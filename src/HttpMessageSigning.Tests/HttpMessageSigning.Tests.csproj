@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <AssemblyName>Dalion.HttpMessageSigning.Tests</AssemblyName>
+        <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <Target Name="InitVersion" BeforeTargets="BeforeBuild">
+        <ReadLinesFromFile File="..\..\version.txt">
+            <Output TaskParameter="Lines" PropertyName="PackageVersion" />
+        </ReadLinesFromFile>
+        <PropertyGroup>
+            <BuildCounter Condition="'$(BuildCounter)'==''">0</BuildCounter>
+            <ProductVersion Condition="'$(ProductVersion)'=='' And $(PackageVersion.IndexOf('-')) &gt; -1">$(PackageVersion.Substring(0, $(PackageVersion.IndexOf('-')))).$(BuildCounter)</ProductVersion>
+            <ProductVersion Condition="'$(ProductVersion)'=='' And $(PackageVersion.IndexOf('-')) &lt; 0">$(PackageVersion).$(BuildCounter)</ProductVersion>
+            <Version>$(ProductVersion)</Version>
+            <InformationalVersion>$(ProductVersion)</InformationalVersion>
+        </PropertyGroup>
+    </Target>
+    
+    <ItemGroup>
+        <PackageReference Include="CompareNETObjects" Version="4.58.0" />
+        <PackageReference Include="FakeItEasy" Version="5.1.1" />
+        <PackageReference Include="FluentAssertions" Version="5.6.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+        <PackageReference Include="xunit" Version="2.4.0" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+        <PackageReference Include="coverlet.collector" Version="1.0.1" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
+    </ItemGroup>
+
+</Project>

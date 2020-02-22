@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning", "HttpMessageSigning\HttpMessageSigning.csproj", "{197735F8-278B-4F9B-B417-193A10527E29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Tests", "HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj", "{DE15B2B8-993A-4307-9D19-22D796608DF3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{197735F8-278B-4F9B-B417-193A10527E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{197735F8-278B-4F9B-B417-193A10527E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{197735F8-278B-4F9B-B417-193A10527E29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE15B2B8-993A-4307-9D19-22D796608DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE15B2B8-993A-4307-9D19-22D796608DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE15B2B8-993A-4307-9D19-22D796608DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE15B2B8-993A-4307-9D19-22D796608DF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
