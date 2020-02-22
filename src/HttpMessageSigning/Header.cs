@@ -49,7 +49,7 @@ namespace Dalion.HttpMessageSigning {
             if (nameAndValues.Length != 2) throw new FormatException($"The specified value ({header}) is not a valid string representation of a header.");
             var name = nameAndValues[0];
             if (string.IsNullOrEmpty(name.Trim())) throw new FormatException($"The specified value ({header}) is not a valid string representation of a header.");
-            var values = nameAndValues[1].Split(new[]{", "}, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()).ToArray();
+            var values = nameAndValues[1].Split(new[]{", "}, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()).Where(v => !string.IsNullOrEmpty(v)).ToArray();
             if (values.Length < 1) throw new FormatException($"The specified value ({header}) is not a valid string representation of a header.");
             return new Header(name, values);
         }
