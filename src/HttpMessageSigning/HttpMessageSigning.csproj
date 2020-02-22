@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AssemblyName>Dalion.HttpMessageSigning</AssemblyName>
+        <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Company>Dalion</Company>
+        <Description>A C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
+        <Product>Dalion.HttpMessageSigning</Product>
+        <Title>Dalion.HttpMessageSigning</Title>
+        <DebugType>full</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+    </PropertyGroup>
+
+    <Target Name="InitVersion" BeforeTargets="BeforeBuild">
+        <ReadLinesFromFile File="..\..\version.txt">
+            <Output TaskParameter="Lines" PropertyName="PackageVersion" />
+        </ReadLinesFromFile>
+        <PropertyGroup>
+            <BuildCounter Condition="'$(BuildCounter)'==''">0</BuildCounter>
+            <ProductVersion Condition="'$(ProductVersion)'=='' And $(PackageVersion.IndexOf('-')) &gt; -1">$(PackageVersion.Substring(0, $(PackageVersion.IndexOf('-')))).$(BuildCounter)</ProductVersion>
+            <ProductVersion Condition="'$(ProductVersion)'=='' And $(PackageVersion.IndexOf('-')) &lt; 0">$(PackageVersion).$(BuildCounter)</ProductVersion>
+            <Version>$(ProductVersion)</Version>
+            <InformationalVersion>$(ProductVersion)</InformationalVersion>
+        </PropertyGroup>
+        <Message Text="The package version for $(TargetFramework) is '$(PackageVersion)'." Importance="High" />
+        <Message Text="The product version for $(TargetFramework) is '$(ProductVersion)'." Importance="High" />
+    </Target>
+
+    <Target Name="PackNuGetPackages" AfterTargets="AfterBuild" Condition="'$(IsPublishing)' == 'true'">
+        <PropertyGroup>
+            <PackagePublishDir Condition="'$(PackagePublishDir)'==''">$(MSBuildThisFileDirectory)bin\Packages\</PackagePublishDir>
+        </PropertyGroup>
+        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion)\&quot;" />
+    </Target>
+
+</Project>

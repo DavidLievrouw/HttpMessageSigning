@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning", "HttpMessageSigning\HttpMessageSigning.csproj", "{197735F8-278B-4F9B-B417-193A10527E29}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{197735F8-278B-4F9B-B417-193A10527E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{197735F8-278B-4F9B-B417-193A10527E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{197735F8-278B-4F9B-B417-193A10527E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{197735F8-278B-4F9B-B417-193A10527E29}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
