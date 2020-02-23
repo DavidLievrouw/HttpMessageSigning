@@ -4,32 +4,32 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning {
-    public class KeyIdTests {
-        public class Construction : KeyIdTests {
+    public class StringKeyIdTests {
+        public class Construction : StringKeyIdTests {
             [Fact]
             public void DefaultConstructor_CreatesEmptyKeyId() {
-                var actual = new KeyId();
-                actual.Should().Be(KeyId.Empty);
+                var actual = new StringKeyId();
+                actual.Should().Be(StringKeyId.Empty);
             }
 
             [Fact]
             public void Constructor_CreatesKeyIdWithValue() {
-                var actual = new KeyId("theValue");
-                actual.Value.Should().Be("theValue");
+                var actual = new StringKeyId("theValue");
+                actual.Key.Should().Be("theValue");
             }
 
             [Fact]
             public void NullValue_CreatesEmptyKeyId() {
-                var actual = new KeyId(null);
-                actual.Should().Be(KeyId.Empty);
+                var actual = new StringKeyId(null);
+                actual.Should().Be(StringKeyId.Empty);
             }
         }
 
-        public class Equality : KeyIdTests {
+        public class Equality : StringKeyIdTests {
             [Fact]
             public void WhenValuesAreEqual_AreEqual() {
-                var first = new KeyId("abc123");
-                var second = new KeyId(first);
+                var first = new StringKeyId("abc123");
+                var second = new StringKeyId(first);
 
                 first.Equals(second).Should().BeTrue();
                 (first == second).Should().BeTrue();
@@ -39,8 +39,8 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void WhenValuesAreDifferent_AreNotEqual() {
-                var first = new KeyId("abc123");
-                var second = new KeyId("xyz123");
+                var first = new StringKeyId("abc123");
+                var second = new StringKeyId("xyz123");
 
                 first.Equals(second).Should().BeFalse();
                 (first == second).Should().BeFalse();
@@ -49,8 +49,8 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void WhenValuesAreDifferentlyCased_AreNotEqual() {
-                var first = new KeyId("abc123");
-                var second = new KeyId("aBc123");
+                var first = new StringKeyId("abc123");
+                var second = new StringKeyId("aBc123");
 
                 first.Equals(second).Should().BeFalse();
                 (first == second).Should().BeFalse();
@@ -59,8 +59,8 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void WhenValuesAreEmpty_AreEqual() {
-                var first = new KeyId("");
-                var second = new KeyId("");
+                var first = new StringKeyId("");
+                var second = new StringKeyId("");
 
                 first.Equals(second).Should().BeTrue();
                 (first == second).Should().BeTrue();
@@ -70,8 +70,8 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void WhenValueIsEmpty_IsEqualToEmpty() {
-                var first = new KeyId("");
-                var second = KeyId.Empty;
+                var first = new StringKeyId("");
+                var second = StringKeyId.Empty;
 
                 first.Equals(second).Should().BeTrue();
                 (first == second).Should().BeTrue();
@@ -81,27 +81,27 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void GivenOtherObjectIsNotKeyId_AreNotEqual() {
-                var first = new KeyId("abc123");
+                var first = new StringKeyId("abc123");
                 var second = new object();
 
                 first.Equals(second).Should().BeFalse();
             }
         }
 
-        public class ToStringRepresentation : KeyIdTests {
+        public class ToStringRepresentation : StringKeyIdTests {
             [Fact]
             public void ReturnsValue() {
                 var value = Guid.NewGuid().ToString();
-                var actual = new KeyId(value).ToString();
+                var actual = new StringKeyId(value).ToString();
                 actual.Should().Be(value);
             }
         }
 
-        public class ConversionOperatorsForString : KeyIdTests {
+        public class ConversionOperatorsForString : StringKeyIdTests {
             [Fact]
             public void IsExplicitlyConvertibleToString() {
                 var value = Guid.NewGuid().ToString();
-                var obj = new KeyId(value);
+                var obj = new StringKeyId(value);
                 var actual = (string) obj;
                 actual.Should().Be(value);
             }       
@@ -109,7 +109,7 @@ namespace Dalion.HttpMessageSigning {
             [Fact]
             public void IsImplicitlyConvertibleToString() {
                 var value = Guid.NewGuid().ToString();
-                var obj = new KeyId(value);
+                var obj = new StringKeyId(value);
                 string actual = obj;
                 actual.Should().Be(value);
             }
@@ -118,8 +118,8 @@ namespace Dalion.HttpMessageSigning {
             public void IsExplicitlyConvertibleFromString() {
                 var value = Guid.NewGuid().ToString();
                 var str = value;
-                var actual = (KeyId) str;
-                var expected = new KeyId(value);
+                var actual = (StringKeyId) str;
+                var expected = new StringKeyId(value);
                 actual.Should().Be(expected);
             }
 
@@ -127,9 +127,9 @@ namespace Dalion.HttpMessageSigning {
             [SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
             public void GivenNullString_ReturnsEmptyKeyId() {
                 string nullString = null;
-                var actual = (KeyId) nullString;
-                actual.Should().NotBeNull().And.BeOfType<KeyId>();
-                actual.Should().Be(KeyId.Empty);
+                var actual = (StringKeyId) nullString;
+                actual.Should().NotBeNull().And.BeOfType<StringKeyId>();
+                actual.Should().Be(StringKeyId.Empty);
             }
         }
     }
