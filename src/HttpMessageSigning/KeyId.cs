@@ -4,18 +4,16 @@ using System.Diagnostics;
 namespace Dalion.HttpMessageSigning {
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     public struct KeyId : IEquatable<KeyId> {
-        private string _value;
-
         public KeyId(string value) {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
+            Value = value ?? string.Empty;
         }
 
-        public string Value => _value ?? (_value = string.Empty);
+        public string Value { get; }
 
         public static KeyId Empty { get; } = new KeyId(string.Empty);
 
         public bool Equals(KeyId other) {
-            return string.Equals(Value, other.Value);
+            return string.Equals(Value ?? string.Empty, other.Value ?? string.Empty);
         }
 
         public override bool Equals(object obj) {
@@ -23,7 +21,7 @@ namespace Dalion.HttpMessageSigning {
         }
 
         public override int GetHashCode() {
-            return Value != null ? Value.GetHashCode() : 0;
+            return (Value ?? string.Empty).GetHashCode();
         }
 
         public static bool operator ==(KeyId left, KeyId right) {
@@ -43,7 +41,7 @@ namespace Dalion.HttpMessageSigning {
         }
 
         public override string ToString() {
-            return Value;
+            return Value ?? string.Empty;
         }
     }
 }

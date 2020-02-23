@@ -6,6 +6,7 @@ namespace Dalion.HttpMessageSigning {
         public Algorithm Algorithm { get; set; }
         public DateTimeOffset? Created { get; set; }
         public DateTimeOffset? Expires { get; set; }
-        public Header[] Headers { get; set; } = Array.Empty<Header>();
+        public HeaderName[] Headers { get; set; } = Array.Empty<HeaderName>();
+        public string String { get; set; }
     }
 }
