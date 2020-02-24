@@ -18,7 +18,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             FakeFactory.Create(out _signatureCreator, out _authorizationHeaderParamCreator, out _logger);
             _signingSettings = new SigningSettings {
                 Expires = TimeSpan.FromMinutes(5),
-                KeyId = new KeyId(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, "abc123"),
+                KeyId = new SelfContainedKeyId(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, "abc123"),
                 Headers = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
                     HeaderName.PredefinedHeaderNames.Date,

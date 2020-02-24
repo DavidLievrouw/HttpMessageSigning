@@ -32,7 +32,9 @@ namespace Dalion.HttpMessageSigning.Signing {
                 };
                 _settings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
-                    KeyId = new KeyId(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, "abc123"),
+                    SignatureAlgorithm = SignatureAlgorithm.RSA,
+                    HashAlgorithm = HashAlgorithm.SHA512,
+                    KeyId = new SelfContainedKeyId(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, "abc123"),
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
@@ -70,11 +72,11 @@ namespace Dalion.HttpMessageSigning.Signing {
                     .Returns(composedString);
 
                 var signingKey = new byte[] {0x01, 0x02};
-                A.CallTo(() => _base64Converter.FromBase64(_settings.KeyId.Key))
+                A.CallTo(() => _base64Converter.FromBase64(_settings.KeyId.Value))
                     .Returns(signingKey);
 
                 var hashAlgorithm = A.Fake<IKeyedHashAlgorithm>();
-                A.CallTo(() => _keyedHashAlgorithmFactory.Create(_settings.KeyId.SignatureAlgorithm, _settings.KeyId.HashAlgorithm, signingKey))
+                A.CallTo(() => _keyedHashAlgorithmFactory.Create(_settings.SignatureAlgorithm, _settings.HashAlgorithm, signingKey))
                     .Returns(hashAlgorithm);
 
                 var signatureHash = new byte[] {0x03, 0x04};
@@ -97,10 +99,15 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void ReturnsSignatureWithExpectedAlgorithm() {
+            public void ReturnsSignatureWithExpectedSignatureAlgorithm() {
                 var actual = _sut.CreateSignature(_httpRequest, _settings);
-                actual.SignatureAlgorithm.Should().Be(SignatureAlgorithm.HMAC);
-                actual.HashAlgorithm.Should().Be(HashAlgorithm.SHA256);
+                actual.SignatureAlgorithm.Should().Be(SignatureAlgorithm.RSA);
+            }
+            
+            [Fact]
+            public void ReturnsSignatureWithExpectedHashAlgorithm() {
+                var actual = _sut.CreateSignature(_httpRequest, _settings);
+                actual.HashAlgorithm.Should().Be(HashAlgorithm.SHA512);
             }
 
             [Fact]

@@ -56,7 +56,7 @@ namespace Dalion.HttpMessageSigning.Validation {
             var signatureMatch = SignatureRegEx.Match(authParam);
             if (signatureMatch.Success) signature = signatureMatch.Groups["signature"].Value;
 
-            if (!KeyId.TryParse(keyIdString, out var keyId)) {
+            if (!SelfContainedKeyId.TryParse(keyIdString, out var keyId)) {
                 throw new HttpMessageSigningInvalidRequestException(
                     $"The specified request does not specify a valid keyId in the authentication parameter of the {AuthorizationHeaderName} header.");
             }

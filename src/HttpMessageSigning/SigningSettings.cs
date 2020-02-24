@@ -8,12 +8,22 @@ namespace Dalion.HttpMessageSigning {
         /// <summary>
         /// The entity that the server can use to look up the component they need to validate the signature.
         /// </summary>
-        public IKeyId KeyId { get; set; }
+        public IKeyId KeyId { get; set; } = new OpaqueKeyId(Guid.NewGuid().ToString("N"));
+
+        /// <summary>
+        /// Gets or sets the algorithm that is used to create the hash value.
+        /// </summary>
+        public HashAlgorithm HashAlgorithm { get; set; } = HashAlgorithm.SHA256;
+
+        /// <summary>
+        /// Gets or sets the keyed hash algorithm that is used to create the hash value.
+        /// </summary>
+        public SignatureAlgorithm SignatureAlgorithm { get; set; } = SignatureAlgorithm.HMAC;
         
         /// <summary>
         /// The timespan after which the signature is considered expired.
         /// </summary>
-        public TimeSpan Expires { get; set; }
+        public TimeSpan Expires { get; set; } = TimeSpan.FromMinutes(5);
         
         /// <summary>
         /// The ordered list of names of request headers to include when generating the signature for the message.

@@ -13,7 +13,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         public string CreateParam(Signature signature) {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
 
-            string keyId = (KeyId) signature.KeyId;
+            var keyId = signature.KeyId.Value;
             var created = signature.Created?.ToUnixTimeSeconds().ToString();
             var expires = signature.Expires?.ToUnixTimeSeconds().ToString();
             var headers = signature.Headers != null

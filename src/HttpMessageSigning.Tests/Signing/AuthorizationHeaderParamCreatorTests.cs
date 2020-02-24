@@ -18,7 +18,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             public CreateParam() {
                 _signature = new Signature {
-                    KeyId = new KeyId(SignatureAlgorithm.HMAC, HashAlgorithm.SHA512, "abc123"),
+                    KeyId = new OpaqueKeyId("abc123"),
                     SignatureAlgorithm = SignatureAlgorithm.HMAC,
                     HashAlgorithm = HashAlgorithm.SHA512,
                     Created = new DateTimeOffset(2020, 2, 24, 13, 53, 12, TimeSpan.Zero),
@@ -38,7 +38,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             public void CreatesExpectedString() {
                 var actual = _sut.CreateParam(_signature);
                 
-                var expected = "keyId=\"sig=hmac, hash=sha512, key=abc123\",algorithm=\"hmac_sha512\",created=1582552392,expires=1582552512,headers=\"h1 h2\",signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
+                var expected = "keyId=\"abc123\",algorithm=\"hmac_sha512\",created=1582552392,expires=1582552512,headers=\"h1 h2\",signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
                 actual.Should().Be(expected);
             }
 
@@ -48,7 +48,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 var actual = _sut.CreateParam(_signature);
                 
-                var expected = "keyId=\"sig=hmac, hash=sha512, key=abc123\",algorithm=\"hmac_sha512\",expires=1582552512,headers=\"h1 h2\",signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
+                var expected = "keyId=\"abc123\",algorithm=\"hmac_sha512\",expires=1582552512,headers=\"h1 h2\",signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
                 actual.Should().Be(expected);
             }
 
@@ -58,7 +58,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 var actual = _sut.CreateParam(_signature);
                 
-                var expected = "keyId=\"sig=hmac, hash=sha512, key=abc123\",algorithm=\"hmac_sha512\",created=1582552392,headers=\"h1 h2\",signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
+                var expected = "keyId=\"abc123\",algorithm=\"hmac_sha512\",created=1582552392,headers=\"h1 h2\",signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
                 actual.Should().Be(expected);
             }
             
@@ -68,7 +68,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 var actual = _sut.CreateParam(_signature);
                 
-                var expected = "keyId=\"sig=hmac, hash=sha512, key=abc123\",created=1582552392,expires=1582552512,headers=\"h1 h2\",signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
+                var expected = "keyId=\"abc123\",created=1582552392,expires=1582552512,headers=\"h1 h2\",signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
                 actual.Should().Be(expected);
             }
             
@@ -78,7 +78,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 var actual = _sut.CreateParam(_signature);
                 
-                var expected = "keyId=\"sig=hmac, hash=sha512, key=abc123\",created=1582552392,expires=1582552512,headers=\"h1 h2\",signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
+                var expected = "keyId=\"abc123\",created=1582552392,expires=1582552512,headers=\"h1 h2\",signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
                 actual.Should().Be(expected);
             }
             
@@ -88,7 +88,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 var actual = _sut.CreateParam(_signature);
                 
-                var expected = "keyId=\"sig=hmac, hash=sha512, key=abc123\",algorithm=\"hmac_sha512\",created=1582552392,expires=1582552512,signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
+                var expected = "keyId=\"abc123\",algorithm=\"hmac_sha512\",created=1582552392,expires=1582552512,signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
                 actual.Should().Be(expected);
             }
             
@@ -98,7 +98,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 var actual = _sut.CreateParam(_signature);
                 
-                var expected = "keyId=\"sig=hmac, hash=sha512, key=abc123\",algorithm=\"hmac_sha512\",created=1582552392,expires=1582552512,signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
+                var expected = "keyId=\"abc123\",algorithm=\"hmac_sha512\",created=1582552392,expires=1582552512,signature=\"YmFzZTY0IGVuY29kZWQgc3RyaW5n\"";
                 actual.Should().Be(expected);
             }
         }
