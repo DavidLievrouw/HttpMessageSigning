@@ -37,6 +37,22 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             [Fact]
+            public void WritesLowercaseMethod() {
+                var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget);
+
+                actual.Should().Contain("post");
+            }
+
+            [Fact]
+            public void DoesNotTouchCasingOfPath() {
+                _httpRequest.RequestUri = new Uri("http://dalion.eu/Api/resource/ID1");
+
+                var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget);
+
+                actual.Should().Contain("/Api/resource/ID1");
+            }
+
+            [Fact]
             public void ReturnsExpectedString() {
                 var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget);
 
