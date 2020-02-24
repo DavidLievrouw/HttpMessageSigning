@@ -76,6 +76,15 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
                 actual.Should().Be("\ndalion-test: forty-two with a linebreak, forty-three with a linebreak");
             }
+            
+            [Fact]
+            public void DoesNotChangeCasingOfHeaderValues() {
+                _httpRequest.Headers.Add("Dalion-test", new[] {"Forty-Two", "Forty-Three"});
+
+                var actual = _sut.BuildStringToAppend(_headerName);
+
+                actual.Should().Be("\ndalion-test: Forty-Two, Forty-Three");
+            }
         }
     }
 }
