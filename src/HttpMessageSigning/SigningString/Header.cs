@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
-    public struct Header : IEquatable<Header> {
+    internal struct Header : IEquatable<Header> {
         public Header(string name, params string[] values) {
             if (values == null) values = Array.Empty<string>();
             Name = name ?? throw new ArgumentNullException(nameof(name));

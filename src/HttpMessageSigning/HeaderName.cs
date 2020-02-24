@@ -2,6 +2,9 @@
 using System.Diagnostics;
 
 namespace Dalion.HttpMessageSigning {
+    /// <summary>
+    /// Represents a pointer to a header of the http request message.
+    /// </summary>
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     public struct HeaderName : IEquatable<HeaderName> {
         public static class PredefinedHeaderNames {
