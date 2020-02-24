@@ -34,9 +34,12 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void NullValue_ThrowsArgumentNullException() {
-                Action act = () => new Header("theName", null);
-                act.Should().Throw<ArgumentNullException>();
+            public void NullValue_CreatesInstanceWithNoValues() {
+                Header header = Header.Empty;
+                Action act = () => header = new Header("theName", null);
+                act.Should().NotThrow();
+                header.Name.Should().Be("theName");
+                header.Values.Should().NotBeNull().And.BeEmpty();
             }
 
             [Theory]

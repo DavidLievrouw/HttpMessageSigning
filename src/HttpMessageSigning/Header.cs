@@ -7,8 +7,8 @@ namespace Dalion.HttpMessageSigning {
     public struct Header : IEquatable<Header> {
         public Header(string name, params string[] values) {
             if (values == null) values = Array.Empty<string>();
-            if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
-            Name = name;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            if (name == string.Empty && values.Any()) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
             Values = values.Select(v => v.Trim()).Where(v => !string.IsNullOrEmpty(v)).ToArray();
         }
         
