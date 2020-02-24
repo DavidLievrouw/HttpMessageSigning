@@ -11,7 +11,10 @@ namespace Dalion.HttpMessageSigning {
         public CompositionTests() {
             var services = new ServiceCollection()
                 .AddLogging()
-                .AddHttpMessageSigning(settings => {});
+                .AddHttpMessageSigning(new ClientKey {
+                    Id = new KeyId("client1"),
+                    Secret = new Secret("s3cr3t")
+                });
             _serviceProvider = services.BuildServiceProvider();
         }
 

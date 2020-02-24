@@ -8,7 +8,7 @@ namespace Dalion.HttpMessageSigning {
         /// <summary>
         /// The entity that the server can use to look up the component they need to validate the signature.
         /// </summary>
-        public IKeyId KeyId { get; set; } = new OpaqueKeyId(Guid.NewGuid().ToString("N"));
+        public ClientKey ClientKey { get; set; } = new ClientKey();
 
         /// <summary>
         /// Gets or sets the algorithm that is used to create the hash value.
@@ -42,10 +42,12 @@ namespace Dalion.HttpMessageSigning {
         }
 
         internal void Validate() {
-            if (KeyId == null) throw new HttpMessageSigningValidationException($"The signing settings do not specify a valid {nameof(KeyId)}.");
+            if (ClientKey == null) throw new HttpMessageSigningValidationException($"The signing settings do not specify a valid {nameof(ClientKey)}.");
             if (Headers == null) throw new HttpMessageSigningValidationException($"The signing settings do not specify a valid {nameof(Headers)}.");
             if (HashAlgorithm == HashAlgorithm.None) throw new HttpMessageSigningValidationException($"The signing settings do not specify a {nameof(HashAlgorithm)}.");
             if (Expires <= TimeSpan.Zero) throw new HttpMessageSigningValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
+            
+            ClientKey.Validate();
         }
     }
 }

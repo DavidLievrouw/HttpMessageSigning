@@ -8,7 +8,7 @@ namespace Dalion.HttpMessageSigning {
         /// <summary>
         /// REQUIRED: Gets or sets the entity that the server can use to look up the component they need to validate the signature.
         /// </summary>
-        public IKeyId KeyId { get; set; }
+        public KeyId KeyId { get; set; }
         
         /// <summary>
         /// OPTIONAL: Gets or sets the keyed hash algorithm that is used to validate the hash value.

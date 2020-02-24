@@ -34,7 +34,10 @@ namespace Dalion.HttpMessageSigning.Signing {
                     Expires = TimeSpan.FromMinutes(5),
                     SignatureAlgorithm = SignatureAlgorithm.RSA,
                     HashAlgorithm = HashAlgorithm.SHA512,
-                    KeyId = new SelfContainedKeyId(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, "abc123"),
+                    ClientKey = new ClientKey {
+                        Id = new KeyId("client1"),
+                        Secret = new Secret("s3cr3t")
+                    },
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
@@ -60,7 +63,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public void GivenInvalidSettings_ThrowsHttpMessageSigningValidationException() {
-                _settings.KeyId = null; // Make invalid
+                _settings.ClientKey = null; // Make invalid
                 Action act = () => _sut.CreateSignature(_httpRequest, _settings);
                 act.Should().Throw<HttpMessageSigningValidationException>();
             }
@@ -71,12 +74,8 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _signingStringComposer.Compose(_httpRequest, _settings, _now))
                     .Returns(composedString);
 
-                var signingKey = new byte[] {0x01, 0x02};
-                A.CallTo(() => _base64Converter.FromBase64(_settings.KeyId.Value))
-                    .Returns(signingKey);
-
                 var hashAlgorithm = A.Fake<IKeyedHashAlgorithm>();
-                A.CallTo(() => _keyedHashAlgorithmFactory.Create(_settings.SignatureAlgorithm, _settings.HashAlgorithm, signingKey))
+                A.CallTo(() => _keyedHashAlgorithmFactory.Create(_settings.SignatureAlgorithm, _settings.HashAlgorithm, _settings.ClientKey.Secret))
                     .Returns(hashAlgorithm);
 
                 var signatureHash = new byte[] {0x03, 0x04};
@@ -95,7 +94,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void ReturnsSignatureWithExpectedKeyId() {
                 var actual = _sut.CreateSignature(_httpRequest, _settings);
-                actual.KeyId.Should().Be(_settings.KeyId);
+                actual.KeyId.Should().Be(_settings.ClientKey.Id);
             }
 
             [Fact]

@@ -56,10 +56,10 @@ namespace Dalion.HttpMessageSigning.Validation {
             var signatureMatch = SignatureRegEx.Match(authParam);
             if (signatureMatch.Success) signature = signatureMatch.Groups["signature"].Value;
 
-            if (!SelfContainedKeyId.TryParse(keyIdString, out var keyId)) {
+           /* if (!SelfContainedKeyId.TryParse(keyIdString, out var keyId)) {
                 throw new HttpMessageSigningInvalidRequestException(
                     $"The specified request does not specify a valid keyId in the authentication parameter of the {AuthorizationHeaderName} header.");
-            }
+            }*/
 
             /*if (!Enum.TryParse(algString, out Algorithm algorithm)) {
                 throw new HttpMessageSigningInvalidRequestException(
@@ -82,7 +82,7 @@ namespace Dalion.HttpMessageSigning.Validation {
             }
 
             return new Signature {
-                KeyId = keyId,
+                //KeyId = keyId,
                 //Algorithm = algorithm, // ToDo: Parse Algorithm
                 Created = created,
                 Expires = expires,

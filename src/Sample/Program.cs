@@ -15,10 +15,7 @@ namespace Sample {
                 var request = new HttpRequestMessage {
                     RequestUri = new Uri("https://httpbin.org/post"),
                     Method = HttpMethod.Post,
-                    Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
-                    Headers = {
-                        {"Date", DateTimeOffset.UtcNow.ToString("R")}
-                    }
+                    Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json)
                 };
                 var requestSigner = serviceProvider.GetRequiredService<IRequestSigner>();
                 requestSigner.Sign(request);
@@ -34,7 +31,10 @@ namespace Sample {
             services
                 .AddLogging(configure => configure.AddConsole())
                 .AddHttpMessageSigning(provider => new SigningSettings {
-                    KeyId = (OpaqueKeyId) "HttpMessageSigningSample"
+                    ClientKey = new ClientKey {
+                        Id = new KeyId("HttpMessageSigningSample"),
+                        Secret = new Secret("yumACY64r%hm")
+                    }
                 });
         }
     }

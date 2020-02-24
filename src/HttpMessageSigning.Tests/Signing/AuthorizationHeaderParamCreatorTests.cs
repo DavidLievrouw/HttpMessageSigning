@@ -18,7 +18,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             public CreateParam() {
                 _signature = new Signature {
-                    KeyId = new OpaqueKeyId("abc123"),
+                    KeyId = new KeyId("abc123"),
                     SignatureAlgorithm = SignatureAlgorithm.HMAC,
                     HashAlgorithm = HashAlgorithm.SHA512,
                     Created = new DateTimeOffset(2020, 2, 24, 13, 53, 12, TimeSpan.Zero),

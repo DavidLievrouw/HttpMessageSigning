@@ -7,7 +7,77 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Dalion.HttpMessageSigning {
     public static class Extensions {
         /// <summary>
-        ///     Adds http message signing registrations, using the specified configurator to the specified
+        ///     Adds http message signing registrations to the specified
+        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// </summary>
+        /// <param name="services">
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
+        ///     registrations to.
+        /// </param>
+        /// <param name="clientKey">The client key.</param>
+        /// <returns>
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
+        ///     were added.
+        /// </returns>
+        public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, ClientKey clientKey) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (clientKey == null) throw new ArgumentNullException(nameof(clientKey));
+
+            return services.AddHttpMessageSigning(prov => new SigningSettings {
+                ClientKey = clientKey
+            });
+        }
+
+        /// <summary>
+        ///     Adds http message signing registrations to the specified
+        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// </summary>
+        /// <param name="services">
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
+        ///     registrations to.
+        /// </param>
+        /// <param name="clientKeyConfig">The action that configures the client key.</param>
+        /// <returns>
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
+        ///     were added.
+        /// </returns>
+        public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, Action<ClientKey> clientKeyConfig) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (clientKeyConfig == null) throw new ArgumentNullException(nameof(clientKeyConfig));
+
+            return services.AddHttpMessageSigning(prov => {
+                var clientKey = new ClientKey();
+                clientKeyConfig.Invoke(clientKey);
+                return new SigningSettings {
+                    ClientKey = clientKey
+                };
+            });
+        }
+
+        /// <summary>
+        ///     Adds http message signing registrations to the specified
+        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// </summary>
+        /// <param name="services">
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
+        ///     registrations to.
+        /// </param>
+        /// <param name="clientKeyFactory">The factory that creates the client key.</param>
+        /// <returns>
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
+        ///     were added.
+        /// </returns>
+        public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, Func<IServiceProvider, ClientKey> clientKeyFactory) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (clientKeyFactory == null) throw new ArgumentNullException(nameof(clientKeyFactory));
+
+            return services.AddHttpMessageSigning(prov => new SigningSettings {
+                ClientKey = clientKeyFactory.Invoke(prov)
+            });
+        }
+
+        /// <summary>
+        ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
         /// </summary>
         /// <param name="services">
@@ -25,9 +95,9 @@ namespace Dalion.HttpMessageSigning {
 
             return services.AddHttpMessageSigning(prov => signingSettings);
         }
-        
+
         /// <summary>
-        ///     Adds http message signing registrations, using the specified configurator to the specified
+        ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
         /// </summary>
         /// <param name="services">
@@ -48,9 +118,9 @@ namespace Dalion.HttpMessageSigning {
                 return newSettings;
             });
         }
-        
+
         /// <summary>
-        ///     Adds http message signing registrations, using the specified configurator to the specified
+        ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
         /// </summary>
         /// <param name="services">

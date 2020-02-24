@@ -29,6 +29,27 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 _signingSettings.Validate();
 
+                /*
+                 if (!settings.Headers.Contains(HeaderName.PredefinedHeaderNames.RequestTarget)) {
+                settings.Headers = new[] {HeaderName.PredefinedHeaderNames.RequestTarget}.Concat(settings.Headers).ToArray();
+            }
+
+            if (!settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Date)) {
+                // ToDo: Add Date header to request, if not specified
+                var requestTargetHeaderIdx = Array.IndexOf(settings.Headers, HeaderName.PredefinedHeaderNames.RequestTarget);
+                settings.Headers = settings.Headers
+                    .Take(requestTargetHeaderIdx + 1)
+                    .Concat(new[] {HeaderName.PredefinedHeaderNames.Date})
+                    .Concat(settings.Headers.Skip(requestTargetHeaderIdx + 1))
+                    .ToArray();
+            }
+
+            if (settings.DigestHashAlgorithm != HashAlgorithm.None && request.Method != HttpMethod.Get && !settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
+                // ToDo: Add Digest header to request, if not specified
+                settings.Headers = settings.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Digest}).ToArray();
+            }
+            
+                 */
                 var signature = _signatureCreator.CreateSignature(request, _signingSettings);
                 var authParam = _authorizationHeaderParamCreator.CreateParam(signature);
 

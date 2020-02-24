@@ -9,7 +9,10 @@ namespace Dalion.HttpMessageSigning {
         public SigningSettingsTests() {
             _sut = new SigningSettings {
                 Expires = TimeSpan.FromMinutes(5),
-                KeyId = new SelfContainedKeyId(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, "abc123"),
+                ClientKey = new ClientKey {
+                    Id = new KeyId("client1"),
+                    Secret = new Secret("s3cr3t")
+                },
                 Headers = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
                     HeaderName.PredefinedHeaderNames.Date,
@@ -25,7 +28,7 @@ namespace Dalion.HttpMessageSigning {
         public class Validate : SigningSettingsTests {
             [Fact]
             public void WhenKeyIdIsNull_ThrowsValidationException() {
-                _sut.KeyId = null;
+                _sut.ClientKey = null;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<HttpMessageSigningValidationException>();
             }
@@ -61,6 +64,20 @@ namespace Dalion.HttpMessageSigning {
             [Fact]
             public void WhenExpiresIsZero_ThrowsValidationException() {
                 _sut.Expires = TimeSpan.Zero;
+                Action act = () => _sut.Validate();
+                act.Should().Throw<HttpMessageSigningValidationException>();
+            }
+            
+            [Fact]
+            public void WhenClientKeyIsNull_ThrowsValidationException() {
+                _sut.ClientKey = null;
+                Action act = () => _sut.Validate();
+                act.Should().Throw<HttpMessageSigningValidationException>();
+            }
+            
+            [Fact]
+            public void WhenClientKeyIsInvalid_ThrowsValidationException() {
+                _sut.ClientKey.Id = KeyId.Empty; // Make invalid
                 Action act = () => _sut.Validate();
                 act.Should().Throw<HttpMessageSigningValidationException>();
             }
