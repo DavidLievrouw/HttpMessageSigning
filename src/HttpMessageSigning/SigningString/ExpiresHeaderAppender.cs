@@ -2,16 +2,16 @@ using System;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class ExpiresHeaderAppender : IHeaderAppender {
-        private readonly ISystemClock _systemClock;
         private readonly SigningSettings _settings;
+        private readonly DateTimeOffset _timeOfComposing;
 
-        public ExpiresHeaderAppender(ISystemClock systemClock, SigningSettings settings) {
-            _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
+        public ExpiresHeaderAppender(SigningSettings settings, DateTimeOffset timeOfComposing) {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _timeOfComposing = timeOfComposing;
         }
 
         public string BuildStringToAppend(HeaderName header) {
-            var expiresValue = _systemClock.UtcNow.Add(_settings.Expires).ToUnixTimeSeconds();
+            var expiresValue = _timeOfComposing.Add(_settings.Expires).ToUnixTimeSeconds();
             return "\n" + new Header(HeaderName.PredefinedHeaderNames.Expires, expiresValue.ToString());
         }
     }

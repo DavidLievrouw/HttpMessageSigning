@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _headerAppenderFactory = headerAppenderFactory ?? throw new ArgumentNullException(nameof(headerAppenderFactory));
         }
 
-        public string Compose(HttpRequestMessage request, SigningSettings settings) {
+        public string Compose(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfComposing) {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
 
@@ -30,7 +30,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     .ToArray();
             }
             
-            var headerAppender = _headerAppenderFactory.Create(request, settings);
+            var headerAppender = _headerAppenderFactory.Create(request, settings, timeOfComposing);
 
             var sb = new StringBuilder();
             foreach (var headerName in settings.Headers.Where(h => h != HeaderName.Empty)) {

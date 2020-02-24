@@ -7,6 +7,8 @@ namespace Dalion.HttpMessageSigning {
         rsa_sha1,
         rsa_sha256,
         hmac_sha256,
+        hmac_sha384,
+        hmac_sha512,
         ecdsa_sha256
     }
 }

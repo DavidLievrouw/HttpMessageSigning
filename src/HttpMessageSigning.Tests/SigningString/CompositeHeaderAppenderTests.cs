@@ -73,8 +73,8 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             [Fact]
             public void WhenHeaderIsSomethingElse_ReturnsResultFromTheDefaultAppender() {
-                var actual = _sut.BuildStringToAppend((HeaderName) "reco-test");
-                actual.Should().Be("{reco-test}");
+                var actual = _sut.BuildStringToAppend((HeaderName) "dalion-test");
+                actual.Should().Be("{dalion-test}");
             }
         }
     }

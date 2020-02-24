@@ -43,12 +43,12 @@ namespace Dalion.HttpMessageSigning {
             return new HeaderName(value ?? string.Empty);
         }
 
-        public static implicit operator string(HeaderName id) {
-            return id.Value;
+        public static implicit operator string(HeaderName name) {
+            return name.Value.ToLowerInvariant();
         }
 
         public override string ToString() {
-            return Value ?? string.Empty;
+            return (Value ?? string.Empty).ToLowerInvariant();
         }
     }
 }

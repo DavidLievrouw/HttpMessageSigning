@@ -96,6 +96,13 @@ namespace Dalion.HttpMessageSigning {
                 var actual = new HeaderName(value).ToString();
                 actual.Should().Be(value);
             }
+            
+            [Fact]
+            public void ConvertsNameToLowercase() {
+                var value = "TheValue-Again";
+                var actual = new HeaderName(value).ToString();
+                actual.Should().Be("thevalue-again");
+            }
         }
 
         public class ConversionOperatorsForString : HeaderNameTests {

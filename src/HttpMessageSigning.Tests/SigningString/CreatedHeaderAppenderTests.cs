@@ -6,21 +6,14 @@ using Xunit;
 namespace Dalion.HttpMessageSigning.SigningString {
     public class CreatedHeaderAppenderTests {
         private readonly CreatedHeaderAppender _sut;
-        private readonly ISystemClock _systemClock;
+        private readonly DateTimeOffset _timeOfComposing;
 
         public CreatedHeaderAppenderTests() {
-            FakeFactory.Create(out _systemClock);
-            _sut = new CreatedHeaderAppender(_systemClock);
+            _timeOfComposing = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.FromHours(1));
+            _sut = new CreatedHeaderAppender(_timeOfComposing);
         }
 
         public class BuildStringToAppend : CreatedHeaderAppenderTests {
-            private readonly DateTimeOffset _now;
-
-            public BuildStringToAppend() {
-                _now = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.FromHours(1));
-                A.CallTo(() => _systemClock.UtcNow).Returns(_now.UtcDateTime);
-            }
-
             [Fact]
             public void ReturnsExpectedString() {
                 var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Expires);
