@@ -1,10 +1,9 @@
 using System;
 using System.Net.Http;
-using FakeItEasy;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Composing {
+namespace Dalion.HttpMessageSigning.SigningString {
     public class DateHeaderAppenderTests {
         private readonly HttpRequestMessage _httpRequest;
         private readonly DateHeaderAppender _sut;

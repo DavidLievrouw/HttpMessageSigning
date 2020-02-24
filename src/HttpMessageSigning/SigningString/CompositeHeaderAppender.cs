@@ -1,6 +1,6 @@
 using System;
 
-namespace Dalion.HttpMessageSigning.Composing {
+namespace Dalion.HttpMessageSigning.SigningString {
     internal class CompositeHeaderAppender : IHeaderAppender {
         private readonly IHeaderAppender _defaultHeaderAppender;
         private readonly IHeaderAppender _requestTargetHeaderAppender;

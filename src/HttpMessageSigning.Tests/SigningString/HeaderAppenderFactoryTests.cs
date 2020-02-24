@@ -3,7 +3,7 @@ using System.Net.Http;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Composing {
+namespace Dalion.HttpMessageSigning.SigningString {
     public class HeaderAppenderFactoryTests {
         private readonly ISystemClock _systemClock;
         private readonly HeaderAppenderFactory _sut;

@@ -3,7 +3,7 @@ using System.Net.Http;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Composing {
+namespace Dalion.HttpMessageSigning.SigningString {
     public class DefaultHeaderAppenderTests {
         private readonly HttpRequestMessage _httpRequest;
         private readonly DefaultHeaderAppender _sut;

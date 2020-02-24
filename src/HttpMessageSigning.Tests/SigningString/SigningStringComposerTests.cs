@@ -5,7 +5,7 @@ using FakeItEasy;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Composing {
+namespace Dalion.HttpMessageSigning.SigningString {
     public class SigningStringComposerTests {
         private readonly IHeaderAppenderFactory _headerAppenderFactory;
         private readonly SigningStringComposer _sut;

@@ -1,7 +1,6 @@
 using System;
-using System.Net.Http;
 
-namespace Dalion.HttpMessageSigning.Composing {
+namespace Dalion.HttpMessageSigning.SigningString {
     internal class ExpiresHeaderAppender : IHeaderAppender {
         private readonly ISystemClock _systemClock;
         private readonly SigningSettings _settings;

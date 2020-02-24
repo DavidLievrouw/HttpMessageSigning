@@ -1,7 +1,7 @@
 using System;
 using System.Net.Http;
 
-namespace Dalion.HttpMessageSigning.Composing {
+namespace Dalion.HttpMessageSigning.SigningString {
     internal class HeaderAppenderFactory : IHeaderAppenderFactory {
         private readonly ISystemClock _systemClock;
         

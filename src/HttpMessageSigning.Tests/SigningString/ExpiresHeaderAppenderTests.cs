@@ -3,7 +3,7 @@ using FakeItEasy;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Composing {
+namespace Dalion.HttpMessageSigning.SigningString {
     public class ExpiresHeaderAppenderTests {
         private readonly SigningSettings _settings;
         private readonly ExpiresHeaderAppender _sut;

@@ -34,5 +34,9 @@
     <ItemGroup>
       <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Validation" />
+    </ItemGroup>
 
 </Project>

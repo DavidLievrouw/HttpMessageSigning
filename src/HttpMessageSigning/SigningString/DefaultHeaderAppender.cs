@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Net.Http;
 
-namespace Dalion.HttpMessageSigning.Composing {
+namespace Dalion.HttpMessageSigning.SigningString {
     internal class DefaultHeaderAppender : IHeaderAppender {
         private readonly HttpRequestMessage _request;
         

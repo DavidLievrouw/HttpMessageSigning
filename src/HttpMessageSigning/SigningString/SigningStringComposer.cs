@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 
-namespace Dalion.HttpMessageSigning.Composing {
+namespace Dalion.HttpMessageSigning.SigningString {
     internal class SigningStringComposer : ISigningStringComposer {
         private readonly IHeaderAppenderFactory _headerAppenderFactory;
 
