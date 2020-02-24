@@ -44,17 +44,32 @@ namespace Dalion.HttpMessageSigning {
             return !left.Equals(right);
         }
 
-        public static explicit operator Header(string header) {
-            if (string.IsNullOrEmpty(header)) return Empty;
-            var nameAndValues = header.Split(new[]{": "}, StringSplitOptions.None);
-            if (nameAndValues.Length != 2) throw new FormatException($"The specified value ({header}) is not a valid string representation of a header.");
-            var name = nameAndValues[0];
-            if (string.IsNullOrEmpty(name.Trim())) throw new FormatException($"The specified value ({header}) is not a valid string representation of a header.");
-            var values = nameAndValues[1].Split(new[]{", "}, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()).Where(v => !string.IsNullOrEmpty(v)).ToArray();
-            return new Header(name, values);
+        public static explicit operator Header(string value) {
+            if (string.IsNullOrEmpty(value)) return Empty;
+            
+            if (!TryParse(value, out var header)) {
+                throw new FormatException($"The specified value ({value ?? "[null]"}) is not a valid string representation of a header.");
+            }
+            return header;
         }
 
-        public static Header FromString(string header) {
+        public static bool TryParse(string value, out Header parsed) {
+            parsed = Empty;
+            
+            if (string.IsNullOrEmpty(value)) return false;
+            
+            var nameAndValues = value.Split(new[]{": "}, StringSplitOptions.None);
+            if (nameAndValues.Length != 2) return false;
+            var name = nameAndValues[0];
+            if (string.IsNullOrEmpty(name.Trim())) return false;
+            var values = nameAndValues[1].Split(new[]{", "}, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()).Where(v => !string.IsNullOrEmpty(v)).ToArray();
+            
+            parsed =  new Header(name, values);
+
+            return true;
+        }
+        
+        public static Header Parse(string header) {
             return (Header) header;
         }
         
