@@ -61,10 +61,10 @@ namespace Dalion.HttpMessageSigning.Validation {
                     $"The specified request does not specify a valid keyId in the authentication parameter of the {AuthorizationHeaderName} header.");
             }
 
-            if (!Enum.TryParse(algString, out Algorithm algorithm)) {
+            /*if (!Enum.TryParse(algString, out Algorithm algorithm)) {
                 throw new HttpMessageSigningInvalidRequestException(
                     $"The specified request does not specify a valid algorithm in the authentication parameter of the {AuthorizationHeaderName} header.");
-            }
+            }*/
 
             DateTimeOffset? created = null;
             if (long.TryParse(createdString, out var createdEpoch)) {
@@ -83,7 +83,7 @@ namespace Dalion.HttpMessageSigning.Validation {
 
             return new Signature {
                 KeyId = keyId,
-                Algorithm = algorithm,
+                //Algorithm = algorithm, // ToDo: Parse Algorithm
                 Created = created,
                 Expires = expires,
                 Headers = headerNames,

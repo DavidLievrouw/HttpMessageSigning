@@ -1,5 +1,4 @@
 using System;
-using System.Security.Cryptography;
 using FluentAssertions;
 using Xunit;
 
@@ -24,9 +23,8 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 var actual = _sut.Create(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, signingKey);
 
-                actual.Should().BeAssignableTo<HMAC>();
-                actual.As<HMAC>().Key.Should().BeEquivalentTo(signingKey);
-                actual.As<HMAC>().HashName.Should().Be("SHA256");
+                actual.Should().BeAssignableTo<RealKeyedHashAlgorithm>();
+                actual.As<RealKeyedHashAlgorithm>().Key.Should().BeEquivalentTo(signingKey);
             }
         }
     }

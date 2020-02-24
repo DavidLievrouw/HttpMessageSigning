@@ -38,7 +38,8 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             var signature = new Signature {
                 KeyId = settings.KeyId,
-                Algorithm = settings.Algorithm,
+                SignatureAlgorithm = settings.KeyId.SignatureAlgorithm,
+                HashAlgorithm = settings.KeyId.HashAlgorithm,
                 Created = timeOfComposing,
                 Expires = timeOfComposing.Add(settings.Expires),
                 Headers = settings.Headers,

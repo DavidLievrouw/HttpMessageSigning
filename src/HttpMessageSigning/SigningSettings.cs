@@ -3,7 +3,6 @@ using System;
 namespace Dalion.HttpMessageSigning {
     public class SigningSettings : IValidatable {
         public IKeyId KeyId { get; set; }
-        public Algorithm Algorithm { get; set; }
         public TimeSpan Expires { get; set; }
         public HeaderName[] Headers { get; set; } = Array.Empty<HeaderName>();
         

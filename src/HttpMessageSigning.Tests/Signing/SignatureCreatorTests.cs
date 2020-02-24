@@ -29,7 +29,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                     RequestUri = new Uri("http://dalion.eu/api/resource/id1")
                 };
                 _settings = new SigningSettings {
-                    Algorithm = Algorithm.hmac_sha256,
                     Expires = TimeSpan.FromMinutes(5),
                     KeyId = new KeyId(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, "abc123"),
                     Headers = new[] {
@@ -98,7 +97,8 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void ReturnsSignatureWithExpectedAlgorithm() {
                 var actual = _sut.CreateSignature(_httpRequest, _settings);
-                actual.Algorithm.Should().Be(Algorithm.hmac_sha256);
+                actual.SignatureAlgorithm.Should().Be(SignatureAlgorithm.HMAC);
+                actual.HashAlgorithm.Should().Be(HashAlgorithm.SHA256);
             }
 
             [Fact]

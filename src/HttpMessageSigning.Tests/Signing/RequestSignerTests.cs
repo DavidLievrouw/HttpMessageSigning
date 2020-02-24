@@ -26,7 +26,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                     RequestUri = new Uri("http://dalion.eu/api/resource/id1")
                 };
                 _settings = new SigningSettings {
-                    Algorithm = Algorithm.hmac_sha256,
                     Expires = TimeSpan.FromMinutes(5),
                     KeyId = new KeyId(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, "abc123"),
                     Headers = new[] {

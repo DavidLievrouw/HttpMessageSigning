@@ -6,14 +6,16 @@ namespace Dalion.HttpMessageSigning.Signing {
         public string CreateParam(Signature signature) {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
 
-            string keyId = (KeyId)signature.KeyId;
-            var algorithm = signature.Algorithm.ToString().ToLowerInvariant();
+            string keyId = (KeyId) signature.KeyId;
             var created = signature.Created?.ToUnixTimeSeconds().ToString();
             var expires = signature.Expires?.ToUnixTimeSeconds().ToString();
             var headers = signature.Headers != null
                 ? string.Join(" ", signature.Headers)
                 : null;
-            
+            var algorithm = signature.SignatureAlgorithm.HasValue && signature.HashAlgorithm.HasValue
+                ? $"{signature.SignatureAlgorithm.ToString().ToLowerInvariant()}_{signature.HashAlgorithm.ToString().ToLowerInvariant()}"
+                : null;
+
             var sb = new StringBuilder();
             sb.Append("keyId=\"" + keyId + "\"");
             if (!string.IsNullOrEmpty(algorithm)) sb.Append(",algorithm=\"" + algorithm + "\"");

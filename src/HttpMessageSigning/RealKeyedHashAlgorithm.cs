@@ -13,5 +13,7 @@ namespace Dalion.HttpMessageSigning {
         public byte[] ComputeHash(string input) {
             return _realAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(input));
         }
+
+        public byte[] Key => _realAlgorithm.Key;
     }
 }
