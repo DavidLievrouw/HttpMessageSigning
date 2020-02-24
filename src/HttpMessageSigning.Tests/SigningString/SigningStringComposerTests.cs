@@ -78,9 +78,9 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
                 interceptedSettings.Headers.ElementAt(0).Should().Be(HeaderName.PredefinedHeaderNames.RequestTarget);
             }
-
+            
             [Fact]
-            public void WhenHeadersDoesNotContainDate_PrependsDateToHeaders_ButAfterRequestTargetHeader() {
+            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainDate_PrependsDateToHeaders_ButAfterRequestTargetHeader() {
                 SigningSettings interceptedSettings = null;
                 A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
                     .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
@@ -91,6 +91,22 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
                 interceptedSettings.Headers.ElementAt(0).Should().Be(HeaderName.PredefinedHeaderNames.RequestTarget);
                 interceptedSettings.Headers.ElementAt(1).Should().Be(HeaderName.PredefinedHeaderNames.Date);
+            }    
+            
+            [Fact]
+            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_PrependsCreatedToHeaders_ButAfterRequestTargetHeader() {
+                _settings.SignatureAlgorithm = (SignatureAlgorithm) 999;
+                
+                SigningSettings interceptedSettings = null;
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
+                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                    .Returns(_headerAppender);
+
+                _settings.Headers = Array.Empty<HeaderName>();
+                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
+
+                interceptedSettings.Headers.ElementAt(0).Should().Be(HeaderName.PredefinedHeaderNames.RequestTarget);
+                interceptedSettings.Headers.ElementAt(1).Should().Be(HeaderName.PredefinedHeaderNames.Created);
             }
 
             [Fact]

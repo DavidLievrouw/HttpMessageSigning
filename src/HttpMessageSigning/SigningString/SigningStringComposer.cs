@@ -17,19 +17,32 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             settings.Validate();
             
+            // According to the spec, the header (request-target) should always be a part of the signature string.
             if (!settings.Headers.Contains(HeaderName.PredefinedHeaderNames.RequestTarget)) {
                 settings.Headers = new[] {HeaderName.PredefinedHeaderNames.RequestTarget}.Concat(settings.Headers).ToArray();
             }
 
-            if (!settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Date)) {
+            // According to the spec, when the algorithm starts with 'rsa', 'hmac' or 'ecdsa', the Date header should be part of the signature string.
+            if (ShouldHaveDateHeader(settings.SignatureAlgorithm) && !settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Date)) {
                 var requestTargetHeaderIdx = Array.IndexOf(settings.Headers, HeaderName.PredefinedHeaderNames.RequestTarget);
                 settings.Headers = settings.Headers
                     .Take(requestTargetHeaderIdx + 1)
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Date})
                     .Concat(settings.Headers.Skip(requestTargetHeaderIdx + 1))
                     .ToArray();
+            }            
+            
+            // According to the spec, when the algorithm does not start with 'rsa', 'hmac' or 'ecdsa', the (created) header should be part of the signature string.
+            if (!ShouldHaveDateHeader(settings.SignatureAlgorithm) && !settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Created)) {
+                var requestTargetHeaderIdx = Array.IndexOf(settings.Headers, HeaderName.PredefinedHeaderNames.RequestTarget);
+                settings.Headers = settings.Headers
+                    .Take(requestTargetHeaderIdx + 1)
+                    .Concat(new[] {HeaderName.PredefinedHeaderNames.Created})
+                    .Concat(settings.Headers.Skip(requestTargetHeaderIdx + 1))
+                    .ToArray();
             }
 
+            // When digest is enabled, make it part of the signature string
             if (settings.DigestHashAlgorithm != HashAlgorithm.None && request.Method != HttpMethod.Get && !settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
                 settings.Headers = settings.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Digest}).ToArray();
             }
@@ -42,6 +55,13 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             return sb.ToString().Trim();
+        }
+
+        private static bool ShouldHaveDateHeader(SignatureAlgorithm signatureAlgorithm) {
+            var signatureAlgorithmString = signatureAlgorithm.ToString().ToLowerInvariant();
+            return signatureAlgorithmString.StartsWith("rsa") || 
+                   signatureAlgorithmString.StartsWith("hmac") ||
+                   signatureAlgorithmString.StartsWith("ecdsa");
         }
     }
 }
