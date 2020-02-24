@@ -35,7 +35,8 @@ namespace Dalion.HttpMessageSigning.SigningString {
                         HeaderName.PredefinedHeaderNames.Date,
                         HeaderName.PredefinedHeaderNames.Expires,
                         new HeaderName("dalion_app_id")
-                    }
+                    },
+                    DigestHashAlgorithm = HashAlgorithm.SHA256
                 };
 
                 FakeFactory.Create(out _headerAppender);
@@ -90,6 +91,52 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             [Fact]
+            public void WhenHeadersDoesNotContainDigest_AndDigestIsOff_DoesNotAddDigestHeader() {
+                _settings.DigestHashAlgorithm = HashAlgorithm.None;
+                
+                SigningSettings interceptedSettings = null;
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
+                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                    .Returns(_headerAppender);
+
+                _settings.Headers = Array.Empty<HeaderName>();
+                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
+
+                interceptedSettings.Headers.Should().NotContain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
+            }
+            
+            [Fact]
+            public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_AddsDigestHeader() {
+                _settings.DigestHashAlgorithm = HashAlgorithm.SHA384;
+                
+                SigningSettings interceptedSettings = null;
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
+                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                    .Returns(_headerAppender);
+
+                _settings.Headers = Array.Empty<HeaderName>();
+                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
+
+                interceptedSettings.Headers.Should().Contain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
+            }
+            
+            [Fact]
+            public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_ButMethodIsGet_DoesNotAddDigestHeader() {
+                _settings.DigestHashAlgorithm = HashAlgorithm.SHA384;
+                _httpRequest.Method = HttpMethod.Get;
+                
+                SigningSettings interceptedSettings = null;
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
+                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                    .Returns(_headerAppender);
+
+                _settings.Headers = Array.Empty<HeaderName>();
+                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
+
+                interceptedSettings.Headers.Should().NotContain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
+            }
+            
+            [Fact]
             public void ExcludesEmptyHeaderNames() {
                 _settings.Headers = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
@@ -105,7 +152,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
                 var actual = _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                var expected = "(request-target),date,(expires),dalion_app_id,";
+                var expected = "(request-target),date,(expires),dalion_app_id,digest,";
                 actual.Should().Be(expected);
             }
             
@@ -116,7 +163,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
                 var actual = _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                var expected = "(request-target),date,(expires),dalion_app_id,";
+                var expected = "(request-target),date,(expires),dalion_app_id,digest,";
                 actual.Should().Be(expected);
             }
         }

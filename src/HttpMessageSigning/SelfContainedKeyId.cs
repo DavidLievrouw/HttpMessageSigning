@@ -75,7 +75,7 @@ namespace Dalion.HttpMessageSigning {
         }
 
         public override string ToString() {
-            return $"sig={SignatureAlgorithm.ToString().ToLowerInvariant()}, hash={HashAlgorithm.ToString().ToLowerInvariant()}, key={Value ?? string.Empty}";
+            return $"sig={SignatureAlgorithm.ToString().ToLowerInvariant()}, hash={HashAlgorithm.ToString().Replace("_", "").ToLowerInvariant()}, key={Value ?? string.Empty}";
         }
     }
 }

@@ -1,12 +1,11 @@
 using System;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Dalion.HttpMessageSigning {
-    internal class RealKeyedHashAlgorithm : IKeyedHashAlgorithm {
-        private readonly KeyedHashAlgorithm _realAlgorithm;
-        
-        public RealKeyedHashAlgorithm(string name, KeyedHashAlgorithm realAlgorithm) {
+    internal class RealHashAlgorithm : IHashAlgorithm {
+        private readonly System.Security.Cryptography.HashAlgorithm _realAlgorithm;
+
+        public RealHashAlgorithm(string name, System.Security.Cryptography.HashAlgorithm realAlgorithm) {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _realAlgorithm = realAlgorithm ?? throw new ArgumentNullException(nameof(realAlgorithm));
         }
@@ -16,8 +15,6 @@ namespace Dalion.HttpMessageSigning {
         public byte[] ComputeHash(string input) {
             return _realAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(input));
         }
-
-        public byte[] Key => _realAlgorithm.Key;
 
         public void Dispose() {
             _realAlgorithm?.Dispose();

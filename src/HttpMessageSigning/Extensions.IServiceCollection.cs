@@ -70,6 +70,7 @@ namespace Dalion.HttpMessageSigning {
                 .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<IBase64Converter, Base64Converter>()
+                .AddSingleton<IHashAlgorithmFactory, HashAlgorithmFactory>()
                 .AddSingleton<IKeyedHashAlgorithmFactory, KeyedHashAlgorithmFactory>()
                 .AddSingleton<ISignatureCreator, SignatureCreator>()
                 .AddSingleton<IAuthorizationHeaderParamCreator, AuthorizationHeaderParamCreator>()

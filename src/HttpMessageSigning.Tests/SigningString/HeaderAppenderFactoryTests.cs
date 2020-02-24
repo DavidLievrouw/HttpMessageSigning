@@ -5,10 +5,13 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     public class HeaderAppenderFactoryTests {
+        private readonly IBase64Converter _base64Converter;
+        private readonly IHashAlgorithmFactory _hashAlgorithmFactory;
         private readonly HeaderAppenderFactory _sut;
 
         public HeaderAppenderFactoryTests() {
-            _sut = new HeaderAppenderFactory();
+            FakeFactory.Create(out _base64Converter, out _hashAlgorithmFactory);
+            _sut = new HeaderAppenderFactory(_base64Converter, _hashAlgorithmFactory);
         }
 
         public class Create : HeaderAppenderFactoryTests {

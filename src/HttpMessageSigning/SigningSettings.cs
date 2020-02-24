@@ -21,9 +21,15 @@ namespace Dalion.HttpMessageSigning {
         public SignatureAlgorithm SignatureAlgorithm { get; set; } = SignatureAlgorithm.HMAC;
         
         /// <summary>
-        /// The timespan after which the signature is considered expired.
+        /// Gets or sets the timespan after which the signature is considered expired.
         /// </summary>
         public TimeSpan Expires { get; set; } = TimeSpan.FromMinutes(5);
+
+        /// <summary>
+        /// Gets or sets the hash algorithm to use to generate a Digest http header, to be able to verify that the body has not been modified.
+        /// </summary>
+        /// <remarks>Select <see cref="Dalion.HttpMessageSigning.HashAlgorithm.None"/> to disable Digest header generation.</remarks>
+        public HashAlgorithm DigestHashAlgorithm { get; set; } = HashAlgorithm.SHA256;
         
         /// <summary>
         /// The ordered list of names of request headers to include when generating the signature for the message.
@@ -37,7 +43,8 @@ namespace Dalion.HttpMessageSigning {
 
         internal void Validate() {
             if (KeyId == null) throw new HttpMessageSigningValidationException($"The signing settings do not specify a valid {nameof(KeyId)}.");
-            if (Headers == null) throw new HttpMessageSigningValidationException($"The signing settings do not specify valid {nameof(Headers)}.");
+            if (Headers == null) throw new HttpMessageSigningValidationException($"The signing settings do not specify a valid {nameof(Headers)}.");
+            if (HashAlgorithm == HashAlgorithm.None) throw new HttpMessageSigningValidationException($"The signing settings do not specify a {nameof(HashAlgorithm)}.");
             if (Expires <= TimeSpan.Zero) throw new HttpMessageSigningValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
         }
     }

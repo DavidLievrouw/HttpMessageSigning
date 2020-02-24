@@ -15,7 +15,10 @@ namespace Dalion.HttpMessageSigning {
                     HeaderName.PredefinedHeaderNames.Date,
                     HeaderName.PredefinedHeaderNames.Expires,
                     new HeaderName("dalion_app_id")
-                }
+                },
+                HashAlgorithm = HashAlgorithm.SHA384,
+                SignatureAlgorithm = SignatureAlgorithm.RSA,
+                DigestHashAlgorithm = HashAlgorithm.None
             };
         }
 
@@ -23,6 +26,13 @@ namespace Dalion.HttpMessageSigning {
             [Fact]
             public void WhenKeyIdIsNull_ThrowsValidationException() {
                 _sut.KeyId = null;
+                Action act = () => _sut.Validate();
+                act.Should().Throw<HttpMessageSigningValidationException>();
+            }
+            
+            [Fact]
+            public void WhenNoHashAlgorithmIsSelected_ThrowsValidationException() {
+                _sut.HashAlgorithm = HashAlgorithm.None;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<HttpMessageSigningValidationException>();
             }

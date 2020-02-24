@@ -2,7 +2,7 @@ using System;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Signing {
+namespace Dalion.HttpMessageSigning {
     public class KeyedHashAlgorithmFactoryTests {
         private readonly KeyedHashAlgorithmFactory _sut;
 
@@ -25,6 +25,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 actual.Should().BeAssignableTo<RealKeyedHashAlgorithm>();
                 actual.As<RealKeyedHashAlgorithm>().Key.Should().BeEquivalentTo(signingKey);
+                actual.As<RealKeyedHashAlgorithm>().Name.Should().BeEquivalentTo("HMACSHA256");
             }
         }
     }

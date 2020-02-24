@@ -1,7 +1,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace Dalion.HttpMessageSigning.Signing {
+namespace Dalion.HttpMessageSigning {
     internal class KeyedHashAlgorithmFactory : IKeyedHashAlgorithmFactory {
         public IKeyedHashAlgorithm Create(SignatureAlgorithm signatureAlgorithm, HashAlgorithm hashAlgorithm, byte[] signingKey) {
             if (signatureAlgorithm != SignatureAlgorithm.HMAC) throw new NotSupportedException($"The signature algorithm '{signatureAlgorithm}' is not supported in this version.");
@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             
             algorithm.Key = signingKey;
             
-            return new RealKeyedHashAlgorithm(algorithm);
+            return new RealKeyedHashAlgorithm(algorithmName, algorithm);
         }
     }
 }

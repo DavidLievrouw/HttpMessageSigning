@@ -36,24 +36,24 @@ namespace Dalion.HttpMessageSigning.Signing {
             _logger.Debug("Composed the following string for request signing: {0}", signingString);
             
             var signingKey = _base64Converter.FromBase64(settings.KeyId.Value);
-            var hashAlgorithm = _keyedHashAlgorithmFactory.Create(settings.SignatureAlgorithm, settings.HashAlgorithm, signingKey);
-            
-            var signatureHash = hashAlgorithm.ComputeHash(signingString);
-            var signatureString = _base64Converter.ToBase64(signatureHash);
+            using (var hashAlgorithm = _keyedHashAlgorithmFactory.Create(settings.SignatureAlgorithm, settings.HashAlgorithm, signingKey)) {
+                var signatureHash = hashAlgorithm.ComputeHash(signingString);
+                var signatureString = _base64Converter.ToBase64(signatureHash);
 
-            _logger.Debug("The base64 hash of the signature string is {0}", signatureString);
+                _logger.Debug("The base64 hash of the signature string is {0}", signatureString);
             
-            var signature = new Signature {
-                KeyId = settings.KeyId,
-                SignatureAlgorithm = settings.SignatureAlgorithm,
-                HashAlgorithm = settings.HashAlgorithm,
-                Created = timeOfComposing,
-                Expires = timeOfComposing.Add(settings.Expires),
-                Headers = settings.Headers,
-                String = signatureString
-            };
+                var signature = new Signature {
+                    KeyId = settings.KeyId,
+                    SignatureAlgorithm = settings.SignatureAlgorithm,
+                    HashAlgorithm = settings.HashAlgorithm,
+                    Created = timeOfComposing,
+                    Expires = timeOfComposing.Add(settings.Expires),
+                    Headers = settings.Headers,
+                    String = signatureString
+                };
 
-            return signature;
+                return signature;
+            }
         }
     }
 }

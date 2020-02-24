@@ -29,6 +29,10 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     .Concat(settings.Headers.Skip(requestTargetHeaderIdx + 1))
                     .ToArray();
             }
+
+            if (settings.DigestHashAlgorithm != HashAlgorithm.None && request.Method != HttpMethod.Get) {
+                settings.Headers = settings.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Digest}).ToArray();
+            }
             
             var headerAppender = _headerAppenderFactory.Create(request, settings, timeOfComposing);
 

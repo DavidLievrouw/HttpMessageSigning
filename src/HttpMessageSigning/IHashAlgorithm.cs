@@ -1,9 +1,8 @@
 using System;
 
 namespace Dalion.HttpMessageSigning {
-    internal interface IKeyedHashAlgorithm : IDisposable {
+    internal interface IHashAlgorithm : IDisposable {
         string Name { get; }
         byte[] ComputeHash(string input);
-        byte[] Key { get; }
     }
 }

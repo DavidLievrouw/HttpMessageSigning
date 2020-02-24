@@ -12,6 +12,7 @@ namespace Dalion.HttpMessageSigning {
             public static readonly HeaderName Created = new HeaderName("(created)");
             public static readonly HeaderName Expires = new HeaderName("(expires)");
             public static readonly HeaderName Date = new HeaderName("date");
+            public static readonly HeaderName Digest = new HeaderName("digest");
         }
 
         public HeaderName(string value) {
