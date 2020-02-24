@@ -17,6 +17,8 @@
     <dependencies>
       <group targetFramework="netstandard2.0">
         <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="[2.2.0,)" />
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[2.2.0,)" />
+        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="[2.2.0,)" />
       </group> 
     </dependencies>
   </metadata>
