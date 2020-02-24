@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Dalion.HttpMessageSigning {
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
@@ -9,6 +8,7 @@ namespace Dalion.HttpMessageSigning {
             public static readonly HeaderName RequestTarget = new HeaderName("(request-target)");
             public static readonly HeaderName Created = new HeaderName("(created)");
             public static readonly HeaderName Expires = new HeaderName("(expires)");
+            public static readonly HeaderName Date = new HeaderName("date");
         }
 
         public HeaderName(string value) {

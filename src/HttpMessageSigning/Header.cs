@@ -5,17 +5,11 @@ using System.Linq;
 namespace Dalion.HttpMessageSigning {
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     public struct Header : IEquatable<Header> {
-        private Header(string name, string[] values) {
-            Name = name;
-            Values = values ?? throw new ArgumentNullException(nameof(values));
-        }
-        
-        public Header(string name, string value, params string[] values) {
-            if (value == null) throw new ArgumentNullException(nameof(value));
-            if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
+        public Header(string name, params string[] values) {
             if (values == null) values = Array.Empty<string>();
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
             Name = name;
-            Values = new[] {value}.Concat(values).Select(v => v.Trim()).Where(v => !string.IsNullOrEmpty(v)).ToArray();
+            Values = values.Select(v => v.Trim()).Where(v => !string.IsNullOrEmpty(v)).ToArray();
         }
         
         public static Header Empty = new Header(string.Empty, Array.Empty<string>());
