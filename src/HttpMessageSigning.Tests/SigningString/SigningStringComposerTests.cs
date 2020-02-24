@@ -121,6 +121,28 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
             
             [Fact]
+            public void WhenHeadersContainsDigest_AndDigestIsOn_DoesNotAddDigestHeaderAgain() {
+                _settings.Headers = new[] {
+                    HeaderName.PredefinedHeaderNames.RequestTarget,
+                    HeaderName.PredefinedHeaderNames.Date,
+                    HeaderName.PredefinedHeaderNames.Digest,
+                    HeaderName.PredefinedHeaderNames.Expires,
+                    new HeaderName("dalion_app_id")
+                };
+                _settings.DigestHashAlgorithm = HashAlgorithm.SHA384;
+                
+                SigningSettings interceptedSettings = null;
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
+                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                    .Returns(_headerAppender);
+
+                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
+
+                interceptedSettings.Headers.Should().Contain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
+                interceptedSettings.Headers.Count(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest).Should().Be(1);
+            }
+            
+            [Fact]
             public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_ButMethodIsGet_DoesNotAddDigestHeader() {
                 _settings.DigestHashAlgorithm = HashAlgorithm.SHA384;
                 _httpRequest.Method = HttpMethod.Get;
@@ -159,11 +181,11 @@ namespace Dalion.HttpMessageSigning.SigningString {
             [Fact]
             public void ComposesStringOutOfAllRequestedHeaders() {
                 A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
-                    .ReturnsLazily(call => call.GetArgument<HeaderName>(0) + ",");
+                    .ReturnsLazily(call => "\n" + call.GetArgument<HeaderName>(0) + ",");
 
                 var actual = _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                var expected = "(request-target),date,(expires),dalion_app_id,digest,";
+                var expected = "(request-target),\ndate,\n(expires),\ndalion_app_id,\ndigest,";
                 actual.Should().Be(expected);
             }
         }

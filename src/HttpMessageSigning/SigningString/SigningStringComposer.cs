@@ -30,7 +30,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     .ToArray();
             }
 
-            if (settings.DigestHashAlgorithm != HashAlgorithm.None && request.Method != HttpMethod.Get) {
+            if (settings.DigestHashAlgorithm != HashAlgorithm.None && request.Method != HttpMethod.Get && !settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
                 settings.Headers = settings.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Digest}).ToArray();
             }
             
@@ -41,7 +41,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 sb = sb.Append(headerAppender.BuildStringToAppend(headerName));
             }
 
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
     }
 }
