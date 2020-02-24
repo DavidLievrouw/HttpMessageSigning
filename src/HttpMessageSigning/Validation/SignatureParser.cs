@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Validation {
-    public class SignatureParser : ISignatureParser {
+    internal class SignatureParser : ISignatureParser {
         private const string AuthorizationHeaderName = "Authorization";
         private const string AuthorizationScheme = "Signature";
 

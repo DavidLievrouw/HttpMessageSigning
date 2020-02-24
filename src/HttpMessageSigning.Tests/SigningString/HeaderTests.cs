@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.SigningString {
     public class HeaderTests {
         public class Construction : HeaderTests {
             [Fact]

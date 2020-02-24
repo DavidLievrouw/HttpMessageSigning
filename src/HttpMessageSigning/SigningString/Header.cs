@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.SigningString {
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     public struct Header : IEquatable<Header> {
         public Header(string name, params string[] values) {
