@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             return services
-                .AddSingleton(typeof(IHttpClientLogger<>), typeof(NetCoreHttpClientLogger<>))
+                .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<IKeyedHashAlgorithmFactory, KeyedHashAlgorithmFactory>()

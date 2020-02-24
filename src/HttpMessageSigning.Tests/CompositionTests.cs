@@ -9,7 +9,9 @@ namespace Dalion.HttpMessageSigning {
         private readonly ServiceProvider _serviceProvider;
 
         public CompositionTests() {
-            var services = new ServiceCollection().AddHttpMessageSigning();
+            var services = new ServiceCollection()
+                .AddLogging()
+                .AddHttpMessageSigning();
             _serviceProvider = services.BuildServiceProvider();
         }
 

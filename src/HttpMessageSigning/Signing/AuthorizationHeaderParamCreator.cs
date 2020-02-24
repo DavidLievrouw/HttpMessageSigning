@@ -1,8 +1,15 @@
 using System;
 using System.Text;
+using Dalion.HttpMessageSigning.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class AuthorizationHeaderParamCreator : IAuthorizationHeaderParamCreator {
+        private readonly IHttpMessageSigningLogger<AuthorizationHeaderParamCreator> _logger;
+        
+        public AuthorizationHeaderParamCreator(IHttpMessageSigningLogger<AuthorizationHeaderParamCreator> logger) {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         public string CreateParam(Signature signature) {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
 
@@ -24,7 +31,11 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (!string.IsNullOrEmpty(headers)) sb.Append(",headers=\"" + headers + "\"");
             sb.Append(",signature=\"" + signature.String + "\"");
 
-            return sb.ToString();
+            var param = sb.ToString();
+
+            _logger.Debug("Created the following authorization header param value: {0}", param);
+            
+            return param;
         }
     }
 }

@@ -2,10 +2,10 @@ using System;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Logging {
-    internal class NetCoreHttpClientLogger<TContext> : IHttpClientLogger<TContext> {
+    internal class NetCoreHttpMessageSigningLogger<TContext> : IHttpMessageSigningLogger<TContext> {
         private readonly ILogger<TContext> _logger;
 
-        public NetCoreHttpClientLogger(ILogger<TContext> logger) {
+        public NetCoreHttpMessageSigningLogger(ILogger<TContext> logger) {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 

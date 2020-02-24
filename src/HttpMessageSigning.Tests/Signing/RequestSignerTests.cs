@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Dalion.HttpMessageSigning.Logging;
 using FakeItEasy;
 using FluentAssertions;
 using Xunit;
@@ -9,11 +10,12 @@ namespace Dalion.HttpMessageSigning.Signing {
     public class RequestSignerTests {
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;
         private readonly ISignatureCreator _signatureCreator;
+        private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
         private readonly RequestSigner _sut;
 
         public RequestSignerTests() {
-            FakeFactory.Create(out _signatureCreator, out _authorizationHeaderParamCreator);
-            _sut = new RequestSigner(_signatureCreator, _authorizationHeaderParamCreator);
+            FakeFactory.Create(out _signatureCreator, out _authorizationHeaderParamCreator, out _logger);
+            _sut = new RequestSigner(_signatureCreator, _authorizationHeaderParamCreator, _logger);
         }
 
         public class Sign : RequestSignerTests {

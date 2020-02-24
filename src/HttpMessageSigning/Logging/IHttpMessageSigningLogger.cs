@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Dalion.HttpMessageSigning.Logging {
-    internal interface IHttpClientLogger<TContext> {
+    internal interface IHttpMessageSigningLogger<TContext> {
         void Verbose(string messageTemplate);
         void Verbose<T>(string messageTemplate, T propertyValue);
         void Verbose<T0, T1>(string messageTemplate, T0 propertyValue0, T1 propertyValue1);

@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using Dalion.HttpMessageSigning.Logging;
 using Dalion.HttpMessageSigning.SigningString;
 using FakeItEasy;
 using FluentAssertions;
@@ -11,11 +12,12 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly IKeyedHashAlgorithmFactory _keyedHashAlgorithmFactory;
         private readonly IBase64Converter _base64Converter;
         private readonly ISystemClock _systemClock;
+        private readonly IHttpMessageSigningLogger<SignatureCreator> _logger;
         private readonly SignatureCreator _sut;
 
         public SignatureCreatorTests() {
-            FakeFactory.Create(out _base64Converter, out _keyedHashAlgorithmFactory, out _signingStringComposer, out _systemClock);
-            _sut = new SignatureCreator(_signingStringComposer, _keyedHashAlgorithmFactory, _base64Converter, _systemClock);
+            FakeFactory.Create(out _base64Converter, out _keyedHashAlgorithmFactory, out _signingStringComposer, out _systemClock, out _logger);
+            _sut = new SignatureCreator(_signingStringComposer, _keyedHashAlgorithmFactory, _base64Converter, _systemClock, _logger);
         }
 
         public class CreateSignature : SignatureCreatorTests {
