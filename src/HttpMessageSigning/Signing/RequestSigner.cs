@@ -9,25 +9,27 @@ namespace Dalion.HttpMessageSigning.Signing {
         
         private readonly ISignatureCreator _signatureCreator;
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;
+        private readonly SigningSettings _signingSettings;
         private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
 
         public RequestSigner(
             ISignatureCreator signatureCreator,
             IAuthorizationHeaderParamCreator authorizationHeaderParamCreator,
+            SigningSettings signingSettings,
             IHttpMessageSigningLogger<RequestSigner> logger) {
             _signatureCreator = signatureCreator ?? throw new ArgumentNullException(nameof(signatureCreator));
             _authorizationHeaderParamCreator = authorizationHeaderParamCreator ?? throw new ArgumentNullException(nameof(authorizationHeaderParamCreator));
+            _signingSettings = signingSettings ?? throw new ArgumentNullException(nameof(signingSettings));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public void Sign(HttpRequestMessage request, SigningSettings signingSettings) {
+        public void Sign(HttpRequestMessage request) {
             try {
                 if (request == null) throw new ArgumentNullException(nameof(request));
-                if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
                 
-                signingSettings.Validate();
+                _signingSettings.Validate();
 
-                var signature = _signatureCreator.CreateSignature(request, signingSettings);
+                var signature = _signatureCreator.CreateSignature(request, _signingSettings);
                 var authParam = _authorizationHeaderParamCreator.CreateParam(signature);
 
                 _logger.Debug("Setting Authorization scheme to '{0}' and param to '{1}'.", AuthorizationScheme, authParam);

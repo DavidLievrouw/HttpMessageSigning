@@ -14,13 +14,57 @@ namespace Dalion.HttpMessageSigning {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
         ///     registrations to.
         /// </param>
-        /// <param name="config">The method that configures the signing algorithm.</param>
+        /// <param name="signingSettings">The signing settings.</param>
         /// <returns>
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
-        public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services) {
+        public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, SigningSettings signingSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
+            if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
+
+            return services.AddHttpMessageSigning(prov => signingSettings);
+        }
+        
+        /// <summary>
+        ///     Adds http message signing registrations, using the specified configurator to the specified
+        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// </summary>
+        /// <param name="services">
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
+        ///     registrations to.
+        /// </param>
+        /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
+        /// <returns>
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
+        ///     were added.
+        /// </returns>
+        public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, Action<SigningSettings> signingSettingsConfig) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
+            return services.AddHttpMessageSigning(prov => {
+                var newSettings = new SigningSettings();
+                signingSettingsConfig?.Invoke(newSettings);
+                return newSettings;
+            });
+        }
+        
+        /// <summary>
+        ///     Adds http message signing registrations, using the specified configurator to the specified
+        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// </summary>
+        /// <param name="services">
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
+        ///     registrations to.
+        /// </param>
+        /// <param name="signingSettingsFactory">The factory that creates the signing settings.</param>
+        /// <returns>
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
+        ///     were added.
+        /// </returns>
+        public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, Func<IServiceProvider, SigningSettings> signingSettingsFactory) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (signingSettingsFactory == null) throw new ArgumentNullException(nameof(signingSettingsFactory));
 
             return services
                 .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
@@ -31,7 +75,11 @@ namespace Dalion.HttpMessageSigning {
                 .AddSingleton<IAuthorizationHeaderParamCreator, AuthorizationHeaderParamCreator>()
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
-                .AddSingleton<IRequestSigner, RequestSigner>();
+                .AddSingleton<IRequestSignerFactory, RequestSignerFactory>()
+                .AddSingleton(prov => {
+                    var factory = prov.GetRequiredService<IRequestSignerFactory>();
+                    return factory.Create(signingSettingsFactory(prov));
+                });
         }
     }
 }

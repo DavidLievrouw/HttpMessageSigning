@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning {
         public CompositionTests() {
             var services = new ServiceCollection()
                 .AddLogging()
-                .AddHttpMessageSigning();
+                .AddHttpMessageSigning(settings => {});
             _serviceProvider = services.BuildServiceProvider();
         }
 
@@ -21,6 +21,7 @@ namespace Dalion.HttpMessageSigning {
 
         [Theory]
         [InlineData(typeof(IRequestSigner))]
+        [InlineData(typeof(IRequestSignerFactory))]
         public void CanResolveType(Type requestedType) {
             var instance = _serviceProvider.GetRequiredService(requestedType);
             instance.Should().NotBeNull().And.BeAssignableTo(requestedType);
