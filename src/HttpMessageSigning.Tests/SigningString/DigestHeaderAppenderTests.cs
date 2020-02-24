@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -69,4 +69,4 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
         }
     }
-}
+}*/

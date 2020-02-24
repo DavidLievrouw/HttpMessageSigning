@@ -10,7 +10,6 @@ namespace Dalion.HttpMessageSigning.SigningString {
         private readonly IHeaderAppender _createdHeaderAppender;
         private readonly IHeaderAppender _expiresHeaderAppender;
         private readonly IHeaderAppender _dateHeaderAppender;
-        private readonly IHeaderAppender _digestHeaderAppender;
         private readonly CompositeHeaderAppender _sut;
 
         public CompositeHeaderAppenderTests() {
@@ -19,15 +18,13 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 out _createdHeaderAppender,
                 out _defaultHeaderAppender,
                 out _expiresHeaderAppender,
-                out _requestTargetHeaderAppender,
-                out _digestHeaderAppender);
+                out _requestTargetHeaderAppender);
             _sut = new CompositeHeaderAppender(
                 _defaultHeaderAppender,
                 _requestTargetHeaderAppender,
                 _createdHeaderAppender,
                 _expiresHeaderAppender,
-                _dateHeaderAppender,
-                _digestHeaderAppender);
+                _dateHeaderAppender);
         }
 
         public class BuildStringToAppend : CompositeHeaderAppenderTests {
@@ -40,8 +37,6 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     .Returns("{known-expires}");
                 A.CallTo(() => _requestTargetHeaderAppender.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget))
                     .Returns("{known-request-target}");
-                A.CallTo(() => _digestHeaderAppender.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Digest))
-                    .Returns("{known-digest}");
                 A.CallTo(() => _defaultHeaderAppender.BuildStringToAppend(A<HeaderName>._))
                     .ReturnsLazily(call => $"{{{call.GetArgument<HeaderName>(0)}}}");
             }
@@ -76,12 +71,6 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 actual.Should().Be("{known-date}");
             }
             
-            [Fact]
-            public void WhenHeaderIsDigest_ReturnsResultFromThatAppender() {
-                var actual = _sut.BuildStringToAppend((HeaderName) "digest");
-                actual.Should().Be("{known-digest}");
-            }
-
             [Fact]
             public void WhenHeaderIsSomethingElse_ReturnsResultFromTheDefaultAppender() {
                 var actual = _sut.BuildStringToAppend((HeaderName) "dalion-test");

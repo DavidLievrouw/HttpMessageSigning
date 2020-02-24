@@ -20,12 +20,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 new RequestTargetHeaderAppender(request), 
                 new CreatedHeaderAppender(timeOfComposing),
                 new ExpiresHeaderAppender(settings, timeOfComposing),
-                new DateHeaderAppender(request),
-                new DigestHeaderAppender(
-                    request, 
-                    settings.DigestHashAlgorithm, 
-                    _base64Converter, 
-                    _hashAlgorithmFactory));
+                new DateHeaderAppender(request));
         }
     }
 }

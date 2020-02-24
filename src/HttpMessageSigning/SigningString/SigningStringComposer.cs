@@ -22,7 +22,6 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             if (!settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Date)) {
-                // ToDo: Add Date header to request, if not specified
                 var requestTargetHeaderIdx = Array.IndexOf(settings.Headers, HeaderName.PredefinedHeaderNames.RequestTarget);
                 settings.Headers = settings.Headers
                     .Take(requestTargetHeaderIdx + 1)
@@ -32,7 +31,6 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             if (settings.DigestHashAlgorithm != HashAlgorithm.None && request.Method != HttpMethod.Get && !settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
-                // ToDo: Add Digest header to request, if not specified
                 settings.Headers = settings.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Digest}).ToArray();
             }
             

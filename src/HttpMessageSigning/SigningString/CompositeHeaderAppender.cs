@@ -7,21 +7,18 @@ namespace Dalion.HttpMessageSigning.SigningString {
         private readonly IHeaderAppender _createdHeaderAppender;
         private readonly IHeaderAppender _expiresHeaderAppender;
         private readonly IHeaderAppender _dateHeaderAppender;
-        private readonly IHeaderAppender _digestHeaderAppender;
 
         public CompositeHeaderAppender(
             IHeaderAppender defaultHeaderAppender,
             IHeaderAppender requestTargetHeaderAppender,
             IHeaderAppender createdHeaderAppender,
             IHeaderAppender expiresHeaderAppender,
-            IHeaderAppender dateHeaderAppender,
-            IHeaderAppender digestHeaderAppender) {
+            IHeaderAppender dateHeaderAppender) {
             _defaultHeaderAppender = defaultHeaderAppender ?? throw new ArgumentNullException(nameof(defaultHeaderAppender));
             _requestTargetHeaderAppender = requestTargetHeaderAppender ?? throw new ArgumentNullException(nameof(requestTargetHeaderAppender));
             _createdHeaderAppender = createdHeaderAppender ?? throw new ArgumentNullException(nameof(createdHeaderAppender));
             _expiresHeaderAppender = expiresHeaderAppender ?? throw new ArgumentNullException(nameof(expiresHeaderAppender));
             _dateHeaderAppender = dateHeaderAppender ?? throw new ArgumentNullException(nameof(dateHeaderAppender));
-            _digestHeaderAppender = digestHeaderAppender ?? throw new ArgumentNullException(nameof(digestHeaderAppender));
         }
 
         public string BuildStringToAppend(HeaderName header) {
@@ -36,8 +33,6 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     return _expiresHeaderAppender.BuildStringToAppend(header);
                 case string str when str == HeaderName.PredefinedHeaderNames.Date:
                     return _dateHeaderAppender.BuildStringToAppend(header);
-                case string str when str == HeaderName.PredefinedHeaderNames.Digest:
-                    return _digestHeaderAppender.BuildStringToAppend(header);
                 default:
                     return _defaultHeaderAppender.BuildStringToAppend(header);
             }

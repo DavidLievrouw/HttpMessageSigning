@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.Logging;
 using FakeItEasy;
 using FluentAssertions;
@@ -11,11 +12,16 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;
         private readonly ISignatureCreator _signatureCreator;
         private readonly SigningSettings _signingSettings;
+        private readonly IAdditionalSignatureHeadersSetter _additionalSignatureHeadersSetter;
         private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
         private readonly RequestSigner _sut;
 
         public RequestSignerTests() {
-            FakeFactory.Create(out _signatureCreator, out _authorizationHeaderParamCreator, out _logger);
+            FakeFactory.Create(
+                out _signatureCreator, 
+                out _authorizationHeaderParamCreator, 
+                out _additionalSignatureHeadersSetter,
+                out _logger);
             _signingSettings = new SigningSettings {
                 Expires = TimeSpan.FromMinutes(5),
                 ClientKey = new ClientKey {
@@ -29,7 +35,12 @@ namespace Dalion.HttpMessageSigning.Signing {
                     new HeaderName("dalion_app_id")
                 }
             };
-            _sut = new RequestSigner(_signatureCreator, _authorizationHeaderParamCreator, _signingSettings, _logger);
+            _sut = new RequestSigner(
+                _signatureCreator, 
+                _authorizationHeaderParamCreator, 
+                _signingSettings, 
+                _additionalSignatureHeadersSetter,
+                _logger);
         }
 
         public class Sign : RequestSignerTests {
@@ -44,19 +55,32 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public void GivenNullRequest_ThrowsArgumentNullException() {
-                Action act = () => _sut.Sign(null);
+                Func<Task> act = () => _sut.Sign(null);
                 act.Should().Throw<ArgumentNullException>();
             }
             
             [Fact]
             public void GivenInvalidSettings_ThrowsHttpMessageSigningValidationException() {
                 _signingSettings.ClientKey = null; // Make invalid
-                Action act = () => _sut.Sign(_httpRequest);
+                Func<Task> act = () => _sut.Sign(_httpRequest);
                 act.Should().Throw<HttpMessageSigningValidationException>();
+            }
+
+            [Fact]
+            public async Task AddsRequiredHeadersForSigningToRequest_BeforeSigning() {
+                var signature = new Signature {String = "abc123="};
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings))
+                    .Returns(signature);
+                
+                await _sut.Sign(_httpRequest);
+
+                A.CallTo(() => _additionalSignatureHeadersSetter.AddMissingRequiredHeadersForSignature(_httpRequest, _signingSettings)).MustHaveHappened()
+                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings)).MustHaveHappened())
+                    .Then(A.CallTo(() => _authorizationHeaderParamCreator.CreateParam(signature)).MustHaveHappened());
             }
             
             [Fact]
-            public void SetsExpectedAuthorizationHeaderInRequest() {
+            public async Task SetsExpectedAuthorizationHeaderInRequest() {
                 var signature = new Signature {String = "abc123="};
                 A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings))
                     .Returns(signature);
@@ -65,13 +89,13 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _authorizationHeaderParamCreator.CreateParam(signature))
                     .Returns(authParam);
 
-                _sut.Sign(_httpRequest);
+                await _sut.Sign(_httpRequest);
 
                 _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("Signature", "signature=abc123="));
             }
 
             [Fact]
-            public void OverwritesAuthorizationHeaderValueInRequest() {
+            public async Task OverwritesAuthorizationHeaderValueInRequest() {
                 _httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Custom", "john.doe");
 
                 var signature = new Signature {String = "abc123="};
@@ -82,7 +106,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _authorizationHeaderParamCreator.CreateParam(signature))
                     .Returns(authParam);
 
-                _sut.Sign(_httpRequest);
+                await _sut.Sign(_httpRequest);
 
                 _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("Signature", "signature=abc123="));
             }

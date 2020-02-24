@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Signing {
     /// <summary>
@@ -9,6 +10,6 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// Sign the specified request.
         /// </summary>
         /// <param name="request">The request to sign.</param>
-        void Sign(HttpRequestMessage request);
+        Task Sign(HttpRequestMessage request);
     }
 }

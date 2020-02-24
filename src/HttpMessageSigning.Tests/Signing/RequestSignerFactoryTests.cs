@@ -8,11 +8,20 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;
         private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
         private readonly ISignatureCreator _signatureCreator;
+        private readonly IAdditionalSignatureHeadersSetter _additionalSignatureHeadersSetter;
         private readonly RequestSignerFactory _sut;
 
         public RequestSignerFactoryTests() {
-            FakeFactory.Create(out _signatureCreator, out _authorizationHeaderParamCreator, out _logger);
-            _sut = new RequestSignerFactory(_signatureCreator, _authorizationHeaderParamCreator, _logger);
+            FakeFactory.Create(
+                out _signatureCreator, 
+                out _authorizationHeaderParamCreator, 
+                out _additionalSignatureHeadersSetter,
+                out _logger);
+            _sut = new RequestSignerFactory(
+                _signatureCreator,
+                _authorizationHeaderParamCreator,
+                _additionalSignatureHeadersSetter,
+                _logger);
         }
 
         public class Create : RequestSignerFactoryTests {
