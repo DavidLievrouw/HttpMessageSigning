@@ -5,16 +5,13 @@ namespace Dalion.HttpMessageSigning {
     /// <summary>
     /// Represents a secret that is used to sign a request, or to validate a signature.
     /// </summary>
-    /// <remarks>In the case of symmetric keys, this value represents the symmetric key. In case of an assymetric key, this value represents the private key on the client side, and its corresponding public key on the server side.</remarks>
+    /// <remarks>In the case of symmetric keys, this value represents the symmetric key. In case of an asymmetric key, this value represents the private key on the client side, and its corresponding public key on the server side.</remarks>
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     public struct Secret : IEquatable<Secret> {
         public Secret(string value) {
             Value = value ?? string.Empty;
         }
         
-        /// <summary>
-        /// Gets the string representation of the secret.
-        /// </summary>
         public string Value { get; }
 
         public static Secret Empty { get; } = new Secret(string.Empty);

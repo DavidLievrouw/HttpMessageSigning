@@ -11,9 +11,6 @@ namespace Dalion.HttpMessageSigning {
             Value = value ?? string.Empty;
         }
         
-        /// <summary>
-        /// Gets the opaque key that is used by the signature algorithm, by which the sender can be uniquely identified.
-        /// </summary>
         public string Value { get; }
 
         public static KeyId Empty { get; } = new KeyId(string.Empty);

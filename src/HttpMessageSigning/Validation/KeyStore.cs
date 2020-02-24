@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Dalion.HttpMessageSigning.Validation {
-    public class KeyStore : IKeyStore {
+    internal class KeyStore : IKeyStore {
         private readonly List<KeyStoreEntry> _entries;
 
         public KeyStore() {

@@ -1,6 +1,5 @@
 using System;
 using System.Net.Http;
-using Dalion.HttpMessageSigning.Signing;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class HeaderAppenderFactory : IHeaderAppenderFactory {
