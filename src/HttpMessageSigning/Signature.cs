@@ -6,12 +6,12 @@ namespace Dalion.HttpMessageSigning {
     /// </summary>
     public class Signature : IValidatable {
         /// <summary>
-        /// REQUIRED: Gets or sets the entity that the server can use to look up the component they need to validate the signature.
+        /// REQUIRED: Gets or sets the entity that the server can use to look up the component they need to verify the signature.
         /// </summary>
         public KeyId KeyId { get; set; }
         
         /// <summary>
-        /// OPTIONAL: Gets or sets the algorithm that needs to be used to validate the hash value.
+        /// OPTIONAL: Gets or sets the algorithm that needs to be used to verify the signature.
         /// </summary>
         public string Algorithm { get; set; }
         
@@ -26,13 +26,13 @@ namespace Dalion.HttpMessageSigning {
         public DateTimeOffset? Expires { get; set; }
         
         /// <summary>
-        /// OPTIONAL: Gets or sets the ordered list of names of request headers to include when validating the signature for the message.
+        /// OPTIONAL: Gets or sets the ordered list of names of request headers to include when verifying the signature for the message.
         /// </summary>
         /// <remarks>When empty, the default headers will be considered, according to the spec.</remarks>
         public HeaderName[] Headers { get; set; }
         
         /// <summary>
-        /// Gets or sets the signature string to be validated by the server.
+        /// Gets or sets the signature string to be verified by the server.
         /// </summary>
         public string String { get; set; }
                 

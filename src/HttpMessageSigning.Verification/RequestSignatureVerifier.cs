@@ -3,24 +3,24 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Dalion.HttpMessageSigning.Verification {
-    internal class RequestSignatureValidator : IRequestSignatureValidator {
+    internal class RequestSignatureVerifier : IRequestSignatureVerifier {
         private readonly ISignatureParser _signatureParser;
         private readonly IClientStore _clientStore;
-        private readonly ISignatureValidator _signatureValidator;
+        private readonly ISignatureVerifier _signatureVerifier;
         private readonly IClaimsPrincipalFactory _claimsPrincipalFactory;
 
-        public RequestSignatureValidator(
+        public RequestSignatureVerifier(
             ISignatureParser signatureParser,
             IClientStore clientStore,
-            ISignatureValidator signatureValidator,
+            ISignatureVerifier signatureVerifier,
             IClaimsPrincipalFactory claimsPrincipalFactory) {
             _signatureParser = signatureParser ?? throw new ArgumentNullException(nameof(signatureParser));
             _clientStore = clientStore ?? throw new ArgumentNullException(nameof(clientStore));
-            _signatureValidator = signatureValidator ?? throw new ArgumentNullException(nameof(signatureValidator));
+            _signatureVerifier = signatureVerifier ?? throw new ArgumentNullException(nameof(signatureVerifier));
             _claimsPrincipalFactory = claimsPrincipalFactory ?? throw new ArgumentNullException(nameof(claimsPrincipalFactory));
         }
 
-        public async Task<RequestSignatureValidationResult> ValidateSignature(HttpRequest request) {
+        public async Task<RequestSignatureVerificationResult> VerifySignature(HttpRequest request) {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             try {
@@ -28,12 +28,12 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 var client = await _clientStore.Get(signature.KeyId);
 
-                await _signatureValidator.ValidateSignature(signature, client);
+                await _signatureVerifier.VerifySignature(signature, client);
 
-                return new RequestSignatureValidationResultSuccess(_claimsPrincipalFactory.CreateForClient(client));
+                return new RequestSignatureVerificationResultSuccess(_claimsPrincipalFactory.CreateForClient(client));
             }
-            catch (SignatureValidationException ex) {
-                return new RequestSignatureValidationResultFailure(ex);
+            catch (SignatureVerificationException ex) {
+                return new RequestSignatureVerificationResultFailure(ex);
             }
         }
     }

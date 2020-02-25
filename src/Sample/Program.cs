@@ -18,13 +18,13 @@ namespace Sample {
     public class Program {
         private static async Task Main(string[] args) {
             using (var serviceProvider = new ServiceCollection().Configure(ConfigureServicesForHMAC).BuildServiceProvider()) {
-                var authParam = await SampleSigning(serviceProvider);
-                await SampleValidating(serviceProvider, authParam);
+                var authParam = await SampleSign(serviceProvider);
+                await SampleVerification(serviceProvider, authParam);
             }
 
             using (var serviceProvider = new ServiceCollection().Configure(ConfigureServicesForRSA).BuildServiceProvider()) {
-                var authParam = await SampleSigning(serviceProvider);
-                await SampleValidating(serviceProvider, authParam);
+                var authParam = await SampleSign(serviceProvider);
+                await SampleVerification(serviceProvider, authParam);
             }
         }
 
@@ -35,7 +35,7 @@ namespace Sample {
                     KeyId = new KeyId("HttpMessageSigningSample"),
                     SignatureAlgorithm = new HMACSignatureAlgorithm("yumACY64r%hm", HashAlgorithm.SHA256)
                 })
-                .AddHttpMessageSignatureValidation(provider => {
+                .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
                         new KeyId("HttpMessageSigningSample"),
@@ -58,7 +58,7 @@ namespace Sample {
                     KeyId = new KeyId("HttpMessageSigningSample"),
                     SignatureAlgorithm = new RSASignatureAlgorithm(HashAlgorithm.SHA384, publicKeyParameters, privateKeyParameters)
                 })
-                .AddHttpMessageSignatureValidation(provider => {
+                .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
                         new KeyId("HttpMessageSigningSample"),
@@ -68,7 +68,7 @@ namespace Sample {
                 });
         }
 
-        private static async Task<string> SampleSigning(IServiceProvider serviceProvider) {
+        private static async Task<string> SampleSign(IServiceProvider serviceProvider) {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post"),
                 Method = HttpMethod.Post,
@@ -87,21 +87,21 @@ namespace Sample {
             return request.Headers.Authorization.Parameter;
         }
 
-        private static async Task SampleValidating(IServiceProvider serviceProvider, string authParam) {
+        private static async Task SampleVerification(IServiceProvider serviceProvider, string authParam) {
             var request = new DefaultHttpRequest(new DefaultHttpContext());
             request.Headers["Authorization"] = "Signature " + authParam;
-            var requestSignatureValidator = serviceProvider.GetRequiredService<IRequestSignatureValidator>();
+            var requestSignatureVerifier = serviceProvider.GetRequiredService<IRequestSignatureVerifier>();
 
-            var validationResult = await requestSignatureValidator.ValidateSignature(request);
-            if (validationResult is RequestSignatureValidationResultSuccess successResult) {
-                Console.WriteLine("Request signature validation succeeded:");
-                var simpleClaims = successResult.ValidatedPrincipal.Claims.Select(c => new {c.Type, Value = c.Value}).ToList();
+            var verificationResult = await requestSignatureVerifier.VerifySignature(request);
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                Console.WriteLine("Request signature verification succeeded:");
+                var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, Value = c.Value}).ToList();
                 var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
                 Console.WriteLine(claimsString);
             }
-            else if (validationResult is RequestSignatureValidationResultFailure failureResult) {
-                Console.WriteLine("Request signature validation failed:");
-                Console.WriteLine(failureResult.SignatureValidationException);
+            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                Console.WriteLine("Request signature verification failed:");
+                Console.WriteLine(failureResult.SignatureVerificationException);
             }
         }
     }

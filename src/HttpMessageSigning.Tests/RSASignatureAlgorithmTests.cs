@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning {
 
         public class VerifySignature : RSASignatureAlgorithmTests {
             [Fact]
-            public void CanValidateValidSignature() {
+            public void CanVerifyValidSignature() {
                 var payload = "_abc_123_";
                 var signature = _sut.ComputeHash(payload);
                 var actual = _sut.VerifySignature(payload, signature);
@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void ValidationFailsOnInvalidSignature() {
+            public void VerificationFailsOnInvalidSignature() {
                 var payload = "_abc_123_";
                 var signature = _sut.ComputeHash(payload);
                 signature[0]++; // Make it invalid
@@ -41,7 +41,7 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void CanValidateWithAlgorithmThatOnlyKnowsAboutThePublicKey() {
+            public void CanVerifyWithAlgorithmThatOnlyKnowsAboutThePublicKey() {
                 var payload = "_abc_123_";
                 var signature = _sut.ComputeHash(payload);
                 var verifier = new RSASignatureAlgorithm(HashAlgorithm.SHA1, _publicKeyParams);

@@ -25,7 +25,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         public ISignatureAlgorithm SignatureAlgorithm { get; }
 
         /// <summary>
-        /// Gets the additional claims that the validated principal will have upon successful signature validation.
+        /// Gets the additional claims that the validated principal will have upon successful signature verification.
         /// </summary>
         public Claim[] Claims { get; }
 

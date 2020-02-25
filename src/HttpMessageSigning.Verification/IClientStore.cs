@@ -2,11 +2,11 @@ using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
-    /// Represents a store that the server can query to obtain client-specific settings for request signature validation.
+    /// Represents a store that the server can query to obtain client-specific settings for request signature verification.
     /// </summary>
     public interface IClientStore {
         /// <summary>
-        /// Registers a client, and its settings to perform signature validation.
+        /// Registers a client, and its settings to perform signature verification.
         /// </summary>
         /// <param name="client">The entry that represents a known client.</param>
         Task Register(Client client);

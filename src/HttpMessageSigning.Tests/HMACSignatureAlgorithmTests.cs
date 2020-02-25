@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning {
             }
             
             [Fact]
-            public void CanValidateValidSignature() {
+            public void CanVerifyValidSignature() {
                 var payload = "_abc_123_";
                 var signature = _sut.ComputeHash(payload);
                 var actual = _sut.VerifySignature(payload, signature);
@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void ValidationFailsOnInvalidSignature() {
+            public void VerificationFailsOnInvalidSignature() {
                 var payload = "_abc_123_";
                 var signature = _sut.ComputeHash(payload);
                 signature[0]++; // Make it invalid

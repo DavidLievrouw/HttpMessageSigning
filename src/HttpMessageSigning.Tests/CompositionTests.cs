@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning {
                     KeyId = new KeyId("client1"),
                     SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA384)
                 })
-                .AddHttpMessageSignatureValidation(new InMemoryClientStore());
+                .AddHttpMessageSignatureVerification(new InMemoryClientStore());
             _serviceProvider = services.BuildServiceProvider();
         }
 
@@ -26,7 +26,7 @@ namespace Dalion.HttpMessageSigning {
 
         [Theory]
         [InlineData(typeof(IRequestSigner))]
-        [InlineData(typeof(IRequestSignatureValidator))]
+        [InlineData(typeof(IRequestSignatureVerifier))]
         public void CanResolveType(Type requestedType) {
             var instance = _serviceProvider.GetRequiredService(requestedType);
             instance.Should().NotBeNull().And.BeAssignableTo(requestedType);

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Dalion.HttpMessageSigning.Verification {
     public static partial class Extensions {
         /// <summary>
-        ///     Adds http message signature validation registrations to the specified
+        ///     Adds http message signature verification registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
         /// </summary>
         /// <param name="services">
@@ -17,15 +17,15 @@ namespace Dalion.HttpMessageSigning.Verification {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
-        public static IServiceCollection AddHttpMessageSignatureValidation(this IServiceCollection services, IClientStore clientStore) {
+        public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, IClientStore clientStore) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (clientStore == null) throw new ArgumentNullException(nameof(clientStore));
 
-            return services.AddHttpMessageSignatureValidation(prov => clientStore);
+            return services.AddHttpMessageSignatureVerification(prov => clientStore);
         }
 
         /// <summary>
-        ///     Adds http message signature validation registrations to the specified
+        ///     Adds http message signature verification registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
         /// </summary>
         /// <param name="services">
@@ -37,17 +37,17 @@ namespace Dalion.HttpMessageSigning.Verification {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
-        public static IServiceCollection AddHttpMessageSignatureValidation(this IServiceCollection services, Func<IServiceProvider, IClientStore> clientStoreFactory) {
+        public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, Func<IServiceProvider, IClientStore> clientStoreFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (clientStoreFactory == null) throw new ArgumentNullException(nameof(clientStoreFactory));
 
             return services
                 .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
                 .AddSingleton<ISignatureParser, SignatureParser>()
-                .AddSingleton<ISignatureValidator, SignatureValidator>()
+                .AddSingleton<ISignatureVerifier, SignatureVerifier>()
                 .AddSingleton<IClaimsPrincipalFactory, ClaimsPrincipalFactory>()
                 .AddSingleton(clientStoreFactory)
-                .AddSingleton<IRequestSignatureValidator, RequestSignatureValidator>();
+                .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
         }
     }
 }

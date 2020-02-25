@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Dalion.HttpMessageSigning {
     /// <summary>
-    /// Represents an entity that the server can use to look up the component they need to validate the signature.
+    /// Represents an entity that the server can use to look up the component they need to verify the signature.
     /// </summary>
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     public struct KeyId : IEquatable<KeyId> {

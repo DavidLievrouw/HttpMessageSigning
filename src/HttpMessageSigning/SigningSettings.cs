@@ -6,7 +6,7 @@ namespace Dalion.HttpMessageSigning {
     /// </summary>
     public class SigningSettings : IValidatable {
         /// <summary>
-        /// The entity that the server can use to look up the component they need to validate the signature.
+        /// The entity that the server can use to look up the component they need to verify the signature.
         /// </summary>
         public KeyId KeyId { get; set; } = KeyId.Empty;
 

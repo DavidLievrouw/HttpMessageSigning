@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Dalion.HttpMessageSigning {
     /// <summary>
-    /// Represents an HMAC algorithm that is used to sign a request, or to validate a signature.
+    /// Represents an HMAC algorithm that is used to sign a request, or to verify a signature.
     /// </summary>
     public class HMACSignatureAlgorithm : ISignatureAlgorithm {
         private readonly KeyedHashAlgorithm _realAlgorithm;
