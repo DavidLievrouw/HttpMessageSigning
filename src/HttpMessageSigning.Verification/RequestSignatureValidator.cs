@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     internal class RequestSignatureValidator : IRequestSignatureValidator {
         private readonly ISignatureParser _signatureParser;
         private readonly IClientStore _clientStore;

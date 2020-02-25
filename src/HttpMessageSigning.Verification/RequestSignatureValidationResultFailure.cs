@@ -1,6 +1,6 @@
 using System;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
     /// Represents a request signature validation failure.
     /// </summary>

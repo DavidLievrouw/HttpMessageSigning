@@ -1,7 +1,7 @@
 using System;
 using System.Security.Claims;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
     /// Represents a successful signature validation.
     /// </summary>

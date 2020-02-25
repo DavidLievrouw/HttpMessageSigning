@@ -2,7 +2,7 @@
 using Dalion.HttpMessageSigning.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     public static partial class Extensions {
         /// <summary>
         ///     Adds http message signature validation registrations to the specified

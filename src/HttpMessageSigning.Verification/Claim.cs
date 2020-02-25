@@ -1,6 +1,6 @@
 using System;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
     /// Represents a statement about an entity by an issuer.
     /// </summary>

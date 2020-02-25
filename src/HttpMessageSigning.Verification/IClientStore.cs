@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
     /// Represents a store that the server can query to obtain client-specific settings for request signature validation.
     /// </summary>

@@ -2,7 +2,7 @@ using System;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     public class ClaimTests {
         public class Construction : ClaimTests {
             [Theory]

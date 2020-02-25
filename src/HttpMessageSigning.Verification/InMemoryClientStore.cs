@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
     /// Represents an in-memory store that the server can query to obtain client-specific settings for request signature validation.
     /// </summary>

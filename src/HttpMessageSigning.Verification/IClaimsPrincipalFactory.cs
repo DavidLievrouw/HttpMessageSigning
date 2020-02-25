@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     internal interface IClaimsPrincipalFactory {
         ClaimsPrincipal CreateForClient(Client client);
     }

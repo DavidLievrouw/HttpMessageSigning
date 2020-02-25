@@ -1,4 +1,4 @@
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     public static class Constants {
         public static class ClaimTypes {
             public const string AppId = "appid";

@@ -1,6 +1,6 @@
 using System;
 using Dalion.HttpMessageSigning.Signing;
-using Dalion.HttpMessageSigning.Validation;
+using Dalion.HttpMessageSigning.Verification;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

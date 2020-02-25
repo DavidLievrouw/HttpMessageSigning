@@ -1,4 +1,4 @@
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
     /// Represents the result of the request signature validation.
     /// </summary>

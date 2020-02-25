@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     internal class ClaimsPrincipalFactory : IClaimsPrincipalFactory {
         public ClaimsPrincipal CreateForClient(Client client) {
             if (client == null) throw new ArgumentNullException(nameof(client));

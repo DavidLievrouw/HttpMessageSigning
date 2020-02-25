@@ -2,13 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <AssemblyName>Dalion.HttpMessageSigning.Validation</AssemblyName>
-        <RootNamespace>Dalion.HttpMessageSigning.Validation</RootNamespace>
+        <AssemblyName>Dalion.HttpMessageSigning.Verification</AssemblyName>
+        <RootNamespace>Dalion.HttpMessageSigning.Verification</RootNamespace>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <Company>Dalion</Company>
         <Description>A C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
-        <Product>Dalion.HttpMessageSigning.Validation</Product>
-        <Title>Dalion.HttpMessageSigning.Validation</Title>
+        <Product>Dalion.HttpMessageSigning.Verification</Product>
+        <Title>Dalion.HttpMessageSigning.Verification</Title>
         <DebugType>full</DebugType>
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
@@ -43,7 +43,7 @@
         <PropertyGroup>
             <PackagePublishDir Condition="'$(PackagePublishDir)'==''">$(MSBuildThisFileDirectory)bin\Packages\</PackagePublishDir>
         </PropertyGroup>
-        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Validation.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion)\&quot;" />
+        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Verification.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion)\&quot;" />
     </Target>
 
 </Project>

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Primitives;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     public class ExtensionsTests {
         public class HttpRequest : ExtensionTests {
             public class ToHttpRequestMessage : HttpRequest {

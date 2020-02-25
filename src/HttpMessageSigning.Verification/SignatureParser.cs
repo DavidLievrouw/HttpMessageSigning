@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     internal class SignatureParser : ISignatureParser {
         private const string AuthorizationHeaderName = "Authorization";
         private const string AuthorizationScheme = "Signature";

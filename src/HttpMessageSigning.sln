@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Signing", "HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj", "{EC01D12E-1297-4614-ACFB-EDE4DCE39189}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Validation", "HttpMessageSigning.Validation\HttpMessageSigning.Validation.csproj", "{D1E2051F-B620-43E3-AC86-E647D3058B88}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification", "HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj", "{D1E2051F-B620-43E3-AC86-E647D3058B88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

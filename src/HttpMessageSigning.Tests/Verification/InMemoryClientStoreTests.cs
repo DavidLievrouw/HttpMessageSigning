@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     public class InMemoryClientStoreTests {
         private readonly InMemoryClientStore _sut;
 

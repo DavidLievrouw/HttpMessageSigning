@@ -3,7 +3,7 @@ using System.Security.Claims;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Validation {
+namespace Dalion.HttpMessageSigning.Verification {
     public class ClaimsPrincipalFactoryTests {
         private readonly ClaimsPrincipalFactory _sut;
 
