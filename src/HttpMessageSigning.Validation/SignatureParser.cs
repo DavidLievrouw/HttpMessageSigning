@@ -32,13 +32,13 @@ namespace Dalion.HttpMessageSigning.Validation {
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             var authParam = string.Join("", authHeader.Skip(authScheme.Length + 1));
 
-            var keyIdString = string.Empty;
+            var keyId = KeyId.Empty;
             var keyIdMatch = KeyIdRegEx.Match(authParam);
-            if (keyIdMatch.Success) keyIdString = keyIdMatch.Groups["keyId"].Value;
+            if (keyIdMatch.Success) keyId = (KeyId)keyIdMatch.Groups["keyId"].Value;
 
-            var algString = string.Empty;
+            var algorithm = string.Empty;
             var algMatch = AlgorithmRegEx.Match(authParam);
-            if (algMatch.Success) algString = algMatch.Groups["algorithm"].Value;
+            if (algMatch.Success) algorithm = algMatch.Groups["algorithm"].Value;
 
             var createdString = string.Empty;
             var createdMatch = CreatedRegEx.Match(authParam);
@@ -56,16 +56,6 @@ namespace Dalion.HttpMessageSigning.Validation {
             var signatureMatch = SignatureRegEx.Match(authParam);
             if (signatureMatch.Success) signature = signatureMatch.Groups["signature"].Value;
 
-           /* if (!SelfContainedKeyId.TryParse(keyIdString, out var keyId)) {
-                throw new HttpMessageSigningInvalidRequestException(
-                    $"The specified request does not specify a valid keyId in the authentication parameter of the {AuthorizationHeaderName} header.");
-            }*/
-
-            /*if (!Enum.TryParse(algString, out Algorithm algorithm)) {
-                throw new HttpMessageSigningInvalidRequestException(
-                    $"The specified request does not specify a valid algorithm in the authentication parameter of the {AuthorizationHeaderName} header.");
-            }*/
-
             DateTimeOffset? created = null;
             if (long.TryParse(createdString, out var createdEpoch)) {
                 created = DateTimeOffset.FromUnixTimeSeconds(createdEpoch);
@@ -78,12 +68,14 @@ namespace Dalion.HttpMessageSigning.Validation {
 
             var headerNames = Array.Empty<HeaderName>();
             if (!string.IsNullOrEmpty(headersString)) {
-                headerNames = headersString.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(s => new HeaderName(s)).ToArray();
+                headerNames = headersString
+                    .Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => new HeaderName(s)).ToArray();
             }
 
             return new Signature {
-                //KeyId = keyId,
-                //Algorithm = algorithm, // ToDo: Parse Algorithm
+                KeyId = keyId,
+                Algorithm = algorithm,
                 Created = created,
                 Expires = expires,
                 Headers = headerNames,

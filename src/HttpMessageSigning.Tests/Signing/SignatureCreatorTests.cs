@@ -9,14 +9,14 @@ using Xunit;
 namespace Dalion.HttpMessageSigning.Signing {
     public class SignatureCreatorTests {
         private readonly ISigningStringComposer _signingStringComposer;
-        private readonly IKeyedHashAlgorithmFactory _keyedHashAlgorithmFactory;
+        private readonly ISignatureAlgorithmFactory _signatureAlgorithmFactory;
         private readonly IBase64Converter _base64Converter;
         private readonly IHttpMessageSigningLogger<SignatureCreator> _logger;
         private readonly SignatureCreator _sut;
 
         public SignatureCreatorTests() {
-            FakeFactory.Create(out _base64Converter, out _keyedHashAlgorithmFactory, out _signingStringComposer, out _logger);
-            _sut = new SignatureCreator(_signingStringComposer, _keyedHashAlgorithmFactory, _base64Converter, _logger);
+            FakeFactory.Create(out _base64Converter, out _signatureAlgorithmFactory, out _signingStringComposer, out _logger);
+            _sut = new SignatureCreator(_signingStringComposer, _signatureAlgorithmFactory, _base64Converter, _logger);
         }
 
         public class CreateSignature : SignatureCreatorTests {
@@ -72,8 +72,8 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _signingStringComposer.Compose(_httpRequest, _settings, _timeOfSigning))
                     .Returns(composedString);
 
-                var hashAlgorithm = A.Fake<IKeyedHashAlgorithm>();
-                A.CallTo(() => _keyedHashAlgorithmFactory.Create(_settings.SignatureAlgorithm, _settings.HashAlgorithm, _settings.ClientKey.Secret))
+                var hashAlgorithm = A.Fake<ISignatureAlgorithm>();
+                A.CallTo(() => _signatureAlgorithmFactory.Create(_settings.SignatureAlgorithm, _settings.HashAlgorithm, _settings.ClientKey.Secret))
                     .Returns(hashAlgorithm);
 
                 var signatureHash = new byte[] {0x03, 0x04};

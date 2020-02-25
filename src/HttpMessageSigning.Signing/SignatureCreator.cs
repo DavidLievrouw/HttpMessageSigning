@@ -6,17 +6,17 @@ using Dalion.HttpMessageSigning.SigningString;
 namespace Dalion.HttpMessageSigning.Signing {
     internal class SignatureCreator : ISignatureCreator {
         private readonly ISigningStringComposer _signingStringComposer;
-        private readonly IKeyedHashAlgorithmFactory _keyedHashAlgorithmFactory;
+        private readonly ISignatureAlgorithmFactory _signatureAlgorithmFactory;
         private readonly IBase64Converter _base64Converter;
         private readonly IHttpMessageSigningLogger<SignatureCreator> _logger;
 
         public SignatureCreator(
             ISigningStringComposer signingStringComposer,
-            IKeyedHashAlgorithmFactory keyedHashAlgorithmFactory,
+            ISignatureAlgorithmFactory signatureAlgorithmFactory,
             IBase64Converter base64Converter,
             IHttpMessageSigningLogger<SignatureCreator> logger) {
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
-            _keyedHashAlgorithmFactory = keyedHashAlgorithmFactory ?? throw new ArgumentNullException(nameof(keyedHashAlgorithmFactory));
+            _signatureAlgorithmFactory = signatureAlgorithmFactory ?? throw new ArgumentNullException(nameof(signatureAlgorithmFactory));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -31,7 +31,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             _logger.Debug("Composed the following string for request signing: {0}", signingString);
             
-            using (var hashAlgorithm = _keyedHashAlgorithmFactory.Create(settings.SignatureAlgorithm, settings.HashAlgorithm, settings.ClientKey.Secret)) {
+            using (var hashAlgorithm = _signatureAlgorithmFactory.Create(settings.SignatureAlgorithm, settings.HashAlgorithm, settings.ClientKey.Secret)) {
                 var signatureHash = hashAlgorithm.ComputeHash(signingString);
                 var signatureString = _base64Converter.ToBase64(signatureHash);
 

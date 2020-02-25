@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning {
         public HashAlgorithm HashAlgorithm { get; set; } = HashAlgorithm.SHA256;
 
         /// <summary>
-        /// Gets or sets the keyed hash algorithm that is used to create the hash value.
+        /// Gets or sets the algorithm that is used to create the signature.
         /// </summary>
         public SignatureAlgorithm SignatureAlgorithm { get; set; } = SignatureAlgorithm.HMAC;
         

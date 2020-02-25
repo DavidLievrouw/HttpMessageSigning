@@ -28,12 +28,12 @@ namespace Dalion.HttpMessageSigning.Validation {
         public string Secret { get; }
 
         /// <summary>
-        /// Gets the algorithm that is used to create the hash value.
+        /// Gets the algorithm that is used to create the signature.
         /// </summary>
         public SignatureAlgorithm SignatureAlgorithm { get; }
         
         /// <summary>
-        /// Gets the keyed hash algorithm that is used to create the hash value.
+        /// Gets the algorithm that is used to create the hash value.
         /// </summary>
         public HashAlgorithm HashAlgorithm { get; }
 

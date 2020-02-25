@@ -3,10 +3,10 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace Dalion.HttpMessageSigning {
-    internal class RealKeyedHashAlgorithm : IKeyedHashAlgorithm {
+    internal class RealSignatureAlgorithm : ISignatureAlgorithm {
         private readonly KeyedHashAlgorithm _realAlgorithm;
         
-        public RealKeyedHashAlgorithm(string name, KeyedHashAlgorithm realAlgorithm) {
+        public RealSignatureAlgorithm(string name, KeyedHashAlgorithm realAlgorithm) {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _realAlgorithm = realAlgorithm ?? throw new ArgumentNullException(nameof(realAlgorithm));
         }

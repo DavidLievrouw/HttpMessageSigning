@@ -3,14 +3,14 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning {
-    public class KeyedHashAlgorithmFactoryTests {
-        private readonly KeyedHashAlgorithmFactory _sut;
+    public class SignatureAlgorithmFactoryTests {
+        private readonly SignatureAlgorithmFactory _sut;
 
-        public KeyedHashAlgorithmFactoryTests() {
-            _sut = new KeyedHashAlgorithmFactory();
+        public SignatureAlgorithmFactoryTests() {
+            _sut = new SignatureAlgorithmFactory();
         }
 
-        public class Create : KeyedHashAlgorithmFactoryTests {
+        public class Create : SignatureAlgorithmFactoryTests {
             private readonly string _secret;
 
             public Create() {
@@ -35,10 +35,10 @@ namespace Dalion.HttpMessageSigning {
             public void CreatesAlgorithmWithExpectedKey() {
                 var actual = _sut.Create(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, _secret);
 
-                actual.Should().BeAssignableTo<RealKeyedHashAlgorithm>();
+                actual.Should().BeAssignableTo<RealSignatureAlgorithm>();
                 var expectedSigningKey = new byte[] {0x73, 0x33, 0x63, 0x72, 0x33, 0x74};
-                actual.As<RealKeyedHashAlgorithm>().Key.Should().BeEquivalentTo(expectedSigningKey);
-                actual.As<RealKeyedHashAlgorithm>().Name.Should().BeEquivalentTo("HMACSHA256");
+                actual.As<RealSignatureAlgorithm>().Key.Should().BeEquivalentTo(expectedSigningKey);
+                actual.As<RealSignatureAlgorithm>().Name.Should().BeEquivalentTo("HMACSHA256");
             }
         }
     }
