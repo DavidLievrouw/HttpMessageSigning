@@ -10,6 +10,7 @@ namespace Dalion.HttpMessageSigning.Validation {
         public KeyStoreEntry(string id, string secret, SignatureAlgorithm signatureAlgorithm, HashAlgorithm hashAlgorithm) {
             if (string.IsNullOrEmpty(id)) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
             if (string.IsNullOrEmpty(secret)) throw new ArgumentException("Value cannot be null or empty.", nameof(secret));
+            if (hashAlgorithm == HashAlgorithm.None) throw new ArgumentException("A hash algorithm must be specified.", nameof(hashAlgorithm));
             SignatureAlgorithm = signatureAlgorithm;
             HashAlgorithm = hashAlgorithm;
             Id = id;

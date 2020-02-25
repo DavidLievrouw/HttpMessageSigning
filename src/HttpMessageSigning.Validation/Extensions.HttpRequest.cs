@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Http.Extensions;
 namespace Dalion.HttpMessageSigning.Validation {
     public static class Extensions {
         internal static HttpRequestMessage ToHttpRequestMessage(this HttpRequest request) {
+            if (request == null) return null;
+            
             var requestMessage = new HttpRequestMessage {
                 RequestUri = new Uri(request.GetEncodedUrl(), UriKind.Absolute),
                 Method = new HttpMethod(request.Method)
             };
             
-            requestMessage.Headers.Host = requestMessage.RequestUri.Authority;
-            
-            if (requestMessage.Method.HasBody()) {
+            if (requestMessage.Method.SupportsBody() && request.Body != null) {
                 var streamContent = new StreamContent(request.Body);
                 requestMessage.Content = streamContent;
             }
@@ -24,6 +24,8 @@ namespace Dalion.HttpMessageSigning.Validation {
                 }
             }
 
+            requestMessage.Headers.Host = requestMessage.RequestUri.Authority;
+            
             return requestMessage;
         }
     }

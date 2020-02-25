@@ -25,6 +25,7 @@
         <PackageReference Include="CompareNETObjects" Version="4.65.0" />
         <PackageReference Include="FakeItEasy" Version="6.0.0" />
         <PackageReference Include="FluentAssertions" Version="5.10.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
@@ -37,10 +38,6 @@
       <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
       <ProjectReference Include="..\HttpMessageSigning.Validation\HttpMessageSigning.Validation.csproj" />
       <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="Validation" />
     </ItemGroup>
 
 </Project>

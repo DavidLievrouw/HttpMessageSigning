@@ -4,7 +4,7 @@ namespace Dalion.HttpMessageSigning {
     /// <summary>
     /// Represents a signature that is received from a client.
     /// </summary>
-    public class Signature {
+    public class Signature : IValidatable {
         /// <summary>
         /// REQUIRED: Gets or sets the entity that the server can use to look up the component they need to validate the signature.
         /// </summary>
@@ -29,11 +29,20 @@ namespace Dalion.HttpMessageSigning {
         /// OPTIONAL: Gets or sets the ordered list of names of request headers to include when validating the signature for the message.
         /// </summary>
         /// <remarks>When empty, the default headers will be considered, according to the spec.</remarks>
-        public HeaderName[] Headers { get; set; } = Array.Empty<HeaderName>();
+        public HeaderName[] Headers { get; set; }
         
         /// <summary>
         /// Gets or sets the signature string to be validated by the server.
         /// </summary>
         public string String { get; set; }
+                
+        void IValidatable.Validate() {
+            Validate();
+        }
+
+        internal void Validate() {
+            if (KeyId == KeyId.Empty) throw new HttpMessageSigningValidationException($"The {nameof(Signature)} do not specify a valid {nameof(KeyId)}.");
+            if (string.IsNullOrEmpty(String)) throw new HttpMessageSigningValidationException($"The {nameof(Signature)} do not specify a valid signature {nameof(String)}.");
+        }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.Validation {
     [Serializable]
     public class HttpMessageSigningSignatureValidationException : HttpMessageSigningException {
         private const string DefaultMessage = "The specified signature is invalid.";

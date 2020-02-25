@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
             
-            if (!request.Method.HasBody()) return;
+            if (!request.Method.SupportsBody()) return;
             if (signingSettings.DigestHashAlgorithm == HashAlgorithm.None) return;
             if (request.Headers.Contains("Digest")) return;
 

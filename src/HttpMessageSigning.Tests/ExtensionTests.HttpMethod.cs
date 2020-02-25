@@ -5,10 +5,10 @@ using Xunit;
 namespace Dalion.HttpMessageSigning {
     public partial class ExtensionTests {
         public class HttpMethod : ExtensionTests {
-            public class HasBody : HttpMethod {
+            public class SupportsBody : HttpMethod {
                 [Fact]
                 public void WhenMethodIsNull_ThrowsArgumentNullException() {
-                    Action act = () => Extensions.HasBody(null);
+                    Action act = () => Extensions.SupportsBody(null);
                     act.Should().Throw<ArgumentNullException>();
                 }
 
@@ -19,7 +19,7 @@ namespace Dalion.HttpMessageSigning {
                 [InlineData("DELETE")]
                 public void WhenMethodIsOneOfThoseWithoutBody_ReturnsFalse(string method) {
                     var sut = new System.Net.Http.HttpMethod(method);
-                    var actual = sut.HasBody();
+                    var actual = sut.SupportsBody();
                     actual.Should().BeFalse();
                 }
 
@@ -30,7 +30,7 @@ namespace Dalion.HttpMessageSigning {
                 [InlineData("PATCH")]
                 public void WhenMethodIsOneOfThoseWithBody_ReturnsTrue(string method) {
                     var sut = new System.Net.Http.HttpMethod(method);
-                    var actual = sut.HasBody();
+                    var actual = sut.SupportsBody();
                     actual.Should().BeTrue();
                 }
             }
