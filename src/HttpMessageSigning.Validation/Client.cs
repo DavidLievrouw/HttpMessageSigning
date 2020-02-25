@@ -7,10 +7,9 @@ namespace Dalion.HttpMessageSigning.Validation {
     /// </summary>
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     public class Client : IEquatable<Client> {
-        public Client(KeyId id, Secret secret, SignatureAlgorithm signatureAlgorithm, HashAlgorithm hashAlgorithm, params Claim[] claims) {
+        public Client(KeyId id, Secret secret, HashAlgorithm hashAlgorithm, params Claim[] claims) {
             if (string.IsNullOrEmpty(id)) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
             if (hashAlgorithm == HashAlgorithm.None) throw new ArgumentException("A hash algorithm must be specified.", nameof(hashAlgorithm));
-            SignatureAlgorithm = signatureAlgorithm;
             HashAlgorithm = hashAlgorithm;
             Claims = claims ?? Array.Empty<Claim>();
             Id = id;
@@ -27,11 +26,6 @@ namespace Dalion.HttpMessageSigning.Validation {
         /// </summary>
         /// <remarks>For symmetric signature algorithms, this is the shared key. For asymmetric signature algorithms, this value represents the public key of the client.</remarks>
         public Secret Secret { get; }
-
-        /// <summary>
-        /// Gets the algorithm that is used to create the signature.
-        /// </summary>
-        public SignatureAlgorithm SignatureAlgorithm { get; }
         
         /// <summary>
         /// Gets the algorithm that is used to create the hash value.

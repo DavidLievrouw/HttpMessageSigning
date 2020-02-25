@@ -22,8 +22,7 @@ namespace Dalion.HttpMessageSigning.Validation {
             public void WhenClientHasNullClaims_OnlyReturnsAppIdClaim() {
                 var client = new Client(
                     (KeyId)"id1", 
-                    "s3cr3t", 
-                    SignatureAlgorithm.HMAC, 
+                    new HMACSecret("s3cr3t"), 
                     HashAlgorithm.SHA256, 
                     null);
                 
@@ -39,8 +38,7 @@ namespace Dalion.HttpMessageSigning.Validation {
             public void WhenClientHasNoClaims_OnlyReturnsAppIdClaim() {
                 var client = new Client(
                     (KeyId)"id1", 
-                    "s3cr3t", 
-                    SignatureAlgorithm.HMAC, 
+                    new HMACSecret("s3cr3t"), 
                     HashAlgorithm.SHA256);
                 
                 var actual = _sut.CreateForClient(client);
@@ -55,8 +53,7 @@ namespace Dalion.HttpMessageSigning.Validation {
             public void WhenClientHasAdditionalClaims_ReturnsAppIdAndAdditionalClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
-                    "s3cr3t", 
-                    SignatureAlgorithm.HMAC, 
+                    new HMACSecret("s3cr3t"), 
                     HashAlgorithm.SHA256,
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
@@ -77,8 +74,7 @@ namespace Dalion.HttpMessageSigning.Validation {
             public void CreatesIdentityWithExpectedNameAndRoleClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
-                    "s3cr3t", 
-                    SignatureAlgorithm.HMAC, 
+                    new HMACSecret("s3cr3t"), 
                     HashAlgorithm.SHA256,
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
@@ -95,8 +91,7 @@ namespace Dalion.HttpMessageSigning.Validation {
             public void CreatesIdentityForExpectedAuthenticationType() {
                 var client = new Client(
                     (KeyId)"id1", 
-                    "s3cr3t", 
-                    SignatureAlgorithm.HMAC, 
+                    new HMACSecret("s3cr3t"), 
                     HashAlgorithm.SHA256,
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
