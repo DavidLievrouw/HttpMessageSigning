@@ -31,8 +31,7 @@ namespace Dalion.HttpMessageSigning {
 
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
-            var encrypted = _rsaForEncrypt.Encrypt(inputBytes, false);
-            var hashedData = _hashAlgorithm.ComputeHash(encrypted);
+            var hashedData = _hashAlgorithm.ComputeHash(inputBytes);
             return _rsaForSign.SignHash(hashedData, CryptoConfig.MapNameToOID(_hashAlgorithm.Id.ToString()));
         }
 
