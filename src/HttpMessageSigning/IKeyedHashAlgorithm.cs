@@ -1,9 +1,5 @@
-using System;
-
 namespace Dalion.HttpMessageSigning {
-    internal interface IKeyedHashAlgorithm : IDisposable {
-        string Name { get; }
-        byte[] ComputeHash(string input);
+    internal interface IKeyedHashAlgorithm : IHashAlgorithm {
         byte[] Key { get; }
     }
 }
