@@ -9,10 +9,10 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
 
             if (!request.Headers.Date.HasValue) {
-                
+                request.Headers.Date = timeOfSigning;
             }
             
-            throw new System.NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }

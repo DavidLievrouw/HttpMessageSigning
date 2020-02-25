@@ -144,7 +144,9 @@ namespace Dalion.HttpMessageSigning {
                 .AddSingleton<IKeyedHashAlgorithmFactory, KeyedHashAlgorithmFactory>()
                 .AddSingleton<IAdditionalSignatureHeadersSetter>(prov => new AdditionalSignatureHeadersSetter(
                     new DateSignatureHeaderEnsurer(), 
-                    new DigestSignatureHeaderEnsurer()))
+                    new DigestSignatureHeaderEnsurer(
+                        prov.GetRequiredService<IHashAlgorithmFactory>(),
+                        prov.GetRequiredService<IBase64Converter>())))
                 .AddSingleton<ISignatureCreator, SignatureCreator>()
                 .AddSingleton<IAuthorizationHeaderParamCreator, AuthorizationHeaderParamCreator>()
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
