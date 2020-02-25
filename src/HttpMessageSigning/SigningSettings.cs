@@ -42,10 +42,10 @@ namespace Dalion.HttpMessageSigning {
         }
 
         internal void Validate() {
-            if (ClientKey == null) throw new HttpMessageSigningValidationException($"The signing settings do not specify a valid {nameof(ClientKey)}.");
-            if (Headers == null) throw new HttpMessageSigningValidationException($"The signing settings do not specify a valid {nameof(Headers)}.");
-            if (HashAlgorithm == HashAlgorithm.None) throw new HttpMessageSigningValidationException($"The signing settings do not specify a {nameof(HashAlgorithm)}.");
-            if (Expires <= TimeSpan.Zero) throw new HttpMessageSigningValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
+            if (ClientKey == null) throw new ValidationException($"The signing settings do not specify a valid {nameof(ClientKey)}.");
+            if (Headers == null) throw new ValidationException($"The signing settings do not specify a valid {nameof(Headers)}.");
+            if (HashAlgorithm == HashAlgorithm.None) throw new ValidationException($"The signing settings do not specify a {nameof(HashAlgorithm)}.");
+            if (Expires <= TimeSpan.Zero) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
             
             ClientKey.Validate();
         }

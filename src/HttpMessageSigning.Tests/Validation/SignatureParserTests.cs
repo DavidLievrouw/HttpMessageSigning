@@ -57,7 +57,7 @@ namespace Dalion.HttpMessageSigning.Validation {
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<HttpMessageSigningSignatureValidationException>();
+                act.Should().Throw<SignatureValidationException>();
             }
 
             [Fact]
@@ -66,7 +66,7 @@ namespace Dalion.HttpMessageSigning.Validation {
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<HttpMessageSigningSignatureValidationException>();
+                act.Should().Throw<SignatureValidationException>();
             }
 
             [Fact]
@@ -75,7 +75,7 @@ namespace Dalion.HttpMessageSigning.Validation {
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<HttpMessageSigningSignatureValidationException>();
+                act.Should().Throw<SignatureValidationException>();
             }
 
             [Fact]
@@ -84,7 +84,7 @@ namespace Dalion.HttpMessageSigning.Validation {
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<HttpMessageSigningSignatureValidationException>();
+                act.Should().Throw<SignatureValidationException>();
             }
 
             [Fact]
@@ -168,7 +168,7 @@ namespace Dalion.HttpMessageSigning.Validation {
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<HttpMessageSigningSignatureValidationException>();
+                act.Should().Throw<SignatureValidationException>();
             }
 
             [Fact]
@@ -177,7 +177,7 @@ namespace Dalion.HttpMessageSigning.Validation {
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<HttpMessageSigningSignatureValidationException>();
+                act.Should().Throw<SignatureValidationException>();
             }
         }
     }

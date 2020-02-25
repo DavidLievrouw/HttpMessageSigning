@@ -33,7 +33,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
                 Action act = () => _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget);
 
-                act.Should().Throw<HttpMessageSigningInvalidRequestException>();
+                act.Should().Throw<ValidationException>();
             }
 
             [Fact]

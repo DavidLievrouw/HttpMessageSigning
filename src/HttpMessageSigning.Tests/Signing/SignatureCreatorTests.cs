@@ -60,10 +60,10 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void GivenInvalidSettings_ThrowsHttpMessageSigningValidationException() {
+            public void GivenInvalidSettings_ThrowsValidationException() {
                 _settings.ClientKey = null; // Make invalid
                 Action act = () => _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
 
             [Fact]

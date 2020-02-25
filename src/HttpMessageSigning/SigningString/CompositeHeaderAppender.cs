@@ -22,7 +22,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public string BuildStringToAppend(HeaderName header) {
-            if (header == HeaderName.Empty) throw new HttpMessageSigningValidationException("An empty header name was specified.");
+            if (header == HeaderName.Empty) throw new ValidationException("An empty header name was specified.");
             
             switch (header) {
                 case string str when str == HeaderName.PredefinedHeaderNames.RequestTarget:

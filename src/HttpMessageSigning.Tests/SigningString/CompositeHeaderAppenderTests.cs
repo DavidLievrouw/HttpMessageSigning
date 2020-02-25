@@ -42,9 +42,9 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             [Fact]
-            public void WhenHeaderIsEmpty_ThrowsHttpMessageSigningValidationException() {
+            public void WhenHeaderIsEmpty_ThrowsValidationException() {
                 Action act = () => _sut.BuildStringToAppend(HeaderName.Empty);
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
 
             [Fact]

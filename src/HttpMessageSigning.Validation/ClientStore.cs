@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Validation {
             
             var match = _entries.FirstOrDefault(_ => _.Id == id);
 
-            if (match == null) throw new HttpMessageSigningSignatureValidationException($"No key store entries with id '{id}' are registered with the server.");
+            if (match == null) throw new SignatureValidationException($"No key store entries with id '{id}' are registered with the server.");
 
             return match;
         }

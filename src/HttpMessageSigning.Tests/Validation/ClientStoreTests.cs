@@ -44,9 +44,9 @@ namespace Dalion.HttpMessageSigning.Validation {
             }
 
             [Fact]
-            public void WhenItemIsNotFound_ThrowsHttpMessageSigningSignatureValidationException() {
+            public void WhenItemIsNotFound_ThrowsSignatureValidationException() {
                 Action act = () => _sut.Get("IDontExist");
-                act.Should().Throw<HttpMessageSigningSignatureValidationException>();
+                act.Should().Throw<SignatureValidationException>();
             }
 
             [Fact]

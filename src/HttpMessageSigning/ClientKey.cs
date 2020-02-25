@@ -19,10 +19,10 @@ namespace Dalion.HttpMessageSigning {
         }
 
         internal void Validate() {
-            if (Id == null) throw new HttpMessageSigningValidationException($"The {nameof(ClientKey)} do not specify a valid {nameof(Id)}.");
-            if (Id == KeyId.Empty) throw new HttpMessageSigningValidationException($"The {nameof(ClientKey)} do not specify a valid {nameof(Id)}.");
-            if (Secret == null) throw new HttpMessageSigningValidationException($"The {nameof(ClientKey)} do not specify a valid {nameof(Secret)}.");
-            if (Secret == Secret.Empty) throw new HttpMessageSigningValidationException($"The {nameof(ClientKey)} do not specify a valid {nameof(Secret)}.");
+            if (Id == null) throw new ValidationException($"The {nameof(ClientKey)} do not specify a valid {nameof(Id)}.");
+            if (Id == KeyId.Empty) throw new ValidationException($"The {nameof(ClientKey)} do not specify a valid {nameof(Id)}.");
+            if (Secret == null) throw new ValidationException($"The {nameof(ClientKey)} do not specify a valid {nameof(Secret)}.");
+            if (Secret == Secret.Empty) throw new ValidationException($"The {nameof(ClientKey)} do not specify a valid {nameof(Secret)}.");
         }
     }
 }

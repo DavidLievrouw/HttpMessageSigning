@@ -30,21 +30,21 @@ namespace Dalion.HttpMessageSigning {
             public void WhenKeyIdIsNull_ThrowsValidationException() {
                 _sut.ClientKey = null;
                 Action act = () => _sut.Validate();
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
             
             [Fact]
             public void WhenNoHashAlgorithmIsSelected_ThrowsValidationException() {
                 _sut.HashAlgorithm = HashAlgorithm.None;
                 Action act = () => _sut.Validate();
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
             
             [Fact]
             public void WhenHeadersIsNull_ThrowsValidationException() {
                 _sut.Headers = null;
                 Action act = () => _sut.Validate();
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
             
             [Fact]
@@ -58,28 +58,28 @@ namespace Dalion.HttpMessageSigning {
             public void WhenExpiresIsNegative_ThrowsValidationException() {
                 _sut.Expires = TimeSpan.FromSeconds(-1);
                 Action act = () => _sut.Validate();
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
             
             [Fact]
             public void WhenExpiresIsZero_ThrowsValidationException() {
                 _sut.Expires = TimeSpan.Zero;
                 Action act = () => _sut.Validate();
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
             
             [Fact]
             public void WhenClientKeyIsNull_ThrowsValidationException() {
                 _sut.ClientKey = null;
                 Action act = () => _sut.Validate();
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
             
             [Fact]
             public void WhenClientKeyIsInvalid_ThrowsValidationException() {
                 _sut.ClientKey.Id = KeyId.Empty; // Make invalid
                 Action act = () => _sut.Validate();
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
             
             [Fact]

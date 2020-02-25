@@ -8,7 +8,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// </summary>
         /// <param name="signingSettings">The settings that specify how to sign requests.</param>
         /// <returns>A new <see cref="Dalion.HttpMessageSigning.Signing.IRequestSigner"/></returns>
-        /// <remarks>The specified a new <see cref="Dalion.HttpMessageSigning.SigningSettings"/> are validated. When invalid, a a new <see cref="Dalion.HttpMessageSigning.HttpMessageSigningValidationException"/> is thrown.</remarks>
+        /// <remarks>The specified a new <see cref="Dalion.HttpMessageSigning.SigningSettings"/> are validated. When invalid, a new <see cref="ValidationException"/> is thrown.</remarks>
         IRequestSigner Create(SigningSettings signingSettings);
     }
 }

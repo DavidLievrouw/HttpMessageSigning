@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public string BuildStringToAppend(HeaderName header) {
-            if (!_request.RequestUri.IsAbsoluteUri) throw new HttpMessageSigningInvalidRequestException("Cannot sign a request that uses a relative uri.");
+            if (!_request.RequestUri.IsAbsoluteUri) throw new ValidationException("Cannot sign a request that uses a relative uri.");
             
             return "\n" + new Header(
                        HeaderName.PredefinedHeaderNames.RequestTarget,

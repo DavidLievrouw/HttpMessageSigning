@@ -21,17 +21,17 @@ namespace Dalion.HttpMessageSigning.Validation {
             
             var authHeader = request.Headers[AuthorizationHeaderName];
             if (authHeader == StringValues.Empty)
-                throw new HttpMessageSigningSignatureValidationException($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
+                throw new SignatureValidationException($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
 
             var rawAuthHeader = (string) authHeader;
             var authHeaderParts = rawAuthHeader.Split(' ');
             var authScheme = rawAuthHeader.Split(' ')[0];
             if (authScheme != AuthorizationScheme)
-                throw new HttpMessageSigningSignatureValidationException(
+                throw new SignatureValidationException(
                     $"The specified request does not specify the {AuthorizationScheme} scheme in the {AuthorizationHeaderName} header.");
 
             if (authHeaderParts.Length < 2)
-                throw new HttpMessageSigningSignatureValidationException(
+                throw new SignatureValidationException(
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             var authParam = rawAuthHeader.Substring(authScheme.Length + 1);
 
@@ -88,8 +88,8 @@ namespace Dalion.HttpMessageSigning.Validation {
             try {
                 parsedSignature.Validate();
             }
-            catch (HttpMessageSigningValidationException ex) {
-                throw new HttpMessageSigningSignatureValidationException(
+            catch (ValidationException ex) {
+                throw new SignatureValidationException(
                     $"The specified request does not specify a valid signature in the {AuthorizationHeaderName} header. See inner exception.",
                     ex);
             }

@@ -41,8 +41,8 @@ namespace Dalion.HttpMessageSigning {
         }
 
         internal void Validate() {
-            if (KeyId == KeyId.Empty) throw new HttpMessageSigningValidationException($"The {nameof(Signature)} do not specify a valid {nameof(KeyId)}.");
-            if (string.IsNullOrEmpty(String)) throw new HttpMessageSigningValidationException($"The {nameof(Signature)} do not specify a valid signature {nameof(String)}.");
+            if (KeyId == KeyId.Empty) throw new ValidationException($"The {nameof(Signature)} do not specify a valid {nameof(KeyId)}.");
+            if (string.IsNullOrEmpty(String)) throw new ValidationException($"The {nameof(Signature)} do not specify a valid signature {nameof(String)}.");
         }
     }
 }

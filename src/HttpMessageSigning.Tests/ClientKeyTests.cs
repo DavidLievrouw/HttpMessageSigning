@@ -18,14 +18,14 @@ namespace Dalion.HttpMessageSigning {
             public void WhenKeyIdIsEmpty_ThrowsValidationException() {
                 _sut.Id = KeyId.Empty;
                 Action act = () => _sut.Validate();
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
 
             [Fact]
             public void WhenSecretIsEmpty_ThrowsValidationException() {
                 _sut.Secret = Secret.Empty;
                 Action act = () => _sut.Validate();
-                act.Should().Throw<HttpMessageSigningValidationException>();
+                act.Should().Throw<ValidationException>();
             }
 
             [Fact]
