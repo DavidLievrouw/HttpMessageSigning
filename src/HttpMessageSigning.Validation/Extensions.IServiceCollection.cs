@@ -44,6 +44,8 @@ namespace Dalion.HttpMessageSigning.Validation {
             return services
                 .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
                 .AddSingleton<ISignatureParser, SignatureParser>()
+                .AddSingleton<ISignatureValidator, SignatureValidator>()
+                .AddSingleton<IClaimsPrincipalFactory, ClaimsPrincipalFactory>()
                 .AddSingleton(clientStoreFactory)
                 .AddSingleton<IRequestSignatureValidator, RequestSignatureValidator>();
         }

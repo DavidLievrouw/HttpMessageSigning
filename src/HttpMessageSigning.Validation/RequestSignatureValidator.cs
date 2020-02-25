@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -8,12 +6,18 @@ namespace Dalion.HttpMessageSigning.Validation {
     internal class RequestSignatureValidator : IRequestSignatureValidator {
         private readonly ISignatureParser _signatureParser;
         private readonly IClientStore _clientStore;
+        private readonly ISignatureValidator _signatureValidator;
+        private readonly IClaimsPrincipalFactory _claimsPrincipalFactory;
 
         public RequestSignatureValidator(
             ISignatureParser signatureParser,
-            IClientStore clientStore) {
+            IClientStore clientStore,
+            ISignatureValidator signatureValidator,
+            IClaimsPrincipalFactory claimsPrincipalFactory) {
             _signatureParser = signatureParser ?? throw new ArgumentNullException(nameof(signatureParser));
             _clientStore = clientStore ?? throw new ArgumentNullException(nameof(clientStore));
+            _signatureValidator = signatureValidator ?? throw new ArgumentNullException(nameof(signatureValidator));
+            _claimsPrincipalFactory = claimsPrincipalFactory ?? throw new ArgumentNullException(nameof(claimsPrincipalFactory));
         }
 
         public async Task<RequestSignatureValidationResult> ValidateSignature(HttpRequest request) {
@@ -24,20 +28,9 @@ namespace Dalion.HttpMessageSigning.Validation {
 
                 var client = await _clientStore.Get(signature.KeyId);
 
-                // ToDo: Implement validation here
+                await _signatureValidator.ValidateSignature(signature, client);
 
-                var additionalClaims = client.Claims?.Select(c => new System.Security.Claims.Claim(c.Type, c.Value)) ?? Enumerable.Empty<System.Security.Claims.Claim>();
-                return new RequestSignatureValidationResultSuccess(
-                    new ClaimsPrincipal(
-                        new ClaimsIdentity(
-                            additionalClaims.Concat(
-                                new[] {
-                                    new System.Security.Claims.Claim(Constants.ClaimTypes.AppId, client.Id)
-                                }),
-                            Constants.AuthenticationSchemes.Signature,
-                            Constants.ClaimTypes.AppId,
-                            Constants.ClaimTypes.Role))
-                );
+                return new RequestSignatureValidationResultSuccess(_claimsPrincipalFactory.CreateForClient(client));
             }
             catch (SignatureValidationException ex) {
                 return new RequestSignatureValidationResultFailure(ex);

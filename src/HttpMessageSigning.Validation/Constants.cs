@@ -6,7 +6,7 @@ namespace Dalion.HttpMessageSigning.Validation {
         }
 
         public static class AuthenticationSchemes {
-            public const string Signature = "Signature";
+            public const string HttpRequestSignature = "HttpRequestSignature";
         }
     }
 }
