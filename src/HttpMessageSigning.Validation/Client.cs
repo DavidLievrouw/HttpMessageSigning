@@ -6,8 +6,8 @@ namespace Dalion.HttpMessageSigning.Validation {
     /// Represents an entry in the list of known clients, that the server maintains.
     /// </summary>
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
-    public class KeyStoreEntry : IEquatable<KeyStoreEntry> {
-        public KeyStoreEntry(string id, string secret, SignatureAlgorithm signatureAlgorithm, HashAlgorithm hashAlgorithm) {
+    public class Client : IEquatable<Client> {
+        public Client(string id, string secret, SignatureAlgorithm signatureAlgorithm, HashAlgorithm hashAlgorithm) {
             if (string.IsNullOrEmpty(id)) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
             if (string.IsNullOrEmpty(secret)) throw new ArgumentException("Value cannot be null or empty.", nameof(secret));
             if (hashAlgorithm == HashAlgorithm.None) throw new ArgumentException("A hash algorithm must be specified.", nameof(hashAlgorithm));
@@ -18,7 +18,7 @@ namespace Dalion.HttpMessageSigning.Validation {
         }
 
         /// <summary>
-        /// Gets the identity of the key store entry that can be looked up by the server.
+        /// Gets the identity of the client that can be looked up by the server.
         /// </summary>
         public string Id { get; }
 
@@ -38,14 +38,14 @@ namespace Dalion.HttpMessageSigning.Validation {
         /// </summary>
         public HashAlgorithm HashAlgorithm { get; }
 
-        public bool Equals(KeyStoreEntry other) {
+        public bool Equals(Client other) {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Id == other.Id;
         }
 
         public override bool Equals(object obj) {
-            return ReferenceEquals(this, obj) || obj is KeyStoreEntry other && Equals(other);
+            return ReferenceEquals(this, obj) || obj is Client other && Equals(other);
         }
 
         public override int GetHashCode() {

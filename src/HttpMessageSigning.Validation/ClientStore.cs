@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Dalion.HttpMessageSigning.Validation {
-    internal class KeyStore : IKeyStore {
-        private readonly List<KeyStoreEntry> _entries;
+    internal class ClientStore : IClientStore {
+        private readonly List<Client> _entries;
 
-        public KeyStore() {
-            _entries = new List<KeyStoreEntry>();
+        public ClientStore() {
+            _entries = new List<Client>();
         }
 
-        public void Register(KeyStoreEntry entry) {
-            if (entry == null) throw new ArgumentNullException(nameof(entry));
+        public void Register(Client client) {
+            if (client == null) throw new ArgumentNullException(nameof(client));
             
-            if (_entries.Contains(entry)) throw new InvalidOperationException($"An key store entry with id '{entry.Id}' is already registered.");
+            if (_entries.Contains(client)) throw new InvalidOperationException($"An key store entry with id '{client.Id}' is already registered.");
             
-            _entries.Add(entry);
+            _entries.Add(client);
         }
 
-        public KeyStoreEntry Get(string id) {
+        public Client Get(string id) {
             if (string.IsNullOrEmpty(id)) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
             
             var match = _entries.FirstOrDefault(_ => _.Id == id);
