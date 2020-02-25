@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning {
                     Id = new KeyId("client1"),
                     Secret = new Secret("s3cr3t")
                 })
-                .AddHttpMessageSignatureValidation(new ClientStore());
+                .AddHttpMessageSignatureValidation(new InMemoryClientStore());
             _serviceProvider = services.BuildServiceProvider();
         }
 
