@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace Dalion.HttpMessageSigning {
-    internal class RSASignatureAlgorithm : ISignatureAlgorithm {
+    public class RSASignatureAlgorithm : ISignatureAlgorithm {
         private readonly RSACryptoServiceProvider _rsaForEncrypt;
         private readonly RSACryptoServiceProvider _rsaForSign;
         private readonly IHashAlgorithm _hashAlgorithm;
@@ -14,11 +14,8 @@ namespace Dalion.HttpMessageSigning {
             _rsaForEncrypt = new RSACryptoServiceProvider();
             _rsaForEncrypt.ImportParameters(publicParameters);
         }
-        
-        public RSASignatureAlgorithm(HashAlgorithm hashAlgorithm, RSAParameters publicParameters, RSAParameters privateParameters) {
-            HashAlgorithm = hashAlgorithm;
-            _rsaForEncrypt = new RSACryptoServiceProvider();
-            _rsaForEncrypt.ImportParameters(publicParameters);
+
+        public RSASignatureAlgorithm(HashAlgorithm hashAlgorithm, RSAParameters publicParameters, RSAParameters privateParameters) : this(hashAlgorithm, publicParameters) {
             _rsaForSign = new RSACryptoServiceProvider();
             _rsaForSign.ImportParameters(privateParameters);
         }
