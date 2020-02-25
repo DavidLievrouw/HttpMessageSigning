@@ -28,14 +28,14 @@ namespace Sample {
                 .AddHttpMessageSigning(provider => new SigningSettings {
                     ClientKey = new ClientKey {
                         Id = new KeyId("HttpMessageSigningSample"),
-                        Secret = new Secret("yumACY64r%hm")
+                        Secret = new HMACSecret("yumACY64r%hm")
                     }
                 })
                 .AddHttpMessageSignatureValidation(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
                         new KeyId("HttpMessageSigningSample"),
-                        new Secret("yumACY64r%hm"),
+                        new HMACSecret("yumACY64r%hm"),
                         SignatureAlgorithm.HMAC,
                         HashAlgorithm.SHA256,
                         new Claim(Constants.ClaimTypes.Role, "users.read")));

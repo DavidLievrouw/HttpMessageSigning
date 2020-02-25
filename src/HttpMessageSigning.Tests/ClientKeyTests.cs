@@ -9,7 +9,7 @@ namespace Dalion.HttpMessageSigning {
         public ClientKeyTests() {
             _sut = new ClientKey {
                 Id = new KeyId("client1"),
-                Secret = new Secret("s3cr3t")
+                Secret = new HMACSecret("s3cr3t")
             };
         }
 
@@ -22,8 +22,22 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
+            public void WhenSecretIsNull_ThrowsValidationException() {
+                _sut.Secret = null;
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
+            
+            [Fact]
+            public void WhenSecretIsNotSupported_ThrowsValidationException() {
+                _sut.Secret = new NotSupportedSecret();
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
+            
+            [Fact]
             public void WhenSecretIsEmpty_ThrowsValidationException() {
-                _sut.Secret = Secret.Empty;
+                _sut.Secret = HMACSecret.Empty;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }

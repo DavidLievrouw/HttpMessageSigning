@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                     HashAlgorithm = HashAlgorithm.SHA512,
                     ClientKey = new ClientKey {
                         Id = new KeyId("client1"),
-                        Secret = new Secret("s3cr3t")
+                        Secret = new HMACSecret("s3cr3t")
                     },
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
@@ -73,7 +73,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                     .Returns(composedString);
 
                 var hashAlgorithm = A.Fake<ISignatureAlgorithm>();
-                A.CallTo(() => _signatureAlgorithmFactory.Create(_settings.SignatureAlgorithm, _settings.HashAlgorithm, _settings.ClientKey.Secret))
+                A.CallTo(() => _signatureAlgorithmFactory.Create(_settings.ClientKey.Secret, _settings.HashAlgorithm))
                     .Returns(hashAlgorithm);
 
                 var signatureHash = new byte[] {0x03, 0x04};

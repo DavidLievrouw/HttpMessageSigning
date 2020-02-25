@@ -31,7 +31,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             _logger.Debug("Composed the following string for request signing: {0}", signingString);
             
-            using (var hashAlgorithm = _signatureAlgorithmFactory.Create(settings.SignatureAlgorithm, settings.HashAlgorithm, settings.ClientKey.Secret)) {
+            using (var hashAlgorithm = _signatureAlgorithmFactory.Create(settings.ClientKey.Secret, settings.HashAlgorithm)) {
                 var signatureHash = hashAlgorithm.ComputeHash(signingString);
                 var signatureString = _base64Converter.ToBase64(signatureHash);
 

@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning {
                 Expires = TimeSpan.FromMinutes(5),
                 ClientKey = new ClientKey {
                     Id = new KeyId("client1"),
-                    Secret = new Secret("s3cr3t")
+                    Secret = new HMACSecret("s3cr3t")
                 },
                 Headers = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
