@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Dalion.HttpMessageSigning.Validation {
-    public static class Extensions {
+    public static partial class Extensions {
         internal static HttpRequestMessage ToHttpRequestMessage(this HttpRequest request) {
             if (request == null) return null;
             

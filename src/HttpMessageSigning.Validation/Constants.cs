@@ -1,0 +1,12 @@
+namespace Dalion.HttpMessageSigning.Validation {
+    public static class Constants {
+        public static class ClaimTypes {
+            public const string AppId = "appid";
+            public const string Role = "role";
+        }
+
+        public static class AuthenticationSchemes {
+            public const string Signature = "Signature";
+        }
+    }
+}
