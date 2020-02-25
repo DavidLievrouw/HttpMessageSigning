@@ -2,21 +2,24 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <AssemblyName>Dalion.HttpMessageSigning</AssemblyName>
-        <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
+        <AssemblyName>Dalion.HttpMessageSigning.Signing</AssemblyName>
+        <RootNamespace>Dalion.HttpMessageSigning.Signing</RootNamespace>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <Company>Dalion</Company>
         <Description>A C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
-        <Product>Dalion.HttpMessageSigning</Product>
-        <Title>Dalion.HttpMessageSigning</Title>
+        <Product>Dalion.HttpMessageSigning.Signing</Product>
+        <Title>Dalion.HttpMessageSigning.Signing</Title>
         <DebugType>full</DebugType>
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
     </ItemGroup>
 
     <Target Name="InitVersion" BeforeTargets="BeforeBuild">
@@ -38,7 +41,7 @@
         <PropertyGroup>
             <PackagePublishDir Condition="'$(PackagePublishDir)'==''">$(MSBuildThisFileDirectory)bin\Packages\</PackagePublishDir>
         </PropertyGroup>
-        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion)\&quot;" />
+        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Signing.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion)\&quot;" />
     </Target>
-
+    
 </Project>

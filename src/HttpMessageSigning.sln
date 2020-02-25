@@ -6,6 +6,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{C3C32183-DB79-404F-B3B3-EEB671CC3787}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Signing", "HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj", "{EC01D12E-1297-4614-ACFB-EDE4DCE39189}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Validation", "HttpMessageSigning.Validation\HttpMessageSigning.Validation.csproj", "{D1E2051F-B620-43E3-AC86-E647D3058B88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,13 @@ Global
 		{C3C32183-DB79-404F-B3B3-EEB671CC3787}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3C32183-DB79-404F-B3B3-EEB671CC3787}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3C32183-DB79-404F-B3B3-EEB671CC3787}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC01D12E-1297-4614-ACFB-EDE4DCE39189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC01D12E-1297-4614-ACFB-EDE4DCE39189}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC01D12E-1297-4614-ACFB-EDE4DCE39189}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC01D12E-1297-4614-ACFB-EDE4DCE39189}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1E2051F-B620-43E3-AC86-E647D3058B88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1E2051F-B620-43E3-AC86-E647D3058B88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1E2051F-B620-43E3-AC86-E647D3058B88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1E2051F-B620-43E3-AC86-E647D3058B88}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
