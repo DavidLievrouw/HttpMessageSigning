@@ -11,19 +11,18 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IKeyedHashAlgorithmFactory _keyedHashAlgorithmFactory;
         private readonly IBase64Converter _base64Converter;
-        private readonly ISystemClock _systemClock;
         private readonly IHttpMessageSigningLogger<SignatureCreator> _logger;
         private readonly SignatureCreator _sut;
 
         public SignatureCreatorTests() {
-            FakeFactory.Create(out _base64Converter, out _keyedHashAlgorithmFactory, out _signingStringComposer, out _systemClock, out _logger);
-            _sut = new SignatureCreator(_signingStringComposer, _keyedHashAlgorithmFactory, _base64Converter, _systemClock, _logger);
+            FakeFactory.Create(out _base64Converter, out _keyedHashAlgorithmFactory, out _signingStringComposer, out _logger);
+            _sut = new SignatureCreator(_signingStringComposer, _keyedHashAlgorithmFactory, _base64Converter, _logger);
         }
 
         public class CreateSignature : SignatureCreatorTests {
             private readonly HttpRequestMessage _httpRequest;
             private readonly SigningSettings _settings;
-            private readonly DateTimeOffset _now;
+            private readonly DateTimeOffset _timeOfSigning;
 
             public CreateSignature() {
                 _httpRequest = new HttpRequestMessage {
@@ -45,33 +44,32 @@ namespace Dalion.HttpMessageSigning.Signing {
                         new HeaderName("dalion_app_id")
                     }
                 };
-                _now = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.Zero);
-                A.CallTo(() => _systemClock.UtcNow).Returns(_now);
+                _timeOfSigning = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.Zero);
             }
 
             [Fact]
             public void GivenNullRequest_ThrowsArgumentNullException() {
-                Action act = () => _sut.CreateSignature(null, _settings);
+                Action act = () => _sut.CreateSignature(null, _settings, _timeOfSigning);
                 act.Should().Throw<ArgumentNullException>();
             }
 
             [Fact]
             public void GivenNullSettings_ThrowsArgumentNullException() {
-                Action act = () => _sut.CreateSignature(_httpRequest, null);
+                Action act = () => _sut.CreateSignature(_httpRequest, null, _timeOfSigning);
                 act.Should().Throw<ArgumentNullException>();
             }
 
             [Fact]
             public void GivenInvalidSettings_ThrowsHttpMessageSigningValidationException() {
                 _settings.ClientKey = null; // Make invalid
-                Action act = () => _sut.CreateSignature(_httpRequest, _settings);
+                Action act = () => _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
                 act.Should().Throw<HttpMessageSigningValidationException>();
             }
 
             [Fact]
             public void ReturnsSignatureWithCalculatedSignatureString() {
                 var composedString = "{the composed string}";
-                A.CallTo(() => _signingStringComposer.Compose(_httpRequest, _settings, _now))
+                A.CallTo(() => _signingStringComposer.Compose(_httpRequest, _settings, _timeOfSigning))
                     .Returns(composedString);
 
                 var hashAlgorithm = A.Fake<IKeyedHashAlgorithm>();
@@ -86,44 +84,44 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _base64Converter.ToBase64(signatureHash))
                     .Returns(signatureString);
 
-                var actual = _sut.CreateSignature(_httpRequest, _settings);
+                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
 
                 actual.String.Should().Be(signatureString);
             }
 
             [Fact]
             public void ReturnsSignatureWithExpectedKeyId() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings);
+                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
                 actual.KeyId.Should().Be(_settings.ClientKey.Id);
             }
 
             [Fact]
             public void ReturnsSignatureWithExpectedSignatureAlgorithm() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings);
+                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
                 actual.SignatureAlgorithm.Should().Be(SignatureAlgorithm.RSA);
             }
             
             [Fact]
             public void ReturnsSignatureWithExpectedHashAlgorithm() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings);
+                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
                 actual.HashAlgorithm.Should().Be(HashAlgorithm.SHA512);
             }
 
             [Fact]
             public void ReturnsSignatureWithExpectedCreatedValue() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings);
-                actual.Created.Should().Be(_now);
+                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
+                actual.Created.Should().Be(_timeOfSigning);
             }
 
             [Fact]
             public void ReturnsSignatureWithExpectedExpiresValue() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings);
-                actual.Expires.Should().Be(_now.Add(_settings.Expires));
+                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
+                actual.Expires.Should().Be(_timeOfSigning.Add(_settings.Expires));
             }
 
             [Fact]
             public void ReturnsSignatureWithExpectedHeaders() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings);
+                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
                 actual.Headers.Should().BeEquivalentTo(
                     new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,

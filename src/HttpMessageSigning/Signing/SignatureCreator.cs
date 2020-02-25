@@ -8,30 +8,26 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IKeyedHashAlgorithmFactory _keyedHashAlgorithmFactory;
         private readonly IBase64Converter _base64Converter;
-        private readonly ISystemClock _systemClock;
         private readonly IHttpMessageSigningLogger<SignatureCreator> _logger;
 
         public SignatureCreator(
             ISigningStringComposer signingStringComposer,
             IKeyedHashAlgorithmFactory keyedHashAlgorithmFactory,
             IBase64Converter base64Converter,
-            ISystemClock systemClock,
             IHttpMessageSigningLogger<SignatureCreator> logger) {
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
             _keyedHashAlgorithmFactory = keyedHashAlgorithmFactory ?? throw new ArgumentNullException(nameof(keyedHashAlgorithmFactory));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
-            _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public Signature CreateSignature(HttpRequestMessage request, SigningSettings settings) {
+        public Signature CreateSignature(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfSigning) {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
 
             settings.Validate();
 
-            var timeOfComposing = _systemClock.UtcNow;
-            var signingString = _signingStringComposer.Compose(request, settings, timeOfComposing);
+            var signingString = _signingStringComposer.Compose(request, settings, timeOfSigning);
 
             _logger.Debug("Composed the following string for request signing: {0}", signingString);
             
@@ -45,8 +41,8 @@ namespace Dalion.HttpMessageSigning.Signing {
                     KeyId = settings.ClientKey.Id,
                     SignatureAlgorithm = settings.SignatureAlgorithm,
                     HashAlgorithm = settings.HashAlgorithm,
-                    Created = timeOfComposing,
-                    Expires = timeOfComposing.Add(settings.Expires),
+                    Created = timeOfSigning,
+                    Expires = timeOfSigning.Add(settings.Expires),
                     Headers = settings.Headers,
                     String = signatureString
                 };

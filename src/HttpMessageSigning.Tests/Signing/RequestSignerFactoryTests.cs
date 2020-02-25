@@ -9,6 +9,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
         private readonly ISignatureCreator _signatureCreator;
         private readonly IAdditionalSignatureHeadersSetter _additionalSignatureHeadersSetter;
+        private readonly ISystemClock _systemClock;
         private readonly RequestSignerFactory _sut;
 
         public RequestSignerFactoryTests() {
@@ -16,11 +17,13 @@ namespace Dalion.HttpMessageSigning.Signing {
                 out _signatureCreator, 
                 out _authorizationHeaderParamCreator, 
                 out _additionalSignatureHeadersSetter,
+                out _systemClock,
                 out _logger);
             _sut = new RequestSignerFactory(
                 _signatureCreator,
                 _authorizationHeaderParamCreator,
                 _additionalSignatureHeadersSetter,
+                _systemClock,
                 _logger);
         }
 

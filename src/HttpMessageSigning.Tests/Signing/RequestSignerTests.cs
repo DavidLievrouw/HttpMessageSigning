@@ -13,6 +13,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly ISignatureCreator _signatureCreator;
         private readonly SigningSettings _signingSettings;
         private readonly IAdditionalSignatureHeadersSetter _additionalSignatureHeadersSetter;
+        private readonly ISystemClock _systemClock;
         private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
         private readonly RequestSigner _sut;
 
@@ -21,6 +22,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 out _signatureCreator, 
                 out _authorizationHeaderParamCreator, 
                 out _additionalSignatureHeadersSetter,
+                out _systemClock,
                 out _logger);
             _signingSettings = new SigningSettings {
                 Expires = TimeSpan.FromMinutes(5),
@@ -40,17 +42,21 @@ namespace Dalion.HttpMessageSigning.Signing {
                 _authorizationHeaderParamCreator, 
                 _signingSettings, 
                 _additionalSignatureHeadersSetter,
+                _systemClock,
                 _logger);
         }
 
         public class Sign : RequestSignerTests {
             private readonly HttpRequestMessage _httpRequest;
+            private readonly DateTimeOffset _timeOfSigning;
 
             public Sign() {
                 _httpRequest = new HttpRequestMessage {
                     Method = HttpMethod.Post,
                     RequestUri = new Uri("http://dalion.eu/api/resource/id1")
                 };
+                _timeOfSigning = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.Zero);
+                A.CallTo(() => _systemClock.UtcNow).Returns(_timeOfSigning);
             }
 
             [Fact]
@@ -69,20 +75,20 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public async Task AddsRequiredHeadersForSigningToRequest_BeforeSigning() {
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings, _timeOfSigning))
                     .Returns(signature);
                 
                 await _sut.Sign(_httpRequest);
 
-                A.CallTo(() => _additionalSignatureHeadersSetter.AddMissingRequiredHeadersForSignature(_httpRequest, _signingSettings)).MustHaveHappened()
-                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings)).MustHaveHappened())
+                A.CallTo(() => _additionalSignatureHeadersSetter.AddMissingRequiredHeadersForSignature(_httpRequest, _signingSettings, _timeOfSigning)).MustHaveHappened()
+                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings, _timeOfSigning)).MustHaveHappened())
                     .Then(A.CallTo(() => _authorizationHeaderParamCreator.CreateParam(signature)).MustHaveHappened());
             }
             
             [Fact]
             public async Task SetsExpectedAuthorizationHeaderInRequest() {
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings, _timeOfSigning))
                     .Returns(signature);
 
                 var authParam = "signature=abc123=";
@@ -99,7 +105,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 _httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Custom", "john.doe");
 
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, _signingSettings, _timeOfSigning))
                     .Returns(signature);
 
                 var authParam = "signature=abc123=";

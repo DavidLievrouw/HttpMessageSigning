@@ -12,6 +12,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;
         private readonly SigningSettings _signingSettings;
         private readonly IAdditionalSignatureHeadersSetter _additionalSignatureHeadersSetter;
+        private readonly ISystemClock _systemClock;
         private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
 
         public RequestSigner(
@@ -19,11 +20,13 @@ namespace Dalion.HttpMessageSigning.Signing {
             IAuthorizationHeaderParamCreator authorizationHeaderParamCreator,
             SigningSettings signingSettings,
             IAdditionalSignatureHeadersSetter additionalSignatureHeadersSetter,
+            ISystemClock systemClock,
             IHttpMessageSigningLogger<RequestSigner> logger) {
             _signatureCreator = signatureCreator ?? throw new ArgumentNullException(nameof(signatureCreator));
             _authorizationHeaderParamCreator = authorizationHeaderParamCreator ?? throw new ArgumentNullException(nameof(authorizationHeaderParamCreator));
             _signingSettings = signingSettings ?? throw new ArgumentNullException(nameof(signingSettings));
             _additionalSignatureHeadersSetter = additionalSignatureHeadersSetter ?? throw new ArgumentNullException(nameof(additionalSignatureHeadersSetter));
+            _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -33,9 +36,10 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 _signingSettings.Validate();
 
-                await _additionalSignatureHeadersSetter.AddMissingRequiredHeadersForSignature(request, _signingSettings);
+                var timeOfSigning = _systemClock.UtcNow;
+                await _additionalSignatureHeadersSetter.AddMissingRequiredHeadersForSignature(request, _signingSettings, timeOfSigning);
                 
-                var signature = _signatureCreator.CreateSignature(request, _signingSettings);
+                var signature = _signatureCreator.CreateSignature(request, _signingSettings, timeOfSigning);
                 var authParam = _authorizationHeaderParamCreator.CreateParam(signature);
 
                 _logger.Debug("Setting Authorization scheme to '{0}' and param to '{1}'.", AuthorizationScheme, authParam);
