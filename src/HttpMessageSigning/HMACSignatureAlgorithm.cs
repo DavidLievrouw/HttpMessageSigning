@@ -12,6 +12,7 @@ namespace Dalion.HttpMessageSigning {
         
         public HMACSignatureAlgorithm(string secret, HashAlgorithm hashAlgorithm) {
             if (secret == null) throw new ArgumentNullException(nameof(secret));
+            if (hashAlgorithm == HashAlgorithm.None) throw new ArgumentException("A hash algorithm must be specified.", nameof(hashAlgorithm));
             var algorithmName = $"HMAC{hashAlgorithm}";
             HashAlgorithm = hashAlgorithm;
             Secret = secret;

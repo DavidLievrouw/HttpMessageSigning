@@ -28,7 +28,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         public IRequestSigner Create(SigningSettings signingSettings) {
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
             
-            signingSettings.Validate();
+             signingSettings.Validate();
             
             return new RequestSigner(
                 _signatureCreator, 

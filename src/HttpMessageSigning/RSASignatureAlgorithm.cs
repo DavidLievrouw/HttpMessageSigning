@@ -9,6 +9,7 @@ namespace Dalion.HttpMessageSigning {
         private readonly IHashAlgorithm _hashAlgorithm;
 
         public RSASignatureAlgorithm(HashAlgorithm hashAlgorithm, RSAParameters publicParameters) {
+            if (hashAlgorithm == HashAlgorithm.None) throw new ArgumentException("A hash algorithm must be specified.", nameof(hashAlgorithm));
             HashAlgorithm = hashAlgorithm;
             _hashAlgorithm = new HashAlgorithmFactory().Create(hashAlgorithm);
             _rsaForEncrypt = new RSACryptoServiceProvider();
