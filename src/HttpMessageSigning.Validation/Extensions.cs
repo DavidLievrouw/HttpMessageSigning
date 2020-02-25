@@ -13,11 +13,7 @@ namespace Dalion.HttpMessageSigning.Validation {
             
             requestMessage.Headers.Host = requestMessage.RequestUri.Authority;
             
-            var requestMethod = request.Method;
-            if (!HttpMethods.IsGet(requestMethod) &&
-                !HttpMethods.IsHead(requestMethod) &&
-                !HttpMethods.IsDelete(requestMethod) &&
-                !HttpMethods.IsTrace(requestMethod)) {
+            if (requestMessage.Method.HasBody()) {
                 var streamContent = new StreamContent(request.Body);
                 requestMessage.Content = streamContent;
             }

@@ -58,9 +58,13 @@ namespace Dalion.HttpMessageSigning.Signing {
                 act.Should().Throw<ArgumentNullException>();
             }
 
-            [Fact]
-            public async Task WhenMethodIsGet_DoesNotSetDigestHeader() {
-                _httpRequest.Method = HttpMethod.Get;
+            [Theory]
+            [InlineData("GET")]
+            [InlineData("TRACE")]
+            [InlineData("HEAD")]
+            [InlineData("DELETE")]
+            public async Task WhenMethodDoesNotHaveBody_DoesNotSetDigestHeader(string method) {
+                _httpRequest.Method = new HttpMethod(method);
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 

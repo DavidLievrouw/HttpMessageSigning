@@ -94,7 +94,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }    
             
             [Fact]
-            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_PrependsCreatedToHeaders_ButAfterRequestTargetHeader() {
+            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_PrependsCreatedToHeaders_ButAfterRequestTargetHeader() {
                 _settings.SignatureAlgorithm = (SignatureAlgorithm) 999;
                 
                 SigningSettings interceptedSettings = null;
@@ -161,10 +161,14 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 interceptedSettings.Headers.Count(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest).Should().Be(1);
             }
             
-            [Fact]
-            public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_ButMethodIsGet_DoesNotAddDigestHeader() {
+            [Theory]
+            [InlineData("GET")]
+            [InlineData("TRACE")]
+            [InlineData("HEAD")]
+            [InlineData("DELETE")]
+            public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_ButMethodDoesNotHaveBody_DoesNotAddDigestHeader(string method) {
                 _settings.DigestHashAlgorithm = HashAlgorithm.SHA384;
-                _httpRequest.Method = HttpMethod.Get;
+                _httpRequest.Method = new HttpMethod(method);
                 
                 SigningSettings interceptedSettings = null;
                 A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
