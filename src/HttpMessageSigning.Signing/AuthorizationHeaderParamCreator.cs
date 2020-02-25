@@ -19,13 +19,10 @@ namespace Dalion.HttpMessageSigning.Signing {
             var headers = signature.Headers != null
                 ? string.Join(" ", signature.Headers)
                 : null;
-            var algorithm = signature.SignatureAlgorithm.HasValue && signature.HashAlgorithm.HasValue
-                ? $"{signature.SignatureAlgorithm.ToString().ToLowerInvariant()}_{signature.HashAlgorithm.ToString().ToLowerInvariant()}"
-                : null;
 
             var sb = new StringBuilder();
             sb.Append("keyId=\"" + keyId + "\"");
-            if (!string.IsNullOrEmpty(algorithm)) sb.Append(",algorithm=\"" + algorithm + "\"");
+            if (!string.IsNullOrEmpty(signature.Algorithm)) sb.Append(",algorithm=\"" + signature.Algorithm + "\"");
             if (!string.IsNullOrEmpty(created)) sb.Append(",created=" + created);
             if (!string.IsNullOrEmpty(expires)) sb.Append(",expires=" + expires);
             if (!string.IsNullOrEmpty(headers)) sb.Append(",headers=\"" + headers + "\"");

@@ -11,14 +11,9 @@ namespace Dalion.HttpMessageSigning {
         public KeyId KeyId { get; set; }
         
         /// <summary>
-        /// OPTIONAL: Gets or sets the keyed hash algorithm that is used to validate the hash value.
+        /// OPTIONAL: Gets or sets the algorithm that needs to be used to validate the hash value.
         /// </summary>
-        public SignatureAlgorithm? SignatureAlgorithm { get; set; }
-        
-        /// <summary>
-        /// OPTIONAL: Gets or sets the algorithm that is used to create the hash value.
-        /// </summary>
-        public HashAlgorithm? HashAlgorithm { get; set; }
+        public string Algorithm { get; set; }
         
         /// <summary>
         /// OPTIONAL: Gets or sets the time at which the signature was created.

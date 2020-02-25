@@ -96,15 +96,9 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void ReturnsSignatureWithExpectedSignatureAlgorithm() {
+            public void ReturnsSignatureWithExpectedAlgorithm() {
                 var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
-                actual.SignatureAlgorithm.Should().Be(SignatureAlgorithm.RSA);
-            }
-            
-            [Fact]
-            public void ReturnsSignatureWithExpectedHashAlgorithm() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
-                actual.HashAlgorithm.Should().Be(HashAlgorithm.SHA512);
+                actual.Algorithm.Should().Be("rsa-sha512");
             }
 
             [Fact]
