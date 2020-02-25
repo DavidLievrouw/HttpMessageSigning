@@ -1,21 +1,26 @@
 using System;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Dalion.HttpMessageSigning {
     internal class SignatureAlgorithmFactory : ISignatureAlgorithmFactory {
+        private readonly IHashAlgorithmFactory _hashAlgorithmFactory;
+
+        public SignatureAlgorithmFactory(IHashAlgorithmFactory hashAlgorithmFactory) {
+            _hashAlgorithmFactory = hashAlgorithmFactory ?? throw new ArgumentNullException(nameof(hashAlgorithmFactory));
+        }
+
         public ISignatureAlgorithm Create(SignatureAlgorithm signatureAlgorithm, HashAlgorithm hashAlgorithm, string secret) {
             if (string.IsNullOrEmpty(secret)) throw new ArgumentException("Value cannot be null or empty.", nameof(secret));
 
-            // ToDo: Add support for RSA
-            if (signatureAlgorithm != SignatureAlgorithm.HMAC) throw new NotSupportedException($"The signature algorithm '{signatureAlgorithm}' is not supported in this version.");
-
-            var algorithmName = $"HMAC{hashAlgorithm}";
-            var algorithm = HMAC.Create(algorithmName);
-            
-            algorithm.Key = Encoding.UTF8.GetBytes(secret);
-            
-            return new RealSignatureAlgorithm(algorithmName, algorithm);
+            switch (signatureAlgorithm) {
+                case SignatureAlgorithm.HMAC:
+                    return new HMACSignatureAlgorithm(hashAlgorithm, secret);
+                case SignatureAlgorithm.RSA:
+                    var hash = _hashAlgorithmFactory.Create(hashAlgorithm);
+                    //return new RSASignatureAlgorithm(secret, hash);
+                    throw new NotSupportedException();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(signatureAlgorithm), signatureAlgorithm, null);
+            }
         }
     }
 }

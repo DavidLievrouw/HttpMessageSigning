@@ -116,8 +116,9 @@ namespace Dalion.HttpMessageSigning.Signing {
                     A.CallTo(() => _hashAlgorithmFactory.Create(_settings.DigestHashAlgorithm))
                         .Returns(hashAlgorithm);
 
+                    var expectedBodyBytes = Encoding.UTF8.GetBytes("abc123");
                     var hashBytes = new byte[] {0x01, 0x02};
-                    A.CallTo(() => hashAlgorithm.ComputeHash("abc123"))
+                    A.CallTo(() => hashAlgorithm.ComputeHash(A<byte[]>.That.IsSameSequenceAs(expectedBodyBytes)))
                         .Returns(hashBytes);
 
                     A.CallTo(() => hashAlgorithm.Name)

@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Signing {
@@ -27,7 +28,8 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             var bodyText = await request.Content.ReadAsStringAsync();
             using (var hashAlgorithm = _hashAlgorithmFactory.Create(signingSettings.DigestHashAlgorithm)) {
-                var payloadBytes = hashAlgorithm.ComputeHash(bodyText);
+                var bodyBytes = Encoding.UTF8.GetBytes(bodyText);
+                var payloadBytes = hashAlgorithm.ComputeHash(bodyBytes);
                 var digest = _base64Converter.ToBase64(payloadBytes);
                 request.Headers.Add("Digest", $"{hashAlgorithm.Name}={digest}");
             }

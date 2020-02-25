@@ -4,10 +4,12 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning {
     public class SignatureAlgorithmFactoryTests {
+        private readonly IHashAlgorithmFactory _hashAlgorithmFactory;
         private readonly SignatureAlgorithmFactory _sut;
 
         public SignatureAlgorithmFactoryTests() {
-            _sut = new SignatureAlgorithmFactory();
+            FakeFactory.Create(out _hashAlgorithmFactory);
+            _sut = new SignatureAlgorithmFactory(_hashAlgorithmFactory);
         }
 
         public class Create : SignatureAlgorithmFactoryTests {
@@ -32,13 +34,9 @@ namespace Dalion.HttpMessageSigning {
             }
             
             [Fact]
-            public void CreatesAlgorithmWithExpectedKey() {
+            public void CreatesExpectedAlgorithm() {
                 var actual = _sut.Create(SignatureAlgorithm.HMAC, HashAlgorithm.SHA256, _secret);
-
-                actual.Should().BeAssignableTo<RealSignatureAlgorithm>();
-                var expectedSigningKey = new byte[] {0x73, 0x33, 0x63, 0x72, 0x33, 0x74};
-                actual.As<RealSignatureAlgorithm>().Key.Should().BeEquivalentTo(expectedSigningKey);
-                actual.As<RealSignatureAlgorithm>().Name.Should().BeEquivalentTo("HMACSHA256");
+                actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
             }
         }
     }
