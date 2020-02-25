@@ -7,13 +7,11 @@ namespace Dalion.HttpMessageSigning.Validation {
     /// </summary>
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     public class Client : IEquatable<Client> {
-        public Client(KeyId id, Secret secret, HashAlgorithm hashAlgorithm, params Claim[] claims) {
+        public Client(KeyId id, ISignatureAlgorithm signatureAlgorithm, params Claim[] claims) {
             if (string.IsNullOrEmpty(id)) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
-            if (hashAlgorithm == HashAlgorithm.None) throw new ArgumentException("A hash algorithm must be specified.", nameof(hashAlgorithm));
-            HashAlgorithm = hashAlgorithm;
             Claims = claims ?? Array.Empty<Claim>();
             Id = id;
-            Secret = secret ?? throw new ArgumentNullException(nameof(secret));
+            SignatureAlgorithm = signatureAlgorithm ?? throw new ArgumentNullException(nameof(signatureAlgorithm));
         }
 
         /// <summary>
@@ -22,15 +20,9 @@ namespace Dalion.HttpMessageSigning.Validation {
         public KeyId Id { get; }
 
         /// <summary>
-        /// Gets the secret of the client which can be used to validate the signature.
+        /// Gets or sets the <see cref="Dalion.HttpMessageSigning.ISignatureAlgorithm"/> that is used to verify the signature.
         /// </summary>
-        /// <remarks>For symmetric signature algorithms, this is the shared key. For asymmetric signature algorithms, this value represents the public key of the client.</remarks>
-        public Secret Secret { get; }
-        
-        /// <summary>
-        /// Gets the algorithm that is used to create the hash value.
-        /// </summary>
-        public HashAlgorithm HashAlgorithm { get; }
+        public ISignatureAlgorithm SignatureAlgorithm { get; }
 
         /// <summary>
         /// Gets the additional claims that the validated principal will have upon successful signature validation.

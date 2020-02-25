@@ -36,10 +36,8 @@ namespace Dalion.HttpMessageSigning.Signing {
             public Create() {
                 _signingSettings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
-                    ClientKey = new ClientKey {
-                        Id = new KeyId("client1"),
-                        Secret = new HMACSecret("s3cr3t")
-                    },
+                    KeyId = new KeyId("client1"),
+                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA512),
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
@@ -57,7 +55,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public void GivenInvalidSettings_ThrowsValidationException() {
-                _signingSettings.ClientKey = null; // Make invalid
+                _signingSettings.KeyId = KeyId.Empty; // Make invalid
                 Action act = () => _sut.Create(_signingSettings);
                 act.Should().Throw<ValidationException>();
             }

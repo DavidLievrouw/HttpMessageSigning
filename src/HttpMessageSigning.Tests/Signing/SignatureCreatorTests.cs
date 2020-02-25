@@ -9,14 +9,13 @@ using Xunit;
 namespace Dalion.HttpMessageSigning.Signing {
     public class SignatureCreatorTests {
         private readonly ISigningStringComposer _signingStringComposer;
-        private readonly ISignatureAlgorithmFactory _signatureAlgorithmFactory;
         private readonly IBase64Converter _base64Converter;
         private readonly IHttpMessageSigningLogger<SignatureCreator> _logger;
         private readonly SignatureCreator _sut;
 
         public SignatureCreatorTests() {
-            FakeFactory.Create(out _base64Converter, out _signatureAlgorithmFactory, out _signingStringComposer, out _logger);
-            _sut = new SignatureCreator(_signingStringComposer, _signatureAlgorithmFactory, _base64Converter, _logger);
+            FakeFactory.Create(out _base64Converter, out _signingStringComposer, out _logger);
+            _sut = new SignatureCreator(_signingStringComposer, _base64Converter, _logger);
         }
 
         public class CreateSignature : SignatureCreatorTests {
@@ -31,12 +30,8 @@ namespace Dalion.HttpMessageSigning.Signing {
                 };
                 _settings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
-                    SignatureAlgorithm = SignatureAlgorithm.RSA,
-                    HashAlgorithm = HashAlgorithm.SHA512,
-                    ClientKey = new ClientKey {
-                        Id = new KeyId("client1"),
-                        Secret = new HMACSecret("s3cr3t")
-                    },
+                    KeyId = new KeyId("client1"),
+                    SignatureAlgorithm = A.Fake<ISignatureAlgorithm>(),
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
@@ -61,7 +56,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public void GivenInvalidSettings_ThrowsValidationException() {
-                _settings.ClientKey = null; // Make invalid
+                _settings.KeyId = KeyId.Empty; // Make invalid
                 Action act = () => _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
                 act.Should().Throw<ValidationException>();
             }
@@ -72,12 +67,8 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _signingStringComposer.Compose(_httpRequest, _settings, _timeOfSigning))
                     .Returns(composedString);
 
-                var hashAlgorithm = A.Fake<ISignatureAlgorithm>();
-                A.CallTo(() => _signatureAlgorithmFactory.Create(_settings.ClientKey.Secret, _settings.HashAlgorithm))
-                    .Returns(hashAlgorithm);
-
                 var signatureHash = new byte[] {0x03, 0x04};
-                A.CallTo(() => hashAlgorithm.ComputeHash(composedString))
+                A.CallTo(() => _settings.SignatureAlgorithm.ComputeHash(composedString))
                     .Returns(signatureHash);
 
                 var signatureString = "xyz=";
@@ -92,12 +83,16 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void ReturnsSignatureWithExpectedKeyId() {
                 var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
-                actual.KeyId.Should().Be(_settings.ClientKey.Id);
+                actual.KeyId.Should().Be(_settings.KeyId);
             }
 
             [Fact]
             public void ReturnsSignatureWithExpectedAlgorithm() {
+                A.CallTo(() => _settings.SignatureAlgorithm.Name).Returns("RSA");
+                A.CallTo(() => _settings.SignatureAlgorithm.HashAlgorithm).Returns(HashAlgorithm.SHA512);
+                
                 var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
+                
                 actual.Algorithm.Should().Be("rsa-sha512");
             }
 

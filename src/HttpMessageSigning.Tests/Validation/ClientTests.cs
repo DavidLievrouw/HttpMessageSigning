@@ -8,20 +8,14 @@ namespace Dalion.HttpMessageSigning.Validation {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
-            public void DoesNotAcceptNullOrEmptyIds(string nullOrEmpty) {
-                Action act = () => new Client((KeyId)nullOrEmpty, (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
+            public void DoesNotAcceptNullOrEmptyKeyIds(string nullOrEmpty) {
+                Action act = () => new Client((KeyId)nullOrEmpty, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
                 act.Should().Throw<ArgumentException>();
             }
-
+            
             [Fact]
-            public void DoesNotAcceptNullSecrets() {
-                Action act = () => new Client((KeyId)"id1", null, HashAlgorithm.SHA256);
-                act.Should().Throw<ArgumentException>();
-            }
-
-            [Fact]
-            public void DoesNotAcceptNoneHashAlgorithm() {
-                Action act = () => new Client((KeyId)"id1", (HMACSecret)"s3cr3t", HashAlgorithm.None);
+            public void DoesNotAcceptNullSignatureAlgorithm() {
+                Action act = () => new Client((KeyId)"id1", null);
                 act.Should().Throw<ArgumentException>();
             }
         }
@@ -29,8 +23,8 @@ namespace Dalion.HttpMessageSigning.Validation {
         public class Equality : ClientTests {
             [Fact]
             public void WhenIdIsTheSame_AreEqual() {
-                var first = new Client((KeyId)"id1", (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
-                var second = new Client((KeyId)"id1", (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
+                var first = new Client((KeyId)"id1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
+                var second = new Client((KeyId)"id1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
 
                 first.Equals(second).Should().BeTrue();
                 first.GetHashCode().Should().Be(second.GetHashCode());
@@ -38,8 +32,8 @@ namespace Dalion.HttpMessageSigning.Validation {
 
             [Fact]
             public void WhenIdIsTheSame_AndTheOtherPropertiesAreDifferent_AreEqual() {
-                var first = new Client((KeyId)"id1", (HMACSecret)"somethingElse", HashAlgorithm.SHA512);
-                var second = new Client((KeyId)"id1", (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
+                var first = new Client((KeyId)"id1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
+                var second = new Client((KeyId)"id1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA512), new Claim("c1", "v1"));
 
                 first.Equals(second).Should().BeTrue();
                 first.GetHashCode().Should().Be(second.GetHashCode());
@@ -47,15 +41,15 @@ namespace Dalion.HttpMessageSigning.Validation {
 
             [Fact]
             public void WhenIdIsTheSame_ButDifferentlyCased_AreNotEqual() {
-                var first = new Client((KeyId)"id1", (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
-                var second = new Client((KeyId)"Id1", (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
+                var first = new Client((KeyId)"id1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
+                var second = new Client((KeyId)"Id1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
 
                 first.Equals(second).Should().BeFalse();
             }
 
             [Fact]
             public void IsNotEqualToANonKeyStoreEntry() {
-                var first = new Client((KeyId)"id1", (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
+                var first = new Client((KeyId)"id1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
                 var second = new object();
 
                 first.Equals(second).Should().BeFalse();
@@ -63,15 +57,15 @@ namespace Dalion.HttpMessageSigning.Validation {
 
             [Fact]
             public void SupportsInheritance() {
-                var first = new Client((KeyId)"id1", (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
-                var second = new InheritedClient((KeyId)"id1", (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
+                var first = new Client((KeyId)"id1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
+                var second = new InheritedClient((KeyId)"id1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
 
                 first.Equals(second).Should().BeTrue();
                 first.GetHashCode().Should().Be(second.GetHashCode());
             }
 
             public class InheritedClient : Client {
-                public InheritedClient(KeyId id, Secret secret, HashAlgorithm hashAlgorithm) : base(id, secret, hashAlgorithm) { }
+                public InheritedClient(KeyId id, ISignatureAlgorithm signatureAlgorithm) : base(id, signatureAlgorithm) { }
             }
         }
 
@@ -79,7 +73,7 @@ namespace Dalion.HttpMessageSigning.Validation {
             private readonly Client _sut;
 
             public ToStringRepresentation() {
-                _sut = new Client((KeyId)"id1", (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
+                _sut = new Client((KeyId)"id1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
             }
 
             [Fact]

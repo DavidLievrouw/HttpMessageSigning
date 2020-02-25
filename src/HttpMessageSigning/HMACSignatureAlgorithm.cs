@@ -4,15 +4,26 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace Dalion.HttpMessageSigning {
-    internal class HMACSignatureAlgorithm : ISignatureAlgorithm {
+    /// <summary>
+    /// Represents an HMAC algorithm that is used to sign a request, or to validate a signature.
+    /// </summary>
+    public class HMACSignatureAlgorithm : ISignatureAlgorithm {
         private readonly KeyedHashAlgorithm _realAlgorithm;
         
-        public HMACSignatureAlgorithm(HashAlgorithm hashAlgorithm, string secret) {
+        public HMACSignatureAlgorithm(string secret, HashAlgorithm hashAlgorithm) {
             if (secret == null) throw new ArgumentNullException(nameof(secret));
             var algorithmName = $"HMAC{hashAlgorithm}";
+            HashAlgorithm = hashAlgorithm;
+            Secret = secret;
             _realAlgorithm = HMAC.Create(algorithmName);
             _realAlgorithm.Key = Encoding.UTF8.GetBytes(secret);
         }
+
+        public string Secret { get; }
+        
+        public string Name => "HMAC";
+        
+        public HashAlgorithm HashAlgorithm { get; }
 
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);

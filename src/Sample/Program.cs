@@ -22,21 +22,17 @@ namespace Sample {
         }
 
         public static void ConfigureServices(IServiceCollection services) {
-            
             services
                 .AddLogging(configure => configure.AddConsole())
                 .AddHttpMessageSigning(provider => new SigningSettings {
-                    ClientKey = new ClientKey {
-                        Id = new KeyId("HttpMessageSigningSample"),
-                        Secret = new HMACSecret("yumACY64r%hm")
-                    }
+                    KeyId = new KeyId("HttpMessageSigningSample"),
+                    SignatureAlgorithm = new HMACSignatureAlgorithm("yumACY64r%hm", HashAlgorithm.SHA256)
                 })
                 .AddHttpMessageSignatureValidation(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
                         new KeyId("HttpMessageSigningSample"),
-                        new HMACSecret("yumACY64r%hm"),
-                        HashAlgorithm.SHA256,
+                        new HMACSignatureAlgorithm("yumACY64r%hm", HashAlgorithm.SHA256),
                         new Claim(Constants.ClaimTypes.Role, "users.read")));
                     return clientStore;
                 });

@@ -12,9 +12,9 @@ namespace Dalion.HttpMessageSigning {
         public CompositionTests() {
             var services = new ServiceCollection()
                 .AddLogging()
-                .AddHttpMessageSigning(new ClientKey {
-                    Id = new KeyId("client1"),
-                    Secret = new HMACSecret("s3cr3t")
+                .AddHttpMessageSigning(provider => new SigningSettings {
+                    KeyId = new KeyId("client1"),
+                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA384)
                 })
                 .AddHttpMessageSignatureValidation(new InMemoryClientStore());
             _serviceProvider = services.BuildServiceProvider();

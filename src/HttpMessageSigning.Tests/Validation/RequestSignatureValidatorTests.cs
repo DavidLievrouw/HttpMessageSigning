@@ -39,7 +39,7 @@ namespace Dalion.HttpMessageSigning.Validation {
                 A.CallTo(() => _signatureParser.Parse(_request))
                     .Returns(signature);
 
-                var client = new Client(signature.KeyId, (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
+                var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 
@@ -55,7 +55,7 @@ namespace Dalion.HttpMessageSigning.Validation {
                 A.CallTo(() => _signatureParser.Parse(_request))
                     .Returns(signature);
 
-                var client = new Client(signature.KeyId, (HMACSecret)"s3cr3t", HashAlgorithm.SHA256);
+                var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 

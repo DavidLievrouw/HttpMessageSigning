@@ -29,10 +29,8 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 };
                 _settings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
-                    ClientKey = new ClientKey {
-                        Id = new KeyId("client1"),
-                        Secret = new HMACSecret("s3cr3t")
-                    },
+                    KeyId = new KeyId("client1"),
+                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA512),
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
@@ -61,7 +59,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             [Fact]
             public void GivenInvalidSettings_ThrowsValidationException() {
-                _settings.ClientKey = null; // Make invalid
+                _settings.KeyId = KeyId.Empty; // Make invalid
                 Action act = () => _sut.Compose(_httpRequest, _settings, _timeOfComposing);
                 act.Should().Throw<ValidationException>();
             }
@@ -95,7 +93,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             
             [Fact]
             public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_PrependsCreatedToHeaders_ButAfterRequestTargetHeader() {
-                _settings.SignatureAlgorithm = (SignatureAlgorithm) 999;
+                _settings.SignatureAlgorithm = new NotSupportedSignatureAlgorithm();
                 
                 SigningSettings interceptedSettings = null;
                 A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))

@@ -57,8 +57,8 @@ namespace Dalion.HttpMessageSigning.SigningString {
             return sb.ToString().Trim();
         }
 
-        private static bool ShouldHaveDateHeader(SignatureAlgorithm signatureAlgorithm) {
-            var signatureAlgorithmString = signatureAlgorithm.ToString().ToLowerInvariant();
+        private static bool ShouldHaveDateHeader(ISignatureAlgorithm signatureAlgorithm) {
+            var signatureAlgorithmString = signatureAlgorithm.Name.ToLowerInvariant();
             return signatureAlgorithmString.StartsWith("rsa") || 
                    signatureAlgorithmString.StartsWith("hmac") ||
                    signatureAlgorithmString.StartsWith("ecdsa");

@@ -4,28 +4,33 @@ using System.Text;
 
 namespace Dalion.HttpMessageSigning {
     internal class RSASignatureAlgorithm : ISignatureAlgorithm {
-        private readonly IHashAlgorithm _hashAlgorithm;
         private readonly RSACryptoServiceProvider _rsaForEncrypt;
         private readonly RSACryptoServiceProvider _rsaForSign;
+        private readonly IHashAlgorithm _hashAlgorithm;
 
-        public RSASignatureAlgorithm(IHashAlgorithm hashAlgorithm, RSAParameters publicParameters) {
-            _hashAlgorithm = hashAlgorithm ?? throw new ArgumentNullException(nameof(hashAlgorithm));
+        public RSASignatureAlgorithm(HashAlgorithm hashAlgorithm, RSAParameters publicParameters) {
+            HashAlgorithm = hashAlgorithm;
+            _hashAlgorithm = new HashAlgorithmFactory().Create(hashAlgorithm);
             _rsaForEncrypt = new RSACryptoServiceProvider();
             _rsaForEncrypt.ImportParameters(publicParameters);
         }
         
-        public RSASignatureAlgorithm(IHashAlgorithm hashAlgorithm, RSAParameters publicParameters, RSAParameters privateParameters) {
-            _hashAlgorithm = hashAlgorithm ?? throw new ArgumentNullException(nameof(hashAlgorithm));
+        public RSASignatureAlgorithm(HashAlgorithm hashAlgorithm, RSAParameters publicParameters, RSAParameters privateParameters) {
+            HashAlgorithm = hashAlgorithm;
             _rsaForEncrypt = new RSACryptoServiceProvider();
             _rsaForEncrypt.ImportParameters(publicParameters);
             _rsaForSign = new RSACryptoServiceProvider();
             _rsaForSign.ImportParameters(privateParameters);
         }
 
+        public HashAlgorithm HashAlgorithm { get; }
+        
         public void Dispose() {
             _rsaForEncrypt?.Dispose();
             _rsaForSign?.Dispose();
         }
+
+        public string Name => "RSA";
 
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
