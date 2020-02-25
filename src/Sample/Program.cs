@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,15 +13,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using HashAlgorithm = Dalion.HttpMessageSigning.HashAlgorithm;
 
 namespace Sample {
     public class Program {
         private static async Task Main(string[] args) {
-            /*using (var serviceProvider = new ServiceCollection().Configure(ConfigureServicesForHMAC).BuildServiceProvider()) {
+            using (var serviceProvider = new ServiceCollection().Configure(ConfigureServicesForHMAC).BuildServiceProvider()) {
                 var authParam = await SampleSigning(serviceProvider);
                 await SampleValidating(serviceProvider, authParam);
-            }*/
+            }
 
             using (var serviceProvider = new ServiceCollection().Configure(ConfigureServicesForRSA).BuildServiceProvider()) {
                 var authParam = await SampleSigning(serviceProvider);
@@ -49,10 +47,6 @@ namespace Sample {
 
         public static void ConfigureServicesForRSA(IServiceCollection services) {
             var cert = new X509Certificate2(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
-            /*var publicKeyProvider = (RSACryptoServiceProvider) cert.PublicKey.Key;
-            var privateKeyProvider = (RSACryptoServiceProvider) cert.PrivateKey;
-            var publicKeyParameters = publicKeyProvider.ExportParameters(false);
-            var privateKeyParameters = privateKeyProvider.ExportParameters(true);*/
             var publicKey = cert.GetRSAPublicKey();
             var publicKeyParameters = publicKey.ExportParameters(false);
             var privateKey = cert.GetRSAPrivateKey();
