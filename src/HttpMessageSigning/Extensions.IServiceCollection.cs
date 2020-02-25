@@ -142,16 +142,19 @@ namespace Dalion.HttpMessageSigning {
                 .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<IHashAlgorithmFactory, HashAlgorithmFactory>()
                 .AddSingleton<IKeyedHashAlgorithmFactory, KeyedHashAlgorithmFactory>()
-                .AddSingleton<IAdditionalSignatureHeadersSetter>(prov => new AdditionalSignatureHeadersSetter(
-                    new DateSignatureHeaderEnsurer(), 
-                    new DigestSignatureHeaderEnsurer(
-                        prov.GetRequiredService<IHashAlgorithmFactory>(),
-                        prov.GetRequiredService<IBase64Converter>())))
                 .AddSingleton<ISignatureCreator, SignatureCreator>()
                 .AddSingleton<IAuthorizationHeaderParamCreator, AuthorizationHeaderParamCreator>()
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
-                .AddSingleton<IRequestSignerFactory, RequestSignerFactory>()
+                .AddSingleton<IRequestSignerFactory>(prov => new RequestSignerFactory(
+                    prov.GetRequiredService<ISignatureCreator>(),
+                    prov.GetRequiredService<IAuthorizationHeaderParamCreator>(),
+                    new DateSignatureHeaderEnsurer(),
+                    new DigestSignatureHeaderEnsurer(
+                        prov.GetRequiredService<IHashAlgorithmFactory>(),
+                        prov.GetRequiredService<IBase64Converter>()),
+                    prov.GetRequiredService<ISystemClock>(),
+                    prov.GetRequiredService<IHttpMessageSigningLogger<RequestSigner>>()))
                 .AddSingleton(prov => {
                     var factory = prov.GetRequiredService<IRequestSignerFactory>();
                     return factory.Create(signingSettingsFactory(prov));

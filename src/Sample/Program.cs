@@ -18,7 +18,7 @@ namespace Sample {
                     Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json)
                 };
                 var requestSigner = serviceProvider.GetRequiredService<IRequestSigner>();
-                requestSigner.Sign(request);
+                await requestSigner.Sign(request);
                 using (var httpClient = new HttpClient()) {
                     var response = await httpClient.SendAsync(request);
                     Console.WriteLine("Response:");
