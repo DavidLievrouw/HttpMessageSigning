@@ -13,13 +13,13 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public class Create : HeaderAppenderFactoryTests {
-            private readonly HttpRequestMessage _httpRequest;
+            private readonly HttpRequestForSigning _httpRequest;
             private readonly SigningSettings _settings;
             private readonly DateTimeOffset _timeOfComposing;
 
             public Create() {
                 _timeOfComposing = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.FromHours(1));
-                _httpRequest = new HttpRequestMessage {
+                _httpRequest = new HttpRequestForSigning {
                     Method = HttpMethod.Post,
                     RequestUri = new Uri("http://dalion.eu/api/resource/id1")
                 };

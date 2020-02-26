@@ -30,7 +30,9 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 Expires = signature.Expires.Value - signature.Created.Value,
                 DigestHashAlgorithm = HashAlgorithmName.SHA256 // ToDo: Does not make sense here. 
             };
-            var signingString = _signingStringComposer.Compose(signedRequest, signingSettings, signature.Created.Value);
+
+            var requestForSigning = signedRequest.ToRequestForSigning();
+            var signingString = _signingStringComposer.Compose(requestForSigning, signingSettings, signature.Created.Value);
             var signatureHash = signingSettings.SignatureAlgorithm.ComputeHash(signingString);
             var signatureString = _base64Converter.ToBase64(signatureHash);
 

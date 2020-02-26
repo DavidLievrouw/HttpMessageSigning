@@ -5,11 +5,11 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     public class DefaultHeaderAppenderTests {
-        private readonly HttpRequestMessage _httpRequest;
+        private readonly HttpRequestForSigning _httpRequest;
         private readonly DefaultHeaderAppender _sut;
 
         public DefaultHeaderAppenderTests() {
-            _httpRequest = new HttpRequestMessage {
+            _httpRequest = new HttpRequestForSigning {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri("http://dalion.eu/api/resource/id1")
             };

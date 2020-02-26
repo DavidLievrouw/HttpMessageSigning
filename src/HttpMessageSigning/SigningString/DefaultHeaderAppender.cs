@@ -4,9 +4,9 @@ using System.Net.Http;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class DefaultHeaderAppender : IHeaderAppender {
-        private readonly HttpRequestMessage _request;
+        private readonly HttpRequestForSigning _request;
         
-        public DefaultHeaderAppender(HttpRequestMessage request) {
+        public DefaultHeaderAppender(HttpRequestForSigning request) {
             _request = request ?? throw new ArgumentNullException(nameof(request));
         }
 

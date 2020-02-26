@@ -1,11 +1,10 @@
 using System;
-using System.Net.Http;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class DateHeaderAppender : IHeaderAppender {
-        private readonly HttpRequestMessage _request;
+        private readonly HttpRequestForSigning _request;
         
-        public DateHeaderAppender(HttpRequestMessage request) {
+        public DateHeaderAppender(HttpRequestForSigning request) {
             _request = request ?? throw new ArgumentNullException(nameof(request));
         }
 

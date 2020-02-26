@@ -20,14 +20,15 @@ namespace Dalion.HttpMessageSigning.Signing {
         }
 
         public class CreateSignature : SignatureCreatorTests {
-            private readonly HttpRequestMessage _httpRequest;
+            private readonly HttpRequestMessage _httpRequestMessage;
             private readonly SigningSettings _settings;
             private readonly DateTimeOffset _timeOfSigning;
 
             public CreateSignature() {
-                _httpRequest = new HttpRequestMessage {
+                _httpRequestMessage = new HttpRequestMessage {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri("http://dalion.eu/api/resource/id1")
+                    RequestUri = new Uri("http://dalion.eu/api/resource/id1"),
+                    Headers = {{"H1", "v1"}}
                 };
                 _settings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
@@ -51,21 +52,38 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public void GivenNullSettings_ThrowsArgumentNullException() {
-                Action act = () => _sut.CreateSignature(_httpRequest, null, _timeOfSigning);
+                Action act = () => _sut.CreateSignature(_httpRequestMessage, null, _timeOfSigning);
                 act.Should().Throw<ArgumentNullException>();
             }
 
             [Fact]
             public void GivenInvalidSettings_ThrowsValidationException() {
                 _settings.KeyId = KeyId.Empty; // Make invalid
-                Action act = () => _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
+                Action act = () => _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
                 act.Should().Throw<ValidationException>();
+            }
+
+            [Fact]
+            public void CalculatesSignatureForExpectedRequestForSigning() {
+                var composedString = "{the composed string}";
+                HttpRequestForSigning interceptedRequest = null;
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings, _timeOfSigning))
+                    .Invokes(call => interceptedRequest = call.GetArgument<HttpRequestForSigning>(0))
+                    .Returns(composedString);
+
+                _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+
+                interceptedRequest.Should().BeEquivalentTo(new HttpRequestForSigning {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri("http://dalion.eu/api/resource/id1"),
+                    Headers = {{"H1", "v1"}}
+                });
             }
 
             [Fact]
             public void ReturnsSignatureWithCalculatedSignatureString() {
                 var composedString = "{the composed string}";
-                A.CallTo(() => _signingStringComposer.Compose(_httpRequest, _settings, _timeOfSigning))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings, _timeOfSigning))
                     .Returns(composedString);
 
                 var signatureHash = new byte[] {0x03, 0x04};
@@ -76,14 +94,14 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _base64Converter.ToBase64(signatureHash))
                     .Returns(signatureString);
 
-                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
+                var actual = _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
 
                 actual.String.Should().Be(signatureString);
             }
 
             [Fact]
             public void ReturnsSignatureWithExpectedKeyId() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
+                var actual = _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
                 actual.KeyId.Should().Be(_settings.KeyId);
             }
 
@@ -91,27 +109,27 @@ namespace Dalion.HttpMessageSigning.Signing {
             public void ReturnsSignatureWithExpectedAlgorithm() {
                 A.CallTo(() => _settings.SignatureAlgorithm.Name).Returns("RSA");
                 A.CallTo(() => _settings.SignatureAlgorithm.HashAlgorithm).Returns(HashAlgorithmName.SHA512);
-                
-                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
-                
+
+                var actual = _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+
                 actual.Algorithm.Should().Be("rsa-sha512");
             }
 
             [Fact]
             public void ReturnsSignatureWithExpectedCreatedValue() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
+                var actual = _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
                 actual.Created.Should().Be(_timeOfSigning);
             }
 
             [Fact]
             public void ReturnsSignatureWithExpectedExpiresValue() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
+                var actual = _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
                 actual.Expires.Should().Be(_timeOfSigning.Add(_settings.Expires));
             }
 
             [Fact]
             public void ReturnsSignatureWithExpectedHeaders() {
-                var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
+                var actual = _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
                 actual.Headers.Should().BeEquivalentTo(
                     new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,

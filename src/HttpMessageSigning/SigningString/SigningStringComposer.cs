@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 
 namespace Dalion.HttpMessageSigning.SigningString {
@@ -11,7 +10,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _headerAppenderFactory = headerAppenderFactory ?? throw new ArgumentNullException(nameof(headerAppenderFactory));
         }
 
-        public string Compose(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfComposing) {
+        public string Compose(HttpRequestForSigning request, SigningSettings settings, DateTimeOffset timeOfComposing) {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
 
