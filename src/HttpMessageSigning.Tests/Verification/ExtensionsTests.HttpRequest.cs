@@ -107,32 +107,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     });
                     actual.Headers.Should().BeEquivalentTo(expectedHeaders);
                 }
-                
-                [Fact]
-                public void SetsExpires() {
-                    var actual = _httpRequest.ToRequestForSigning(_signature, _client);
 
-                    actual.Expires.Should().Be(TimeSpan.FromMinutes(3));
-                }
-                
-                [Fact]
-                public void WhenCreatedIsNull_SetsExpiresToNull() {
-                    _signature.Created = null;
-                    
-                    var actual = _httpRequest.ToRequestForSigning(_signature, _client);
-
-                    actual.Expires.Should().BeNull();
-                }
-                
-                [Fact]
-                public void WhenExpiresIsNull_SetsExpiresToNull() {
-                    _signature.Expires = null;
-                    
-                    var actual = _httpRequest.ToRequestForSigning(_signature, _client);
-
-                    actual.Expires.Should().BeNull();
-                }
-                
                 [Fact]
                 public void SetsSignatureAlgorithm() {
                     var actual = _httpRequest.ToRequestForSigning(_signature, _client);

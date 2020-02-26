@@ -7,6 +7,5 @@ namespace Dalion.HttpMessageSigning {
         public Uri RequestUri { get; set; }
         public HeaderDictionary Headers { get; set; } = new HeaderDictionary();
         public string SignatureAlgorithmName { get; set; }
-        public TimeSpan? Expires { get; set; }
     }
 }

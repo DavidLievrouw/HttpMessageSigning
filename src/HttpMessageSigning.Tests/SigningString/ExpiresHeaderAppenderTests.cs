@@ -7,25 +7,16 @@ namespace Dalion.HttpMessageSigning.SigningString {
         private readonly HttpRequestForSigning _request;
         private readonly ExpiresHeaderAppender _sut;
         private readonly DateTimeOffset _timeOfComposing;
+        private readonly TimeSpan _expires;
 
         public ExpiresHeaderAppenderTests() {
             _timeOfComposing = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.FromHours(1));
-            _request = new HttpRequestForSigning {
-                Expires = TimeSpan.FromMinutes(5)
-            };
-            _sut = new ExpiresHeaderAppender(_request, _timeOfComposing);
+            _expires = TimeSpan.FromMinutes(10);
+            _request = new HttpRequestForSigning();
+            _sut = new ExpiresHeaderAppender(_request, _timeOfComposing, _expires);
         }
 
         public class BuildStringToAppend : ExpiresHeaderAppenderTests {
-            [Fact]
-            public void WhenExpiresHasNoValue_ReturnsEmptyString() {
-                _request.Expires = null;
-                
-                var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Expires);
-
-                actual.Should().NotBeNull().And.BeEmpty();
-            }
-            
             [Theory]
             [InlineData("rsa")]
             [InlineData("hmac")]
@@ -45,7 +36,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 
                 var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Expires);
 
-                var expected = "\n(expires): 1582539914";
+                var expected = "\n(expires): 1582540214";
                 actual.Should().Be(expected);
             }
         }

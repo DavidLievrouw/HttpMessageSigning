@@ -22,10 +22,6 @@ namespace Dalion.HttpMessageSigning.Verification {
                 requestMessage.Headers[header.Key] = header.Value;
             }
 
-            if (signature.Expires.HasValue && signature.Created.HasValue) {
-                requestMessage.Expires = signature.Expires.Value - signature.Created.Value;
-            }
-
             return requestMessage;
         }
     }

@@ -6,6 +6,7 @@ using Dalion.HttpMessageSigning.Logging;
 using Dalion.HttpMessageSigning.SigningString;
 using FakeItEasy;
 using FluentAssertions;
+using KellermanSoftware.CompareNetObjects.TypeComparers;
 using Microsoft.Extensions.Primitives;
 using Xunit;
 
@@ -78,7 +79,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             public void CalculatesSignatureForExpectedRequestForSigning() {
                 var composedString = "{the composed string}";
                 HttpRequestForSigning interceptedRequest = null;
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning, _settings.Expires))
                     .Invokes(call => interceptedRequest = call.GetArgument<HttpRequestForSigning>(0))
                     .Returns(composedString);
 
@@ -88,7 +89,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                     Method = HttpMethod.Post,
                     RequestUri = new Uri("http://dalion.eu/api/resource/id1"),
                     Headers = new HeaderDictionary(new Dictionary<string, StringValues> {{"H1", "v1"}}),
-                    Expires = TimeSpan.FromMinutes(5),
                     SignatureAlgorithmName = "Custom"
                 });
             }
@@ -96,7 +96,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void ReturnsSignatureWithCalculatedSignatureString() {
                 var composedString = "{the composed string}";
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning, _settings.Expires))
                     .Returns(composedString);
 
                 var signatureHash = new byte[] {0x03, 0x04};

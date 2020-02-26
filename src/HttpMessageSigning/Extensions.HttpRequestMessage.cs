@@ -13,7 +13,6 @@ namespace Dalion.HttpMessageSigning {
             var requestForSigning = new HttpRequestForSigning {
                 Method = httpRequestMessage.Method,
                 RequestUri = httpRequestMessage.RequestUri,
-                Expires = signingSettings.Expires,
                 SignatureAlgorithmName = signingSettings.SignatureAlgorithm.Name
             };
             

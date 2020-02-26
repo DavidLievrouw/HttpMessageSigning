@@ -90,13 +90,6 @@ namespace Dalion.HttpMessageSigning {
                 }
                 
                 [Fact]
-                public void SetsExpires() {
-                    var actual = _httpRequestMessage.ToRequestForSigning(_signingSettings);
-
-                    actual.Expires.Should().Be(_signingSettings.Expires);
-                }
-                
-                [Fact]
                 public void SetsSignatureAlgorithm() {
                     var actual = _httpRequestMessage.ToRequestForSigning(_signingSettings);
 

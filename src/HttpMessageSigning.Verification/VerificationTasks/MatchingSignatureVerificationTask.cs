@@ -20,8 +20,9 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             if (!signature.Expires.HasValue) {
                 throw new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.");
             }
-            
-            var signingString = _signingStringComposer.Compose(signedRequest, signature.Headers, signature.Created.Value);
+
+            var expires = signature.Expires.Value - signature.Created.Value;
+            var signingString = _signingStringComposer.Compose(signedRequest, signature.Headers, signature.Created.Value, expires);
             var signatureHash = client.SignatureAlgorithm.ComputeHash(signingString);
             var signatureString = _base64Converter.ToBase64(signatureHash);
 
