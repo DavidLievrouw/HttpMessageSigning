@@ -1,8 +1,9 @@
 using System;
 using System.Net.Http;
+using System.Net.Mime;
+using System.Text;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning {
@@ -15,7 +16,10 @@ namespace Dalion.HttpMessageSigning {
                     _httpRequestMessage = new HttpRequestMessage {
                         Method = HttpMethod.Post,
                         RequestUri = new Uri("https://dalion.eu:9000/tests/api/rsc1?query=1&cache=false"),
-                        Headers = {{"H1", "v1"}, {"H2", new[] {"v2", "v3"}}, {"H3", ""}}
+                        Headers = {{"H1", "v1"}, {"H2", new[] {"v2", "v3"}}, {"H3", ""}},
+                        Content = new StringContent("abc123", Encoding.UTF8, MediaTypeNames.Text.Plain) {
+                            Headers = {{"Category", "42"}}
+                        }
                     };
                 }
 
@@ -56,9 +60,17 @@ namespace Dalion.HttpMessageSigning {
                     var expectedHeaders = new HeaderDictionary {
                         {"H1", "v1"},
                         {"H2", new[] {"v2", "v3"}},
-                        {"H3", ""}
+                        {"H3", ""},
+                        {"Category", "42"}
                     };
                     actual.Headers.Should().BeEquivalentTo(expectedHeaders);
+                }
+
+                [Fact]
+                public void CopiesContentHeadersToHeaders() {
+                    var actual = _httpRequestMessage.ToRequestForSigning();
+
+                    actual.Headers.Should().Contain(_ => _.Key == "Category");
                 }
             }
         }
