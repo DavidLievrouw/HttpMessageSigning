@@ -80,7 +80,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 Headers = headerNames.Any() ? headerNames : null,
                 String = signature
             };
-
+            
             try {
                 parsedSignature.Validate();
             }

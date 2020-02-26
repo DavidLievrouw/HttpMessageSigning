@@ -46,6 +46,8 @@ namespace Dalion.HttpMessageSigning.Verification {
                 .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
                 .AddSingleton<ISignatureParser, SignatureParser>()
                 .AddSingleton<IClaimsPrincipalFactory, ClaimsPrincipalFactory>()
+                .AddSingleton<IDefaultSignatureHeadersProvider, DefaultSignatureHeadersProvider>()
+                .AddSingleton<ISignatureSanitizer, SignatureSanitizer>()
                 .AddSingleton(clientStoreFactory)
                 .AddSingleton<ISignatureVerifier>(provider => new SignatureVerifier(
                     new KnownAlgorithmVerificationTask(), 

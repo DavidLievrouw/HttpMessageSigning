@@ -15,11 +15,12 @@ namespace Dalion.HttpMessageSigning.Verification {
         private readonly IClientStore _clientStore;
         private readonly ISignatureParser _signatureParser;
         private readonly ISignatureVerifier _signatureVerifier;
+        private readonly ISignatureSanitizer _signatureSanitizer;
         private readonly RequestSignatureVerifier _sut;
 
         public RequestSignatureVerifierTests() {
-            FakeFactory.Create(out _signatureParser, out _clientStore, out _signatureVerifier, out _claimsPrincipalFactory);
-            _sut = new RequestSignatureVerifier(_signatureParser, _clientStore, _signatureVerifier, _claimsPrincipalFactory);
+            FakeFactory.Create(out _signatureParser, out _clientStore, out _signatureVerifier, out _claimsPrincipalFactory, out _signatureSanitizer);
+            _sut = new RequestSignatureVerifier(_signatureParser, _clientStore, _signatureVerifier, _claimsPrincipalFactory, _signatureSanitizer);
         }
 
         public class VerifySignature : RequestSignatureVerifierTests {
@@ -41,7 +42,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public async Task VerifiesSignatureOfClient_ThatMatchesTheKeyIdFromTheRequest() {
+            public async Task VerifiesSanitizedSignatureOfClient_ThatMatchesTheKeyIdFromTheRequest() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
                 A.CallTo(() => _signatureParser.Parse(A<HttpRequestMessage>.That.Matches(r => r.RequestUri == _expectedUri)))
                     .Returns(signature);
@@ -50,9 +51,13 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 
+                var sanitizedSignature = new Signature {KeyId = new KeyId("app001"), Headers = new[] {new HeaderName("h1")}};
+                A.CallTo(() => _signatureSanitizer.Sanitize(signature, client))
+                    .Returns(sanitizedSignature);
+
                 await _sut.VerifySignature(_request);
 
-                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestMessage>.That.Matches(r => r.RequestUri == _expectedUri), signature, client))
+                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestMessage>.That.Matches(r => r.RequestUri == _expectedUri), sanitizedSignature, client))
                     .MustHaveHappened();
             }
 

@@ -9,13 +9,13 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification {
     public class SignatureVerifierTests {
-        private readonly IVerificationTask _knownAlgorithmVerificationTask;
-        private readonly IVerificationTask _matchingAlgorithmVerificationTask;
-        private readonly IVerificationTask _createdHeaderGuardVerificationTask;
-        private readonly IVerificationTask _expiresHeaderGuardVerificationTask;
         private readonly IVerificationTask _allHeadersPresentVerificationTask;
+        private readonly IVerificationTask _createdHeaderGuardVerificationTask;
         private readonly IVerificationTask _creationTimeVerificationTask;
         private readonly IVerificationTask _expirationTimeVerificationTask;
+        private readonly IVerificationTask _expiresHeaderGuardVerificationTask;
+        private readonly IVerificationTask _knownAlgorithmVerificationTask;
+        private readonly IVerificationTask _matchingAlgorithmVerificationTask;
         private readonly IVerificationTask _matchingSignatureVerificationTask;
         private readonly SignatureVerifier _sut;
 
@@ -56,7 +56,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 Func<Task> act = () => _sut.VerifySignature(null, _signature, _client);
                 act.Should().Throw<ArgumentNullException>();
             }
-            
+
             [Fact]
             public void GivenNullSignature_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.VerifySignature(_signedRequest, null, _client);
@@ -86,7 +86,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 await _sut.VerifySignature(_signedRequest, _signature, _client);
                 A.CallTo(() => _createdHeaderGuardVerificationTask.Verify(_signedRequest, _signature, _client)).MustHaveHappened();
             }
-            
+
             [Fact]
             public async Task VerifiesThatTheExpiresHeaderIsNotIncludedInTheSignatureForCertainSignatureAlgorithms() {
                 await _sut.VerifySignature(_signedRequest, _signature, _client);
