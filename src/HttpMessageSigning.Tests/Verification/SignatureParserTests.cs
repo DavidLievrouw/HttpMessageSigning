@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 if (!string.IsNullOrEmpty(created)) parts.Add("created=" + created);
                 if (!string.IsNullOrEmpty(expires)) parts.Add("expires=" + expires);
                 if (!string.IsNullOrEmpty(headers)) parts.Add("headers=\"" + headers + "\"");
-                if (!string.IsNullOrEmpty(sig)) parts.Add(",signature=\"" + sig + "\"");
+                if (!string.IsNullOrEmpty(sig)) parts.Add("signature=\"" + sig + "\"");
                 return string.Join(",", parts);
             }
 
@@ -108,6 +108,28 @@ namespace Dalion.HttpMessageSigning.Verification {
                 actual.Should().BeEquivalentTo(expected);
             }
 
+            [Fact]
+            public void IgnoresAdditionalSettings() {
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
+                _request.Headers["Authorization"] += ",additional=true";
+                
+                var actual = _sut.Parse(_request);
+
+                var expected = new Signature {
+                    KeyId = new KeyId("app1"),
+                    Algorithm = "rsa-sha256",
+                    Created = _now,
+                    Expires = _expires,
+                    Headers = new[] {
+                        new HeaderName("(request-target)"),
+                        new HeaderName("date"),
+                        new HeaderName("content-length")
+                    },
+                    String = "xyz123=="
+                };
+                actual.Should().BeEquivalentTo(expected);
+            }
+            
             [Fact]
             public void WhenCreatedIsNotSpecified_SetsCreatedToNull() {
                 SetHeader(_request, "app1", "rsa-sha256", null, _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
