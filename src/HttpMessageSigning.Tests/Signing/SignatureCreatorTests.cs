@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Cryptography;
 using Dalion.HttpMessageSigning.Logging;
 using Dalion.HttpMessageSigning.SigningString;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Primitives;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
@@ -76,7 +78,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 interceptedRequest.Should().BeEquivalentTo(new HttpRequestForSigning {
                     Method = HttpMethod.Post,
                     RequestUri = new Uri("http://dalion.eu/api/resource/id1"),
-                    Headers = {{"H1", "v1"}}
+                    Headers = new HeaderDictionary(new Dictionary<string, StringValues> {{"H1", "v1"}})
                 });
             }
 

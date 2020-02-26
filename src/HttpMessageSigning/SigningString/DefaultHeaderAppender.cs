@@ -12,7 +12,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
         public string BuildStringToAppend(HeaderName header) {
             var isPresent = _request.Headers.TryGetValues(header, out var headerValues);
-            var sanitizedHeaderValues = headerValues?.Select(SanitizeHeaderValue)?.ToArray();
+            var sanitizedHeaderValues = headerValues.Select(SanitizeHeaderValue)?.ToArray();
             return isPresent
                 ? "\n" + new Header(header, sanitizedHeaderValues)
                 : string.Empty;

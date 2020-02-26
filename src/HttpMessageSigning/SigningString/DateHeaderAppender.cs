@@ -1,4 +1,7 @@
 using System;
+using System.Globalization;
+using System.Linq;
+using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class DateHeaderAppender : IHeaderAppender {
@@ -9,10 +12,14 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public string BuildStringToAppend(HeaderName header) {
-            var dateValue = _request.Headers.Date;
-            return dateValue.HasValue
-                ? "\n" + new Header(HeaderName.PredefinedHeaderNames.Date, dateValue.Value.ToString("R"))
-                : string.Empty;
+            var dateValues = _request.Headers[HeaderName.PredefinedHeaderNames.Date];
+            
+            if (dateValues == StringValues.Empty) return string.Empty;
+            if (!DateTimeOffset.TryParseExact(dateValues.First(), "R", CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.None, out var dateValue)) {
+                return string.Empty;
+            }
+            
+            return "\n" + new Header(HeaderName.PredefinedHeaderNames.Date, dateValue.ToString("R"));
         }
     }
 }

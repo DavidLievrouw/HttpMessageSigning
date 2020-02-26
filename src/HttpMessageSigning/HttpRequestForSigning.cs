@@ -1,11 +1,10 @@
 using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace Dalion.HttpMessageSigning {
     internal class HttpRequestForSigning {
-        public HttpMethod Method { get; set; }
+        public HttpMethod Method { get; set; } = HttpMethod.Get;
         public Uri RequestUri { get; set; }
-        public HttpRequestHeaders Headers { get; set; } = new HttpRequestMessage().Headers;
+        public HeaderDictionary Headers { get; set; } = new HeaderDictionary();
     }
 }

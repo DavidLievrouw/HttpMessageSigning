@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -27,7 +28,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             try {
-                var requestMessage = request.ToHttpRequestMessage();
+                var requestMessage = new HttpRequestMessage(); // ToDo Get RequestForSigning
                 
                 var signature = _signatureParser.Parse(requestMessage);
                 var client = await _clientStore.Get(signature.KeyId);

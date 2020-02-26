@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning {
@@ -21,12 +23,13 @@ namespace Dalion.HttpMessageSigning {
                             Headers = {{"Category", "42"}}
                         }
                     };
+                    _httpRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
                 }
 
                 [Fact]
-                public void WhenRequestMessageIsNull_ThrowsArgumentNullException() {
-                    Action act = () => Extensions.ToRequestForSigning(null);
-                    act.Should().Throw<ArgumentNullException>();
+                public void GivenNullInput_ReturnsNull() {
+                    var actual = Extensions.ToRequestForSigning(null);
+                    actual.Should().BeNull();
                 }
 
                 [Fact]
@@ -57,12 +60,13 @@ namespace Dalion.HttpMessageSigning {
                 public void CopiesHeaders() {
                     var actual = _httpRequestMessage.ToRequestForSigning();
 
-                    var expectedHeaders = new HeaderDictionary {
+                    var expectedHeaders = new HeaderDictionary(new Dictionary<string, StringValues> {
                         {"H1", "v1"},
                         {"H2", new[] {"v2", "v3"}},
                         {"H3", ""},
-                        {"Category", "42"}
-                    };
+                        {"Category", "42"},
+                        {"Content-Type", "text/html"}
+                    });
                     actual.Headers.Should().BeEquivalentTo(expectedHeaders);
                 }
 
@@ -70,7 +74,8 @@ namespace Dalion.HttpMessageSigning {
                 public void CopiesContentHeadersToHeaders() {
                     var actual = _httpRequestMessage.ToRequestForSigning();
 
-                    actual.Headers.Should().Contain(_ => _.Key == "Category");
+                    actual.Headers.Contains("Category").Should().BeTrue();
+                    actual.Headers.Contains("Content-Type").Should().BeTrue();
                 }
             }
         }

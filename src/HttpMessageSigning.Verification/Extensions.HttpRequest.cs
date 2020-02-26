@@ -5,29 +5,19 @@ using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Dalion.HttpMessageSigning.Verification {
     public static partial class Extensions {
-        internal static HttpRequestMessage ToHttpRequestMessage(this HttpRequest request) {
+        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequest request) {
             if (request == null) return null;
 
-            var requestMessage = new HttpRequestMessage {
-                RequestUri = new Uri(request.GetEncodedUrl(), UriKind.Absolute)
+            var requestMessage = new HttpRequestForSigning {
+                RequestUri = new Uri(request.GetEncodedUrl(), UriKind.Absolute),
+                Method = string.IsNullOrEmpty(request.Method)
+                    ? HttpMethod.Get
+                    : new HttpMethod(request.Method)
             };
 
-            if (!string.IsNullOrEmpty(request.Method)) {
-                requestMessage.Method = new HttpMethod(request.Method);
-            }
-
-            if (requestMessage.Method.SupportsBody() && request.Body != null) {
-                var streamContent = new StreamContent(request.Body);
-                requestMessage.Content = streamContent;
-            }
-
             foreach (var header in request.Headers) {
-                if (!requestMessage.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray())) {
-                    requestMessage.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
-                }
+                requestMessage.Headers[header.Key] = header.Value;
             }
-
-            requestMessage.Headers.Host = requestMessage.RequestUri.Authority;
 
             return requestMessage;
         }
