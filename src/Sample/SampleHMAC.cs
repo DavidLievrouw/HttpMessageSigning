@@ -60,7 +60,13 @@ namespace Sample {
 
             var requestSigner = requestSignerFactory.CreateFor("HttpMessageSigningSampleHMAC");
             await requestSigner.Sign(request);
-
+            
+            using (var httpClient = new HttpClient()) {
+                var response = await httpClient.SendAsync(request);
+                Console.WriteLine("Response:");
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+            }
+            
             return request;
         }
 
@@ -90,18 +96,19 @@ namespace Sample {
                     {"Authorization", clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter}
                 }
             };
-            if (clientRequest.Headers.Contains("Date")) {
-                request.Headers.Add("Date", clientRequest.Headers.GetValues("Date").ToArray());
-            }
-
+            
             if (clientRequest.Headers.Contains("Dalion-App-Id")) {
                 request.Headers.Add("Dalion-App-Id", clientRequest.Headers.GetValues("Dalion-App-Id").ToArray());
             }
 
-            if (clientRequest.Headers.Contains("Digest")) {
-                request.Headers.Add("Digest", clientRequest.Headers.GetValues("Digest").ToArray());
+            if (clientRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
+                request.Headers.Add(HeaderName.PredefinedHeaderNames.Digest, clientRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Digest).ToArray());
             }
 
+            if (clientRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Date)) {
+                request.Headers.Add(HeaderName.PredefinedHeaderNames.Date, clientRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Date).ToArray());
+            }
+            
             return request;
         }
     }

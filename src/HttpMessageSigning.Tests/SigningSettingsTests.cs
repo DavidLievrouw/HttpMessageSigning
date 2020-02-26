@@ -15,7 +15,6 @@ namespace Dalion.HttpMessageSigning {
                 Headers = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
                     HeaderName.PredefinedHeaderNames.Date,
-                    HeaderName.PredefinedHeaderNames.Expires,
                     new HeaderName("dalion_app_id")
                 },
                 DigestHashAlgorithm = default
@@ -69,6 +68,20 @@ namespace Dalion.HttpMessageSigning {
             public void WhenEverythingIsValid_DoesNotThrow() {
                 Action act = () => _sut.Validate();
                 act.Should().NotThrow();
+            }
+
+            [Fact]
+            public void WhenHeaderContainsCreatedHeader_ThrowsPlatformNotSupportedException() {
+                _sut.Headers = new[] {HeaderName.PredefinedHeaderNames.Created};
+                Action act = () => _sut.Validate();
+                act.Should().Throw<PlatformNotSupportedException>();
+            }
+
+            [Fact]
+            public void WhenHeaderContainsExpiresHeader_ThrowsPlatformNotSupportedException() {
+                _sut.Headers = new[] {HeaderName.PredefinedHeaderNames.Expires};
+                Action act = () => _sut.Validate();
+                act.Should().Throw<PlatformNotSupportedException>();
             }
         }
     }

@@ -40,7 +40,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
-                        HeaderName.PredefinedHeaderNames.Expires,
                         new HeaderName("dalion_app_id")
                     }
                 };
@@ -148,7 +147,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                     new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
-                        HeaderName.PredefinedHeaderNames.Expires,
                         new HeaderName("dalion_app_id")
                     },
                     options => options.WithStrictOrdering());

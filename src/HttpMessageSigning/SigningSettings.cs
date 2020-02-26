@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace Dalion.HttpMessageSigning {
@@ -41,6 +42,13 @@ namespace Dalion.HttpMessageSigning {
             if (KeyId == KeyId.Empty) throw new ValidationException($"The signing settings do not specify a valid {nameof(KeyId)}.");
             if (SignatureAlgorithm == null) throw new ValidationException($"The signing settings do not specify a valid {nameof(SignatureAlgorithm)}.");
             if (Expires <= TimeSpan.Zero) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
+
+            if (Headers != null && Headers.Contains(HeaderName.PredefinedHeaderNames.Created)) {
+                throw new PlatformNotSupportedException($"The current platform disallows headers with token separator characters. Disallowed header: {HeaderName.PredefinedHeaderNames.Created}.");
+            }
+            if (Headers != null && Headers.Contains(HeaderName.PredefinedHeaderNames.Expires)) {
+                throw new PlatformNotSupportedException($"The current platform disallows headers with token separator characters. Disallowed header: {HeaderName.PredefinedHeaderNames.Expires}.");
+            }
         }
     }
 }
