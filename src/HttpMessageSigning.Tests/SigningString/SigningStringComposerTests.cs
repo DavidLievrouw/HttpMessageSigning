@@ -1,7 +1,5 @@
 using System;
-using System.Linq;
 using System.Net.Http;
-using System.Security.Cryptography;
 using FakeItEasy;
 using FluentAssertions;
 using Xunit;
@@ -18,7 +16,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
         public class Compose : SigningStringComposerTests {
             private readonly HttpRequestForSigning _httpRequest;
-            private readonly SigningSettings _settings;
+            private readonly HeaderName[] _headerNames;
             private readonly IHeaderAppender _headerAppender;
             private readonly DateTimeOffset _timeOfComposing;
 
@@ -28,17 +26,11 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     Method = HttpMethod.Post,
                     RequestUri = new Uri("http://dalion.eu/api/resource/id1")
                 };
-                _settings = new SigningSettings {
-                    Expires = TimeSpan.FromMinutes(5),
-                    KeyId = new KeyId("client1"),
-                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
-                    Headers = new[] {
-                        HeaderName.PredefinedHeaderNames.RequestTarget,
-                        HeaderName.PredefinedHeaderNames.Date,
-                        HeaderName.PredefinedHeaderNames.Expires,
-                        new HeaderName("dalion_app_id")
-                    },
-                    DigestHashAlgorithm = HashAlgorithmName.SHA256
+                _headerNames = new[] {
+                    HeaderName.PredefinedHeaderNames.RequestTarget,
+                    HeaderName.PredefinedHeaderNames.Date,
+                    HeaderName.PredefinedHeaderNames.Expires,
+                    new HeaderName("dalion_app_id")
                 };
 
                 FakeFactory.Create(out _headerAppender);
@@ -48,170 +40,19 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             [Fact]
             public void GivenNullRequest_ThrowsArgumentNullException() {
-                Action act = () => _sut.Compose(null, _settings, _timeOfComposing);
+                Action act = () => _sut.Compose(null, _headerNames, _timeOfComposing);
                 act.Should().Throw<ArgumentNullException>();
             }
 
             [Fact]
-            public void GivenNullSettings_ThrowsArgumentNullException() {
+            public void GivenNullHeaders_ThrowsArgumentNullException() {
                 Action act = () => _sut.Compose(_httpRequest, null, _timeOfComposing);
                 act.Should().Throw<ArgumentNullException>();
             }
 
             [Fact]
-            public void GivenInvalidSettings_ThrowsValidationException() {
-                _settings.KeyId = KeyId.Empty; // Make invalid
-                Action act = () => _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-                act.Should().Throw<ValidationException>();
-            }
-
-            [Fact]
-            public void WhenHeadersDoesNotContainRequestTarget_AddsRequestTargetToHeaders() {
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
-                    .Returns(_headerAppender);
-
-                _settings.Headers = Array.Empty<HeaderName>();
-                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-
-                _settings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.RequestTarget);
-            }
-            
-            [Fact]
-            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainDate_AddsDateToHeaders() {
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
-                    .Returns(_headerAppender);
-
-                _settings.Headers = Array.Empty<HeaderName>();
-                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-
-                _settings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Date);
-            }    
-            
-            [Fact]
-            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_AddsCreatedToHeaders() {
-                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("SomethingElse");
-                
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
-                    .Returns(_headerAppender);
-
-                _settings.Headers = Array.Empty<HeaderName>();
-                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-
-                _settings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Created);
-            }
-
-            [Theory]
-            [InlineData("RSA")]
-            [InlineData("HMAC")]
-            [InlineData("ECDSA")]
-            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_DoesNotAddCreatedToHeaders(string algorithmName) {
-                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
-                
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
-                    .Returns(_headerAppender);
-
-                _settings.Headers = Array.Empty<HeaderName>();
-                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-
-                _settings.Headers.Should().NotContain(HeaderName.PredefinedHeaderNames.Created);
-            }
-            
-            [Fact]
-            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_AddsExpiresToHeaders() {
-                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("SomethingElse");
-                
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
-                    .Returns(_headerAppender);
-
-                _settings.Headers = Array.Empty<HeaderName>();
-                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-
-                _settings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Expires);
-            }
-            
-            [Theory]
-            [InlineData("RSA")]
-            [InlineData("HMAC")]
-            [InlineData("ECDSA")]
-            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_DoesNotAddExpiresToHeaders(string algorithmName) {
-                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
-                
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
-                    .Returns(_headerAppender);
-
-                _settings.Headers = Array.Empty<HeaderName>();
-                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-
-                _settings.Headers.Should().NotContain(HeaderName.PredefinedHeaderNames.Expires);
-            }
-            
-            [Fact]
-            public void WhenHeadersDoesNotContainDigest_AndDigestIsOff_DoesNotAddDigestHeader() {
-                _settings.DigestHashAlgorithm = default;
-                
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
-                    .Returns(_headerAppender);
-
-                _settings.Headers = Array.Empty<HeaderName>();
-                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-
-                _settings.Headers.Should().NotContain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
-            }
-            
-            [Fact]
-            public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_AddsDigestHeader() {
-                _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
-                
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
-                    .Returns(_headerAppender);
-
-                _settings.Headers = Array.Empty<HeaderName>();
-                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-
-                _settings.Headers.Should().Contain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
-            }
-            
-            [Fact]
-            public void WhenHeadersContainsDigest_AndDigestIsOn_DoesNotAddDigestHeaderAgain() {
-                _settings.Headers = new[] {
-                    HeaderName.PredefinedHeaderNames.RequestTarget,
-                    HeaderName.PredefinedHeaderNames.Date,
-                    HeaderName.PredefinedHeaderNames.Digest,
-                    HeaderName.PredefinedHeaderNames.Expires,
-                    new HeaderName("dalion_app_id")
-                };
-                _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
-                
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
-                    .Returns(_headerAppender);
-
-                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-
-                _settings.Headers.Should().Contain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
-                _settings.Headers.Count(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest).Should().Be(1);
-            }
-            
-            [Theory]
-            [InlineData("GET")]
-            [InlineData("TRACE")]
-            [InlineData("HEAD")]
-            [InlineData("DELETE")]
-            public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_ButMethodDoesNotHaveBody_DoesNotAddDigestHeader(string method) {
-                _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
-                _httpRequest.Method = new HttpMethod(method);
-                
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
-                    .Returns(_headerAppender);
-
-                _settings.Headers = Array.Empty<HeaderName>();
-                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
-
-                _settings.Headers.Should().NotContain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
-            }
-            
-            [Fact]
             public void ExcludesEmptyHeaderNames() {
-                _settings.Headers = new[] {
+                var headerNames = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
                     HeaderName.Empty, 
                     HeaderName.PredefinedHeaderNames.Date,
@@ -223,9 +64,9 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
                     .ReturnsLazily(call => call.GetArgument<HeaderName>(0) + ",");
 
-                var actual = _sut.Compose(_httpRequest, _settings, _timeOfComposing);
+                var actual = _sut.Compose(_httpRequest, headerNames, _timeOfComposing);
 
-                var expected = "(request-target),date,(expires),dalion_app_id,digest,";
+                var expected = "(request-target),date,(expires),dalion_app_id,";
                 actual.Should().Be(expected);
             }
             
@@ -234,9 +75,9 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
                     .ReturnsLazily(call => "\n" + call.GetArgument<HeaderName>(0) + ",");
 
-                var actual = _sut.Compose(_httpRequest, _settings, _timeOfComposing);
+                var actual = _sut.Compose(_httpRequest, _headerNames, _timeOfComposing);
 
-                var expected = "(request-target),\ndate,\n(expires),\ndalion_app_id,\ndigest,";
+                var expected = "(request-target),\ndate,\n(expires),\ndalion_app_id,";
                 actual.Should().Be(expected);
             }
         }

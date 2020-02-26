@@ -2,6 +2,6 @@ using System;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal interface ISigningStringComposer {
-        string Compose(HttpRequestForSigning request, SigningSettings settings, DateTimeOffset timeOfComposing);
+        string Compose(HttpRequestForSigning request, HeaderName[] headerNames, DateTimeOffset timeOfComposing);
     }
 }

@@ -83,6 +83,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<ISignatureCreator, SignatureCreator>()
+                .AddSingleton<ISigningSettingsSanitizer, SigningSettingsSanitizer>()
                 .AddSingleton<IAuthorizationHeaderParamCreator, AuthorizationHeaderParamCreator>()
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()

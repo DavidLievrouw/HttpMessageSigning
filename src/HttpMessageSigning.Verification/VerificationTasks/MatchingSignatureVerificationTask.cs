@@ -1,5 +1,4 @@
 using System;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.SigningString;
 
@@ -22,16 +21,8 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 throw new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.");
             }
             
-            var signingSettings = new SigningSettings {
-                KeyId = client.Id,
-                Headers = signature.Headers,
-                SignatureAlgorithm = client.SignatureAlgorithm,
-                Expires = signature.Expires.Value - signature.Created.Value,
-                DigestHashAlgorithm = HashAlgorithmName.SHA256 // ToDo: Does not make sense here. 
-            };
-
-            var signingString = _signingStringComposer.Compose(signedRequest, signingSettings, signature.Created.Value);
-            var signatureHash = signingSettings.SignatureAlgorithm.ComputeHash(signingString);
+            var signingString = _signingStringComposer.Compose(signedRequest, signature.Headers, signature.Created.Value);
+            var signatureHash = client.SignatureAlgorithm.ComputeHash(signingString);
             var signatureString = _base64Converter.ToBase64(signatureHash);
 
             if (signature.String != signatureString) {

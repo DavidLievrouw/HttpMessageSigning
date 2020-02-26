@@ -13,12 +13,13 @@ namespace Dalion.HttpMessageSigning.Signing {
     public class SignatureCreatorTests {
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IBase64Converter _base64Converter;
+        private readonly ISigningSettingsSanitizer _signingSettingsSanitizer;
         private readonly IHttpMessageSigningLogger<SignatureCreator> _logger;
         private readonly SignatureCreator _sut;
 
         public SignatureCreatorTests() {
-            FakeFactory.Create(out _base64Converter, out _signingStringComposer, out _logger);
-            _sut = new SignatureCreator(_signingStringComposer, _base64Converter, _logger);
+            FakeFactory.Create(out _base64Converter, out _signingStringComposer, out _signingSettingsSanitizer, out _logger);
+            _sut = new SignatureCreator(_signingSettingsSanitizer, _signingStringComposer, _base64Converter, _logger);
         }
 
         public class CreateSignature : SignatureCreatorTests {
@@ -67,10 +68,18 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
+            public void SanitizesHeaderNamesToInclude() {
+                _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+
+                A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(_settings, _httpRequestMessage))
+                    .MustHaveHappened();
+            }
+            
+            [Fact]
             public void CalculatesSignatureForExpectedRequestForSigning() {
                 var composedString = "{the composed string}";
                 HttpRequestForSigning interceptedRequest = null;
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings, _timeOfSigning))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning))
                     .Invokes(call => interceptedRequest = call.GetArgument<HttpRequestForSigning>(0))
                     .Returns(composedString);
 
@@ -88,7 +97,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void ReturnsSignatureWithCalculatedSignatureString() {
                 var composedString = "{the composed string}";
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings, _timeOfSigning))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning))
                     .Returns(composedString);
 
                 var signatureHash = new byte[] {0x03, 0x04};
