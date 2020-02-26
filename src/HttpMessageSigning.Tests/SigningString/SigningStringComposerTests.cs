@@ -75,7 +75,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.ElementAt(0).Should().Be(HeaderName.PredefinedHeaderNames.RequestTarget);
+                interceptedSettings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.RequestTarget);
             }
             
             [Fact]
@@ -88,8 +88,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.ElementAt(0).Should().Be(HeaderName.PredefinedHeaderNames.RequestTarget);
-                interceptedSettings.Headers.ElementAt(1).Should().Be(HeaderName.PredefinedHeaderNames.Date);
+                interceptedSettings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Date);
             }    
             
             [Fact]

@@ -9,15 +9,15 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 throw new SignatureVerificationException($"The {HeaderName.PredefinedHeaderNames.RequestTarget} header is required to be included in the signature.");
             }
             
-            if (ShouldHaveDateHeader(client.SignatureAlgorithm) && !signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Date)) {
+            if (client.SignatureAlgorithm.ShouldIncludeDateHeader() && !signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Date)) {
                 throw new SignatureVerificationException($"The {HeaderName.PredefinedHeaderNames.Date} header is required when using security algorithm '{client.SignatureAlgorithm.Name}'.");
             }
             
-            if (ShouldHaveCreatedHeader(client.SignatureAlgorithm) && !signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Created)) {
+            if (client.SignatureAlgorithm.ShouldIncludeCreatedHeader() && !signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Created)) {
                 throw new SignatureVerificationException($"The {HeaderName.PredefinedHeaderNames.Created} header is required when using security algorithm '{client.SignatureAlgorithm.Name}'.");
             }
             
-            if (ShouldHaveExpiresHeader(client.SignatureAlgorithm) && !signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires)) {
+            if (client.SignatureAlgorithm.ShouldIncludeExpiresHeader() && !signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires)) {
                 throw new SignatureVerificationException($"The {HeaderName.PredefinedHeaderNames.Expires} header is required when using security algorithm '{client.SignatureAlgorithm.Name}'.");
             }
             
@@ -28,27 +28,6 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             return Task.CompletedTask;
-        }
-        
-        private static bool ShouldHaveDateHeader(ISignatureAlgorithm signatureAlgorithm) {
-            var signatureAlgorithmString = signatureAlgorithm.Name.ToLowerInvariant();
-            return signatureAlgorithmString.StartsWith("rsa") || 
-                   signatureAlgorithmString.StartsWith("hmac") ||
-                   signatureAlgorithmString.StartsWith("ecdsa");
-        }
-                
-        private static bool ShouldHaveCreatedHeader(ISignatureAlgorithm signatureAlgorithm) {
-            var signatureAlgorithmString = signatureAlgorithm.Name.ToLowerInvariant();
-            return !signatureAlgorithmString.StartsWith("rsa") && 
-                   !signatureAlgorithmString.StartsWith("hmac") &&
-                   !signatureAlgorithmString.StartsWith("ecdsa");
-        }
-        
-        private static bool ShouldHaveExpiresHeader(ISignatureAlgorithm signatureAlgorithm) {
-            var signatureAlgorithmString = signatureAlgorithm.Name.ToLowerInvariant();
-            return !signatureAlgorithmString.StartsWith("rsa") && 
-                   !signatureAlgorithmString.StartsWith("hmac") &&
-                   !signatureAlgorithmString.StartsWith("ecdsa");
         }
     }
 }

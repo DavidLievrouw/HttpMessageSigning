@@ -4,8 +4,8 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning {
     public partial class ExtensionTests {
-        public class HttpMethod : ExtensionTests {
-            public class SupportsBody : HttpMethod {
+        public class ForHttpMethod : ExtensionTests {
+            public class SupportsBody : ForHttpMethod {
                 [Fact]
                 public void WhenMethodIsNull_ThrowsArgumentNullException() {
                     Action act = () => Extensions.SupportsBody(null);
