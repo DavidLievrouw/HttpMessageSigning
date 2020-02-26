@@ -42,7 +42,12 @@ namespace Sample {
                 .AddHttpMessageSigning(
                     new KeyId("HttpMessageSigningSampleHMAC"),
                     provider => new SigningSettings {
-                        SignatureAlgorithm = new HMACSignatureAlgorithm("yumACY64r%hm", HashAlgorithmName.SHA256)
+                        SignatureAlgorithm = new HMACSignatureAlgorithm("yumACY64r%hm", HashAlgorithmName.SHA256),
+                        DigestHashAlgorithm = HashAlgorithmName.SHA256,
+                        Expires = TimeSpan.FromMinutes(1),
+                        Headers = new [] {
+                            (HeaderName)"Dalion-App-Id"
+                        }
                     })
                 .AddHttpMessageSigning(
                     new KeyId("HttpMessageSigningSampleRSA"),
@@ -67,7 +72,10 @@ namespace Sample {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post"),
                 Method = HttpMethod.Post,
-                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json)
+                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Headers = {
+                    {"Dalion-App-Id", "ringor"}
+                }
             };
 
             var requestSigner = requestSignerFactory.CreateFor(new KeyId("HttpMessageSigningSampleHMAC"));
@@ -80,7 +88,10 @@ namespace Sample {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post"),
                 Method = HttpMethod.Post,
-                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json)
+                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Headers = {
+                    {"Dalion-App-Id", "ringor"}
+                }
             };
 
             var requestSigner = requestSignerFactory.CreateFor(new KeyId("HttpMessageSigningSampleRSA"));
@@ -90,16 +101,7 @@ namespace Sample {
         }
 
         private static async Task SampleVerify(IRequestSignatureVerifier verifier, HttpRequestMessage clientRequest) {
-            var request = new DefaultHttpRequest(new DefaultHttpContext()) {
-                Method = "POST",
-                Scheme = "https",
-                Host = new HostString("httpbin.org", 443),
-                Path = new PathString("/post"),
-                Headers = {
-                    {"Date", clientRequest.Headers.GetValues("Date").First()},
-                    {"Authorization", clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter}
-                }
-            };
+            var request = CreateFakeReceivedHttpRequest(clientRequest);
 
             var verificationResult = await verifier.VerifySignature(request);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
@@ -112,6 +114,31 @@ namespace Sample {
                 Console.WriteLine("Request signature verification failed:");
                 Console.WriteLine(failureResult.SignatureVerificationException);
             }
+        }
+
+        private static DefaultHttpRequest CreateFakeReceivedHttpRequest(HttpRequestMessage clientRequest) {
+            var request = new DefaultHttpRequest(new DefaultHttpContext()) {
+                Method = "POST",
+                Scheme = "https",
+                Host = new HostString("httpbin.org", 443),
+                Path = new PathString("/post"),
+                Headers = {
+                    {"Authorization", clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter}
+                }
+            };
+            if (clientRequest.Headers.Contains("Date")) {
+                request.Headers.Add("Date", clientRequest.Headers.GetValues("Date").ToArray());
+            }
+
+            if (clientRequest.Headers.Contains("Dalion-App-Id")) {
+                request.Headers.Add("Dalion-App-Id", clientRequest.Headers.GetValues("Dalion-App-Id").ToArray());
+            }
+
+            if (clientRequest.Headers.Contains("Digest")) {
+                request.Headers.Add("Digest", clientRequest.Headers.GetValues("Digest").ToArray());
+            }
+
+            return request;
         }
     }
 }
