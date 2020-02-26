@@ -8,7 +8,7 @@ namespace Dalion.HttpMessageSigning {
         /// <summary>
         /// The entity that the server can use to look up the component they need to verify the signature.
         /// </summary>
-        public KeyId KeyId { get; set; } = KeyId.Empty;
+        internal KeyId KeyId { get; set; } = KeyId.Empty;
 
         /// <summary>
         /// Gets or sets the <see cref="Dalion.HttpMessageSigning.ISignatureAlgorithm"/> that is used to create the signature.

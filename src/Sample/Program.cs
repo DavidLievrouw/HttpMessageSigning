@@ -31,10 +31,11 @@ namespace Sample {
         public static void ConfigureServicesForHMAC(IServiceCollection services) {
             services
                 .AddLogging(configure => configure.AddConsole())
-                .AddHttpMessageSigning(provider => new SigningSettings {
-                    KeyId = new KeyId("HttpMessageSigningSample"),
-                    SignatureAlgorithm = new HMACSignatureAlgorithm("yumACY64r%hm", HashAlgorithm.SHA256)
-                })
+                .AddHttpMessageSigning(
+                    new KeyId("HttpMessageSigningSample"),
+                    provider => new SigningSettings {
+                        SignatureAlgorithm = new HMACSignatureAlgorithm("yumACY64r%hm", HashAlgorithm.SHA256)
+                    })
                 .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
@@ -51,13 +52,14 @@ namespace Sample {
             var publicKeyParameters = publicKey.ExportParameters(false);
             var privateKey = cert.GetRSAPrivateKey();
             var privateKeyParameters = privateKey.ExportParameters(true);
-            
+
             services
                 .AddLogging(configure => configure.AddConsole())
-                .AddHttpMessageSigning(provider => new SigningSettings {
-                    KeyId = new KeyId("HttpMessageSigningSample"),
-                    SignatureAlgorithm = new RSASignatureAlgorithm(HashAlgorithm.SHA384, publicKeyParameters, privateKeyParameters)
-                })
+                .AddHttpMessageSigning(
+                    new KeyId("HttpMessageSigningSample"),
+                    provider => new SigningSettings {
+                        SignatureAlgorithm = new RSASignatureAlgorithm(HashAlgorithm.SHA384, publicKeyParameters, privateKeyParameters)
+                    })
                 .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
@@ -75,7 +77,8 @@ namespace Sample {
                 Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json)
             };
 
-            var requestSigner = serviceProvider.GetRequiredService<IRequestSigner>();
+            var requestSignerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>();
+            var requestSigner = requestSignerFactory.CreateFor(new KeyId("HttpMessageSigningSample"));
 
             await requestSigner.Sign(request);
             using (var httpClient = new HttpClient()) {
@@ -90,6 +93,7 @@ namespace Sample {
         private static async Task SampleVerification(IServiceProvider serviceProvider, string authParam) {
             var request = new DefaultHttpRequest(new DefaultHttpContext());
             request.Headers["Authorization"] = "Signature " + authParam;
+            
             var requestSignatureVerifier = serviceProvider.GetRequiredService<IRequestSignatureVerifier>();
 
             var verificationResult = await requestSignatureVerifier.VerifySignature(request);

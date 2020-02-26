@@ -12,10 +12,11 @@ namespace Dalion.HttpMessageSigning {
         public CompositionTests() {
             var services = new ServiceCollection()
                 .AddLogging()
-                .AddHttpMessageSigning(provider => new SigningSettings {
-                    KeyId = new KeyId("client1"),
-                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA384)
-                })
+                .AddHttpMessageSigning(
+                    new KeyId("client1"),
+                    provider => new SigningSettings {
+                        SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA384)
+                    })
                 .AddHttpMessageSignatureVerification(new InMemoryClientStore());
             _serviceProvider = services.BuildServiceProvider();
         }
@@ -25,8 +26,9 @@ namespace Dalion.HttpMessageSigning {
         }
 
         [Theory]
-        [InlineData(typeof(IRequestSigner))]
+        [InlineData(typeof(IRequestSignerFactory))]
         [InlineData(typeof(IRequestSignatureVerifier))]
+        [InlineData(typeof(IRegisteredSignerSettingsStore))]
         public void CanResolveType(Type requestedType) {
             var instance = _serviceProvider.GetRequiredService(requestedType);
             instance.Should().NotBeNull().And.BeAssignableTo(requestedType);
