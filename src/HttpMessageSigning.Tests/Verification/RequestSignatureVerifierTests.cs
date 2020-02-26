@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -9,7 +6,6 @@ using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.Extensions.Primitives;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification {
@@ -28,20 +24,12 @@ namespace Dalion.HttpMessageSigning.Verification {
 
         public class VerifySignature : RequestSignatureVerifierTests {
             private readonly DefaultHttpRequest _httpRequest;
-            private readonly HttpRequestForSigning _requestForSigning;
 
             public VerifySignature() {
                 _httpRequest = new DefaultHttpRequest(new DefaultHttpContext()) {
                     Method = "POST",
                     Scheme = "https",
                     Host = new HostString("unittest.com", 9000)
-                };
-                _requestForSigning = new HttpRequestForSigning {
-                    RequestUri = new Uri("https://unittest.com:9000/", UriKind.Absolute),
-                    Method = HttpMethod.Post,
-                    Headers = new HeaderDictionary(new Dictionary<string, StringValues> {
-                        {"Host", "unittest.com:9000"}
-                    })
                 };
             }
 
@@ -54,7 +42,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task VerifiesSanitizedSignatureOfClient_ThatMatchesTheKeyIdFromTheRequest() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(A<HttpRequestForSigning>.That.Matches(RequestForSigningMatcher)))
+                A.CallTo(() => _signatureParser.Parse(_httpRequest))
                     .Returns(signature);
 
                 var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
@@ -67,14 +55,17 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 await _sut.VerifySignature(_httpRequest);
 
-                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>.That.Matches(RequestForSigningMatcher), sanitizedSignature, client))
+                A.CallTo(() => _signatureVerifier.VerifySignature(
+                        A<HttpRequestForSigning>.That.Matches(_ => _.RequestUri == new Uri("https://unittest.com:9000/")), 
+                        sanitizedSignature, 
+                        client))
                     .MustHaveHappened();
             }
 
             [Fact]
             public async Task WhenVerificationSucceeds_ReturnsSuccessResultWithClaimsPrincipal() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(A<HttpRequestForSigning>.That.Matches(RequestForSigningMatcher)))
+                A.CallTo(() => _signatureParser.Parse(_httpRequest))
                     .Returns(signature);
 
                 var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
@@ -94,6 +85,14 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenVerificationFails_ReturnsFailureResult() {
+                var signature = new Signature {KeyId = new KeyId("app001")};
+                A.CallTo(() => _signatureParser.Parse(_httpRequest))
+                    .Returns(signature);
+
+                var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
+                A.CallTo(() => _clientStore.Get(signature.KeyId))
+                    .Returns(client);
+                
                 var failure = new SignatureVerificationException("Invalid signature.");
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Throws(failure);
@@ -108,7 +107,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task WhenSignatureCannotBeParsed_ReturnsFailureResult() {
                 var failure = new SignatureVerificationException("Cannot parse signature.");
-                A.CallTo(() => _signatureParser.Parse(A<HttpRequestForSigning>.That.Matches(RequestForSigningMatcher)))
+                A.CallTo(() => _signatureParser.Parse(_httpRequest))
                     .Throws(failure);
 
                 var actual = await _sut.VerifySignature(_httpRequest);
@@ -121,7 +120,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task WhenClientDoesNotExist_ReturnsFailureResult() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(A<HttpRequestForSigning>.That.Matches(RequestForSigningMatcher)))
+                A.CallTo(() => _signatureParser.Parse(_httpRequest))
                     .Returns(signature);
 
                 var failure = new SignatureVerificationException("Don't know that client.");
@@ -134,8 +133,6 @@ namespace Dalion.HttpMessageSigning.Verification {
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
                 actual.As<RequestSignatureVerificationResultFailure>().SignatureVerificationException.Should().Be(failure);
             }
-
-            private Expression<Func<HttpRequestForSigning, bool>> RequestForSigningMatcher => _ => _.RequestUri == _requestForSigning.RequestUri;
         }
     }
 }

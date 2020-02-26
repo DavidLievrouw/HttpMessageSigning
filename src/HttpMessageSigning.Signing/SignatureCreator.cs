@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             settings.Validate();
 
-            var requestForSigning = request.ToRequestForSigning();
+            var requestForSigning = request.ToRequestForSigning(settings);
             var signingString = _signingStringComposer.Compose(requestForSigning, settings, timeOfSigning);
 
             _logger.Debug("Composed the following string for request signing: {0}", signingString);

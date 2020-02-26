@@ -1,15 +1,20 @@
+using System;
 using System.Linq;
 using System.Net.Http;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning {
     public static partial class Extensions {
-        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequestMessage httpRequestMessage) {
+        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequestMessage httpRequestMessage, SigningSettings signingSettings) {
+            if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
+            
             if (httpRequestMessage == null) return null;
 
             var requestForSigning = new HttpRequestForSigning {
                 Method = httpRequestMessage.Method,
-                RequestUri = httpRequestMessage.RequestUri
+                RequestUri = httpRequestMessage.RequestUri,
+                Expires = signingSettings.Expires,
+                SignatureAlgorithmName = signingSettings.SignatureAlgorithm.Name
             };
             
             foreach (var header in httpRequestMessage.Headers) {

@@ -42,7 +42,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 };
 
                 FakeFactory.Create(out _headerAppender);
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
             }
 
@@ -66,44 +66,38 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             [Fact]
-            public void WhenHeadersDoesNotContainRequestTarget_PrependsRequestTargetToHeaders() {
-                SigningSettings interceptedSettings = null;
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
-                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+            public void WhenHeadersDoesNotContainRequestTarget_AddsRequestTargetToHeaders() {
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
 
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.RequestTarget);
+                _settings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.RequestTarget);
             }
             
             [Fact]
-            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainDate_PrependsDateToHeaders_ButAfterRequestTargetHeader() {
-                SigningSettings interceptedSettings = null;
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
-                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainDate_AddsDateToHeaders() {
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
 
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Date);
+                _settings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Date);
             }    
             
             [Fact]
             public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_AddsCreatedToHeaders() {
                 _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("SomethingElse");
                 
-                SigningSettings interceptedSettings = null;
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
-                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
 
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Created);
+                _settings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Created);
             }
 
             [Theory]
@@ -113,30 +107,26 @@ namespace Dalion.HttpMessageSigning.SigningString {
             public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_DoesNotAddCreatedToHeaders(string algorithmName) {
                 _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
                 
-                SigningSettings interceptedSettings = null;
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
-                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
 
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.Should().NotContain(HeaderName.PredefinedHeaderNames.Created);
+                _settings.Headers.Should().NotContain(HeaderName.PredefinedHeaderNames.Created);
             }
             
             [Fact]
             public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_AddsExpiresToHeaders() {
                 _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("SomethingElse");
                 
-                SigningSettings interceptedSettings = null;
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
-                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
 
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Expires);
+                _settings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Expires);
             }
             
             [Theory]
@@ -146,45 +136,39 @@ namespace Dalion.HttpMessageSigning.SigningString {
             public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_DoesNotAddExpiresToHeaders(string algorithmName) {
                 _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
                 
-                SigningSettings interceptedSettings = null;
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
-                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
 
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.Should().NotContain(HeaderName.PredefinedHeaderNames.Expires);
+                _settings.Headers.Should().NotContain(HeaderName.PredefinedHeaderNames.Expires);
             }
             
             [Fact]
             public void WhenHeadersDoesNotContainDigest_AndDigestIsOff_DoesNotAddDigestHeader() {
                 _settings.DigestHashAlgorithm = default;
                 
-                SigningSettings interceptedSettings = null;
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
-                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
 
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.Should().NotContain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
+                _settings.Headers.Should().NotContain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
             }
             
             [Fact]
             public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_AddsDigestHeader() {
                 _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
                 
-                SigningSettings interceptedSettings = null;
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
-                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
 
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.Should().Contain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
+                _settings.Headers.Should().Contain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
             }
             
             [Fact]
@@ -198,15 +182,13 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 };
                 _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
                 
-                SigningSettings interceptedSettings = null;
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
-                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
 
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.Should().Contain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
-                interceptedSettings.Headers.Count(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest).Should().Be(1);
+                _settings.Headers.Should().Contain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
+                _settings.Headers.Count(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest).Should().Be(1);
             }
             
             [Theory]
@@ -218,15 +200,13 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
                 _httpRequest.Method = new HttpMethod(method);
                 
-                SigningSettings interceptedSettings = null;
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
-                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing))
                     .Returns(_headerAppender);
 
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.Should().NotContain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
+                _settings.Headers.Should().NotContain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
             }
             
             [Fact]

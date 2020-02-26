@@ -41,7 +41,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 settings.Headers = settings.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Digest}).ToArray();
             }
             
-            var headerAppender = _headerAppenderFactory.Create(request, settings, timeOfComposing);
+            var headerAppender = _headerAppenderFactory.Create(request, timeOfComposing);
 
             var sb = new StringBuilder();
             foreach (var headerName in settings.Headers.Where(h => h != HeaderName.Empty)) {

@@ -1,6 +1,5 @@
 using System;
 using System.Net.Http;
-using System.Security.Cryptography;
 using FluentAssertions;
 using Xunit;
 
@@ -14,7 +13,6 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
         public class Create : HeaderAppenderFactoryTests {
             private readonly HttpRequestForSigning _httpRequest;
-            private readonly SigningSettings _settings;
             private readonly DateTimeOffset _timeOfComposing;
 
             public Create() {
@@ -23,34 +21,18 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     Method = HttpMethod.Post,
                     RequestUri = new Uri("http://dalion.eu/api/resource/id1")
                 };
-                _settings = new SigningSettings {
-                    Expires = TimeSpan.FromMinutes(5),
-                    KeyId = new KeyId("client1"),
-                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
-                    Headers = new[] {
-                        HeaderName.PredefinedHeaderNames.RequestTarget,
-                        HeaderName.PredefinedHeaderNames.Date,
-                        HeaderName.PredefinedHeaderNames.Expires,
-                        new HeaderName("dalion_app_id")
-                    }
-                };
             }
 
             [Fact]
             public void GivenNullRequest_ThrowsArgumentNullException() {
-                Action act = () => _sut.Create(null, _settings, _timeOfComposing);
+                Action act = () => _sut.Create(null, _timeOfComposing);
                 act.Should().Throw<ArgumentNullException>();
             }
 
-            [Fact]
-            public void GivenNullSettings_ThrowsArgumentNullException() {
-                Action act = () => _sut.Create(_httpRequest, null, _timeOfComposing);
-                act.Should().Throw<ArgumentNullException>();
-            }
 
             [Fact]
             public void CreatesInstanceOfExpectedType() {
-                var actual = _sut.Create(_httpRequest, _settings, _timeOfComposing);
+                var actual = _sut.Create(_httpRequest, _timeOfComposing);
                 actual.Should().NotBeNull().And.BeAssignableTo<CompositeHeaderAppender>();
             }
         }

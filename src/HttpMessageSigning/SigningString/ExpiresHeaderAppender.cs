@@ -4,21 +4,23 @@ using System.Linq;
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class ExpiresHeaderAppender : IHeaderAppender {
         private static readonly string[] AlgorithmNamesThatDoNotAllowExpiresHeader = {"rsa", "hmac", "ecdsa"};
-        
-        private readonly SigningSettings _settings;
+
+        private readonly HttpRequestForSigning _requestForSigning;
         private readonly DateTimeOffset _timeOfComposing;
 
-        public ExpiresHeaderAppender(SigningSettings settings, DateTimeOffset timeOfComposing) {
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        public ExpiresHeaderAppender(HttpRequestForSigning requestForSigning, DateTimeOffset timeOfComposing) {
+            _requestForSigning = requestForSigning ?? throw new ArgumentNullException(nameof(requestForSigning));
             _timeOfComposing = timeOfComposing;
         }
 
         public string BuildStringToAppend(HeaderName header) {
-            if (AlgorithmNamesThatDoNotAllowExpiresHeader.Contains(_settings.SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase)) {
-                throw new HttpMessageSigningException($"It is not allowed to include the {HeaderName.PredefinedHeaderNames.Expires} header in the signature, when the signature algorithm is '{_settings.SignatureAlgorithm.Name}'.");
-            }
+            if (!_requestForSigning.Expires.HasValue) return string.Empty;
             
-            var expiresValue = _timeOfComposing.Add(_settings.Expires).ToUnixTimeSeconds();
+            if (AlgorithmNamesThatDoNotAllowExpiresHeader.Contains(_requestForSigning.SignatureAlgorithmName, StringComparer.OrdinalIgnoreCase)) {
+                throw new HttpMessageSigningException($"It is not allowed to include the {HeaderName.PredefinedHeaderNames.Expires} header in the signature, when the signature algorithm is '{_requestForSigning.SignatureAlgorithmName}'.");
+            }
+
+            var expiresValue = _timeOfComposing.Add(_requestForSigning.Expires.Value).ToUnixTimeSeconds();
             return "\n" + new Header(HeaderName.PredefinedHeaderNames.Expires, expiresValue.ToString());
         }
     }

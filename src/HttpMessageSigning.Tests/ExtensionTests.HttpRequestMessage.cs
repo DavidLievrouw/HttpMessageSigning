@@ -13,6 +13,7 @@ namespace Dalion.HttpMessageSigning {
         public class ForHttpRequestMessage : ExtensionTests {
             public class ToRequestForSigning : ForHttpRequestMessage {
                 private readonly HttpRequestMessage _httpRequestMessage;
+                private readonly SigningSettings _signingSettings;
 
                 public ToRequestForSigning() {
                     _httpRequestMessage = new HttpRequestMessage {
@@ -24,17 +25,27 @@ namespace Dalion.HttpMessageSigning {
                         }
                     };
                     _httpRequestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
+                    _signingSettings = new SigningSettings {
+                        Expires = TimeSpan.FromMinutes(5),
+                        SignatureAlgorithm = new CustomSignatureAlgorithm("Custom")
+                    };
                 }
 
                 [Fact]
                 public void GivenNullInput_ReturnsNull() {
-                    var actual = Extensions.ToRequestForSigning(null);
+                    var actual = Extensions.ToRequestForSigning(null, _signingSettings);
                     actual.Should().BeNull();
+                }
+                
+                [Fact]
+                public void GivenNullSigningSettings_ThrowsArgumentNullException() {
+                    Action act = () => _httpRequestMessage.ToRequestForSigning(null);
+                    act.Should().Throw<ArgumentNullException>();
                 }
 
                 [Fact]
                 public void CopiesUri() {
-                    var actual = _httpRequestMessage.ToRequestForSigning();
+                    var actual = _httpRequestMessage.ToRequestForSigning(_signingSettings);
                     var expectedUri = new Uri("https://dalion.eu:9000/tests/api/rsc1?query=1&cache=false", UriKind.Absolute);
                     actual.RequestUri.Should().Be(expectedUri);
                 }
@@ -51,14 +62,14 @@ namespace Dalion.HttpMessageSigning {
                 public void CopiesMethod(string method) {
                     _httpRequestMessage.Method = new HttpMethod(method);
 
-                    var actual = _httpRequestMessage.ToRequestForSigning();
+                    var actual = _httpRequestMessage.ToRequestForSigning(_signingSettings);
 
                     actual.Method.Should().Be(new HttpMethod(method));
                 }
 
                 [Fact]
                 public void CopiesHeaders() {
-                    var actual = _httpRequestMessage.ToRequestForSigning();
+                    var actual = _httpRequestMessage.ToRequestForSigning(_signingSettings);
 
                     var expectedHeaders = new HeaderDictionary(new Dictionary<string, StringValues> {
                         {"H1", "v1"},
@@ -72,10 +83,24 @@ namespace Dalion.HttpMessageSigning {
 
                 [Fact]
                 public void CopiesContentHeadersToHeaders() {
-                    var actual = _httpRequestMessage.ToRequestForSigning();
+                    var actual = _httpRequestMessage.ToRequestForSigning(_signingSettings);
 
                     actual.Headers.Contains("Category").Should().BeTrue();
                     actual.Headers.Contains("Content-Type").Should().BeTrue();
+                }
+                
+                [Fact]
+                public void SetsExpires() {
+                    var actual = _httpRequestMessage.ToRequestForSigning(_signingSettings);
+
+                    actual.Expires.Should().Be(_signingSettings.Expires);
+                }
+                
+                [Fact]
+                public void SetsSignatureAlgorithm() {
+                    var actual = _httpRequestMessage.ToRequestForSigning(_signingSettings);
+
+                    actual.SignatureAlgorithmName.Should().Be("Custom");
                 }
             }
         }

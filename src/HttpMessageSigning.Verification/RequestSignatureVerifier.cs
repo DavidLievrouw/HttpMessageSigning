@@ -28,10 +28,10 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             try {
-                var requestForSigning = request.ToRequestForSigning();
-                
-                var signature = _signatureParser.Parse(requestForSigning);
+                var signature = _signatureParser.Parse(request);
                 var client = await _clientStore.Get(signature.KeyId);
+                
+                var requestForSigning = request.ToRequestForSigning(signature, client);
 
                 var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client);
                 await _signatureVerifier.VerifySignature(requestForSigning, sanitizedSignature, client);

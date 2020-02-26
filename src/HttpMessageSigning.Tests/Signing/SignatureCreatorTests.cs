@@ -44,6 +44,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                     }
                 };
                 _timeOfSigning = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.Zero);
+                A.CallTo(() => _settings.SignatureAlgorithm.Name).Returns("Custom");
             }
 
             [Fact]
@@ -78,7 +79,9 @@ namespace Dalion.HttpMessageSigning.Signing {
                 interceptedRequest.Should().BeEquivalentTo(new HttpRequestForSigning {
                     Method = HttpMethod.Post,
                     RequestUri = new Uri("http://dalion.eu/api/resource/id1"),
-                    Headers = new HeaderDictionary(new Dictionary<string, StringValues> {{"H1", "v1"}})
+                    Headers = new HeaderDictionary(new Dictionary<string, StringValues> {{"H1", "v1"}}),
+                    Expires = TimeSpan.FromMinutes(5),
+                    SignatureAlgorithmName = "Custom"
                 });
             }
 

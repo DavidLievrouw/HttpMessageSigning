@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification {
@@ -15,7 +16,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         private static readonly Regex HeadersRegEx = new Regex("headers=\"(?<headers>[a-z0-9-\\(\\) ]+)\"", RegexOptions.Compiled);
         private static readonly Regex SignatureRegEx = new Regex("signature=\"(?<signature>[a-zA-Z0-9+/]+={0,2})\"", RegexOptions.Compiled);
 
-        public Signature Parse(HttpRequestForSigning request) {
+        public Signature Parse(HttpRequest request) {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             var authHeader = request.Headers[AuthorizationHeaderName];
