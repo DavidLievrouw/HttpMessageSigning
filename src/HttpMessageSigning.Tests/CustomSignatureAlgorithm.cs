@@ -2,10 +2,15 @@ using System;
 using System.Security.Cryptography;
 
 namespace Dalion.HttpMessageSigning {
-    public class NotSupportedSignatureAlgorithm : ISignatureAlgorithm {
+    public class CustomSignatureAlgorithm : ISignatureAlgorithm {
+        public CustomSignatureAlgorithm(string name) {
+            if (string.IsNullOrEmpty(name)) name = "NOTSUPPORTED";
+            Name = name;
+        }
+        
         public void Dispose() { }
         
-        public string Name => "NOTSUPPORTED";
+        public string Name { get; }
         
         public HashAlgorithmName HashAlgorithm { get; set; }
         

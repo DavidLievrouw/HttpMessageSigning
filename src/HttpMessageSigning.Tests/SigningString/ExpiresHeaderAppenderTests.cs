@@ -26,8 +26,23 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public class BuildStringToAppend : ExpiresHeaderAppenderTests {
+            [Theory]
+            [InlineData("rsa")]
+            [InlineData("hmac")]
+            [InlineData("ecdsa")]
+            [InlineData("RSA")]
+            [InlineData("HMAC")]
+            [InlineData("ECDSA")]
+            public void WhenAlgorithmDoesNotAllowInclusionOfExpiresHeader_ThrowsHttpMessageSigningException(string algorithmName) {
+                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
+                Action act = () => _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Expires);
+                act.Should().Throw<HttpMessageSigningException>();
+            }
+            
             [Fact]
             public void ReturnsExpectedString() {
+                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("hs2019");
+                
                 var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Expires);
 
                 var expected = "\n(expires): 1582539914";

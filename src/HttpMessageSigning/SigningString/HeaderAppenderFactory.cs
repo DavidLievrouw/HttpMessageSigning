@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             return new CompositeHeaderAppender(
                 new DefaultHeaderAppender(request), 
                 new RequestTargetHeaderAppender(request), 
-                new CreatedHeaderAppender(timeOfComposing),
+                new CreatedHeaderAppender(settings, timeOfComposing),
                 new ExpiresHeaderAppender(settings, timeOfComposing),
                 new DateHeaderAppender(request));
         }

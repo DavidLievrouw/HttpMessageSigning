@@ -35,6 +35,15 @@ namespace Dalion.HttpMessageSigning.Verification {
                 }
 
                 [Fact]
+                public void AllowsNullMethod() {
+                    _httpRequest.Method = null;
+                    
+                    var actual = _httpRequest.ToHttpRequestMessage();
+
+                    actual.Method.Should().Be(System.Net.Http.HttpMethod.Get);
+                }
+                
+                [Fact]
                 public void CopiesUri() {
                     var actual = _httpRequest.ToHttpRequestMessage();
                     var expectedUri = new Uri("https://dalion.eu:9000/tests/api/rsc1?query=1&cache=false", UriKind.Absolute);

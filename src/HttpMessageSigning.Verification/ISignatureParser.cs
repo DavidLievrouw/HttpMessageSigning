@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Http;
+using System.Net.Http;
 
 namespace Dalion.HttpMessageSigning.Verification {
     internal interface ISignatureParser {
-        Signature Parse(HttpRequest request);
+        Signature Parse(HttpRequestMessage request);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -23,9 +24,14 @@ namespace Dalion.HttpMessageSigning.Verification {
 
         public class VerifySignature : RequestSignatureVerifierTests {
             private readonly DefaultHttpRequest _request;
+            private readonly Uri _expectedUri;
 
             public VerifySignature() {
-                _request = new DefaultHttpRequest(new DefaultHttpContext());
+                _request = new DefaultHttpRequest(new DefaultHttpContext()) {
+                    Scheme = "https",
+                    Host = new HostString("unittest.com", 9000)
+                };
+                _expectedUri = new Uri("https://unittest.com:9000", UriKind.Absolute);
             }
 
             [Fact]
@@ -37,7 +43,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task VerifiesSignatureOfClient_ThatMatchesTheKeyIdFromTheRequest() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(_request))
+                A.CallTo(() => _signatureParser.Parse(A<HttpRequestMessage>.That.Matches(r => r.RequestUri == _expectedUri)))
                     .Returns(signature);
 
                 var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
@@ -46,14 +52,14 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 await _sut.VerifySignature(_request);
 
-                A.CallTo(() => _signatureVerifier.VerifySignature(signature, client))
+                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestMessage>.That.Matches(r => r.RequestUri == _expectedUri), signature, client))
                     .MustHaveHappened();
             }
 
             [Fact]
             public async Task WhenVerificationSucceeds_ReturnsSuccessResultWithClaimsPrincipal() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(_request))
+                A.CallTo(() => _signatureParser.Parse(A<HttpRequestMessage>.That.Matches(r => r.RequestUri == _expectedUri)))
                     .Returns(signature);
 
                 var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
@@ -74,7 +80,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task WhenVerificationFails_ReturnsFailureResult() {
                 var failure = new SignatureVerificationException("Invalid signature.");
-                A.CallTo(() => _signatureVerifier.VerifySignature(A<Signature>._, A<Client>._))
+                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestMessage>._, A<Signature>._, A<Client>._))
                     .Throws(failure);
 
                 var actual = await _sut.VerifySignature(_request);
@@ -87,7 +93,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task WhenSignatureCannotBeParsed_ReturnsFailureResult() {
                 var failure = new SignatureVerificationException("Cannot parse signature.");
-                A.CallTo(() => _signatureParser.Parse(_request))
+                A.CallTo(() => _signatureParser.Parse(A<HttpRequestMessage>.That.Matches(r => r.RequestUri == _expectedUri)))
                     .Throws(failure);
 
                 var actual = await _sut.VerifySignature(_request);
@@ -100,7 +106,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task WhenClientDoesNotExist_ReturnsFailureResult() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(_request))
+                A.CallTo(() => _signatureParser.Parse(A<HttpRequestMessage>.That.Matches(r => r.RequestUri == _expectedUri)))
                     .Returns(signature);
 
                 var failure = new SignatureVerificationException("Don't know that client.");

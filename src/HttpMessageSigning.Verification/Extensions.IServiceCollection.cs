@@ -1,5 +1,6 @@
 ﻿using System;
 using Dalion.HttpMessageSigning.Logging;
+using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification {
@@ -44,9 +45,17 @@ namespace Dalion.HttpMessageSigning.Verification {
             return services
                 .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
                 .AddSingleton<ISignatureParser, SignatureParser>()
-                .AddSingleton<ISignatureVerifier, SignatureVerifier>()
                 .AddSingleton<IClaimsPrincipalFactory, ClaimsPrincipalFactory>()
                 .AddSingleton(clientStoreFactory)
+                .AddSingleton<ISignatureVerifier>(provider => new SignatureVerifier(
+                    new KnownAlgorithmVerificationTask(), 
+                    new MatchingAlgorithmVerificationTask(), 
+                    new CreatedHeaderGuardVerificationTask(), 
+                    new ExpiresHeaderGuardVerificationTask(), 
+                    new AllHeadersPresentVerificationTask(), 
+                    new CreationTimeVerificationTask(), 
+                    new ExpirationTimeVerificationTask(), 
+                    new MatchingSignatureVerificationTask()))
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
         }
     }

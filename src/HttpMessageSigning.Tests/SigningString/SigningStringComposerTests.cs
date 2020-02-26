@@ -93,8 +93,8 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }    
             
             [Fact]
-            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_PrependsCreatedToHeaders_ButAfterRequestTargetHeader() {
-                _settings.SignatureAlgorithm = new NotSupportedSignatureAlgorithm();
+            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_AddsCreatedToHeaders() {
+                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("SomethingElse");
                 
                 SigningSettings interceptedSettings = null;
                 A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
@@ -104,10 +104,60 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 _settings.Headers = Array.Empty<HeaderName>();
                 _sut.Compose(_httpRequest, _settings, _timeOfComposing);
 
-                interceptedSettings.Headers.ElementAt(0).Should().Be(HeaderName.PredefinedHeaderNames.RequestTarget);
-                interceptedSettings.Headers.ElementAt(1).Should().Be(HeaderName.PredefinedHeaderNames.Created);
+                interceptedSettings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Created);
             }
 
+            [Theory]
+            [InlineData("RSA")]
+            [InlineData("HMAC")]
+            [InlineData("ECDSA")]
+            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_DoesNotAddCreatedToHeaders(string algorithmName) {
+                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
+                
+                SigningSettings interceptedSettings = null;
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
+                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                    .Returns(_headerAppender);
+
+                _settings.Headers = Array.Empty<HeaderName>();
+                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
+
+                interceptedSettings.Headers.Should().NotContain(HeaderName.PredefinedHeaderNames.Created);
+            }
+            
+            [Fact]
+            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_AddsExpiresToHeaders() {
+                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("SomethingElse");
+                
+                SigningSettings interceptedSettings = null;
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
+                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                    .Returns(_headerAppender);
+
+                _settings.Headers = Array.Empty<HeaderName>();
+                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
+
+                interceptedSettings.Headers.Should().Contain(HeaderName.PredefinedHeaderNames.Expires);
+            }
+            
+            [Theory]
+            [InlineData("RSA")]
+            [InlineData("HMAC")]
+            [InlineData("ECDSA")]
+            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_DoesNotAddExpiresToHeaders(string algorithmName) {
+                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
+                
+                SigningSettings interceptedSettings = null;
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
+                    .Invokes(call => interceptedSettings = call.GetArgument<SigningSettings>(1))
+                    .Returns(_headerAppender);
+
+                _settings.Headers = Array.Empty<HeaderName>();
+                _sut.Compose(_httpRequest, _settings, _timeOfComposing);
+
+                interceptedSettings.Headers.Should().NotContain(HeaderName.PredefinedHeaderNames.Expires);
+            }
+            
             [Fact]
             public void WhenHeadersDoesNotContainDigest_AndDigestIsOff_DoesNotAddDigestHeader() {
                 _settings.DigestHashAlgorithm = default;

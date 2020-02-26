@@ -9,9 +9,12 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (request == null) return null;
             
             var requestMessage = new HttpRequestMessage {
-                RequestUri = new Uri(request.GetEncodedUrl(), UriKind.Absolute),
-                Method = new HttpMethod(request.Method)
+                RequestUri = new Uri(request.GetEncodedUrl(), UriKind.Absolute)
             };
+            
+            if (!string.IsNullOrEmpty(request.Method)) {
+                requestMessage.Method = new HttpMethod(request.Method);
+            }
             
             if (requestMessage.Method.SupportsBody() && request.Body != null) {
                 var streamContent = new StreamContent(request.Body);
