@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Security.Cryptography;
 using Dalion.HttpMessageSigning.Logging;
 using Dalion.HttpMessageSigning.SigningString;
 using FakeItEasy;
@@ -89,7 +90,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void ReturnsSignatureWithExpectedAlgorithm() {
                 A.CallTo(() => _settings.SignatureAlgorithm.Name).Returns("RSA");
-                A.CallTo(() => _settings.SignatureAlgorithm.HashAlgorithm).Returns(HashAlgorithm.SHA512);
+                A.CallTo(() => _settings.SignatureAlgorithm.HashAlgorithm).Returns(HashAlgorithmName.SHA512);
                 
                 var actual = _sut.CreateSignature(_httpRequest, _settings, _timeOfSigning);
                 

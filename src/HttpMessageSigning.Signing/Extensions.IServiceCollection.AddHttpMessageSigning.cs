@@ -4,7 +4,7 @@ using Dalion.HttpMessageSigning.SigningString;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Signing {
-    public static class Extensions {
+    public static partial class Extensions {
         /// <summary>
         ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -82,7 +82,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                 .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<IBase64Converter, Base64Converter>()
-                .AddSingleton<IHashAlgorithmFactory, HashAlgorithmFactory>()
                 .AddSingleton<ISignatureCreator, SignatureCreator>()
                 .AddSingleton<IAuthorizationHeaderParamCreator, AuthorizationHeaderParamCreator>()
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
@@ -94,7 +93,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                     prov.GetRequiredService<IAuthorizationHeaderParamCreator>(),
                     new DateSignatureHeaderEnsurer(),
                     new DigestSignatureHeaderEnsurer(
-                        prov.GetRequiredService<IHashAlgorithmFactory>(),
                         prov.GetRequiredService<IBase64Converter>()),
                     prov.GetRequiredService<ISystemClock>(),
                     prov.GetRequiredService<IHttpMessageSigningLogger<RequestSigner>>(),

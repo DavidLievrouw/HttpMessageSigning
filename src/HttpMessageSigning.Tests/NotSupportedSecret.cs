@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 
 namespace Dalion.HttpMessageSigning {
     public class NotSupportedSignatureAlgorithm : ISignatureAlgorithm {
@@ -6,7 +7,7 @@ namespace Dalion.HttpMessageSigning {
         
         public string Name => "NOTSUPPORTED";
         
-        public HashAlgorithm HashAlgorithm { get; set; }
+        public HashAlgorithmName HashAlgorithm { get; set; }
         
         public byte[] ComputeHash(string contentToSign) {
             throw new NotSupportedException();

@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
@@ -39,7 +40,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => _signatureParser.Parse(_request))
                     .Returns(signature);
 
-                var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
+                var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 
@@ -55,7 +56,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => _signatureParser.Parse(_request))
                     .Returns(signature);
 
-                var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
+                var client = new Client(signature.KeyId, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 

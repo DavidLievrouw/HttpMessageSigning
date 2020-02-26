@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
 using FakeItEasy;
 using FluentAssertions;
 using Xunit;
@@ -30,14 +31,14 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 _settings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
                     KeyId = new KeyId("client1"),
-                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA512),
+                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
                         HeaderName.PredefinedHeaderNames.Expires,
                         new HeaderName("dalion_app_id")
                     },
-                    DigestHashAlgorithm = HashAlgorithm.SHA256
+                    DigestHashAlgorithm = HashAlgorithmName.SHA256
                 };
 
                 FakeFactory.Create(out _headerAppender);
@@ -109,7 +110,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             [Fact]
             public void WhenHeadersDoesNotContainDigest_AndDigestIsOff_DoesNotAddDigestHeader() {
-                _settings.DigestHashAlgorithm = HashAlgorithm.None;
+                _settings.DigestHashAlgorithm = default;
                 
                 SigningSettings interceptedSettings = null;
                 A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
@@ -124,7 +125,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             
             [Fact]
             public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_AddsDigestHeader() {
-                _settings.DigestHashAlgorithm = HashAlgorithm.SHA384;
+                _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
                 
                 SigningSettings interceptedSettings = null;
                 A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
@@ -146,7 +147,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     HeaderName.PredefinedHeaderNames.Expires,
                     new HeaderName("dalion_app_id")
                 };
-                _settings.DigestHashAlgorithm = HashAlgorithm.SHA384;
+                _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
                 
                 SigningSettings interceptedSettings = null;
                 A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _settings, _timeOfComposing))
@@ -165,7 +166,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             [InlineData("HEAD")]
             [InlineData("DELETE")]
             public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_ButMethodDoesNotHaveBody_DoesNotAddDigestHeader(string method) {
-                _settings.DigestHashAlgorithm = HashAlgorithm.SHA384;
+                _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
                 _httpRequest.Method = new HttpMethod(method);
                 
                 SigningSettings interceptedSettings = null;

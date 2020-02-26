@@ -43,7 +43,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             // When digest is enabled, make it part of the signature string
-            if (settings.DigestHashAlgorithm != HashAlgorithm.None && request.Method.SupportsBody() && !settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
+            if (!string.IsNullOrEmpty(settings.DigestHashAlgorithm.Name) && request.Method.SupportsBody() && !settings.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
                 settings.Headers = settings.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Digest}).ToArray();
             }
             

@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.Logging;
 using FakeItEasy;
@@ -29,7 +30,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             _signingSettings = new SigningSettings {
                 Expires = TimeSpan.FromMinutes(5),
                 KeyId = new KeyId("client1"),
-                SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA512),
+                SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
                 Headers = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
                     HeaderName.PredefinedHeaderNames.Date,

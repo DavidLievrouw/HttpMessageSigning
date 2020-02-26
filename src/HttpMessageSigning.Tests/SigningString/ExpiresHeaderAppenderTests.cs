@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using FluentAssertions;
 using Xunit;
 
@@ -13,7 +14,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _settings = new SigningSettings {
                 Expires = TimeSpan.FromMinutes(5),
                 KeyId = new KeyId("client1"),
-                SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA512),
+                SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
                 Headers = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
                     HeaderName.PredefinedHeaderNames.Date,

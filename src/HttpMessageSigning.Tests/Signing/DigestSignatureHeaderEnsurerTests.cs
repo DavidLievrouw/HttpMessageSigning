@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -10,13 +12,12 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public class DigestSignatureHeaderEnsurerTests {
-        private readonly IHashAlgorithmFactory _hashAlgorithmFactory;
         private readonly IBase64Converter _base64Converter;
         private readonly DigestSignatureHeaderEnsurer _sut;
 
         public DigestSignatureHeaderEnsurerTests() {
-            FakeFactory.Create(out _hashAlgorithmFactory, out _base64Converter);
-            _sut = new DigestSignatureHeaderEnsurer(_hashAlgorithmFactory, _base64Converter);
+            FakeFactory.Create(out _base64Converter);
+            _sut = new DigestSignatureHeaderEnsurer(_base64Converter);
         }
 
         public class EnsureHeader : DigestSignatureHeaderEnsurerTests {
@@ -33,14 +34,14 @@ namespace Dalion.HttpMessageSigning.Signing {
                 _settings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
                     KeyId = "client1",
-                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA512),
+                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
                         HeaderName.PredefinedHeaderNames.Expires,
                         new HeaderName("dalion_app_id")
                     },
-                    DigestHashAlgorithm = HashAlgorithm.SHA256
+                    DigestHashAlgorithm = HashAlgorithmName.SHA256
                 };
             }
 
@@ -71,11 +72,22 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public async Task WhenDigestIsDisabled_DoesNotSetDigestHeader() {
-                _settings.DigestHashAlgorithm = HashAlgorithm.None;
+                _settings.DigestHashAlgorithm = new HashAlgorithmName();
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
                 _httpRequest.Headers.Should().NotContain("Digest");
+            }
+            
+            [Fact]
+            public void WhenHashAlgorithmIsNotSupported_ThrowsNotSupportedException() {
+                _httpRequest.Content = new StringContent("abc123", Encoding.UTF8, MediaTypeNames.Application.Json);
+                
+                _settings.DigestHashAlgorithm = new HashAlgorithmName("Unsupported");
+
+                Func<Task> act = () =>  _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
+
+                act.Should().Throw<NotSupportedException>();
             }
 
             [Fact]
@@ -109,27 +121,18 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public async Task ReturnsExpectedString() {
                 _httpRequest.Content = new StringContent("abc123", Encoding.UTF8, MediaTypeNames.Application.Json);
+                var expectedBodyBytes = Encoding.UTF8.GetBytes("abc123");
+                
+                _settings.DigestHashAlgorithm = HashAlgorithmName.SHA512;
+                var hashBytes = HashAlgorithm.Create(HashAlgorithmName.SHA512.Name)?.ComputeHash(expectedBodyBytes);
 
-                using (var hashAlgorithm = A.Fake<IHashAlgorithm>()) {
-                    A.CallTo(() => _hashAlgorithmFactory.Create(_settings.DigestHashAlgorithm))
-                        .Returns(hashAlgorithm);
-
-                    var expectedBodyBytes = Encoding.UTF8.GetBytes("abc123");
-                    var hashBytes = new byte[] {0x01, 0x02};
-                    A.CallTo(() => hashAlgorithm.ComputeHash(A<byte[]>.That.IsSameSequenceAs(expectedBodyBytes)))
-                        .Returns(hashBytes);
-
-                    A.CallTo(() => hashAlgorithm.Name)
-                        .Returns("SHA-384");
-
-                    var base64 = "xyz==";
-                    A.CallTo(() => _base64Converter.ToBase64(hashBytes))
-                        .Returns(base64);
-
-                    await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
-
-                    _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value == new StringValues("SHA-384=xyz=="));
-                }
+                var base64 = "xyz==";
+                A.CallTo(() => _base64Converter.ToBase64(A<byte[]>.That.IsSameSequenceAs(hashBytes)))
+                    .Returns(base64);
+                
+                await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
+                
+                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value == new StringValues("SHA-512=xyz=="));
             }
         }
     }

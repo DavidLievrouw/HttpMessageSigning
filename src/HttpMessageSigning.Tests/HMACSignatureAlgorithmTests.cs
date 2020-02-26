@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using FluentAssertions;
 using Xunit;
 
@@ -6,7 +7,7 @@ namespace Dalion.HttpMessageSigning {
         private readonly HMACSignatureAlgorithm _sut;
 
         public HMACSignatureAlgorithmTests() {
-            _sut = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA384);
+            _sut = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
         }
 
         public class Name : HMACSignatureAlgorithmTests {
@@ -19,7 +20,7 @@ namespace Dalion.HttpMessageSigning {
         public class VerifySignature : HMACSignatureAlgorithmTests {
             [Fact]
             public void CanUseEmptySecret() {
-                var sut = new HMACSignatureAlgorithm("", HashAlgorithm.SHA384);
+                var sut = new HMACSignatureAlgorithm("", HashAlgorithmName.SHA384);
                 var payload = "_abc_123_";
                 var signature = sut.ComputeHash(payload);
                 var actual = sut.VerifySignature(payload, signature);

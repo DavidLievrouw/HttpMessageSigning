@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class DigestSignatureHeaderEnsurer : ISignatureHeaderEnsurer {
-        private readonly IHashAlgorithmFactory _hashAlgorithmFactory;
         private readonly IBase64Converter _base64Converter;
 
-        public DigestSignatureHeaderEnsurer(IHashAlgorithmFactory hashAlgorithmFactory, IBase64Converter base64Converter) {
-            _hashAlgorithmFactory = hashAlgorithmFactory ?? throw new ArgumentNullException(nameof(hashAlgorithmFactory));
+        public DigestSignatureHeaderEnsurer(IBase64Converter base64Converter) {
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
         }
 
@@ -18,7 +16,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
             
             if (!request.Method.SupportsBody()) return;
-            if (signingSettings.DigestHashAlgorithm == HashAlgorithm.None) return;
+            if (string.IsNullOrEmpty(signingSettings.DigestHashAlgorithm.Name)) return;
             if (request.Headers.Contains("Digest")) return;
 
             if (request.Content == null) {
@@ -27,11 +25,13 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             var bodyText = await request.Content.ReadAsStringAsync();
-            using (var hashAlgorithm = _hashAlgorithmFactory.Create(signingSettings.DigestHashAlgorithm)) {
+            using (var hashAlgorithm = System.Security.Cryptography.HashAlgorithm.Create(signingSettings.DigestHashAlgorithm.Name)) {
+                if (hashAlgorithm == null) throw new NotSupportedException($"The specified hash algorithm ({signingSettings.DigestHashAlgorithm.Name}) for digest is currently not supported.");
                 var bodyBytes = Encoding.UTF8.GetBytes(bodyText);
                 var payloadBytes = hashAlgorithm.ComputeHash(bodyBytes);
                 var digest = _base64Converter.ToBase64(payloadBytes);
-                request.Headers.Add("Digest", $"{hashAlgorithm.Name}={digest}");
+                var digestAlgorithmName = Constants.DigestHashAlgorithmNames[signingSettings.DigestHashAlgorithm.Name];
+                request.Headers.Add("Digest", $"{digestAlgorithmName}={digest}");
             }
         }
     }

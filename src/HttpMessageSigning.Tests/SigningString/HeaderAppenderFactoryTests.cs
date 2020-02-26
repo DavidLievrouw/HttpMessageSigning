@@ -1,17 +1,15 @@
 using System;
 using System.Net.Http;
+using System.Security.Cryptography;
 using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     public class HeaderAppenderFactoryTests {
-        private readonly IBase64Converter _base64Converter;
-        private readonly IHashAlgorithmFactory _hashAlgorithmFactory;
         private readonly HeaderAppenderFactory _sut;
 
         public HeaderAppenderFactoryTests() {
-            FakeFactory.Create(out _base64Converter, out _hashAlgorithmFactory);
-            _sut = new HeaderAppenderFactory(_base64Converter, _hashAlgorithmFactory);
+            _sut = new HeaderAppenderFactory();
         }
 
         public class Create : HeaderAppenderFactoryTests {
@@ -28,7 +26,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 _settings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
                     KeyId = new KeyId("client1"),
-                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA512),
+                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,

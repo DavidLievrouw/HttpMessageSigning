@@ -10,9 +10,8 @@ namespace Dalion.HttpMessageSigning {
     public class HMACSignatureAlgorithm : ISignatureAlgorithm {
         private readonly KeyedHashAlgorithm _realAlgorithm;
         
-        public HMACSignatureAlgorithm(string secret, HashAlgorithm hashAlgorithm) {
+        public HMACSignatureAlgorithm(string secret, HashAlgorithmName hashAlgorithm) {
             if (secret == null) throw new ArgumentNullException(nameof(secret));
-            if (hashAlgorithm == HashAlgorithm.None) throw new ArgumentException("A hash algorithm must be specified.", nameof(hashAlgorithm));
             var algorithmName = $"HMAC{hashAlgorithm}";
             HashAlgorithm = hashAlgorithm;
             Secret = secret;
@@ -24,7 +23,7 @@ namespace Dalion.HttpMessageSigning {
         
         public string Name => "HMAC";
         
-        public HashAlgorithm HashAlgorithm { get; }
+        public HashAlgorithmName HashAlgorithm { get; }
 
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using FluentAssertions;
 using Xunit;
 
@@ -11,8 +12,8 @@ namespace Dalion.HttpMessageSigning.Signing {
 
         public RegisteredSignerSettingsStoreTests() {
             _registeredSigningSettings = new[] {
-                new RegisteredSigningSettings(new KeyId("client1"), new SigningSettings {DigestHashAlgorithm = HashAlgorithm.SHA384}),
-                new RegisteredSigningSettings(new KeyId("client2"), new SigningSettings {DigestHashAlgorithm = HashAlgorithm.SHA512})
+                new RegisteredSigningSettings(new KeyId("client1"), new SigningSettings {DigestHashAlgorithm = HashAlgorithmName.SHA384}),
+                new RegisteredSigningSettings(new KeyId("client2"), new SigningSettings {DigestHashAlgorithm = HashAlgorithmName.SHA512})
             };
             _sut = new RegisteredSignerSettingsStore(_registeredSigningSettings);
         }

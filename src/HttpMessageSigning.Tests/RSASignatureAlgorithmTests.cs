@@ -12,7 +12,7 @@ namespace Dalion.HttpMessageSigning {
             var rsa = new RSACryptoServiceProvider();
             _publicKeyParams = rsa.ExportParameters(false);
             _privateKeyParams = rsa.ExportParameters(true);
-            _sut = new RSASignatureAlgorithm(HashAlgorithm.SHA1, _publicKeyParams, _privateKeyParams);
+            _sut = new RSASignatureAlgorithm(HashAlgorithmName.SHA1, _publicKeyParams, _privateKeyParams);
         }
 
         public class Name : RSASignatureAlgorithmTests {
@@ -44,7 +44,7 @@ namespace Dalion.HttpMessageSigning {
             public void CanVerifyWithAlgorithmThatOnlyKnowsAboutThePublicKey() {
                 var payload = "_abc_123_";
                 var signature = _sut.ComputeHash(payload);
-                var verifier = new RSASignatureAlgorithm(HashAlgorithm.SHA1, _publicKeyParams);
+                var verifier = new RSASignatureAlgorithm(HashAlgorithmName.SHA1, _publicKeyParams);
                 var actual = verifier.VerifySignature(payload, signature);
                 actual.Should().BeTrue();
             }

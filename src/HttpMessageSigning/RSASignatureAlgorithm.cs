@@ -4,24 +4,29 @@ using System.Text;
 
 namespace Dalion.HttpMessageSigning {
     public class RSASignatureAlgorithm : ISignatureAlgorithm {
-        private readonly RSACryptoServiceProvider _rsaForEncrypt;
-        private readonly RSACryptoServiceProvider _rsaForSign;
-        private readonly IHashAlgorithm _hashAlgorithm;
+        private readonly RSA _rsaForEncrypt;
+        private readonly RSA _rsaForSign;
+        private readonly HashAlgorithm _hasher;
 
-        public RSASignatureAlgorithm(HashAlgorithm hashAlgorithm, RSAParameters publicParameters) {
-            if (hashAlgorithm == HashAlgorithm.None) throw new ArgumentException("A hash algorithm must be specified.", nameof(hashAlgorithm));
+        public RSASignatureAlgorithm(HashAlgorithmName hashAlgorithm, RSA rsa) {
             HashAlgorithm = hashAlgorithm;
-            _hashAlgorithm = new HashAlgorithmFactory().Create(hashAlgorithm);
+            _hasher = System.Security.Cryptography.HashAlgorithm.Create(hashAlgorithm.Name);
+            _rsaForEncrypt = rsa ?? throw new ArgumentNullException(nameof(rsa));
+        }
+        
+        public RSASignatureAlgorithm(HashAlgorithmName hashAlgorithm, RSAParameters publicParameters) {
+            HashAlgorithm = hashAlgorithm;
+            _hasher = System.Security.Cryptography.HashAlgorithm.Create(hashAlgorithm.Name);
             _rsaForEncrypt = new RSACryptoServiceProvider();
             _rsaForEncrypt.ImportParameters(publicParameters);
         }
 
-        public RSASignatureAlgorithm(HashAlgorithm hashAlgorithm, RSAParameters publicParameters, RSAParameters privateParameters) : this(hashAlgorithm, publicParameters) {
+        public RSASignatureAlgorithm(HashAlgorithmName hashAlgorithm, RSAParameters publicParameters, RSAParameters privateParameters) : this(hashAlgorithm, publicParameters) {
             _rsaForSign = new RSACryptoServiceProvider();
             _rsaForSign.ImportParameters(privateParameters);
         }
 
-        public HashAlgorithm HashAlgorithm { get; }
+        public HashAlgorithmName HashAlgorithm { get; }
         
         public void Dispose() {
             _rsaForEncrypt?.Dispose();
@@ -32,8 +37,8 @@ namespace Dalion.HttpMessageSigning {
 
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
-            var hashedData = _hashAlgorithm.ComputeHash(inputBytes);
-            return _rsaForSign.SignHash(hashedData, CryptoConfig.MapNameToOID(_hashAlgorithm.Id.ToString()));
+            var hashedData = _hasher.ComputeHash(inputBytes);
+            return _rsaForSign.SignHash(hashedData, HashAlgorithm, RSASignaturePadding.Pkcs1);
         }
 
         public bool VerifySignature(string contentToSign, byte[] signature) {
@@ -41,9 +46,9 @@ namespace Dalion.HttpMessageSigning {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
 
             var signedBytes = Encoding.UTF8.GetBytes(contentToSign);
-            var hashedData = _hashAlgorithm.ComputeHash(signedBytes);
+            var hashedData = _hasher.ComputeHash(signedBytes);
 
-            return _rsaForEncrypt.VerifyHash(hashedData, CryptoConfig.MapNameToOID(_hashAlgorithm.Id.ToString()), signature);
+            return _rsaForEncrypt.VerifyHash(hashedData, signature, HashAlgorithm, RSASignaturePadding.Pkcs1);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 
 namespace Dalion.HttpMessageSigning {
     /// <summary>
@@ -23,8 +24,8 @@ namespace Dalion.HttpMessageSigning {
         /// <summary>
         /// Gets or sets the hash algorithm to use to generate a Digest http header, to be able to verify that the body has not been modified.
         /// </summary>
-        /// <remarks>Select <see cref="Dalion.HttpMessageSigning.HashAlgorithm.None"/> to disable Digest header generation.</remarks>
-        public HashAlgorithm DigestHashAlgorithm { get; set; } = HashAlgorithm.SHA256;
+        /// <remarks>Set to 'default' to disable Digest header generation.</remarks>
+        public HashAlgorithmName DigestHashAlgorithm { get; set; } = default;
         
         /// <summary>
         /// The ordered list of names of request headers to include when generating the signature for the message.

@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using Dalion.HttpMessageSigning.Signing;
 using Dalion.HttpMessageSigning.Verification;
 using FluentAssertions;
@@ -15,7 +16,7 @@ namespace Dalion.HttpMessageSigning {
                 .AddHttpMessageSigning(
                     new KeyId("client1"),
                     provider => new SigningSettings {
-                        SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA384)
+                        SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384)
                     })
                 .AddHttpMessageSignatureVerification(new InMemoryClientStore());
             _serviceProvider = services.BuildServiceProvider();

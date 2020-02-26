@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using FluentAssertions;
 using Xunit;
 
@@ -22,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void WhenClientHasNullClaims_OnlyReturnsAppIdClaim() {
                 var client = new Client(
                     (KeyId)"id1", 
-                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256),
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     null);
                 
                 var actual = _sut.CreateForClient(client);
@@ -37,7 +38,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void WhenClientHasNoClaims_OnlyReturnsAppIdClaim() {
                 var client = new Client(
                     (KeyId)"id1", 
-                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256));
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
                 
                 var actual = _sut.CreateForClient(client);
 
@@ -51,7 +52,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void WhenClientHasAdditionalClaims_ReturnsAppIdAndAdditionalClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
-                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256),
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
                     new Claim("c2", "v2"));
@@ -71,7 +72,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void CreatesIdentityWithExpectedNameAndRoleClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
-                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256),
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
                     new Claim("c2", "v2"));
@@ -87,7 +88,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void CreatesIdentityForExpectedAuthenticationType() {
                 var client = new Client(
                     (KeyId)"id1", 
-                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA256),
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
                     new Claim("c2", "v2"));

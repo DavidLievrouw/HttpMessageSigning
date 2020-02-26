@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using Dalion.HttpMessageSigning.Logging;
 using FakeItEasy;
 using FluentAssertions;
@@ -42,7 +43,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 _keyId = new KeyId("client1");
                 _signingSettings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
-                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA512),
+                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
@@ -105,7 +106,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             public void CreatesNewInstanceOfExpectedType() {
                 var signingSettings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
-                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithm.SHA512),
+                    SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
