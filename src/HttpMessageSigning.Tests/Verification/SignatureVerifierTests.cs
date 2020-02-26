@@ -43,11 +43,14 @@ namespace Dalion.HttpMessageSigning.Verification {
         public class VerifySignature : SignatureVerifierTests {
             private readonly Signature _signature;
             private readonly Client _client;
-            private readonly HttpRequestMessage _signedRequest;
+            private readonly HttpRequestForSigning _signedRequest;
 
             public VerifySignature() {
                 _signature = new Signature {KeyId = "client1"};
-                _signedRequest = new HttpRequestMessage(HttpMethod.Get, "https://unittest.com:9001");
+                _signedRequest = new HttpRequestForSigning {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri("https://unittest.com:9001")
+                };
                 _client = new Client("client1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
             }
 

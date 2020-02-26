@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using FluentAssertions;
 using Xunit;
 
@@ -14,14 +12,14 @@ namespace Dalion.HttpMessageSigning.Verification {
         }
 
         public class Parse : SignatureParserTests {
-            private readonly HttpRequestMessage _request;
+            private readonly HttpRequestForSigning _request;
             private readonly long _nowEpoch;
             private readonly long _expiresEpoch;
             private readonly DateTimeOffset _now;
             private readonly DateTimeOffset _expires;
 
             public Parse() {
-                _request = new HttpRequestMessage();
+                _request = new HttpRequestForSigning();
                 _now = new DateTimeOffset(2020, 2, 25, 10, 29, 29, TimeSpan.Zero);
                 _expires = _now.AddMinutes(10);
                 _nowEpoch = _now.ToUnixTimeSeconds();
@@ -45,7 +43,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public void WhenRequestHasAnInvalidAuthorizationHeader_ThrowsSignatureVerificationException() {
-                _request.Headers.Authorization = new AuthenticationHeaderValue("Blah");
+                _request.Headers["Authorization"] = "{nonsense}";
 
                 Action act = () => _sut.Parse(_request);
 
@@ -54,7 +52,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public void WhenRequestHasAnAuthorizationHeaderForAnotherScheme_ThrowsSignatureVerificationException() {
-                _request.Headers.Authorization = new AuthenticationHeaderValue("Custom", "abc123");
+                _request.Headers["Authorization"] = "Custom abc123";
 
                 Action act = () => _sut.Parse(_request);
 
@@ -63,7 +61,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public void WhenRequestHasAnAuthorizationHeaderWithoutParam_ThrowsSignatureVerificationException() {
-                _request.Headers.Authorization = new AuthenticationHeaderValue("Signature");
+                _request.Headers["Authorization"] = "Signature ";
 
                 Action act = () => _sut.Parse(_request);
 
@@ -94,7 +92,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void IgnoresAdditionalSettings() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
-                _request.Headers.Authorization = new AuthenticationHeaderValue("Signature", _request.Headers.Authorization.Parameter + ",additional=true");
+                _request.Headers["Authorization"] = _request.Headers["Authorization"] + ",additional=true";
 
                 var actual = _sut.Parse(_request);
 
@@ -203,7 +201,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             private static void SetHeader(
-                HttpRequestMessage request,
+                HttpRequestForSigning request,
                 string keyId = null,
                 string algorithm = null,
                 string created = null,
@@ -211,7 +209,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 string headers = null,
                 string sig = null) {
                 var param = Compose(keyId, algorithm, created, expires, headers, sig);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Signature", param);
+                request.Headers["Authorization"] = "Signature " + param;
             }
         }
     }

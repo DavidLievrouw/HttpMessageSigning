@@ -1,10 +1,9 @@
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class AllHeadersPresentVerificationTask : IVerificationTask {
-        public Task Verify(HttpRequestMessage signedRequest, Signature signature, Client client) {
+        public Task Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (!signature.Headers.Contains(HeaderName.PredefinedHeaderNames.RequestTarget)) {
                 throw new SignatureVerificationException($"The {HeaderName.PredefinedHeaderNames.RequestTarget} header is required to be included in the signature.");
             }

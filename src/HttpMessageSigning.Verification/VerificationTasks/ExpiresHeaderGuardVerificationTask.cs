@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 
@@ -8,7 +7,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class ExpiresHeaderGuardVerificationTask : IVerificationTask {
         private static readonly string[] AlgorithmNamesThatDoNotAllowExpiresHeader = {"rsa", "hmac", "ecdsa"};
 
-        public Task Verify(HttpRequestMessage signedRequest, Signature signature, Client client) {
+        public Task Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (
                 signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires) &&
                 AlgorithmNamesThatDoNotAllowExpiresHeader.Contains(client.SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase)) {

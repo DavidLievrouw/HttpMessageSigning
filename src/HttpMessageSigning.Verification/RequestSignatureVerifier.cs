@@ -28,13 +28,13 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             try {
-                var requestMessage = new HttpRequestMessage(); // ToDo Get RequestForSigning
+                var requestForSigning = request.ToRequestForSigning();
                 
-                var signature = _signatureParser.Parse(requestMessage);
+                var signature = _signatureParser.Parse(requestForSigning);
                 var client = await _clientStore.Get(signature.KeyId);
 
                 var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client);
-                await _signatureVerifier.VerifySignature(requestMessage, sanitizedSignature, client);
+                await _signatureVerifier.VerifySignature(requestForSigning, sanitizedSignature, client);
 
                 return new RequestSignatureVerificationResultSuccess(_claimsPrincipalFactory.CreateForClient(client));
             }

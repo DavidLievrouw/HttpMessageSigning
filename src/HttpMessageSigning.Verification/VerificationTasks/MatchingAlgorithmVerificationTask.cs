@@ -1,10 +1,9 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class MatchingAlgorithmVerificationTask : IVerificationTask {
-        public Task Verify(HttpRequestMessage signedRequest, Signature signature, Client client) {
+        public Task Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             // Algorithm parameter is not required
             if (string.IsNullOrEmpty(signature.Algorithm)) return Task.CompletedTask;
 

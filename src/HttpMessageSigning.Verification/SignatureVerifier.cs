@@ -1,5 +1,4 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 
@@ -33,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             _matchingSignatureVerificationTask = matchingSignatureVerificationTask ?? throw new ArgumentNullException(nameof(matchingSignatureVerificationTask));
         }
 
-        public async Task VerifySignature(HttpRequestMessage signedRequest, Signature signature, Client client) {
+        public async Task VerifySignature(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (signedRequest == null) throw new ArgumentNullException(nameof(signedRequest));
             if (signature == null) throw new ArgumentNullException(nameof(signature));
             if (client == null) throw new ArgumentNullException(nameof(client));

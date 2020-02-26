@@ -1,5 +1,4 @@
 using System;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.SigningString;
@@ -14,7 +13,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
         }
 
-        public Task Verify(HttpRequestMessage signedRequest, Signature signature, Client client) {
+        public Task Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (!signature.Created.HasValue) {
                 throw new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.");
             }           
@@ -31,8 +30,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 DigestHashAlgorithm = HashAlgorithmName.SHA256 // ToDo: Does not make sense here. 
             };
 
-            var requestForSigning = signedRequest.ToRequestForSigning();
-            var signingString = _signingStringComposer.Compose(requestForSigning, signingSettings, signature.Created.Value);
+            var signingString = _signingStringComposer.Compose(signedRequest, signingSettings, signature.Created.Value);
             var signatureHash = signingSettings.SignatureAlgorithm.ComputeHash(signingString);
             var signatureString = _base64Converter.ToBase64(signatureHash);
 

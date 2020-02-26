@@ -1,5 +1,4 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
@@ -10,7 +9,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
         }
 
-        public Task Verify(HttpRequestMessage signedRequest, Signature signature, Client client) {
+        public Task Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (!signature.Created.HasValue) {
                 throw new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.");
             }
