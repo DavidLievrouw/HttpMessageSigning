@@ -7,15 +7,15 @@ namespace Dalion.HttpMessageSigning.Verification {
     public static partial class Extensions {
         internal static HttpRequestMessage ToHttpRequestMessage(this HttpRequest request) {
             if (request == null) return null;
-            
+
             var requestMessage = new HttpRequestMessage {
                 RequestUri = new Uri(request.GetEncodedUrl(), UriKind.Absolute)
             };
-            
+
             if (!string.IsNullOrEmpty(request.Method)) {
                 requestMessage.Method = new HttpMethod(request.Method);
             }
-            
+
             if (requestMessage.Method.SupportsBody() && request.Body != null) {
                 var streamContent = new StreamContent(request.Body);
                 requestMessage.Content = streamContent;
@@ -28,7 +28,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             requestMessage.Headers.Host = requestMessage.RequestUri.Authority;
-            
+
             return requestMessage;
         }
     }

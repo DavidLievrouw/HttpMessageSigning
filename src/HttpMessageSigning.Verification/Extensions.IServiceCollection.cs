@@ -1,5 +1,6 @@
 ﻿using System;
 using Dalion.HttpMessageSigning.Logging;
+using Dalion.HttpMessageSigning.SigningString;
 using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -44,20 +45,27 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             return services
                 .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
+                .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<ISignatureParser, SignatureParser>()
                 .AddSingleton<IClaimsPrincipalFactory, ClaimsPrincipalFactory>()
                 .AddSingleton<IDefaultSignatureHeadersProvider, DefaultSignatureHeadersProvider>()
                 .AddSingleton<ISignatureSanitizer, SignatureSanitizer>()
                 .AddSingleton(clientStoreFactory)
+                .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
+                .AddSingleton<ISigningStringComposer, SigningStringComposer>()
                 .AddSingleton<ISignatureVerifier>(provider => new SignatureVerifier(
                     new KnownAlgorithmVerificationTask(), 
                     new MatchingAlgorithmVerificationTask(), 
                     new CreatedHeaderGuardVerificationTask(), 
                     new ExpiresHeaderGuardVerificationTask(), 
                     new AllHeadersPresentVerificationTask(), 
-                    new CreationTimeVerificationTask(), 
-                    new ExpirationTimeVerificationTask(), 
-                    new MatchingSignatureVerificationTask()))
+                    new CreationTimeVerificationTask(
+                        provider.GetRequiredService<ISystemClock>()), 
+                    new ExpirationTimeVerificationTask(
+                        provider.GetRequiredService<ISystemClock>()), 
+                    new MatchingSignatureVerificationTask(
+                        provider.GetRequiredService<ISigningStringComposer>(),
+                        provider.GetRequiredService<IBase64Converter>())))
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
         }
     }
