@@ -4,21 +4,22 @@ using System.Text;
 
 namespace Dalion.HttpMessageSigning {
     public class RSASignatureAlgorithm : ISignatureAlgorithm {
-        private readonly RSA _rsaForEncrypt;
+        private readonly RSA _rsaForVerification;
         private readonly RSA _rsaForSign;
         private readonly HashAlgorithm _hasher;
 
         public RSASignatureAlgorithm(HashAlgorithmName hashAlgorithm, RSA rsa) {
             HashAlgorithm = hashAlgorithm;
             _hasher = System.Security.Cryptography.HashAlgorithm.Create(hashAlgorithm.Name);
-            _rsaForEncrypt = rsa ?? throw new ArgumentNullException(nameof(rsa));
+            _rsaForVerification = rsa ?? throw new ArgumentNullException(nameof(rsa));
+            _rsaForSign = rsa ?? throw new ArgumentNullException(nameof(rsa));
         }
         
         public RSASignatureAlgorithm(HashAlgorithmName hashAlgorithm, RSAParameters publicParameters) {
             HashAlgorithm = hashAlgorithm;
             _hasher = System.Security.Cryptography.HashAlgorithm.Create(hashAlgorithm.Name);
-            _rsaForEncrypt = new RSACryptoServiceProvider();
-            _rsaForEncrypt.ImportParameters(publicParameters);
+            _rsaForVerification = new RSACryptoServiceProvider();
+            _rsaForVerification.ImportParameters(publicParameters);
         }
 
         public RSASignatureAlgorithm(HashAlgorithmName hashAlgorithm, RSAParameters publicParameters, RSAParameters privateParameters) : this(hashAlgorithm, publicParameters) {
@@ -29,7 +30,7 @@ namespace Dalion.HttpMessageSigning {
         public HashAlgorithmName HashAlgorithm { get; }
         
         public void Dispose() {
-            _rsaForEncrypt?.Dispose();
+            _rsaForVerification?.Dispose();
             _rsaForSign?.Dispose();
         }
 
@@ -48,7 +49,7 @@ namespace Dalion.HttpMessageSigning {
             var signedBytes = Encoding.UTF8.GetBytes(contentToSign);
             var hashedData = _hasher.ComputeHash(signedBytes);
 
-            return _rsaForEncrypt.VerifyHash(hashedData, signature, HashAlgorithm, RSASignaturePadding.Pkcs1);
+            return _rsaForVerification.VerifyHash(hashedData, signature, HashAlgorithm, RSASignaturePadding.Pkcs1);
         }
     }
 }
