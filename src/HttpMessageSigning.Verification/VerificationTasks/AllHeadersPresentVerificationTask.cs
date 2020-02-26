@@ -21,8 +21,10 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             foreach (var headerName in signature.Headers) {
-                if (!signedRequest.Headers.Contains(headerName)) {
-                    throw new SignatureVerificationException($"The request header {headerName} is missing, but it is required to validate the signature.");
+                if (headerName != HeaderName.PredefinedHeaderNames.RequestTarget) {
+                    if (!signedRequest.Headers.Contains(headerName)) {
+                        throw new SignatureVerificationException($"The request header {headerName} is missing, but it is required to validate the signature.");
+                    }
                 }
             }
             

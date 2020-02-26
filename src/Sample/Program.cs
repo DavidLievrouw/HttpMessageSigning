@@ -21,12 +21,12 @@ namespace Sample {
             using (var serviceProvider = new ServiceCollection().Configure(ConfigureServices).BuildServiceProvider()) {
                 var signerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>();
                 var verifier = serviceProvider.GetRequiredService<IRequestSignatureVerifier>();
-                
-                var authParamHMAC = await SampleSignHMAC(signerFactory);
-                await SampleVerify(verifier, authParamHMAC);
-                
-                var authParamRSA = await SampleSignRSA(signerFactory);
-                await SampleVerify(verifier, authParamRSA);
+
+                var signedRequestForHMAC = await SampleSignHMAC(signerFactory);
+                await SampleVerify(verifier, signedRequestForHMAC);
+
+                var signedRequestForRSA = await SampleSignRSA(signerFactory);
+                await SampleVerify(verifier, signedRequestForRSA);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Sample {
             var publicKeyParameters = publicKey.ExportParameters(false);
             var privateKey = cert.GetRSAPrivateKey();
             var privateKeyParameters = privateKey.ExportParameters(true);
-            
+
             services
                 .AddLogging(configure => configure.AddConsole())
                 .AddHttpMessageSigning(
@@ -63,26 +63,20 @@ namespace Sample {
                 });
         }
 
-        private static async Task<string> SampleSignHMAC(IRequestSignerFactory requestSignerFactory) {
+        private static async Task<HttpRequestMessage> SampleSignHMAC(IRequestSignerFactory requestSignerFactory) {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post"),
                 Method = HttpMethod.Post,
                 Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json)
             };
 
-           var requestSigner = requestSignerFactory.CreateFor(new KeyId("HttpMessageSigningSampleHMAC"));
-
+            var requestSigner = requestSignerFactory.CreateFor(new KeyId("HttpMessageSigningSampleHMAC"));
             await requestSigner.Sign(request);
-            using (var httpClient = new HttpClient()) {
-                var response = await httpClient.SendAsync(request);
-                Console.WriteLine("Response:");
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
-            }
 
-            return request.Headers.Authorization.Parameter;
+            return request;
         }
-        
-        private static async Task<string> SampleSignRSA(IRequestSignerFactory requestSignerFactory) {
+
+        private static async Task<HttpRequestMessage> SampleSignRSA(IRequestSignerFactory requestSignerFactory) {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post"),
                 Method = HttpMethod.Post,
@@ -90,21 +84,23 @@ namespace Sample {
             };
 
             var requestSigner = requestSignerFactory.CreateFor(new KeyId("HttpMessageSigningSampleRSA"));
-
             await requestSigner.Sign(request);
-            using (var httpClient = new HttpClient()) {
-                var response = await httpClient.SendAsync(request);
-                Console.WriteLine("Response:");
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
-            }
 
-            return request.Headers.Authorization.Parameter;
+            return request;
         }
 
-        private static async Task SampleVerify(IRequestSignatureVerifier verifier, string authParam) {
-            var request = new DefaultHttpRequest(new DefaultHttpContext());
-            request.Headers["Authorization"] = "Signature " + authParam;
-            
+        private static async Task SampleVerify(IRequestSignatureVerifier verifier, HttpRequestMessage clientRequest) {
+            var request = new DefaultHttpRequest(new DefaultHttpContext()) {
+                Method = "POST",
+                Scheme = "https",
+                Host = new HostString("httpbin.org", 443),
+                Path = new PathString("/post"),
+                Headers = {
+                    {"Date", clientRequest.Headers.GetValues("Date").First()},
+                    {"Authorization", clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter}
+                }
+            };
+
             var verificationResult = await verifier.VerifySignature(request);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 Console.WriteLine("Request signature verification succeeded:");
