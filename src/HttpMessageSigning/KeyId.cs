@@ -40,7 +40,7 @@ namespace Dalion.HttpMessageSigning {
             return true;
         }
         
-        public static explicit operator KeyId(string value) {
+        public static implicit operator KeyId(string value) {
             if (!TryParse(value, out var keyId)) {
                 throw new FormatException($"The specified value ({value ?? "[null]"}) is not a valid string representation of a key id.");
             }
