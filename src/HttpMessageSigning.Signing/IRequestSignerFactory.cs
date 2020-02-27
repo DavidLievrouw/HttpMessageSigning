@@ -1,8 +1,10 @@
+using System;
+
 namespace Dalion.HttpMessageSigning.Signing {
     /// <summary>
     /// Factory that is able to create a <see cref="Dalion.HttpMessageSigning.Signing.IRequestSigner"/>, based on the specified settings.
     /// </summary>
-    public interface IRequestSignerFactory {
+    public interface IRequestSignerFactory : IDisposable {
         /// <summary>
         /// Create a new <see cref="Dalion.HttpMessageSigning.Signing.IRequestSigner"/>, based on the specified settings.
         /// </summary>

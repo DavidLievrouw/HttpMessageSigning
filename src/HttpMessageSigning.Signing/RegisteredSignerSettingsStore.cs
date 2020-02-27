@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class RegisteredSignerSettingsStore : IRegisteredSignerSettingsStore {
-        private readonly IEnumerable<RegisteredSigningSettings> _registeredSigningSettings;
+        private readonly IList<RegisteredSigningSettings> _registeredSigningSettings;
 
         public RegisteredSignerSettingsStore(IEnumerable<RegisteredSigningSettings> registeredSigningSettings) {
-            _registeredSigningSettings = registeredSigningSettings ?? throw new ArgumentNullException(nameof(registeredSigningSettings));
+            _registeredSigningSettings = registeredSigningSettings?.ToList() ?? throw new ArgumentNullException(nameof(registeredSigningSettings));
         }
 
         public SigningSettings Get(KeyId keyId) {
@@ -23,6 +23,13 @@ namespace Dalion.HttpMessageSigning.Signing {
             signingSettings.KeyId = keyId;
             
             return signingSettings;
+        }
+
+        public void Dispose() {
+            foreach (var setting in _registeredSigningSettings) {
+                setting?.Dispose();
+            }
+            _registeredSigningSettings.Clear();
         }
     }
 }

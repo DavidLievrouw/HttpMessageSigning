@@ -47,5 +47,9 @@ namespace Dalion.HttpMessageSigning.Verification {
                 return new RequestSignatureVerificationResultFailure(ex);
             }
         }
+
+        public virtual void Dispose() {
+            _clientStore?.Dispose();
+        }
     }
 }

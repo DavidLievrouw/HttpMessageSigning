@@ -6,7 +6,7 @@ namespace Dalion.HttpMessageSigning {
     /// <summary>
     /// Represents settings to be used when signing a http request message.
     /// </summary>
-    public class SigningSettings : IValidatable {
+    public class SigningSettings : IValidatable, IDisposable {
         /// <summary>
         /// The entity that the server can use to look up the component they need to verify the signature.
         /// </summary>
@@ -49,6 +49,10 @@ namespace Dalion.HttpMessageSigning {
             if (Headers != null && Headers.Contains(HeaderName.PredefinedHeaderNames.Expires)) {
                 throw new PlatformNotSupportedException($"The current platform disallows headers with token separator characters. Disallowed header: {HeaderName.PredefinedHeaderNames.Expires}.");
             }
+        }
+
+        public virtual void Dispose() {
+            SignatureAlgorithm?.Dispose();
         }
     }
 }

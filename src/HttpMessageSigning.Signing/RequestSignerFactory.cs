@@ -57,5 +57,9 @@ namespace Dalion.HttpMessageSigning.Signing {
             
             return Create(keyId, signingSettings);
         }
+
+        public void Dispose() {
+            _registeredSignerSettingsStore?.Dispose();
+        }
     }
 }

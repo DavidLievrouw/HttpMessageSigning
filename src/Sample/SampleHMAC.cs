@@ -17,11 +17,12 @@ namespace Sample {
     public class SampleHMAC {
         public static async Task Run(string[] args) {
             using (var serviceProvider = new ServiceCollection().Configure(ConfigureServices).BuildServiceProvider()) {
-                var signerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>();
-                var verifier = serviceProvider.GetRequiredService<IRequestSignatureVerifier>();
-
-                var signedRequestForHMAC = await SampleSignHMAC(signerFactory);
-                await SampleVerify(verifier, signedRequestForHMAC);
+                using (var signerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>()) {
+                    using (var verifier = serviceProvider.GetRequiredService<IRequestSignatureVerifier>()) {
+                        var signedRequestForHMAC = await SampleSignHMAC(signerFactory);
+                        await SampleVerify(verifier, signedRequestForHMAC);
+                    }
+                }
             }
         }
 
@@ -71,7 +72,7 @@ namespace Sample {
         }
 
         private static async Task SampleVerify(IRequestSignatureVerifier verifier, HttpRequestMessage clientRequest) {
-            var receivedRequest = CreateFakeReceivedServerSideHttpRequest(clientRequest);
+            var receivedRequest = clientRequest.ToServerSideHttpRequest();
 
             var verificationResult = await verifier.VerifySignature(receivedRequest);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
@@ -84,32 +85,6 @@ namespace Sample {
                 Console.WriteLine("Request signature verification failed:");
                 Console.WriteLine(failureResult.SignatureVerificationException);
             }
-        }
-
-        private static DefaultHttpRequest CreateFakeReceivedServerSideHttpRequest(HttpRequestMessage clientRequest) {
-            var request = new DefaultHttpRequest(new DefaultHttpContext()) {
-                Method = "POST",
-                Scheme = "https",
-                Host = new HostString("httpbin.org", 443),
-                Path = new PathString("/post"),
-                Headers = {
-                    {"Authorization", clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter}
-                }
-            };
-            
-            if (clientRequest.Headers.Contains("Dalion-App-Id")) {
-                request.Headers.Add("Dalion-App-Id", clientRequest.Headers.GetValues("Dalion-App-Id").ToArray());
-            }
-
-            if (clientRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
-                request.Headers.Add(HeaderName.PredefinedHeaderNames.Digest, clientRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Digest).ToArray());
-            }
-
-            if (clientRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Date)) {
-                request.Headers.Add(HeaderName.PredefinedHeaderNames.Date, clientRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Date).ToArray());
-            }
-            
-            return request;
         }
     }
 }

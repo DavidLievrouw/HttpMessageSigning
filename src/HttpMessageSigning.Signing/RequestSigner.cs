@@ -55,5 +55,9 @@ namespace Dalion.HttpMessageSigning.Signing {
                 throw;
             }
         }
+
+        public virtual void Dispose() {
+            _signingSettings?.Dispose();
+        }
     }
 }

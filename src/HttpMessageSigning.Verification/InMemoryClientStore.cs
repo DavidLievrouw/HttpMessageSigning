@@ -8,7 +8,7 @@ namespace Dalion.HttpMessageSigning.Verification {
     /// Represents an in-memory store that the server can query to obtain client-specific settings for request signature verification.
     /// </summary>
     public class InMemoryClientStore : IClientStore {
-        private readonly List<Client> _entries;
+        private readonly IList<Client> _entries;
 
         public InMemoryClientStore() {
             _entries = new List<Client>();
@@ -41,6 +41,13 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (match == null) throw new SignatureVerificationException($"No {nameof(Client)}s with id '{id}' are registered in the server store.");
 
             return Task.FromResult(match);
+        }
+
+        public virtual void Dispose() {
+            foreach (var entry in _entries) {
+                entry?.Dispose();
+            }
+            _entries.Clear();
         }
     }
 }

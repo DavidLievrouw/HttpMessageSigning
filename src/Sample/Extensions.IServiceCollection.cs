@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Sample {
-    public static class Extensions {
+    public static partial class Extensions {
         public static IServiceCollection Configure(this IServiceCollection services, Action<IServiceCollection> configure) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (configure == null) throw new ArgumentNullException(nameof(configure));

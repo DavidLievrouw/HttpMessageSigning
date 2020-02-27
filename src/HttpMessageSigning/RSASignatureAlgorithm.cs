@@ -32,6 +32,7 @@ namespace Dalion.HttpMessageSigning {
         public void Dispose() {
             _rsaForVerification?.Dispose();
             _rsaForSign?.Dispose();
+            _hasher?.Dispose();
         }
 
         public string Name => "RSA";
