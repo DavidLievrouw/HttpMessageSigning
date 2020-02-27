@@ -43,7 +43,7 @@ namespace Sample {
                     clientStore.Register(new Client(
                         new KeyId("HttpMessageSigningSampleHMAC"),
                         new HMACSignatureAlgorithm("yumACY64r%hm", HashAlgorithmName.SHA256),
-                        new Claim(Constants.ClaimTypes.Role, "users.read")));
+                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 });
         }

@@ -86,8 +86,8 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var actual = _sut.CreateForClient(client);
 
                 actual.Identity.Should().BeAssignableTo<ClaimsIdentity>();
-                actual.Identity.As<ClaimsIdentity>().NameClaimType.Should().Be(Constants.ClaimTypes.AppId);
-                actual.Identity.As<ClaimsIdentity>().RoleClaimType.Should().Be(Constants.ClaimTypes.Role);
+                actual.Identity.As<ClaimsIdentity>().NameClaimType.Should().Be(SignedHttpRequestClaimTypes.AppId);
+                actual.Identity.As<ClaimsIdentity>().RoleClaimType.Should().Be(SignedHttpRequestClaimTypes.Role);
             }
             
             [Fact]
@@ -102,7 +102,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var actual = _sut.CreateForClient(client);
 
                 actual.Identity.Should().BeAssignableTo<ClaimsIdentity>();
-                actual.Identity.As<ClaimsIdentity>().AuthenticationType.Should().Be(Constants.AuthenticationSchemes.SignedHttpRequest);
+                actual.Identity.As<ClaimsIdentity>().AuthenticationType.Should().Be(SignedHttpRequestDefaults.AuthenticationScheme);
             }
         }
     }

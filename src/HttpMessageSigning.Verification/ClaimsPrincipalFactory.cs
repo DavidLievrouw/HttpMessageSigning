@@ -18,13 +18,13 @@ namespace Dalion.HttpMessageSigning.Verification {
             return new ClaimsPrincipal(
                 new ClaimsIdentity(
                     new[] {
-                        new Claim(Constants.ClaimTypes.AppId, client.Id),
-                        new Claim(Constants.ClaimTypes.Name, client.Id),
-                        new Claim(Constants.ClaimTypes.Version, _version)
+                        new Claim(SignedHttpRequestClaimTypes.AppId, client.Id),
+                        new Claim(SignedHttpRequestClaimTypes.Name, client.Id),
+                        new Claim(SignedHttpRequestClaimTypes.Version, _version)
                     }.Concat(additionalClaims),
-                    Constants.AuthenticationSchemes.SignedHttpRequest,
-                    Constants.ClaimTypes.AppId,
-                    Constants.ClaimTypes.Role));
+                    SignedHttpRequestDefaults.AuthenticationScheme,
+                    SignedHttpRequestClaimTypes.AppId,
+                    SignedHttpRequestClaimTypes.Role));
         }
     }
 }

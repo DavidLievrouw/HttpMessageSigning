@@ -46,7 +46,7 @@ namespace Sample {
                     clientStore.Register(new Client(
                         new KeyId("HttpMessageSigningSampleRSA"),
                         new RSASignatureAlgorithm(HashAlgorithmName.SHA384, publicKeyParameters, privateKeyParameters),
-                        new Claim(Constants.ClaimTypes.Role, "users.read")));
+                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 });
         }
