@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -17,21 +18,32 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 return Task.FromResult<Exception>(null);
             }
 
-            var parts = signature.Algorithm.Split('-');
-            if (parts.Length < 2) {
+            var algorithmParts = new List<string>();
+            if (!string.IsNullOrEmpty(signature.Algorithm)) {
+                var separatorIndex = signature.Algorithm.IndexOf('-');
+                if (separatorIndex < 0 || separatorIndex >= signature.Algorithm.Length - 1) {
+                    algorithmParts.Add(signature.Algorithm);
+                }
+                else {
+                    algorithmParts.Add(signature.Algorithm.Substring(0, separatorIndex));
+                    algorithmParts.Add(signature.Algorithm.Substring(separatorIndex + 1));
+                }
+            }
+            
+            if (algorithmParts.Count < 2) {
                 return new SignatureVerificationException($"The specified signature algorithm ({signature.Algorithm}) is not supported.")
                     .ToTask<Exception>();
             }
 
-            if (!client.SignatureAlgorithm.Name.Equals(parts[0], StringComparison.InvariantCultureIgnoreCase)) {
+            if (!client.SignatureAlgorithm.Name.Equals(algorithmParts[0], StringComparison.InvariantCultureIgnoreCase)) {
                 return new SignatureVerificationException(
-                    $"The specified signature algorithm ({parts[0]}) does not match the registered signature algorithm for the client with id {client.Id}.")
+                    $"The specified signature algorithm ({algorithmParts[0]}) does not match the registered signature algorithm for the client with id {client.Id}.")
                     .ToTask<Exception>();
             }
 
-            if (!client.SignatureAlgorithm.HashAlgorithm.Name.Equals(parts[1], StringComparison.InvariantCultureIgnoreCase)) {
+            if (!client.SignatureAlgorithm.HashAlgorithm.Name.Equals(algorithmParts[1], StringComparison.InvariantCultureIgnoreCase)) {
                 return new SignatureVerificationException(
-                    $"The specified hash algorithm ({parts[1]}) does not match the registered hash algorithm for the client with id {client.Id}.")
+                    $"The specified hash algorithm ({algorithmParts[1]}) does not match the registered hash algorithm for the client with id {client.Id}.")
                     .ToTask<Exception>();
             }
 

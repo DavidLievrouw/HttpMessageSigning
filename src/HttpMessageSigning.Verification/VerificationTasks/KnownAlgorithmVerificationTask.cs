@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -20,20 +21,31 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 return Task.FromResult<Exception>(null);
             }
 
-            var parts = signature.Algorithm.Split('-');
-            if (parts.Length < 2) {
+            var algorithmParts = new List<string>();
+            if (!string.IsNullOrEmpty(signature.Algorithm)) {
+                var separatorIndex = signature.Algorithm.IndexOf('-');
+                if (separatorIndex < 0 || separatorIndex >= signature.Algorithm.Length - 1) {
+                    algorithmParts.Add(signature.Algorithm);
+                }
+                else {
+                    algorithmParts.Add(signature.Algorithm.Substring(0, separatorIndex));
+                    algorithmParts.Add(signature.Algorithm.Substring(separatorIndex + 1));
+                }
+            }
+            
+            if (algorithmParts.Count < 2) {
                 return new SignatureVerificationException($"The specified signature algorithm ({signature.Algorithm}) is not supported.")
                     .ToTask<Exception>();
             }
 
-            if (!SupportedSignatureAlgorithmNames.Contains(parts[0])) {
+            if (!SupportedSignatureAlgorithmNames.Contains(algorithmParts[0])) {
                 return new SignatureVerificationException($"The specified signature algorithm ({signature.Algorithm}) is not supported.")
                     .ToTask<Exception>();
             }
 
-            var hashAlgorithm = System.Security.Cryptography.HashAlgorithm.Create(parts[1].ToUpperInvariant());
+            var hashAlgorithm = System.Security.Cryptography.HashAlgorithm.Create(algorithmParts[1].ToUpperInvariant());
             if (hashAlgorithm == null) {
-                return new SignatureVerificationException($"The specified hash algorithm ({parts[1]}) is not supported.")
+                return new SignatureVerificationException($"The specified hash algorithm ({algorithmParts[1]}) is not supported.")
                     .ToTask<Exception>();
             }
             

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -52,11 +53,26 @@ namespace Dalion.HttpMessageSigning.SigningString {
             
             if (string.IsNullOrEmpty(value)) return false;
             
-            var nameAndValues = value.Split(new[]{": "}, StringSplitOptions.None);
-            if (nameAndValues.Length != 2) return false;
+            var nameAndValues = new List<string>();
+            if (!string.IsNullOrEmpty(value)) {
+                var separatorIndex = value.IndexOf(": ", StringComparison.InvariantCulture);
+                if (separatorIndex < 0 || separatorIndex >= value.Length - 1) {
+                    nameAndValues.Add(value);
+                }
+                else {
+                    nameAndValues.Add(value.Substring(0, separatorIndex));
+                    nameAndValues.Add(value.Substring(separatorIndex + 1));
+                }
+            }
+            
+            if (nameAndValues.Count != 2) return false;
             var name = nameAndValues[0];
             if (string.IsNullOrEmpty(name.Trim())) return false;
-            var values = nameAndValues[1].Split(new[]{", "}, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()).Where(v => !string.IsNullOrEmpty(v)).ToArray();
+            var values = nameAndValues[1]
+                .Split(new[]{", "}, StringSplitOptions.RemoveEmptyEntries)
+                .Select(v => v.Trim())
+                .Where(v => !string.IsNullOrEmpty(v))
+                .ToArray();
             
             parsed =  new Header(name, values);
 

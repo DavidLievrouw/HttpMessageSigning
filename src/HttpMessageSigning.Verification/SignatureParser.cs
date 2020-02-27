@@ -24,16 +24,20 @@ namespace Dalion.HttpMessageSigning.Verification {
                 throw new SignatureVerificationException($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
 
             var rawAuthHeader = (string) authHeader;
-            var authHeaderParts = rawAuthHeader.Split(' ');
-            var authScheme = rawAuthHeader.Split(' ')[0];
+            var separatorIndex = rawAuthHeader.IndexOf(' ');
+            if (separatorIndex < 0) {
+                throw new SignatureVerificationException(
+                    $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
+            }
+            var authScheme = rawAuthHeader.Substring(0, separatorIndex);
             if (authScheme != AuthorizationScheme)
                 throw new SignatureVerificationException(
                     $"The specified request does not specify the {AuthorizationScheme} scheme in the {AuthorizationHeaderName} header.");
 
-            if (authHeaderParts.Length < 2)
+            if (separatorIndex >= rawAuthHeader.Length - 1)
                 throw new SignatureVerificationException(
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
-            var authParam = rawAuthHeader.Substring(authScheme.Length + 1);
+            var authParam = rawAuthHeader.Substring(separatorIndex + 1);
 
             var keyId = KeyId.Empty;
             var keyIdMatch = KeyIdRegEx.Match(authParam);
