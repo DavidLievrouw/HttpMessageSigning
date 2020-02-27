@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Dalion.HttpMessageSigning.SigningString;
 using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,71 @@ using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification {
     public static partial class Extensions {
+        /// <summary>
+        ///     Adds http message signature verification registrations to the specified
+        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// </summary>
+        /// <param name="services">
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
+        ///     registrations to.
+        /// </param>
+        /// <returns>
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
+        ///     were added.
+        /// </returns>
+        public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
+            return services.AddHttpMessageSignatureVerification(prov => new InMemoryClientStore());
+        }
+        
+        /// <summary>
+        ///     Adds http message signature verification registrations to the specified
+        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// </summary>
+        /// <param name="services">
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
+        ///     registrations to.
+        /// </param>
+        /// <param name="allowedClients">The clients that are allowed to authenticate.</param>
+        /// <returns>
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
+        ///     were added.
+        /// </returns>
+        public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, params Client[] allowedClients) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (allowedClients == null) allowedClients = Array.Empty<Client>();
+
+            return services.AddHttpMessageSignatureVerification(prov => allowedClients);
+        }
+                
+        /// <summary>
+        ///     Adds http message signature verification registrations to the specified
+        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// </summary>
+        /// <param name="services">
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
+        ///     registrations to.
+        /// </param>
+        /// <param name="allowedClientsFactory">The factory that creates the clients that are allowed to authenticate.</param>
+        /// <returns>
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
+        ///     were added.
+        /// </returns>
+        public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, Func<IServiceProvider, IEnumerable<Client>> allowedClientsFactory) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (allowedClientsFactory == null) throw new ArgumentNullException(nameof(allowedClientsFactory));
+
+            return services.AddHttpMessageSignatureVerification(prov => {
+                var store = new InMemoryClientStore();
+                var allowedClients = allowedClientsFactory(prov);
+                foreach (var client in allowedClients) {
+                    store.Register(client).GetAwaiter().GetResult();
+                }
+                return store;
+            });
+        }
+        
         /// <summary>
         ///     Adds http message signature verification registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
