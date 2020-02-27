@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Signing"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification", "HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj", "{D1E2051F-B620-43E3-AC86-E647D3058B88}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.AuthenticationScheme", "HttpMessageSigning.Verification.AuthenticationScheme\HttpMessageSigning.Verification.AuthenticationScheme.csproj", "{FB8B2469-6693-458B-9DF9-D904363B3A6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{D1E2051F-B620-43E3-AC86-E647D3058B88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1E2051F-B620-43E3-AC86-E647D3058B88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1E2051F-B620-43E3-AC86-E647D3058B88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB8B2469-6693-458B-9DF9-D904363B3A6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB8B2469-6693-458B-9DF9-D904363B3A6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB8B2469-6693-458B-9DF9-D904363B3A6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB8B2469-6693-458B-9DF9-D904363B3A6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

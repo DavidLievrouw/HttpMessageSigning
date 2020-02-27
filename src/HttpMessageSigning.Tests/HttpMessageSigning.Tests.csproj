@@ -36,6 +36,7 @@
     
     <ItemGroup>
       <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
+      <ProjectReference Include="..\HttpMessageSigning.Verification.AuthenticationScheme\HttpMessageSigning.Verification.AuthenticationScheme.csproj" />
       <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
       <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
     </ItemGroup>
