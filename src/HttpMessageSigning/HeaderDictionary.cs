@@ -25,6 +25,10 @@ namespace Dalion.HttpMessageSigning {
             return _innerDictionary.ContainsKey(key);
         }
         
+        public bool Remove(string key) {
+            return _innerDictionary.Remove(key);
+        }
+        
         public StringValues GetValues(string key) {
             return this[key];
         }

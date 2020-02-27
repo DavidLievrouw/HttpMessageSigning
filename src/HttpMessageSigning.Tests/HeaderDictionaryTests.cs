@@ -91,7 +91,35 @@ namespace Dalion.HttpMessageSigning {
                 actual.Should().BeFalse();
             }
         }
+        
+        public class Remove : HeaderDictionaryTests {
+            [Fact]
+            public void WhenTheItemExists_RemovesTheItem() {
+                var countBefore = _sut.Count;
+                _sut.Remove("h2");
+                var countAfter = _sut.Count;
+                countAfter.Should().Be(countBefore - 1);
+            }
+            
+            [Fact]
+            public void WhenTheItemExists_ReturnsTrue() {
+                var actual = _sut.Remove("h2");
+                actual.Should().BeTrue();
+            }
 
+            [Fact]
+            public void WhenTheItemExists_ButIncorrectlyCased_ReturnsTrue() {
+                var actual = _sut.Remove("H2");
+                actual.Should().BeTrue();
+            }
+
+            [Fact]
+            public void WhenTheItemDoesNotExist_ReturnsFalse() {
+                var actual = _sut.Remove("something_else");
+                actual.Should().BeFalse();
+            }
+        }
+        
         public class GetValues : HeaderDictionaryTests {
             [Fact]
             public void WhenRequestedHeaderDoesNotExist_ReturnsEmpty() {
