@@ -7,7 +7,7 @@ using Microsoft.Extensions.Primitives;
 namespace Dalion.HttpMessageSigning.Verification {
     internal class SignatureParser : ISignatureParser {
         private const string AuthorizationHeaderName = "Authorization";
-        private const string AuthorizationScheme = "Signature";
+        private const string AuthorizationScheme = "SignedHttpRequest";
 
         private static readonly Regex KeyIdRegEx = new Regex("keyId=\"(?<keyId>[A-z0-9, =-]+)\"", RegexOptions.Compiled);
         private static readonly Regex AlgorithmRegEx = new Regex("algorithm=\"(?<algorithm>[a-z0-9-]+)\"", RegexOptions.Compiled);

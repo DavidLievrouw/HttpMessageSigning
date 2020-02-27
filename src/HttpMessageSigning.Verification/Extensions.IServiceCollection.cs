@@ -111,6 +111,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             return services
                 .AddSingleton<IBase64Converter, Base64Converter>()
+                .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<ISignatureParser, SignatureParser>()
                 .AddSingleton<IClaimsPrincipalFactory, ClaimsPrincipalFactory>()
                 .AddSingleton<IDefaultSignatureHeadersProvider, DefaultSignatureHeadersProvider>()

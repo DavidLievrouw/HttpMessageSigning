@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class RequestSigner : IRequestSigner {
-        private const string AuthorizationScheme = "Signature";
+        private const string AuthorizationScheme = "SignedHttpRequest";
         
         private readonly ISignatureCreator _signatureCreator;
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;

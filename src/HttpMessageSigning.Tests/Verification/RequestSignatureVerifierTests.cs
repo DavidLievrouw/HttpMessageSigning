@@ -77,7 +77,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 
-                var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new System.Security.Claims.Claim("name", "john.doe")}));
+                var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
                 A.CallTo(() => _claimsPrincipalFactory.CreateForClient(client))
                     .Returns(principal);
                 

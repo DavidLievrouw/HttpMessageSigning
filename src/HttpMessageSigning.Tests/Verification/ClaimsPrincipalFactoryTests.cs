@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public void WhenClientHasNullClaims_OnlyReturnsAppIdClaim() {
+            public void WhenClientHasNullClaims_OnlyReturnsDefaultClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
@@ -29,13 +29,15 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var actual = _sut.CreateForClient(client);
 
                 var expectedClaims = new[] {
-                    new System.Security.Claims.Claim("appid", "id1")
+                    new Claim("appid", "id1"),
+                    new Claim("name", "id1"),
+                    new Claim("ver", typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2))
                 };
                 actual.Claims.Should().BeEquivalentTo(expectedClaims, options => options.Including(c => c.Type).Including(c => c.Value));
             }
             
             [Fact]
-            public void WhenClientHasNoClaims_OnlyReturnsAppIdClaim() {
+            public void WhenClientHasNoClaims_OnlyReturnsDefaultClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
@@ -43,13 +45,15 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var actual = _sut.CreateForClient(client);
 
                 var expectedClaims = new[] {
-                    new System.Security.Claims.Claim("appid", "id1")
+                    new Claim("appid", "id1"),
+                    new Claim("name", "id1"),
+                    new Claim("ver", typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2))
                 };
                 actual.Claims.Should().BeEquivalentTo(expectedClaims, options => options.Including(c => c.Type).Including(c => c.Value));
             }
 
             [Fact]
-            public void WhenClientHasAdditionalClaims_ReturnsAppIdAndAdditionalClaims() {
+            public void WhenClientHasAdditionalClaims_ReturnsDefaultAndAdditionalClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
@@ -60,10 +64,12 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var actual = _sut.CreateForClient(client);
 
                 var expectedClaims = new[] {
-                    new System.Security.Claims.Claim("appid", "id1"),
-                    new System.Security.Claims.Claim("c1", "v1"),
-                    new System.Security.Claims.Claim("c1", "v2"),
-                    new System.Security.Claims.Claim("c2", "v2")
+                    new Claim("appid", "id1"),
+                    new Claim("name", "id1"),
+                    new Claim("ver", typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2)),
+                    new Claim("c1", "v1"),
+                    new Claim("c1", "v2"),
+                    new Claim("c2", "v2")
                 };
                 actual.Claims.Should().BeEquivalentTo(expectedClaims, options => options.Including(c => c.Type).Including(c => c.Value));
             }
@@ -96,7 +102,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var actual = _sut.CreateForClient(client);
 
                 actual.Identity.Should().BeAssignableTo<ClaimsIdentity>();
-                actual.Identity.As<ClaimsIdentity>().AuthenticationType.Should().Be(Constants.AuthenticationSchemes.HttpRequestSignature);
+                actual.Identity.As<ClaimsIdentity>().AuthenticationType.Should().Be(Constants.AuthenticationSchemes.SignedHttpRequest);
             }
         }
     }

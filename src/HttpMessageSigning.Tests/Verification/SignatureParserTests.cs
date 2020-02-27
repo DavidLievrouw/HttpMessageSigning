@@ -63,7 +63,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public void WhenRequestHasAnAuthorizationHeaderWithoutParam_ThrowsSignatureVerificationException() {
-                _request.Headers["Authorization"] = "Signature ";
+                _request.Headers["Authorization"] = "SignedHttpRequest ";
 
                 Action act = () => _sut.Parse(_request);
 
@@ -211,7 +211,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 string headers = null,
                 string sig = null) {
                 var param = Compose(keyId, algorithm, created, expires, headers, sig);
-                request.Headers["Authorization"] = "Signature " + param;
+                request.Headers["Authorization"] = "SignedHttpRequest " + param;
             }
         }
     }

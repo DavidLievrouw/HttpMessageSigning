@@ -6,11 +6,13 @@ namespace Dalion.HttpMessageSigning.Verification {
     public static class Constants {
         public static class ClaimTypes {
             public const string AppId = "appid";
+            public const string Name = "name";
             public const string Role = "role";
+            public const string Version = "ver";
         }
 
         public static class AuthenticationSchemes {
-            public const string HttpRequestSignature = "HttpRequestSignature";
+            public const string SignedHttpRequest = "SignedHttpRequest";
         }
         
         public static IDictionary<string, string> DigestHashAlgorithms = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {

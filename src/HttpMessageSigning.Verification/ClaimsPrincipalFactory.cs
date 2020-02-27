@@ -4,18 +4,25 @@ using System.Security.Claims;
 
 namespace Dalion.HttpMessageSigning.Verification {
     internal class ClaimsPrincipalFactory : IClaimsPrincipalFactory {
+        private readonly string _version;
+
+        public ClaimsPrincipalFactory() {
+            _version = typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2);
+        }
+
         public ClaimsPrincipal CreateForClient(Client client) {
             if (client == null) throw new ArgumentNullException(nameof(client));
             
-            var additionalClaims = client.Claims?.Select(c => new System.Security.Claims.Claim(c.Type, c.Value)) ?? Enumerable.Empty<System.Security.Claims.Claim>();
+            var additionalClaims = client.Claims?.Select(c => new Claim(c.Type, c.Value)) ?? Enumerable.Empty<Claim>();
 
             return new ClaimsPrincipal(
                 new ClaimsIdentity(
-                    additionalClaims.Concat(
-                        new[] {
-                            new System.Security.Claims.Claim(Constants.ClaimTypes.AppId, client.Id)
-                        }),
-                    Constants.AuthenticationSchemes.HttpRequestSignature,
+                    new[] {
+                        new Claim(Constants.ClaimTypes.AppId, client.Id),
+                        new Claim(Constants.ClaimTypes.Name, client.Id),
+                        new Claim(Constants.ClaimTypes.Version, _version)
+                    }.Concat(additionalClaims),
+                    Constants.AuthenticationSchemes.SignedHttpRequest,
                     Constants.ClaimTypes.AppId,
                     Constants.ClaimTypes.Role));
         }

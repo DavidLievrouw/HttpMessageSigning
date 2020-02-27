@@ -93,7 +93,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 await _sut.Sign(_httpRequest);
                 
-                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("Signature", "signature=abc123="));
+                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("SignedHttpRequest", "signature=abc123="));
             }
             
             [Fact]
@@ -140,7 +140,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.Sign(_httpRequest);
 
-                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("Signature", "signature=abc123="));
+                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("SignedHttpRequest", "signature=abc123="));
             }
 
             [Fact]
@@ -159,7 +159,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.Sign(_httpRequest);
 
-                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("Signature", "signature=abc123="));
+                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("SignedHttpRequest", "signature=abc123="));
             }
 
             [Fact]
