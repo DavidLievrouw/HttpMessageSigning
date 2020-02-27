@@ -12,7 +12,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         private readonly IVerificationTask _creationTimeVerificationTask;
         private readonly IVerificationTask _expirationTimeVerificationTask;
         private readonly IVerificationTask _digestVerificationTask;
-        private readonly IVerificationTask _matchingSignatureVerificationTask;
+        private readonly IVerificationTask _matchingSignatureStringVerificationTask;
 
         public SignatureVerifier(
             IVerificationTask knownAlgorithmVerificationTask,
@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             IVerificationTask creationTimeVerificationTask,
             IVerificationTask expirationTimeVerificationTask,
             IVerificationTask digestVerificationTask,
-            IVerificationTask matchingSignatureVerificationTask) {
+            IVerificationTask matchingSignatureStringVerificationTask) {
             _knownAlgorithmVerificationTask = knownAlgorithmVerificationTask ?? throw new ArgumentNullException(nameof(knownAlgorithmVerificationTask));
             _matchingAlgorithmVerificationTask = matchingAlgorithmVerificationTask ?? throw new ArgumentNullException(nameof(matchingAlgorithmVerificationTask));
             _createdHeaderGuardVerificationTask = createdHeaderGuardVerificationTask ?? throw new ArgumentNullException(nameof(createdHeaderGuardVerificationTask));
@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             _creationTimeVerificationTask = creationTimeVerificationTask ?? throw new ArgumentNullException(nameof(creationTimeVerificationTask));
             _expirationTimeVerificationTask = expirationTimeVerificationTask ?? throw new ArgumentNullException(nameof(expirationTimeVerificationTask));
             _digestVerificationTask = digestVerificationTask ?? throw new ArgumentNullException(nameof(digestVerificationTask));
-            _matchingSignatureVerificationTask = matchingSignatureVerificationTask ?? throw new ArgumentNullException(nameof(matchingSignatureVerificationTask));
+            _matchingSignatureStringVerificationTask = matchingSignatureStringVerificationTask ?? throw new ArgumentNullException(nameof(matchingSignatureStringVerificationTask));
         }
 
         public async Task<Exception> VerifySignature(HttpRequestForSigning signedRequest, Signature signature, Client client) {
@@ -48,7 +48,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                           await _creationTimeVerificationTask.Verify(signedRequest, signature, client) ??
                           await _expirationTimeVerificationTask.Verify(signedRequest, signature, client) ??
                           await _digestVerificationTask.Verify(signedRequest, signature, client) ??
-                          await _matchingSignatureVerificationTask.Verify(signedRequest, signature, client);
+                          await _matchingSignatureStringVerificationTask.Verify(signedRequest, signature, client);
 
             return failure;
         }

@@ -17,7 +17,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         private readonly IVerificationTask _digestVerificationTask;
         private readonly IVerificationTask _knownAlgorithmVerificationTask;
         private readonly IVerificationTask _matchingAlgorithmVerificationTask;
-        private readonly IVerificationTask _matchingSignatureVerificationTask;
+        private readonly IVerificationTask _matchingSignatureStringVerificationTask;
         private readonly SignatureVerifier _sut;
 
         public SignatureVerifierTests() {
@@ -30,7 +30,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 out _allHeadersPresentVerificationTask,
                 out _expirationTimeVerificationTask,
                 out _digestVerificationTask,
-                out _matchingSignatureVerificationTask);
+                out _matchingSignatureStringVerificationTask);
             _sut = new SignatureVerifier(
                 _knownAlgorithmVerificationTask,
                 _matchingAlgorithmVerificationTask,
@@ -40,7 +40,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 _creationTimeVerificationTask,
                 _expirationTimeVerificationTask,
                 _digestVerificationTask,
-                _matchingSignatureVerificationTask);
+                _matchingSignatureStringVerificationTask);
         }
 
         public class VerifySignature : SignatureVerifierTests {
@@ -66,7 +66,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => _creationTimeVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
                 A.CallTo(() => _expirationTimeVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
                 A.CallTo(() => _digestVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
-                A.CallTo(() => _matchingSignatureVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
+                A.CallTo(() => _matchingSignatureStringVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
             }
 
             [Fact]
@@ -138,7 +138,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task VerifiesThatTheSignatureStringMatches() {
                 await _sut.VerifySignature(_signedRequest, _signature, _client);
-                A.CallTo(() => _matchingSignatureVerificationTask.Verify(_signedRequest, _signature, _client)).MustHaveHappened();
+                A.CallTo(() => _matchingSignatureStringVerificationTask.Verify(_signedRequest, _signature, _client)).MustHaveHappened();
             }
 
             [Fact]

@@ -4,15 +4,15 @@ using Dalion.HttpMessageSigning.SigningString;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
-    internal class MatchingSignatureVerificationTask : IVerificationTask {
+    internal class MatchingSignatureStringVerificationTask : IVerificationTask {
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IBase64Converter _base64Converter;
-        private readonly ILogger<MatchingSignatureVerificationTask> _logger;
+        private readonly ILogger<MatchingSignatureStringVerificationTask> _logger;
 
-        public MatchingSignatureVerificationTask(
+        public MatchingSignatureStringVerificationTask(
             ISigningStringComposer signingStringComposer, 
             IBase64Converter base64Converter,
-            ILogger<MatchingSignatureVerificationTask> logger) {
+            ILogger<MatchingSignatureStringVerificationTask> logger) {
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

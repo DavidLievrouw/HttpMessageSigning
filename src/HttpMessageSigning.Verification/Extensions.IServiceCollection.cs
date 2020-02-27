@@ -134,10 +134,10 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new DigestVerificationTask(
                         provider.GetRequiredService<IBase64Converter>(),
                         provider.GetRequiredService<ILogger<DigestVerificationTask>>()), 
-                    new MatchingSignatureVerificationTask(
+                    new MatchingSignatureStringVerificationTask(
                         provider.GetRequiredService<ISigningStringComposer>(),
                         provider.GetRequiredService<IBase64Converter>(),
-                        provider.GetRequiredService<ILogger<MatchingSignatureVerificationTask>>())))
+                        provider.GetRequiredService<ILogger<MatchingSignatureStringVerificationTask>>())))
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
         }
     }
