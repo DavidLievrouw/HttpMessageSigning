@@ -31,7 +31,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var signature = _signatureParser.Parse(request);
                 var client = await _clientStore.Get(signature.KeyId);
                 
-                var requestForSigning = request.ToRequestForSigning(signature, client);
+                var requestForSigning = request.ToRequestForSigning(client.SignatureAlgorithm);
 
                 var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client);
                 await _signatureVerifier.VerifySignature(requestForSigning, sanitizedSignature, client);

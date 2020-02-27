@@ -16,7 +16,6 @@ namespace Dalion.HttpMessageSigning.Verification {
             public class ToRequestForSigning : HttpRequest {
                 private readonly Microsoft.AspNetCore.Http.HttpRequest _httpRequest;
                 private readonly Client _client;
-                private readonly Signature _signature;
 
                 public ToRequestForSigning() {
                     _httpRequest = new DefaultHttpRequest(new DefaultHttpContext()) {
@@ -28,30 +27,19 @@ namespace Dalion.HttpMessageSigning.Verification {
                         QueryString = new QueryString("?query=1&cache=false")
                     };
                     _client = new Client("client", new CustomSignatureAlgorithm("Custom"));
-                    _signature = new Signature {
-                        KeyId = _client.Id,
-                        Created = new DateTimeOffset(2020, 2, 26, 15, 54, 22, TimeSpan.Zero),
-                        Expires = new DateTimeOffset(2020, 2, 26, 15, 57, 22, TimeSpan.Zero)
-                    };
                 }
 
                 [Fact]
                 public void GivenNullInput_ReturnsNull() {
                     Microsoft.AspNetCore.Http.HttpRequest nullRequest = null;
                     // ReSharper disable once ExpressionIsAlwaysNull
-                    var actual = nullRequest.ToRequestForSigning(_signature, _client);
+                    var actual = nullRequest.ToRequestForSigning(_client.SignatureAlgorithm);
                     actual.Should().BeNull();
                 }
                 
                 [Fact]
-                public void GivenNullSigningSignature_ThrowsArgumentNullException() {
-                    Action act = () => _httpRequest.ToRequestForSigning(null, _client);
-                    act.Should().Throw<ArgumentNullException>();
-                }
-                
-                [Fact]
-                public void GivenNullClient_ThrowsArgumentNullException() {
-                    Action act = () => _httpRequest.ToRequestForSigning(_signature, null);
+                public void GivenNullSignatureAlgorithm_ThrowsArgumentNullException() {
+                    Action act = () => _httpRequest.ToRequestForSigning(null);
                     act.Should().Throw<ArgumentNullException>();
                 }
 
@@ -59,14 +47,14 @@ namespace Dalion.HttpMessageSigning.Verification {
                 public void AllowsNullMethod() {
                     _httpRequest.Method = null;
 
-                    var actual = _httpRequest.ToRequestForSigning(_signature, _client);
+                    var actual = _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
 
                     actual.Method.Should().Be(HttpMethod.Get);
                 }
 
                 [Fact]
                 public void CopiesUri() {
-                    var actual = _httpRequest.ToRequestForSigning(_signature, _client);
+                    var actual = _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
                     var expectedUri = new Uri("https://dalion.eu:9000/tests/api/rsc1?query=1&cache=false", UriKind.Absolute);
                     actual.RequestUri.Should().Be(expectedUri);
                 }
@@ -83,7 +71,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 public void CopiesMethod(string method) {
                     _httpRequest.Method = method;
 
-                    var actual = _httpRequest.ToRequestForSigning(_signature, _client);
+                    var actual = _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
 
                     actual.Method.Should().Be(new HttpMethod(method));
                 }
@@ -96,7 +84,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     _httpRequest.Headers.Add("Content-Type", "text/plain");
                     _httpRequest.ContentType = "application/json";
                     
-                    var actual = _httpRequest.ToRequestForSigning(_signature, _client);
+                    var actual = _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
 
                     var expectedHeaders = new HeaderDictionary(new Dictionary<string, StringValues> {
                         {"dalion-empty-header", ""},
@@ -110,7 +98,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 [Fact]
                 public void SetsSignatureAlgorithm() {
-                    var actual = _httpRequest.ToRequestForSigning(_signature, _client);
+                    var actual = _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
 
                     actual.SignatureAlgorithmName.Should().Be("Custom");
                 }

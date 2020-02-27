@@ -29,7 +29,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             
             settings.Validate();
 
-            var requestForSigning = request.ToRequestForSigning(settings);
+            var requestForSigning = request.ToRequestForSigning(settings.SignatureAlgorithm);
             var signingString = _signingStringComposer.Compose(requestForSigning, settings.Headers, timeOfSigning, settings.Expires);
 
             _logger.Debug("Composed the following string for request signing: {0}", signingString);
