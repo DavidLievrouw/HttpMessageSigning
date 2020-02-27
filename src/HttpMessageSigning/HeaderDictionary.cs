@@ -46,5 +46,9 @@ namespace Dalion.HttpMessageSigning {
         public bool TryGetValues(string key, out StringValues values) {
             return _innerDictionary.TryGetValue(key, out values);
         }
+
+        public IDictionary<string, StringValues> ToDictionary() {
+            return new Dictionary<string, StringValues>(_innerDictionary, StringComparer.OrdinalIgnoreCase);
+        }
     }
 }

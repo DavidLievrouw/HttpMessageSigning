@@ -21,7 +21,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     .ToTask<Exception>();
             }
 
-            var createdHeaderValues = signedRequest.Headers.GetValues("Created");
+            var createdHeaderValues = signedRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Created);
             if (createdHeaderValues != StringValues.Empty && signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Created)) {
                 if (!long.TryParse(createdHeaderValues.First(), out var parsedCreatedValue)) {
                     return new SignatureVerificationException(

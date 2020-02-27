@@ -21,7 +21,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     .ToTask<Exception>();
             }
 
-            var expiresHeaderValues = signedRequest.Headers.GetValues("Expires");
+            var expiresHeaderValues = signedRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Expires);
             if (expiresHeaderValues != StringValues.Empty && signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires)) {
                 if (!long.TryParse(expiresHeaderValues.First(), out var parsedExpiresValue)) {
                     return new SignatureVerificationException(
@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 var expiresHeaderValue = DateTimeOffset.FromUnixTimeSeconds(parsedExpiresValue);
                 if (expiresHeaderValue != signature.Expires.Value) {
                     return new SignatureVerificationException(
-                        $"The signature creation time does not match the value of the {HeaderName.PredefinedHeaderNames.Expires} request header.")
+                        $"The signature expiration time does not match the value of the {HeaderName.PredefinedHeaderNames.Expires} request header.")
                         .ToTask<Exception>();
                 }
             }

@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Extensions.Primitives;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
@@ -22,29 +19,9 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             private readonly Func<HttpRequestForSigning, Signature, Client, Task<Exception>> _method;
 
             public Verify() {
-                _signature = new Signature {
-                    KeyId = "app1",
-                    Algorithm = "hmac-sha256",
-                    Headers = new[] {
-                        HeaderName.PredefinedHeaderNames.RequestTarget,
-                        HeaderName.PredefinedHeaderNames.Date,
-                        (HeaderName) "dalion-app-id"
-                    },
-                    Created = new DateTimeOffset(2020, 2, 27, 14, 18, 22, TimeSpan.Zero),
-                    Expires = new DateTimeOffset(2020, 2, 27, 14, 21, 22, TimeSpan.Zero),
-                    String = "xyz123="
-                };
-                _signedRequest = new HttpRequestForSigning {
-                    RequestUri = new Uri("https://dalion.eu/api/rsc1"),
-                    Method = HttpMethod.Get,
-                    SignatureAlgorithmName = "HMAC",
-                    Headers = new HeaderDictionary(new Dictionary<string, StringValues> {
-                        {"dalion-app-id", "app-one"},
-                        {HeaderName.PredefinedHeaderNames.Date, _signature.Created.Value.ToString("R")}
-                    })
-                };
-                _client = new Client(_signature.KeyId, new CustomSignatureAlgorithm("HMAC"));
-
+                _signature = (Signature)TestModels.Signature.Clone();
+                _signedRequest = (HttpRequestForSigning)TestModels.Request.Clone();
+                _client = (Client)TestModels.Client.Clone();
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
             }
 

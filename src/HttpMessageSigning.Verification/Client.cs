@@ -7,7 +7,7 @@ namespace Dalion.HttpMessageSigning.Verification {
     /// Represents an entry in the list of known clients, that the server maintains.
     /// </summary>
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
-    public class Client : IEquatable<Client>, IDisposable {
+    public class Client : IEquatable<Client>, ICloneable, IDisposable {
         public Client(KeyId id, ISignatureAlgorithm signatureAlgorithm, params Claim[] claims) {
             if (string.IsNullOrEmpty(id)) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
             Claims = claims ?? Array.Empty<Claim>();
@@ -46,6 +46,10 @@ namespace Dalion.HttpMessageSigning.Verification {
 
         public override string ToString() {
             return Id;
+        }
+
+        public object Clone() {
+            return new Client(Id, SignatureAlgorithm, (Claim[])Claims.Clone());
         }
 
         public virtual void Dispose() {
