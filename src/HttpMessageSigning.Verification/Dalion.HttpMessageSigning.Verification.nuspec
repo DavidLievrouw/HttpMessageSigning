@@ -17,7 +17,6 @@
     <dependencies>
       <group targetFramework="netstandard2.0">
         <dependency id="Microsoft.AspNetCore.Http" version="[2.2.0,)" />
-        <dependency id="Microsoft.AspNetCore.Http.Extensions" version="[2.2.0,)" />
         <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[2.2.0,)" />
         <dependency id="Microsoft.Extensions.Logging.Abstractions" version="[2.2.0,)" />
         <dependency id="Dalion.HttpMessageSigning" version="[$version$,)" />

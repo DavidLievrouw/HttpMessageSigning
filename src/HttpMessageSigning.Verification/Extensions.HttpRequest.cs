@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.Internal;
 
 namespace Dalion.HttpMessageSigning.Verification {
@@ -15,10 +14,10 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
             
             if (request == null) return null;
-
+            
             var requestMessage = new HttpRequestForSigning {
                 SignatureAlgorithmName = signatureAlgorithm.Name,
-                RequestUri = new Uri(request.GetEncodedUrl(), UriKind.Absolute),
+                RequestUri = BuildAbsoluteUri(request),
                 Method = string.IsNullOrEmpty(request.Method)
                     ? HttpMethod.Get
                     : new HttpMethod(request.Method)
@@ -49,6 +48,36 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (request.Body == null) return false;
             return (signature.Headers?.Contains(HeaderName.PredefinedHeaderNames.Digest) ?? false) || 
                    (request.Headers?.ContainsKey(HeaderName.PredefinedHeaderNames.Digest) ?? false);
+        }
+
+        private static Uri BuildAbsoluteUri(HttpRequest request) {
+            var scheme = request.Scheme;
+            var host = request.Host;
+            var pathBase = request.PathBase;
+            var path = request.Path;
+            var query = request.QueryString;
+            
+            var combinedPath = pathBase.HasValue || path.HasValue ? (pathBase + path).ToString() : "/";
+
+            var encodedHost = host.ToString();
+            var encodedQuery = query.ToString();
+
+            var schemeDelimiter = "://";
+            var length = scheme.Length + 
+                         schemeDelimiter.Length + 
+                         encodedHost.Length + 
+                         combinedPath.Length + 
+                         encodedQuery.Length;
+
+            var uriString = new StringBuilder(length)
+                .Append(scheme)
+                .Append(schemeDelimiter)
+                .Append(encodedHost)
+                .Append(combinedPath)
+                .Append(encodedQuery)
+                .ToString();
+
+            return new Uri(uriString, UriKind.Absolute);
         }
     }
 }
