@@ -6,7 +6,7 @@ namespace Dalion.HttpMessageSigning {
     /// <summary>
     /// Represents settings to be used when signing a http request message.
     /// </summary>
-    public class SigningSettings : IValidatable, IDisposable {
+    public class SigningSettings : IValidatable, IDisposable, ICloneable {
         /// <summary>
         /// The entity that the server can use to look up the component they need to verify the signature.
         /// </summary>
@@ -34,6 +34,11 @@ namespace Dalion.HttpMessageSigning {
         /// <remarks>When empty, the default headers will be included, according to the spec.</remarks>
         public HeaderName[] Headers { get; set; } = Array.Empty<HeaderName>();
 
+        /// <summary>
+        /// Gets or sets the <see cref="RequestSigningEvents"/> to notify when signing requests.
+        /// </summary>
+        public RequestSigningEvents Events { get; set; } = new RequestSigningEvents();
+        
         void IValidatable.Validate() {
             Validate();
         }
@@ -53,6 +58,16 @@ namespace Dalion.HttpMessageSigning {
 
         public virtual void Dispose() {
             SignatureAlgorithm?.Dispose();
+        }
+
+        public object Clone() {
+            return new SigningSettings {
+                Expires = Expires,
+                Headers = (HeaderName[])Headers?.Clone(),
+                KeyId = KeyId,
+                SignatureAlgorithm = SignatureAlgorithm,
+                DigestHashAlgorithm = DigestHashAlgorithm
+            };
         }
     }
 }

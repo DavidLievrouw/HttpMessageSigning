@@ -36,19 +36,26 @@ namespace Dalion.HttpMessageSigning.Signing {
         public async Task Sign(HttpRequestMessage request) {
             try {
                 if (request == null) throw new ArgumentNullException(nameof(request));
+
+                var clonedSettings = (SigningSettings)_signingSettings.Clone();
+                var onRequestSigningTask = _signingSettings.Events?.OnRequestSigning?.Invoke(request, clonedSettings);
+                if (onRequestSigningTask != null) await onRequestSigningTask;
                 
-                _signingSettings.Validate();
+                clonedSettings.Validate();
 
                 var timeOfSigning = _systemClock.UtcNow;
-                await _dateHeaderEnsurer.EnsureHeader(request, _signingSettings, timeOfSigning);
-                await _digestHeaderEnsurer.EnsureHeader(request, _signingSettings, timeOfSigning);
+                await _dateHeaderEnsurer.EnsureHeader(request, clonedSettings, timeOfSigning);
+                await _digestHeaderEnsurer.EnsureHeader(request, clonedSettings, timeOfSigning);
                 
-                var signature = _signatureCreator.CreateSignature(request, _signingSettings, timeOfSigning);
+                var signature = _signatureCreator.CreateSignature(request, clonedSettings, timeOfSigning);
                 var authParam = _authorizationHeaderParamCreator.CreateParam(signature);
 
                 _logger.Debug("Setting Authorization scheme to '{0}' and param to '{1}'.", AuthorizationScheme, authParam);
 
                 request.Headers.Authorization = new AuthenticationHeaderValue(AuthorizationScheme, authParam);
+                
+                var onRequestSignedTask = _signingSettings.Events?.OnRequestSigned?.Invoke(request, clonedSettings);
+                if (onRequestSignedTask != null) await onRequestSignedTask;
             }
             catch (Exception ex) {
                 _logger.Error(ex, "Could not sign the specified request. See inner exception.");
