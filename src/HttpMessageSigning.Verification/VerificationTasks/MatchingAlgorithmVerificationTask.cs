@@ -1,11 +1,21 @@
 using System;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class MatchingAlgorithmVerificationTask : IVerificationTask {
+        private readonly IHttpMessageSigningLogger<MatchingAlgorithmVerificationTask> _logger;
+        
+        public MatchingAlgorithmVerificationTask(IHttpMessageSigningLogger<MatchingAlgorithmVerificationTask> logger) {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         public Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             // Algorithm parameter is not required
-            if (string.IsNullOrEmpty(signature.Algorithm)) return Task.FromResult<Exception>(null);
+            if (string.IsNullOrEmpty(signature.Algorithm)) {
+                _logger.Debug("Algorithm match verification is not required, because there is no algorithm specified in the signature.");
+                return Task.FromResult<Exception>(null);
+            }
 
             var parts = signature.Algorithm.Split('-');
             if (parts.Length < 2) {

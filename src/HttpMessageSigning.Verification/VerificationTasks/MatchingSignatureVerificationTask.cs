@@ -40,7 +40,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _logger.Debug("The base64 hash of the signature string for verification is '{0}'.", signatureString);
             
             if (signature.String != signatureString) {
-                return new SignatureVerificationException("The signature string verification failed.")
+                return new SignatureVerificationException("The signature string does not match the expected value.")
                     .ToTask<Exception>();
             }
             

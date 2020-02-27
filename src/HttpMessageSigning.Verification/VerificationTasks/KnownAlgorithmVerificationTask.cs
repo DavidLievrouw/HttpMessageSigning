@@ -1,14 +1,24 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class KnownAlgorithmVerificationTask : IVerificationTask {
+        private readonly IHttpMessageSigningLogger<KnownAlgorithmVerificationTask> _logger;
+        
         private static readonly string[] SupportedSignatureAlgorithmNames = {"rsa", "hmac"};
+
+        public KnownAlgorithmVerificationTask(IHttpMessageSigningLogger<KnownAlgorithmVerificationTask> logger) {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
 
         public Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             // Algorithm parameter is not required
-            if (string.IsNullOrEmpty(signature.Algorithm)) return Task.FromResult<Exception>(null);
+            if (string.IsNullOrEmpty(signature.Algorithm)) {
+                _logger.Debug("Algorithm verification is not required, because there is no algorithm specified in the signature.");
+                return Task.FromResult<Exception>(null);
+            }
 
             var parts = signature.Algorithm.Split('-');
             if (parts.Length < 2) {

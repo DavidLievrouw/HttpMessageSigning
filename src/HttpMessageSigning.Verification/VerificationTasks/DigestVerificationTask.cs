@@ -3,13 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class DigestVerificationTask : IVerificationTask {
         private readonly IBase64Converter _base64Converter;
-        
-        public DigestVerificationTask(IBase64Converter base64Converter) {
+        private readonly IHttpMessageSigningLogger<DigestVerificationTask> _logger;
+
+        public DigestVerificationTask(
+            IBase64Converter base64Converter,
+            IHttpMessageSigningLogger<DigestVerificationTask> logger) {
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
@@ -19,10 +25,15 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     .ToTask<Exception>();
             }
 
-            if (!signedRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) return Task.FromResult<Exception>(null);
-            
-            if (signedRequest.Body == null) return new SignatureVerificationException($"The {HeaderName.PredefinedHeaderNames.Digest} header verification failed. The request has no body.")
-                .ToTask<Exception>();
+            if (!signedRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
+                _logger.Debug("{0} header verification is not required, because it is not present in the request to verify.", HeaderName.PredefinedHeaderNames.Digest);
+                return Task.FromResult<Exception>(null);
+            }
+
+            if (signedRequest.Body == null) {
+                return new SignatureVerificationException($"The {HeaderName.PredefinedHeaderNames.Digest} header verification failed. The request has no body.")
+                    .ToTask<Exception>();
+            }
 
             var digestHeaderValue = signedRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Digest).FirstOrDefault();
             var digestParams = new List<string>();
