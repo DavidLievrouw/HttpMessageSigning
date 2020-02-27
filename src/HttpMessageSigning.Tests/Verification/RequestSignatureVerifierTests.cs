@@ -2,6 +2,7 @@ using System;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Logging;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -15,11 +16,12 @@ namespace Dalion.HttpMessageSigning.Verification {
         private readonly ISignatureParser _signatureParser;
         private readonly ISignatureSanitizer _signatureSanitizer;
         private readonly ISignatureVerifier _signatureVerifier;
+        private readonly IHttpMessageSigningLogger<RequestSignatureVerifier> _logger;
         private readonly RequestSignatureVerifier _sut;
 
         public RequestSignatureVerifierTests() {
-            FakeFactory.Create(out _signatureParser, out _clientStore, out _signatureVerifier, out _claimsPrincipalFactory, out _signatureSanitizer);
-            _sut = new RequestSignatureVerifier(_signatureParser, _clientStore, _signatureVerifier, _claimsPrincipalFactory, _signatureSanitizer);
+            FakeFactory.Create(out _signatureParser, out _clientStore, out _signatureVerifier, out _claimsPrincipalFactory, out _signatureSanitizer, out _logger);
+            _sut = new RequestSignatureVerifier(_signatureParser, _clientStore, _signatureVerifier, _claimsPrincipalFactory, _signatureSanitizer, _logger);
         }
 
         public class VerifySignature : RequestSignatureVerifierTests {
@@ -75,7 +77,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 
-                var principal = new ClaimsPrincipal();
+                var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new System.Security.Claims.Claim("name", "john.doe")}));
                 A.CallTo(() => _claimsPrincipalFactory.CreateForClient(client))
                     .Returns(principal);
                 
