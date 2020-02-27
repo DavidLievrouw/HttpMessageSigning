@@ -69,7 +69,7 @@ namespace Sample {
         }
 
         private static async Task SampleVerify(IRequestSignatureVerifier verifier, HttpRequestMessage clientRequest) {
-            var receivedRequest = clientRequest.ToServerSideHttpRequest();
+            var receivedRequest = await clientRequest.ToServerSideHttpRequest();
 
             var verificationResult = await verifier.VerifySignature(receivedRequest);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {

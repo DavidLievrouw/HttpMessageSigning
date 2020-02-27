@@ -63,7 +63,8 @@ namespace Dalion.HttpMessageSigning.Verification {
                         provider.GetRequiredService<ISystemClock>()), 
                     new ExpirationTimeVerificationTask(
                         provider.GetRequiredService<ISystemClock>()), 
-                    new DigestVerificationTask(), 
+                    new DigestVerificationTask(
+                        provider.GetRequiredService<IBase64Converter>()), 
                     new MatchingSignatureVerificationTask(
                         provider.GetRequiredService<ISigningStringComposer>(),
                         provider.GetRequiredService<IBase64Converter>())))

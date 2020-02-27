@@ -1,12 +1,13 @@
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Dalion.HttpMessageSigning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 
 namespace Sample {
     public static partial class Extensions {
-        public static HttpRequest ToServerSideHttpRequest(this HttpRequestMessage clientRequest) {
+        public static async Task<HttpRequest> ToServerSideHttpRequest(this HttpRequestMessage clientRequest) {
             if (clientRequest == null) return null;
 
             var request = new DefaultHttpRequest(new DefaultHttpContext()) {
@@ -18,6 +19,9 @@ namespace Sample {
                     {"Authorization", clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter}
                 }
             };
+
+            var bodyTask = clientRequest.Content?.ReadAsStreamAsync();
+            if (bodyTask != null) request.Body = await bodyTask;
 
             if (clientRequest.Headers.Contains("Dalion-App-Id")) {
                 request.Headers.Add("Dalion-App-Id", clientRequest.Headers.GetValues("Dalion-App-Id").ToArray());

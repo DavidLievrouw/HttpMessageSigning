@@ -3,13 +3,14 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.Internal;
 
 namespace Dalion.HttpMessageSigning.Verification {
     public static partial class Extensions {
-        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequest request, ISignatureAlgorithm signatureAlgorithm, Signature signature) {
+        internal static async Task<HttpRequestForSigning> ToRequestForSigning(this HttpRequest request, ISignatureAlgorithm signatureAlgorithm, Signature signature) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
             if (signature == null) throw new ArgumentNullException(nameof(signature));
             
@@ -36,7 +37,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     detectEncodingFromByteOrderMarks: false,
                     bufferSize: 1024,
                     leaveOpen: true)) {
-                    requestMessage.Body = reader.ReadToEnd();
+                    requestMessage.Body = await reader.ReadToEndAsync();
                     request.Body.Seek(0, SeekOrigin.Begin);
                 }
             }
