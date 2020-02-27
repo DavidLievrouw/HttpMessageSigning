@@ -1,5 +1,4 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -30,13 +29,19 @@ namespace Dalion.HttpMessageSigning.Verification {
             try {
                 var signature = _signatureParser.Parse(request);
                 var client = await _clientStore.Get(signature.KeyId);
-                
+
                 var requestForSigning = request.ToRequestForSigning(client.SignatureAlgorithm);
 
                 var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client);
-                await _signatureVerifier.VerifySignature(requestForSigning, sanitizedSignature, client);
+                var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, sanitizedSignature, client);
 
-                return new RequestSignatureVerificationResultSuccess(_claimsPrincipalFactory.CreateForClient(client));
+                if (verificationFailure != null && !(verificationFailure is SignatureVerificationException)) {
+                    throw verificationFailure;
+                }
+
+                return verificationFailure == null
+                    ? (RequestSignatureVerificationResult) new RequestSignatureVerificationResultSuccess(_claimsPrincipalFactory.CreateForClient(client))
+                    : (RequestSignatureVerificationResult) new RequestSignatureVerificationResultFailure((SignatureVerificationException) verificationFailure);
             }
             catch (SignatureVerificationException ex) {
                 return new RequestSignatureVerificationResultFailure(ex);

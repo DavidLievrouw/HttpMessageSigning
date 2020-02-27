@@ -12,13 +12,15 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
         }
 
-        public Task Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (!signature.Created.HasValue) {
-                throw new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.");
+                return new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.")
+                    .ToTask<Exception>();
             }           
             
             if (!signature.Expires.HasValue) {
-                throw new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.");
+                return new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.")
+                    .ToTask<Exception>();
             }
 
             var expires = signature.Expires.Value - signature.Created.Value;
@@ -27,10 +29,11 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             var signatureString = _base64Converter.ToBase64(signatureHash);
 
             if (signature.String != signatureString) {
-                throw new SignatureVerificationException("The signature string verification failed.");
+                return new SignatureVerificationException("The signature string verification failed.")
+                    .ToTask<Exception>();
             }
             
-            return Task.CompletedTask;
+            return Task.FromResult<Exception>(null);
         }
     }
 }

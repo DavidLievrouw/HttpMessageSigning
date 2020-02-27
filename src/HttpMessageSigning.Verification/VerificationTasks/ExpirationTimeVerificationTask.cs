@@ -9,16 +9,18 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
         }
 
-        public Task Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (!signature.Expires.HasValue) {
-                throw new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.");
+                return new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.")
+                    .ToTask<Exception>();
             }
             
             if (signature.Expires.Value < _systemClock.UtcNow) {
-                throw new SignatureVerificationException("The signature is expired.");
+                return new SignatureVerificationException("The signature is expired.")
+                    .ToTask<Exception>();
             }
             
-            return Task.CompletedTask;
+            return Task.FromResult<Exception>(null);
         }
     }
 }

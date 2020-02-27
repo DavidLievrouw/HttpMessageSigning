@@ -11,6 +11,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         private readonly IVerificationTask _allHeadersPresentVerificationTask;
         private readonly IVerificationTask _creationTimeVerificationTask;
         private readonly IVerificationTask _expirationTimeVerificationTask;
+        private readonly IVerificationTask _digestVerificationTask;
         private readonly IVerificationTask _matchingSignatureVerificationTask;
 
         public SignatureVerifier(
@@ -21,6 +22,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             IVerificationTask allHeadersPresentVerificationTask,
             IVerificationTask creationTimeVerificationTask,
             IVerificationTask expirationTimeVerificationTask,
+            IVerificationTask digestVerificationTask,
             IVerificationTask matchingSignatureVerificationTask) {
             _knownAlgorithmVerificationTask = knownAlgorithmVerificationTask ?? throw new ArgumentNullException(nameof(knownAlgorithmVerificationTask));
             _matchingAlgorithmVerificationTask = matchingAlgorithmVerificationTask ?? throw new ArgumentNullException(nameof(matchingAlgorithmVerificationTask));
@@ -29,22 +31,26 @@ namespace Dalion.HttpMessageSigning.Verification {
             _allHeadersPresentVerificationTask = allHeadersPresentVerificationTask ?? throw new ArgumentNullException(nameof(allHeadersPresentVerificationTask));
             _creationTimeVerificationTask = creationTimeVerificationTask ?? throw new ArgumentNullException(nameof(creationTimeVerificationTask));
             _expirationTimeVerificationTask = expirationTimeVerificationTask ?? throw new ArgumentNullException(nameof(expirationTimeVerificationTask));
+            _digestVerificationTask = digestVerificationTask ?? throw new ArgumentNullException(nameof(digestVerificationTask));
             _matchingSignatureVerificationTask = matchingSignatureVerificationTask ?? throw new ArgumentNullException(nameof(matchingSignatureVerificationTask));
         }
 
-        public async Task VerifySignature(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public async Task<Exception> VerifySignature(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (signedRequest == null) throw new ArgumentNullException(nameof(signedRequest));
             if (signature == null) throw new ArgumentNullException(nameof(signature));
             if (client == null) throw new ArgumentNullException(nameof(client));
 
-            await _knownAlgorithmVerificationTask.Verify(signedRequest, signature, client);
-            await _matchingAlgorithmVerificationTask.Verify(signedRequest, signature, client);
-            await _createdHeaderGuardVerificationTask.Verify(signedRequest, signature, client);
-            await _expiresHeaderGuardVerificationTask.Verify(signedRequest, signature, client);
-            await _allHeadersPresentVerificationTask.Verify(signedRequest, signature, client);
-            await _creationTimeVerificationTask.Verify(signedRequest, signature, client);
-            await _expirationTimeVerificationTask.Verify(signedRequest, signature, client);
-            await _matchingSignatureVerificationTask.Verify(signedRequest, signature, client);
+            var failure = await _knownAlgorithmVerificationTask.Verify(signedRequest, signature, client) ??
+                          await _matchingAlgorithmVerificationTask.Verify(signedRequest, signature, client) ??
+                          await _createdHeaderGuardVerificationTask.Verify(signedRequest, signature, client) ??
+                          await _expiresHeaderGuardVerificationTask.Verify(signedRequest, signature, client) ??
+                          await _allHeadersPresentVerificationTask.Verify(signedRequest, signature, client) ??
+                          await _creationTimeVerificationTask.Verify(signedRequest, signature, client) ??
+                          await _expirationTimeVerificationTask.Verify(signedRequest, signature, client) ??
+                          await _digestVerificationTask.Verify(signedRequest, signature, client) ??
+                          await _matchingSignatureVerificationTask.Verify(signedRequest, signature, client);
+
+            return failure;
         }
     }
 }

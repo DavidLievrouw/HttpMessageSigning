@@ -11,7 +11,7 @@ using Microsoft.Extensions.Primitives;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification {
-    public class ExtensionsTests {
+    public partial class ExtensionsTests {
         public class HttpRequest : ExtensionTests {
             public class ToRequestForSigning : HttpRequest {
                 private readonly Microsoft.AspNetCore.Http.HttpRequest _httpRequest;
