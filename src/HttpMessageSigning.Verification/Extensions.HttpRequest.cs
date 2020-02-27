@@ -1,12 +1,18 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Http.Internal;
 
 namespace Dalion.HttpMessageSigning.Verification {
     public static partial class Extensions {
-        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequest request, ISignatureAlgorithm signatureAlgorithm) {
+        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequest request, ISignatureAlgorithm signatureAlgorithm, Signature signature) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
+            if (signature == null) throw new ArgumentNullException(nameof(signature));
+            
             if (request == null) return null;
 
             var requestMessage = new HttpRequestForSigning {
@@ -21,7 +27,27 @@ namespace Dalion.HttpMessageSigning.Verification {
                 requestMessage.Headers[header.Key] = header.Value;
             }
 
+            if (ShouldReadBody(request, signature) && request.Body != null) {
+                request.EnableRewind();
+
+                using (var reader = new StreamReader(
+                    request.Body,
+                    encoding: Encoding.UTF8,
+                    detectEncodingFromByteOrderMarks: false,
+                    bufferSize: 1024,
+                    leaveOpen: true)) {
+                    requestMessage.Body = reader.ReadToEnd();
+                    request.Body.Seek(0, SeekOrigin.Begin);
+                }
+            }
+
             return requestMessage;
+        }
+
+        private static bool ShouldReadBody(HttpRequest request, Signature signature) {
+            if (request.Body == null) return false;
+            return (signature.Headers?.Contains(HeaderName.PredefinedHeaderNames.Digest) ?? false) || 
+                   (request.Headers?.ContainsKey(HeaderName.PredefinedHeaderNames.Digest) ?? false);
         }
     }
 }
