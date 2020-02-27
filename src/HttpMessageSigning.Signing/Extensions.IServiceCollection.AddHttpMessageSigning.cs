@@ -1,7 +1,7 @@
 ﻿using System;
-using Dalion.HttpMessageSigning.Logging;
 using Dalion.HttpMessageSigning.SigningString;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public static partial class Extensions {
@@ -79,7 +79,6 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (keyId == KeyId.Empty) throw new ArgumentException("The specified key id cannot be empty.", nameof(keyId));
 
             return services
-                .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<ISignatureCreator, SignatureCreator>()
@@ -96,7 +95,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                     new DigestSignatureHeaderEnsurer(
                         prov.GetRequiredService<IBase64Converter>()),
                     prov.GetRequiredService<ISystemClock>(),
-                    prov.GetRequiredService<IHttpMessageSigningLogger<RequestSigner>>(),
+                    prov.GetRequiredService<ILogger<RequestSigner>>(),
                     prov.GetRequiredService<IRegisteredSignerSettingsStore>()));
         }
     }

@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Net.Http;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class DefaultHeaderAppender : IHeaderAppender {

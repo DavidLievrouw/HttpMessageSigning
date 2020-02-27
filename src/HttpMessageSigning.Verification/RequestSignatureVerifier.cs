@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification {
     internal class RequestSignatureVerifier : IRequestSignatureVerifier {
@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         private readonly ISignatureVerifier _signatureVerifier;
         private readonly IClaimsPrincipalFactory _claimsPrincipalFactory;
         private readonly ISignatureSanitizer _signatureSanitizer;
-        private readonly IHttpMessageSigningLogger<RequestSignatureVerifier> _logger;
+        private readonly ILogger<RequestSignatureVerifier> _logger;
 
         public RequestSignatureVerifier(
             ISignatureParser signatureParser,
@@ -18,7 +18,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             ISignatureVerifier signatureVerifier,
             IClaimsPrincipalFactory claimsPrincipalFactory,
             ISignatureSanitizer signatureSanitizer,
-            IHttpMessageSigningLogger<RequestSignatureVerifier> logger) {
+            ILogger<RequestSignatureVerifier> logger) {
             _signatureParser = signatureParser ?? throw new ArgumentNullException(nameof(signatureParser));
             _clientStore = clientStore ?? throw new ArgumentNullException(nameof(clientStore));
             _signatureVerifier = signatureVerifier ?? throw new ArgumentNullException(nameof(signatureVerifier));
@@ -55,10 +55,10 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             if (result is RequestSignatureVerificationResultSuccess success) {
-                _logger.Debug($"Request verification succeeded for principal {success.Principal?.Identity?.Name ?? "[null]"}.");
+                _logger.LogDebug($"Request verification succeeded for principal {success.Principal?.Identity?.Name ?? "[null]"}.");
             }
             else if (result is RequestSignatureVerificationResultFailure failure) {
-                _logger.Warning(failure.SignatureVerificationException, "Request verification failed. See exception for details.");
+                _logger.LogWarning(failure.SignatureVerificationException, "Request verification failed. See exception for details.");
             }
             
             return result;

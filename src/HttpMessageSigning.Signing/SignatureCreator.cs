@@ -1,20 +1,20 @@
 using System;
 using System.Net.Http;
-using Dalion.HttpMessageSigning.Logging;
 using Dalion.HttpMessageSigning.SigningString;
+using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class SignatureCreator : ISignatureCreator {
         private readonly ISigningSettingsSanitizer _signingSettingsSanitizer;
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IBase64Converter _base64Converter;
-        private readonly IHttpMessageSigningLogger<SignatureCreator> _logger;
+        private readonly ILogger<SignatureCreator> _logger;
 
         public SignatureCreator(
             ISigningSettingsSanitizer signingSettingsSanitizer,
             ISigningStringComposer signingStringComposer,
             IBase64Converter base64Converter,
-            IHttpMessageSigningLogger<SignatureCreator> logger) {
+            ILogger<SignatureCreator> logger) {
             _signingSettingsSanitizer = signingSettingsSanitizer ?? throw new ArgumentNullException(nameof(signingSettingsSanitizer));
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
@@ -32,12 +32,12 @@ namespace Dalion.HttpMessageSigning.Signing {
             var requestForSigning = request.ToRequestForSigning(settings.SignatureAlgorithm);
             var signingString = _signingStringComposer.Compose(requestForSigning, settings.Headers, timeOfSigning, settings.Expires);
 
-            _logger.Debug("Composed the following signing string for request signing: {0}", signingString);
+            _logger.LogDebug("Composed the following signing string for request signing: {0}", signingString);
 
             var signatureHash = settings.SignatureAlgorithm.ComputeHash(signingString);
             var signatureString = _base64Converter.ToBase64(signatureHash);
 
-            _logger.Debug("The base64 hash of the signature string for signing is '{0}'.", signatureString);
+            _logger.LogDebug("The base64 hash of the signature string for signing is '{0}'.", signatureString);
 
             var signature = new Signature {
                 KeyId = settings.KeyId,

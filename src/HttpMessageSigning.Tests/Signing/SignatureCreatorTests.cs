@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Cryptography;
-using Dalion.HttpMessageSigning.Logging;
 using Dalion.HttpMessageSigning.SigningString;
 using FakeItEasy;
 using FluentAssertions;
-using KellermanSoftware.CompareNetObjects.TypeComparers;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Xunit;
 
@@ -15,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IBase64Converter _base64Converter;
         private readonly ISigningSettingsSanitizer _signingSettingsSanitizer;
-        private readonly IHttpMessageSigningLogger<SignatureCreator> _logger;
+        private readonly ILogger<SignatureCreator> _logger;
         private readonly SignatureCreator _sut;
 
         public SignatureCreatorTests() {

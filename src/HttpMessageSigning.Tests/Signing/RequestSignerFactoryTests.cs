@@ -1,14 +1,14 @@
 using System;
 using System.Security.Cryptography;
-using Dalion.HttpMessageSigning.Logging;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public class RequestSignerFactoryTests {
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;
-        private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
+        private readonly ILogger<RequestSigner> _logger;
         private readonly ISignatureCreator _signatureCreator;
         private readonly ISignatureHeaderEnsurer _dateHeaderEnsurer;
         private readonly ISignatureHeaderEnsurer _digestHeaderEnsurer;

@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class DigestVerificationTask : IVerificationTask {
         private readonly IBase64Converter _base64Converter;
-        private readonly IHttpMessageSigningLogger<DigestVerificationTask> _logger;
+        private readonly ILogger<DigestVerificationTask> _logger;
 
         public DigestVerificationTask(
             IBase64Converter base64Converter,
-            IHttpMessageSigningLogger<DigestVerificationTask> logger) {
+            ILogger<DigestVerificationTask> logger) {
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -26,7 +25,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             if (!signedRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
-                _logger.Debug("{0} header verification is not required, because it is not present in the request to verify.", HeaderName.PredefinedHeaderNames.Digest);
+                _logger.LogDebug("{0} header verification is not required, because it is not present in the request to verify.", HeaderName.PredefinedHeaderNames.Digest);
                 return Task.FromResult<Exception>(null);
             }
 

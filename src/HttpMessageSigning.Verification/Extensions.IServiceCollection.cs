@@ -1,8 +1,8 @@
 ﻿using System;
-using Dalion.HttpMessageSigning.Logging;
 using Dalion.HttpMessageSigning.SigningString;
 using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification {
     public static partial class Extensions {
@@ -44,7 +44,6 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (clientStoreFactory == null) throw new ArgumentNullException(nameof(clientStoreFactory));
 
             return services
-                .AddSingleton(typeof(IHttpMessageSigningLogger<>), typeof(NetCoreHttpMessageSigningLogger<>))
                 .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<ISignatureParser, SignatureParser>()
                 .AddSingleton<IClaimsPrincipalFactory, ClaimsPrincipalFactory>()
@@ -54,8 +53,10 @@ namespace Dalion.HttpMessageSigning.Verification {
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
                 .AddSingleton<ISignatureVerifier>(provider => new SignatureVerifier(
-                    new KnownAlgorithmVerificationTask(), 
-                    new MatchingAlgorithmVerificationTask(), 
+                    new KnownAlgorithmVerificationTask(
+                        provider.GetRequiredService<ILogger<KnownAlgorithmVerificationTask>>()), 
+                    new MatchingAlgorithmVerificationTask(
+                        provider.GetRequiredService<ILogger<MatchingAlgorithmVerificationTask>>()), 
                     new CreatedHeaderGuardVerificationTask(), 
                     new ExpiresHeaderGuardVerificationTask(), 
                     new AllHeadersPresentVerificationTask(), 
@@ -64,11 +65,12 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new ExpirationTimeVerificationTask(
                         provider.GetRequiredService<ISystemClock>()), 
                     new DigestVerificationTask(
-                        provider.GetRequiredService<IBase64Converter>()), 
+                        provider.GetRequiredService<IBase64Converter>(),
+                        provider.GetRequiredService<ILogger<DigestVerificationTask>>()), 
                     new MatchingSignatureVerificationTask(
                         provider.GetRequiredService<ISigningStringComposer>(),
                         provider.GetRequiredService<IBase64Converter>(),
-                        provider.GetRequiredService<IHttpMessageSigningLogger<MatchingSignatureVerificationTask>>())))
+                        provider.GetRequiredService<ILogger<MatchingSignatureVerificationTask>>())))
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
         }
     }

@@ -4,9 +4,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Logging;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
@@ -17,7 +17,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly ISignatureHeaderEnsurer _dateHeaderEnsurer;
         private readonly ISignatureHeaderEnsurer _digestHeaderEnsurer;
         private readonly ISystemClock _systemClock;
-        private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
+        private readonly ILogger<RequestSigner> _logger;
         private readonly RequestSigner _sut;
 
         public RequestSignerTests() {

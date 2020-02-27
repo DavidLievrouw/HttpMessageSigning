@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using Dalion.HttpMessageSigning.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class RequestSignerFactory : IRequestSignerFactory {
@@ -9,7 +8,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly ISignatureHeaderEnsurer _dateHeaderEnsurer;
         private readonly ISignatureHeaderEnsurer _digestHeaderEnsurer;
         private readonly ISystemClock _systemClock;
-        private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
+        private readonly ILogger<RequestSigner> _logger;
         private readonly IRegisteredSignerSettingsStore _registeredSignerSettingsStore;
 
         public RequestSignerFactory(
@@ -18,7 +17,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             ISignatureHeaderEnsurer dateHeaderEnsurer,
             ISignatureHeaderEnsurer digestHeaderEnsurer,
             ISystemClock systemClock,
-            IHttpMessageSigningLogger<RequestSigner> logger,
+            ILogger<RequestSigner> logger,
             IRegisteredSignerSettingsStore registeredSignerSettingsStore) {
             _signatureCreator = signatureCreator ?? throw new ArgumentNullException(nameof(signatureCreator));
             _authorizationHeaderParamCreator = authorizationHeaderParamCreator ?? throw new ArgumentNullException(nameof(authorizationHeaderParamCreator));

@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using Dalion.HttpMessageSigning;
 using Dalion.HttpMessageSigning.Signing;
 using Dalion.HttpMessageSigning.Verification;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

@@ -2,11 +2,11 @@ using System;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Logging;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification {
@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         private readonly ISignatureParser _signatureParser;
         private readonly ISignatureSanitizer _signatureSanitizer;
         private readonly ISignatureVerifier _signatureVerifier;
-        private readonly IHttpMessageSigningLogger<RequestSignatureVerifier> _logger;
+        private readonly ILogger<RequestSignatureVerifier> _logger;
         private readonly RequestSignatureVerifier _sut;
 
         public RequestSignatureVerifierTests() {

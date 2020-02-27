@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class RequestSigner : IRequestSigner {
@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         private readonly ISignatureHeaderEnsurer _dateHeaderEnsurer;
         private readonly ISignatureHeaderEnsurer _digestHeaderEnsurer;
         private readonly ISystemClock _systemClock;
-        private readonly IHttpMessageSigningLogger<RequestSigner> _logger;
+        private readonly ILogger<RequestSigner> _logger;
 
         public RequestSigner(
             ISignatureCreator signatureCreator,
@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             ISignatureHeaderEnsurer dateHeaderEnsurer, 
             ISignatureHeaderEnsurer digestHeaderEnsurer,
             ISystemClock systemClock,
-            IHttpMessageSigningLogger<RequestSigner> logger) {
+            ILogger<RequestSigner> logger) {
             _signatureCreator = signatureCreator ?? throw new ArgumentNullException(nameof(signatureCreator));
             _authorizationHeaderParamCreator = authorizationHeaderParamCreator ?? throw new ArgumentNullException(nameof(authorizationHeaderParamCreator));
             _signingSettings = signingSettings ?? throw new ArgumentNullException(nameof(signingSettings));
@@ -50,7 +50,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 var signature = _signatureCreator.CreateSignature(request, clonedSettings, timeOfSigning);
                 var authParam = _authorizationHeaderParamCreator.CreateParam(signature);
 
-                _logger.Debug("Setting Authorization scheme to '{0}' and param to '{1}'.", AuthorizationScheme, authParam);
+                _logger.LogDebug("Setting Authorization scheme to '{0}' and param to '{1}'.", AuthorizationScheme, authParam);
 
                 request.Headers.Authorization = new AuthenticationHeaderValue(AuthorizationScheme, authParam);
                 
@@ -58,7 +58,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 if (onRequestSignedTask != null) await onRequestSignedTask;
             }
             catch (Exception ex) {
-                _logger.Error(ex, "Could not sign the specified request. See inner exception.");
+                _logger.LogError(ex, "Could not sign the specified request. See inner exception.");
                 throw;
             }
         }

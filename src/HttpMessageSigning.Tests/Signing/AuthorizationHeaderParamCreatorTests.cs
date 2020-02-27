@@ -1,11 +1,11 @@
 using System;
-using Dalion.HttpMessageSigning.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public class AuthorizationHeaderParamCreatorTests {
-        private readonly IHttpMessageSigningLogger<AuthorizationHeaderParamCreator> _logger;
+        private readonly ILogger<AuthorizationHeaderParamCreator> _logger;
         private readonly AuthorizationHeaderParamCreator _sut;
 
         public AuthorizationHeaderParamCreatorTests() {

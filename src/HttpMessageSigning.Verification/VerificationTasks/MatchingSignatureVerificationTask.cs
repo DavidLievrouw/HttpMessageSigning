@@ -1,18 +1,18 @@
 using System;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Logging;
 using Dalion.HttpMessageSigning.SigningString;
+using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class MatchingSignatureVerificationTask : IVerificationTask {
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IBase64Converter _base64Converter;
-        private readonly IHttpMessageSigningLogger<MatchingSignatureVerificationTask> _logger;
+        private readonly ILogger<MatchingSignatureVerificationTask> _logger;
 
         public MatchingSignatureVerificationTask(
             ISigningStringComposer signingStringComposer, 
             IBase64Converter base64Converter,
-            IHttpMessageSigningLogger<MatchingSignatureVerificationTask> logger) {
+            ILogger<MatchingSignatureVerificationTask> logger) {
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -32,12 +32,12 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             var expires = signature.Expires.Value - signature.Created.Value;
             var signingString = _signingStringComposer.Compose(signedRequest, signature.Headers, signature.Created.Value, expires);
             
-            _logger.Debug("Composed the following signing string for request verification: {0}", signingString);
+            _logger.LogDebug("Composed the following signing string for request verification: {0}", signingString);
             
             var signatureHash = client.SignatureAlgorithm.ComputeHash(signingString);
             var signatureString = _base64Converter.ToBase64(signatureHash);
 
-            _logger.Debug("The base64 hash of the signature string for verification is '{0}'.", signatureString);
+            _logger.LogDebug("The base64 hash of the signature string for verification is '{0}'.", signatureString);
             
             if (signature.String != signatureString) {
                 return new SignatureVerificationException("The signature string does not match the expected value.")

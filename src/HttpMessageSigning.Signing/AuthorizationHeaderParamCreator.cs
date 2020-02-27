@@ -1,12 +1,12 @@
 using System;
 using System.Text;
-using Dalion.HttpMessageSigning.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class AuthorizationHeaderParamCreator : IAuthorizationHeaderParamCreator {
-        private readonly IHttpMessageSigningLogger<AuthorizationHeaderParamCreator> _logger;
+        private readonly ILogger<AuthorizationHeaderParamCreator> _logger;
         
-        public AuthorizationHeaderParamCreator(IHttpMessageSigningLogger<AuthorizationHeaderParamCreator> logger) {
+        public AuthorizationHeaderParamCreator(ILogger<AuthorizationHeaderParamCreator> logger) {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -30,7 +30,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             var param = sb.ToString();
 
-            _logger.Debug("Created the following authorization header param value: {0}", param);
+            _logger.LogDebug("Created the following authorization header param value: {0}", param);
             
             return param;
         }
