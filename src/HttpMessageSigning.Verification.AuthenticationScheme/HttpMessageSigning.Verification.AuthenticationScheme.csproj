@@ -6,7 +6,7 @@
         <RootNamespace>Dalion.HttpMessageSigning.Verification.AuthenticationScheme</RootNamespace>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <Company>Dalion</Company>
-        <Description>A C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
+        <Description>ASP.NET Core Authentication scheme for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
         <Product>Dalion.HttpMessageSigning.Verification.AuthenticationScheme</Product>
         <Title>Dalion.HttpMessageSigning.Verification.AuthenticationScheme</Title>
         <DebugType>full</DebugType>

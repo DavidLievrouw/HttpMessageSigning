@@ -11,8 +11,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/DavidLievrouw/HttpMessageSigning</projectUrl>
-    <description>A C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</description>
-    <summary>A C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</summary>
+    <description>Core library of the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</description>
+    <summary>Core library of the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</summary>
     <tags>signing http messages ietf cavage lievrouw dalion</tags>
     <dependencies>
       <group targetFramework="netstandard2.0">

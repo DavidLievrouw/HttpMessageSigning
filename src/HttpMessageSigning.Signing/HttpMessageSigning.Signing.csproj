@@ -6,7 +6,7 @@
         <RootNamespace>Dalion.HttpMessageSigning.Signing</RootNamespace>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <Company>Dalion</Company>
-        <Description>A C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
+        <Description>HTTP request signing extensions for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
         <Product>Dalion.HttpMessageSigning.Signing</Product>
         <Title>Dalion.HttpMessageSigning.Signing</Title>
         <DebugType>full</DebugType>
