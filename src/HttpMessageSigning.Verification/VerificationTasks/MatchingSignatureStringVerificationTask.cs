@@ -33,13 +33,13 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             var signingString = _signingStringComposer.Compose(signedRequest, signature.Headers, signature.Created.Value, expires);
             
             _logger.LogDebug("Composed the following signing string for request verification: {0}", signingString);
-            
-            var signatureHash = client.SignatureAlgorithm.ComputeHash(signingString);
-            var signatureString = _base64Converter.ToBase64(signatureHash);
 
-            _logger.LogDebug("The base64 hash of the signature string for verification is '{0}'.", signatureString);
+            var receivedSignature = _base64Converter.FromBase64(signature.String);
+            var isValidSignature = client.SignatureAlgorithm.VerifySignature(signingString, receivedSignature);
+
+            _logger.LogDebug("The verification of the signature {0}.", isValidSignature ? "succeeded" : "failed");
             
-            if (signature.String != signatureString) {
+            if (!isValidSignature) {
                 return new SignatureVerificationException("The signature string does not match the expected value.")
                     .ToTask<Exception>();
             }

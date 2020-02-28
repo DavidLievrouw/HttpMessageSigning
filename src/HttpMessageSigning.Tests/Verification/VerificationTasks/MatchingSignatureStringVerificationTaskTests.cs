@@ -15,8 +15,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         private readonly MatchingSignatureStringVerificationTask _sut;
 
         public MatchingSignatureStringVerificationTaskTests() {
-            FakeFactory.Create(out _signingStringComposer, out _logger);
-            _base64Converter = new Base64Converter();
+            FakeFactory.Create(out _signingStringComposer, out _base64Converter, out _logger);
             _sut = new MatchingSignatureStringVerificationTask(_signingStringComposer, _base64Converter, _logger);
         }
 
@@ -30,7 +29,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             public Verify() {
                 _signature = (Signature) TestModels.Signature.Clone();
                 _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
-                _client = new Client(TestModels.Client.Id, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.MD5));
+                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, A.Fake<ISignatureAlgorithm>());
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
 
                 _composedSignatureString = "abc123";
@@ -82,8 +81,13 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureStringDoesNotMatchCalculatedSignatureString_ReturnsSignatureVerificationException() {
-                _signature.String = _signature.String + "a";
+            public async Task WhenSignatureStringCannotBeVerified_ReturnsSignatureVerificationException() {
+                var receivedSignature = new byte[] {0x01, 0x02, 0x03};
+                A.CallTo(() => _base64Converter.FromBase64(_signature.String))
+                    .Returns(receivedSignature);
+
+                A.CallTo(() => _client.SignatureAlgorithm.VerifySignature(_composedSignatureString, A<byte[]>.That.IsSameSequenceAs(receivedSignature)))
+                    .Returns(false);
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
@@ -91,7 +95,14 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureStringMatchesCalculatedSignatureString_ReturnsNull() {
+            public async Task WhenSignatureStringIsVerified_ReturnsNull() {
+                var receivedSignature = new byte[] {0x01, 0x02, 0x03};
+                A.CallTo(() => _base64Converter.FromBase64(_signature.String))
+                    .Returns(receivedSignature);
+
+                A.CallTo(() => _client.SignatureAlgorithm.VerifySignature(_composedSignatureString, A<byte[]>.That.IsSameSequenceAs(receivedSignature)))
+                    .Returns(true);
+                
                 var actual = await _method(_signedRequest, _signature, _client);
 
                 actual.Should().BeNull();
