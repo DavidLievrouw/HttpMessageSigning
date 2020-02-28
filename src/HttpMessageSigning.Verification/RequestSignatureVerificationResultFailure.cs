@@ -5,7 +5,10 @@ namespace Dalion.HttpMessageSigning.Verification {
     /// Represents a request signature verification failure.
     /// </summary>
     public class RequestSignatureVerificationResultFailure : RequestSignatureVerificationResult {
-        internal RequestSignatureVerificationResultFailure(Client client, SignatureVerificationException signatureVerificationException) : base(client) {
+        internal RequestSignatureVerificationResultFailure(
+            Client client, 
+            Signature signature,
+            SignatureVerificationException signatureVerificationException) : base(client, signature) {
             SignatureVerificationException = signatureVerificationException ?? throw new ArgumentNullException(nameof(signatureVerificationException));
         }
 

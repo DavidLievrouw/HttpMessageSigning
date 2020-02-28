@@ -32,9 +32,10 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             RequestSignatureVerificationResult result;
             Client client = null;
+            Signature signature = null;
             
             try {
-                var signature = _signatureParser.Parse(request);
+                signature = _signatureParser.Parse(request);
                 client = await _clientStore.Get(signature.KeyId);
 
                 var requestForSigning = await request.ToRequestForSigning(client.SignatureAlgorithm, signature);
@@ -47,11 +48,11 @@ namespace Dalion.HttpMessageSigning.Verification {
                 }
 
                 result = verificationFailure == null
-                    ? (RequestSignatureVerificationResult) new RequestSignatureVerificationResultSuccess(client, _claimsPrincipalFactory.CreateForClient(client))
-                    : (RequestSignatureVerificationResult) new RequestSignatureVerificationResultFailure(client, (SignatureVerificationException) verificationFailure);
+                    ? (RequestSignatureVerificationResult) new RequestSignatureVerificationResultSuccess(client, signature, _claimsPrincipalFactory.CreateForClient(client))
+                    : (RequestSignatureVerificationResult) new RequestSignatureVerificationResultFailure(client, signature, (SignatureVerificationException) verificationFailure);
             }
             catch (SignatureVerificationException ex) {
-                result = new RequestSignatureVerificationResultFailure(client, ex);
+                result = new RequestSignatureVerificationResultFailure(client, signature, ex);
             }
 
             if (result is RequestSignatureVerificationResultSuccess success) {

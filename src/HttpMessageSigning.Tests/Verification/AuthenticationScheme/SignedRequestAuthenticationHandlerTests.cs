@@ -75,6 +75,7 @@ namespace Dalion.HttpMessageSigning.Verification.AuthenticationScheme {
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest))
                     .Returns(new RequestSignatureVerificationResultFailure(
                         new Client("app1", new CustomSignatureAlgorithm("test")),
+                        new Signature(), 
                         cause));
 
                 var actual = await _sut.DoAuthenticate();
@@ -88,7 +89,7 @@ namespace Dalion.HttpMessageSigning.Verification.AuthenticationScheme {
                 _httpRequest.Headers["Authorization"] = "tests-scheme abc123";
 
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest))
-                    .Returns(new UnknownResult(new Client("app1", new CustomSignatureAlgorithm("test"))));
+                    .Returns(new UnknownResult(new Client("app1", new CustomSignatureAlgorithm("test")), new Signature()));
 
                 var actual = await _sut.DoAuthenticate();
 
@@ -103,6 +104,7 @@ namespace Dalion.HttpMessageSigning.Verification.AuthenticationScheme {
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest))
                     .Returns(new RequestSignatureVerificationResultSuccess(
                         new Client("app1", new CustomSignatureAlgorithm("test")),
+                        new Signature(), 
                         principal));
 
                 var actual = await _sut.DoAuthenticate();
@@ -113,7 +115,7 @@ namespace Dalion.HttpMessageSigning.Verification.AuthenticationScheme {
             }
 
             private class UnknownResult : RequestSignatureVerificationResult {
-                public UnknownResult(Client client) : base(client) { }
+                public UnknownResult(Client client, Signature signature) : base(client, signature) { }
                 public override bool IsSuccess => false;
             }
         }

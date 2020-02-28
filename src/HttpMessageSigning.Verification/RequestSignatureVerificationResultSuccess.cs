@@ -6,8 +6,12 @@ namespace Dalion.HttpMessageSigning.Verification {
     /// Represents a successful signature verification.
     /// </summary>
     public class RequestSignatureVerificationResultSuccess : RequestSignatureVerificationResult {
-        internal RequestSignatureVerificationResultSuccess(Client client, ClaimsPrincipal principal) : base(client) {
+        internal RequestSignatureVerificationResultSuccess(
+            Client client, 
+            Signature signature,
+            ClaimsPrincipal principal) : base(client, signature) {
             if (client == null) throw new ArgumentNullException(nameof(client));
+            if (signature == null) throw new ArgumentNullException(nameof(signature));
             Principal = principal ?? throw new ArgumentNullException(nameof(principal));
         }
 
