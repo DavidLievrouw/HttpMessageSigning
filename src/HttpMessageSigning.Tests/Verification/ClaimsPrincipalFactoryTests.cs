@@ -23,6 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void WhenClientHasNullClaims_OnlyReturnsDefaultClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
+                    "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     null);
                 
@@ -30,7 +31,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 var expectedClaims = new[] {
                     new Claim("appid", "id1"),
-                    new Claim("name", "id1"),
+                    new Claim("name", "Unit test app"),
                     new Claim("ver", typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2))
                 };
                 actual.Claims.Should().BeEquivalentTo(expectedClaims, options => options.Including(c => c.Type).Including(c => c.Value));
@@ -40,13 +41,14 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void WhenClientHasNoClaims_OnlyReturnsDefaultClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
+                    "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
                 
                 var actual = _sut.CreateForClient(client);
 
                 var expectedClaims = new[] {
                     new Claim("appid", "id1"),
-                    new Claim("name", "id1"),
+                    new Claim("name", "Unit test app"),
                     new Claim("ver", typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2))
                 };
                 actual.Claims.Should().BeEquivalentTo(expectedClaims, options => options.Including(c => c.Type).Including(c => c.Value));
@@ -56,6 +58,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void WhenClientHasAdditionalClaims_ReturnsDefaultAndAdditionalClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
+                    "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
@@ -65,7 +68,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 var expectedClaims = new[] {
                     new Claim("appid", "id1"),
-                    new Claim("name", "id1"),
+                    new Claim("name", "Unit test app"),
                     new Claim("ver", typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2)),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
@@ -78,6 +81,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void CreatesIdentityWithExpectedNameAndRoleClaims() {
                 var client = new Client(
                     (KeyId)"id1", 
+                    "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
@@ -86,7 +90,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var actual = _sut.CreateForClient(client);
 
                 actual.Identity.Should().BeAssignableTo<ClaimsIdentity>();
-                actual.Identity.As<ClaimsIdentity>().NameClaimType.Should().Be(SignedHttpRequestClaimTypes.AppId);
+                actual.Identity.As<ClaimsIdentity>().NameClaimType.Should().Be(SignedHttpRequestClaimTypes.Name);
                 actual.Identity.As<ClaimsIdentity>().RoleClaimType.Should().Be(SignedHttpRequestClaimTypes.Role);
             }
             
@@ -94,6 +98,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void CreatesIdentityForExpectedAuthenticationType() {
                 var client = new Client(
                     (KeyId)"id1", 
+                    "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),

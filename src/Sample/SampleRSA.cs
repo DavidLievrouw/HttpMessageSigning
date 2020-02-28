@@ -29,23 +29,20 @@ namespace Sample {
 
         public static void ConfigureServices(IServiceCollection services) {
             var cert = new X509Certificate2(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
-            var publicKey = cert.GetRSAPublicKey();
-            var publicKeyParameters = publicKey.ExportParameters(false);
-            var privateKey = cert.GetRSAPrivateKey();
-            var privateKeyParameters = privateKey.ExportParameters(true);
-
+            
             services
                 .AddLogging(configure => configure.AddConsole())
                 .AddHttpMessageSigning(
-                    new KeyId("HttpMessageSigningSampleRSA"),
+                    new KeyId("4d8f14b6c4184dc1b677c88a2b60bfd2"),
                     provider => new SigningSettings {
-                        SignatureAlgorithm = new RSASignatureAlgorithm(HashAlgorithmName.SHA384, publicKeyParameters, privateKeyParameters)
+                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning(cert)
                     })
                 .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
-                        new KeyId("HttpMessageSigningSampleRSA"),
-                        new RSASignatureAlgorithm(HashAlgorithmName.SHA384, publicKeyParameters, privateKeyParameters),
+                        new KeyId("4d8f14b6c4184dc1b677c88a2b60bfd2"),
+                        "HttpMessageSigningSampleRSA",
+                        SignatureAlgorithm.CreateForVerification(cert),
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 });
@@ -61,7 +58,7 @@ namespace Sample {
                 }
             };
 
-            var requestSigner = requestSignerFactory.CreateFor("HttpMessageSigningSampleRSA");
+            var requestSigner = requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
             await requestSigner.Sign(request);
 
             return request;

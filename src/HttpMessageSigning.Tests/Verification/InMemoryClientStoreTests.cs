@@ -22,7 +22,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public void WhenEntryAlreadyExists_ThrowsInvalidOperationException() {
-                var entry = new Client((KeyId)"entry1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), new Claim("c1", "v1"));
+                var entry = new Client((KeyId)"entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), new Claim("c1", "v1"));
                 _sut.Register(entry);
                 Func<Task> act = () => _sut.Register(entry);
                 act.Should().Throw<InvalidOperationException>();
@@ -30,7 +30,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task AddsEntry() {
-                var entry = new Client((KeyId)"entry1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), new Claim("c1", "v1"));
+                var entry = new Client((KeyId)"entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), new Claim("c1", "v1"));
                 await _sut.Register(entry);
                 var registeredEntry = await _sut.Get(entry.Id);
                 registeredEntry.Should().Be(entry);
@@ -54,7 +54,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenItemIsFound_ReturnsFoundItem() {
-                var entry = new Client((KeyId)"entry1", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), new Claim("c1", "v1"));
+                var entry = new Client((KeyId)"entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), new Claim("c1", "v1"));
                 await _sut.Register(entry);
                 var registeredEntry = await _sut.Get(entry.Id);
                 registeredEntry.Should().Be(entry);

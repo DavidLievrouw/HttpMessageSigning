@@ -29,9 +29,9 @@ namespace Sample {
             services
                 .AddLogging(configure => configure.AddConsole())
                 .AddHttpMessageSigning(
-                    new KeyId("HttpMessageSigningSampleHMAC"),
+                    new KeyId("e0e8dcd638334c409e1b88daf821d135"),
                     provider => new SigningSettings {
-                        SignatureAlgorithm = new HMACSignatureAlgorithm("yumACY64r%hm", HashAlgorithmName.SHA256),
+                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("yumACY64r%hm"),
                         DigestHashAlgorithm = HashAlgorithmName.SHA256,
                         Expires = TimeSpan.FromMinutes(1),
                         Headers = new [] {
@@ -41,8 +41,9 @@ namespace Sample {
                 .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
-                        new KeyId("HttpMessageSigningSampleHMAC"),
-                        new HMACSignatureAlgorithm("yumACY64r%hm", HashAlgorithmName.SHA256),
+                        new KeyId("e0e8dcd638334c409e1b88daf821d135"),
+                        "HttpMessageSigningSampleHMAC",
+                        SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 });
@@ -58,7 +59,7 @@ namespace Sample {
                 }
             };
 
-            var requestSigner = requestSignerFactory.CreateFor("HttpMessageSigningSampleHMAC");
+            var requestSigner = requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
             
             using (var httpClient = new HttpClient()) {

@@ -8,10 +8,12 @@ namespace Dalion.HttpMessageSigning.Verification {
     /// </summary>
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     public class Client : IEquatable<Client>, ICloneable, IDisposable {
-        public Client(KeyId id, ISignatureAlgorithm signatureAlgorithm, params Claim[] claims) {
-            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
+        public Client(KeyId id, string name, ISignatureAlgorithm signatureAlgorithm, params Claim[] claims) {
+            if (id == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
             Claims = claims ?? Array.Empty<Claim>();
             Id = id;
+            Name = name;
             SignatureAlgorithm = signatureAlgorithm ?? throw new ArgumentNullException(nameof(signatureAlgorithm));
         }
 
@@ -19,6 +21,11 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// Gets the identity of the client that can be looked up by the server.
         /// </summary>
         public KeyId Id { get; }
+        
+        /// <summary>
+        /// Gets the descriptive name of the client.
+        /// </summary>
+        public string Name { get; }
 
         /// <summary>
         /// Gets or sets the <see cref="Dalion.HttpMessageSigning.ISignatureAlgorithm"/> that is used to verify the signature.
@@ -49,7 +56,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         }
 
         public object Clone() {
-            return new Client(Id, SignatureAlgorithm, (Claim[])Claims.Clone());
+            return new Client(Id, Name, SignatureAlgorithm, (Claim[])Claims.Clone());
         }
 
         public virtual void Dispose() {

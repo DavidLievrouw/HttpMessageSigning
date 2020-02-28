@@ -74,7 +74,7 @@ namespace Dalion.HttpMessageSigning.Verification.AuthenticationScheme {
                 var cause = new SignatureVerificationException("Invalid signature");
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest))
                     .Returns(new RequestSignatureVerificationResultFailure(
-                        new Client("app1", new CustomSignatureAlgorithm("test")),
+                        new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test")),
                         new Signature(), 
                         cause));
 
@@ -89,7 +89,7 @@ namespace Dalion.HttpMessageSigning.Verification.AuthenticationScheme {
                 _httpRequest.Headers["Authorization"] = "tests-scheme abc123";
 
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest))
-                    .Returns(new UnknownResult(new Client("app1", new CustomSignatureAlgorithm("test")), new Signature()));
+                    .Returns(new UnknownResult(new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test")), new Signature()));
 
                 var actual = await _sut.DoAuthenticate();
 
@@ -103,7 +103,7 @@ namespace Dalion.HttpMessageSigning.Verification.AuthenticationScheme {
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest))
                     .Returns(new RequestSignatureVerificationResultSuccess(
-                        new Client("app1", new CustomSignatureAlgorithm("test")),
+                        new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test")),
                         new Signature(), 
                         principal));
 

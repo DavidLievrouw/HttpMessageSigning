@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
                 _signedRequest = (HttpRequestForSigning)TestModels.Request.Clone();
                 _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Expires, _signature.Expires.Value.ToUnixTimeSeconds().ToString());
-                _client = new Client(TestModels.Client.Id, new CustomSignatureAlgorithm("hs2019"));
+                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, new CustomSignatureAlgorithm("hs2019"));
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
             }
 
@@ -33,7 +33,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [InlineData("HMAC")]
             [InlineData("ECDSA")]
             public async Task WhenSignatureIncludesExpiresHeader_ButItShouldNot_ReturnsSignatureVerificationException(string algorithm) {
-                var client = new Client(_client.Id, new CustomSignatureAlgorithm(algorithm));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm));
                 _signature.Algorithm = algorithm + "-sha256";
 
                 var actual = await _method(_signedRequest, _signature, client);

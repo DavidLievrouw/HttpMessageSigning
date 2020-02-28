@@ -30,7 +30,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                             {HeaderName.PredefinedHeaderNames.Digest, "SHA-256=xyz123="}
                         }
                     };
-                    _client = new Client("client", new CustomSignatureAlgorithm("Custom"));
+                    _client = new Client("client", "Unit test app", new CustomSignatureAlgorithm("Custom"));
                     _signature = new Signature {Headers = new[] {HeaderName.PredefinedHeaderNames.Digest}};
                 }
 

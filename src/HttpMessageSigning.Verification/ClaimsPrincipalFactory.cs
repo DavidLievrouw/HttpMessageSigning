@@ -19,11 +19,11 @@ namespace Dalion.HttpMessageSigning.Verification {
                 new ClaimsIdentity(
                     new[] {
                         new Claim(SignedHttpRequestClaimTypes.AppId, client.Id),
-                        new Claim(SignedHttpRequestClaimTypes.Name, client.Id),
+                        new Claim(SignedHttpRequestClaimTypes.Name, client.Name ?? client.Id),
                         new Claim(SignedHttpRequestClaimTypes.Version, _version)
                     }.Concat(additionalClaims),
                     SignedHttpRequestDefaults.AuthenticationScheme,
-                    SignedHttpRequestClaimTypes.AppId,
+                    SignedHttpRequestClaimTypes.Name,
                     SignedHttpRequestClaimTypes.Role));
         }
     }

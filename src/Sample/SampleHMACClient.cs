@@ -26,7 +26,7 @@ namespace Sample {
                 .AddHttpMessageSigning(
                     new KeyId(KeyId),
                     provider => new SigningSettings {
-                        SignatureAlgorithm = new HMACSignatureAlgorithm(Secret, HashAlgorithmName.SHA512),
+                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning(Secret, HashAlgorithmName.SHA512),
                         DigestHashAlgorithm = HashAlgorithmName.SHA256
                     });
         }
