@@ -54,7 +54,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 request.Headers.Authorization = new AuthenticationHeaderValue(AuthorizationScheme, authParam);
                 
-                var onRequestSignedTask = _signingSettings.Events?.OnRequestSigned?.Invoke(request, clonedSettings);
+                var onRequestSignedTask = _signingSettings.Events?.OnRequestSigned?.Invoke(request, signature, clonedSettings);
                 if (onRequestSignedTask != null) await onRequestSignedTask;
             }
             catch (Exception ex) {

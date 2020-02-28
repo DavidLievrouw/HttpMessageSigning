@@ -175,7 +175,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             
             [Fact]
             public async Task AfterSigning_InvokesEvent_WhenNotNull() {
-                var onRequestSigned = A.Fake<Func<HttpRequestMessage, SigningSettings, Task>>();
+                var onRequestSigned = A.Fake<Func<HttpRequestMessage, Signature, SigningSettings, Task>>();
                 _signingSettings.Events.OnRequestSigned = onRequestSigned;
                 
                 await _sut.Sign(_httpRequest);
