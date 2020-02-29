@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<package xmlns:ns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Dalion.HttpMessageSigning.Verification.Owin</id>
+    <title>Dalion HttpMessageSigning.Verification.Owin</title>
+    <version>$version$</version>
+    <copyright>Created by David Lievrouw, License: MIT</copyright>
+    <authors>Dalion</authors>
+    <owners>David Lievrouw</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/DavidLievrouw/HttpMessageSigning</projectUrl>
+    <description>Owin shim for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</description>
+    <summary>Owin shim for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</summary>
+    <tags>signing http messages ietf cavage lievrouw dalion owin</tags>
+    <dependencies>
+      <group targetFramework="netstandard2.0">
+        <dependency id="Dalion.HttpMessageSigning.Verification" version="[$version$,)" />
+        <dependency id="Microsoft.Owin.Security" version="[4.1.0,)" />
+      </group> 
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\$configuration$\netstandard2.0\Dalion.HttpMessageSigning.Verification.Owin*.*" target="lib\netstandard2.0" />
+  </files>
+</package>
