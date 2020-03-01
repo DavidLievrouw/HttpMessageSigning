@@ -2,21 +2,14 @@
 
 A C# implementation of the "Authorization" scheme of the IETF Internet-Draft [Signing HTTP Messages](https://tools.ietf.org/html/draft-cavage-http-signatures-12).
 
-It is an implementation that uses symmetric keys. The server needs a mapping between the key, used to sign the contents, and the authorized entity.
-Assymetric keys, which would allow server authentication without prior knowledge of the client, is currently out-of-scope.
-
-Targets .NET Standard 2.0.
+Targets .NET Standard 2.0, except for the Owin authentication middleware package, which targets net472.
 
 ## Status
 
-NuGet: TBA
+[![Build status](https://ci.appveyor.com/api/projects/status/d8fdl40nfj62ed1v?svg=true)](https://ci.appveyor.com/project/DavidLievrouw/httpmessagesigning)
 
-CI: [![Build status](https://ci.appveyor.com/api/projects/status/d8fdl40nfj62ed1v?svg=true)](https://ci.appveyor.com/project/DavidLievrouw/httpmessagesigning)
+[![Coverage Status](https://coveralls.io/repos/github/DavidLievrouw/HttpMessageSigning/badge.svg?branch=master)](https://coveralls.io/github/DavidLievrouw/HttpMessageSigning?branch=master)
 
-## Usage
+## Documentation
 
-TBA
-
-## Sample projects
-
-TBA
+See [Wiki](https://github.com/DavidLievrouw/HttpMessageSigning/wiki).

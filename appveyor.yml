@@ -1,6 +1,9 @@
 version: 1.0.0.{build}
 image: Visual Studio 2019
 configuration: Release
+environment:
+  COVERALLS_REPO_TOKEN:  
+    secure: f9pWLoYMRSqoOcUvnz1PXF23eFoHQtEXohEcLf2PkhXVZk8Qj+J/0mh0ByXVwxbb
 nuget:
   disable_publish_on_pr: true
 build_script:
@@ -28,7 +31,20 @@ test_script:
     dotnet test ./src/HttpMessageSigning.Tests/HttpMessageSigning.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor
     
     dotnet test ./src/HttpMessageSigning.Verification.Owin.Tests/HttpMessageSigning.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor
-
+    
+- ps: >-
+    nuget install xunit.runner.console -OutputDirectory packages -Version 2.4.1
+    
+    nuget install OpenCover -OutputDirectory packages -Version 4.7.922
+    
+    dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
+    
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""src\HttpMessageSigning.Tests\bin\Release\netcoreapp2.0\HttpMessageSigning.Tests.dll"" -noshadow -appveyor" -filter:".*" -oldStyle -output:opencoverCoverage.xml
+    
+    $coveralls = ".\tools\csmacnz.coveralls.exe"
+    
+    & $coveralls --opencover -i opencoverCoverage.xml --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_JOB_ID
+    
 artifacts:
 - path: ./dist
   name: dist
