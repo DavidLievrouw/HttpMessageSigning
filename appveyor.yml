@@ -2,6 +2,8 @@ version: 1.0.0.{build}
 image: Visual Studio 2019
 configuration: Release
 environment:
+  PRODUCT: HttpMessageSigning
+  DISTPATH: ../../dist
   COVERALLS_REPO_TOKEN:  
     secure: f9pWLoYMRSqoOcUvnz1PXF23eFoHQtEXohEcLf2PkhXVZk8Qj+J/0mh0ByXVwxbb
 nuget:
@@ -10,27 +12,27 @@ build_script:
 - cmd: >-
     dotnet --version
     
-    dotnet restore ./src/HttpMessageSigning.sln
+    dotnet restore ./src/$env:PRODUCT.sln
     
-    dotnet publish ./src/HttpMessageSigning/HttpMessageSigning.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="../../dist/HttpMessageSigning/netstandard2.0" /p:PackagePublishDir="../../dist/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
     
-    dotnet publish ./src/HttpMessageSigning.Signing/HttpMessageSigning.Signing.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="../../dist/HttpMessageSigning.Signing/netstandard2.0" /p:PackagePublishDir="../../dist/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Signing/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
     
-    dotnet publish ./src/HttpMessageSigning.Verification/HttpMessageSigning.Verification.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="../../dist/HttpMessageSigning.Verification/netstandard2.0" /p:PackagePublishDir="../../dist/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
     
-    dotnet publish ./src/HttpMessageSigning.Verification.AuthenticationScheme/HttpMessageSigning.Verification.AuthenticationScheme.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="../../dist/HttpMessageSigning.Verification.AuthenticationScheme/netstandard2.0" /p:PackagePublishDir="../../dist/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Verification.AuthenticationScheme/$env:PRODUCT.Verification.AuthenticationScheme.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.AuthenticationScheme/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
     
-    dotnet publish ./src/HttpMessageSigning.Verification.MongoDb/HttpMessageSigning.Verification.MongoDb.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="../../dist/HttpMessageSigning.Verification.MongoDb/netstandard2.0" /p:PackagePublishDir="../../dist/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.MongoDb/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
     
-    dotnet publish ./src/HttpMessageSigning.Verification.Owin/HttpMessageSigning.Verification.Owin.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="../../dist/HttpMessageSigning.Verification.Owin/net472" /p:PackagePublishDir="../../dist/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.Owin/net472" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
 
 test_script:
 - cmd: >-
-    dotnet restore ./src/HttpMessageSigning.sln --verbosity m
+    dotnet restore ./src/$env:PRODUCT.sln --verbosity m
     
-    dotnet test ./src/HttpMessageSigning.Tests/HttpMessageSigning.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor
+    dotnet test ./src/$env:PRODUCT.Tests/$env:PRODUCT.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor
     
-    dotnet test ./src/HttpMessageSigning.Verification.Owin.Tests/HttpMessageSigning.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor
+    dotnet test ./src/$env:PRODUCT.Verification.Owin.Tests/$env:PRODUCT.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor
     
 - ps: >-
     nuget install xunit.runner.console -OutputDirectory packages -Version 2.4.1
@@ -39,15 +41,15 @@ test_script:
     
     dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
     
-    dotnet restore ./src/HttpMessageSigning.sln
+    dotnet restore ./src/$env:PRODUCT.sln
     
-    dotnet build ./src/HttpMessageSigning.Tests/HttpMessageSigning.Tests.csproj
+    dotnet build ./src/$env:PRODUCT.Tests/$env:PRODUCT.Tests.csproj
     
-    dotnet build ./src/HttpMessageSigning.Verification.Owin.Tests/HttpMessageSigning.Verification.Owin.Tests.csproj
+    dotnet build ./src/$env:PRODUCT.Verification.Owin.Tests/$env:PRODUCT.Verification.Owin.Tests.csproj
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.HttpMessageSigning*]* -[*.tests]* -[*.Tests]*" -oldStyle -output:opencoverCoverage.xml
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Tests\$env:PRODUCT.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -mergeoutput
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\HttpMessageSigning.Verification.Owin.Tests\HttpMessageSigning.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.HttpMessageSigning*]* -[*.tests]* -[*.Tests]*" -oldStyle -output:opencoverCoverage.xml -mergeoutput
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Verification.Owin.Tests\$env:PRODUCT.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -mergeoutput
     
     $coveralls = ".\tools\csmacnz.coveralls.exe"
     
