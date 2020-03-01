@@ -36,9 +36,7 @@ test_script:
     
     dotnet restore ./src/$env:PRODUCT.sln
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Tests\$env:PRODUCT.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -oldStyle
-    
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Verification.Owin.Tests\$env:PRODUCT.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -mergeoutput -oldStyle
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Tests.sln --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -oldStyle
     
     $coveralls = ".\tools\csmacnz.coveralls.exe"
     
