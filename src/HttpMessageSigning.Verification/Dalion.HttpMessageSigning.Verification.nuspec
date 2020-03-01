@@ -4,9 +4,11 @@
   <metadata>
     <id>Dalion.HttpMessageSigning.Verification</id>
     <title>Dalion HttpMessageSigning.Verification</title>
+    <icon>images\dalion128.png</icon>
+    <iconUrl>https://dalion.eu/dalion128.png</iconUrl>
     <version>$version$</version>
-    <copyright>Created by David Lievrouw, License: MIT</copyright>
-    <authors>Dalion</authors>
+    <copyright>Copyright (c) 2020, David Lievrouw</copyright>
+    <authors>Dalion, David Lievrouw</authors>
     <owners>David Lievrouw</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
@@ -25,5 +27,6 @@
   </metadata>
   <files>
     <file src="bin\$configuration$\netstandard2.0\Dalion.HttpMessageSigning.Verification*.*" target="lib\netstandard2.0" />
+    <file src="..\..\dalion128.png" target="images" />
   </files>
 </package>
