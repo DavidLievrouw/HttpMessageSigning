@@ -22,6 +22,7 @@
     </Target>
 
     <ItemGroup>
+        <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
         <PackageReference Include="CompareNETObjects" Version="4.65.0" />
         <PackageReference Include="FakeItEasy" Version="6.0.0" />
         <PackageReference Include="FluentAssertions" Version="5.10.2" />
