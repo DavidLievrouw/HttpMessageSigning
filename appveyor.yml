@@ -39,7 +39,11 @@ test_script:
     
     dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""src\HttpMessageSigning.Tests\bin\Release\netcoreapp2.0\HttpMessageSigning.Tests.dll"" -noshadow -appveyor" -filter:".*" -oldStyle -output:opencoverCoverage.xml
+    dotnet build ./src/HttpMessageSigning.Tests/HttpMessageSigning.Tests.csproj
+    
+    dotnet build ./src/HttpMessageSigning.Verification.Owin.Tests/HttpMessageSigning.Verification.Owin.Tests.csproj
+    
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""src\HttpMessageSigning.Tests\bin\Debug\netcoreapp2.2\Dalion.HttpMessageSigning.Tests.dll"" ""src\HttpMessageSigning.Verification.Owin.Tests\bin\Debug\netcoreapp2.2\Dalion.HttpMessageSigning.Verification.Owin.Tests.dll"" -noshadow -appveyor" -filter:".*" -oldStyle -output:opencoverCoverage.xml
     
     $coveralls = ".\tools\csmacnz.coveralls.exe"
     
