@@ -36,13 +36,9 @@ test_script:
     
     dotnet restore ./src/$env:PRODUCT.sln
     
-    dotnet build ./src/$env:PRODUCT.Tests/$env:PRODUCT.Tests.csproj
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Tests\$env:PRODUCT.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -oldStyle
     
-    dotnet build ./src/$env:PRODUCT.Verification.Owin.Tests/$env:PRODUCT.Verification.Owin.Tests.csproj
-    
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Tests\$env:PRODUCT.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml
-    
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Verification.Owin.Tests\$env:PRODUCT.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -mergeoutput
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Verification.Owin.Tests\$env:PRODUCT.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -mergeoutput -oldStyle
     
     $coveralls = ".\tools\csmacnz.coveralls.exe"
     
