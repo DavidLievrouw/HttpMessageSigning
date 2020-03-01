@@ -28,6 +28,11 @@ namespace Dalion.HttpMessageSigning {
         }
 
         public HashAlgorithmName HashAlgorithm { get; }
+
+        public RSAParameters GetPublicKey() {
+            var rsa = _rsaForVerification ?? _rsaForSign;
+            return rsa.ExportParameters(false);
+        }
         
         public void Dispose() {
             _rsaForVerification?.Dispose();

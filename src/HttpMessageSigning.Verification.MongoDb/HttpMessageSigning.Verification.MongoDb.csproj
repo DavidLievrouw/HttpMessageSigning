@@ -17,6 +17,10 @@
         <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
+    </ItemGroup>
+
     <Target Name="InitVersion" BeforeTargets="BeforeBuild">
         <ReadLinesFromFile File="..\..\version.txt">
             <Output TaskParameter="Lines" PropertyName="PackageVersion" />

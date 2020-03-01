@@ -33,8 +33,8 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// </summary>
         /// <param name="id">The identifier of the registered client to get.</param>
         /// <returns>The registered client that corresponds to the specified identifier.</returns>
-        public Task<Client> Get(string id) {
-            if (string.IsNullOrEmpty(id)) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
+        public Task<Client> Get(KeyId id) {
+            if (id == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
             
             var match = _entries.FirstOrDefault(_ => _.Id == id);
 

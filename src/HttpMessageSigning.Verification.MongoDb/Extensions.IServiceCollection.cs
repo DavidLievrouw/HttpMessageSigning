@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    public static class Extensions {
+    public static partial class Extensions {
         /// <summary>
         ///     Adds http message signature verification registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -46,7 +46,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     var mongoSettings = settingsFactory(prov);
                     if (mongoSettings == null) throw new ValidationException($"Invalid {nameof(MongoDbSettings)} were specified.");
                     mongoSettings.Validate();
-                    return new MongoDbClientStore(mongoSettings);
+                    return new MongoDbClientStore(
+                        new MongoDatabaseClientProvider(mongoSettings.ConnectionString), 
+                        mongoSettings.CollectionName);
                 });
         }
     }

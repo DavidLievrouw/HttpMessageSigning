@@ -17,6 +17,6 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// </summary>
         /// <param name="id">The identifier of the registered client to get.</param>
         /// <returns>The registered client that corresponds to the specified identifier.</returns>
-        Task<Client> Get(string id);
+        Task<Client> Get(KeyId id);
     }
 }

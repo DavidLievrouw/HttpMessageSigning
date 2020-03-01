@@ -8,8 +8,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
         public MongoDbSettingsTests() {
             _sut = new MongoDbSettings {
-                ConnectionString = "mongodb://localhost:27017/?connectTimeoutMS=60000",
-                DatabaseName = "DbForTests",
+                ConnectionString = "mongodb://localhost:27017/DbForTests?connectTimeoutMS=60000",
                 CollectionName = "signatureclients"
             };
         }
@@ -20,15 +19,6 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData("")]
             public void GivenNullOrEmptyConnectionString_ThrowsValidationException(string nullOrEmpty) {
                 _sut.ConnectionString = nullOrEmpty;
-                Action act = () => _sut.Validate();
-                act.Should().Throw<ValidationException>();
-            }
-
-            [Theory]
-            [InlineData(null)]
-            [InlineData("")]
-            public void GivenNullOrEmptyDatabaseName_ThrowsValidationException(string nullOrEmpty) {
-                _sut.DatabaseName = nullOrEmpty;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }
