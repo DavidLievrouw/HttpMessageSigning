@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verifica
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.Owin", "HttpMessageSigning.Verification.Owin\HttpMessageSigning.Verification.Owin.csproj", "{4C44E410-EF49-4FB7-9F6D-C841162F624A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.Owin.Tests", "HttpMessageSigning.Verification.Owin.Tests\HttpMessageSigning.Verification.Owin.Tests.csproj", "{2CE6490A-22C1-45D9-B1A5-68EA5A6E8B3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{4C44E410-EF49-4FB7-9F6D-C841162F624A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C44E410-EF49-4FB7-9F6D-C841162F624A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C44E410-EF49-4FB7-9F6D-C841162F624A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CE6490A-22C1-45D9-B1A5-68EA5A6E8B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CE6490A-22C1-45D9-B1A5-68EA5A6E8B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CE6490A-22C1-45D9-B1A5-68EA5A6E8B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CE6490A-22C1-45D9-B1A5-68EA5A6E8B3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

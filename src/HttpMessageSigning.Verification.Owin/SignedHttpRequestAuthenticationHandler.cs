@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             var httpRequest = Request.ToHttpRequest();
             try {
-                var verificationResult = await Options.RequestSignatureVerifier.VerifySignature(Request.ToHttpRequest());
+                var verificationResult = await Options.RequestSignatureVerifier.VerifySignature(httpRequest);
 
                 if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                     var onIdentityVerifiedTask = Options.OnIdentityVerified?.Invoke(successResult);

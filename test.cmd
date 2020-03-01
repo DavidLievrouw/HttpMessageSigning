@@ -5,5 +5,6 @@ SET SRCDIR=%DIR%\src
 SET PRODUCT=HttpMessageSigning
 
 dotnet test %SRCDIR%\%PRODUCT%.Tests\%PRODUCT%.Tests.csproj
+dotnet test %SRCDIR%\%PRODUCT%.Verification.Owin.Tests\%PRODUCT%.Verification.Owin.Tests.csproj
 
 pause
