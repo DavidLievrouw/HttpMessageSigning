@@ -11,7 +11,7 @@ Targets .NET Standard 2.0.
 
 NuGet: TBA
 
-CI: TBA
+CI: [![Build status](https://ci.appveyor.com/api/projects/status/d8fdl40nfj62ed1v?svg=true)](https://ci.appveyor.com/project/DavidLievrouw/httpmessagesigning)
 
 ## Usage
 
