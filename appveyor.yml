@@ -9,7 +9,7 @@ environment:
 nuget:
   disable_publish_on_pr: true
 build_script:
-- cmd: >-
+- ps: >-
     dotnet --version
     
     dotnet restore ./src/$env:PRODUCT.sln
@@ -27,7 +27,7 @@ build_script:
     dotnet publish ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.Owin/net472" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
 
 test_script:
-- cmd: >-
+- ps: >-
     dotnet restore ./src/$env:PRODUCT.sln --verbosity m
     
     dotnet test ./src/$env:PRODUCT.Tests/$env:PRODUCT.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor
