@@ -59,5 +59,30 @@ namespace Dalion.HttpMessageSigning {
                 actual.Should().BeTrue();
             }
         }
+
+        public class GetPublicKey : RSASignatureAlgorithmTests {
+            [Fact]
+            public void ReturnsPublicKeyParameters() {
+                var actual = _sut.GetPublicKey();
+                actual.D.Should().BeEquivalentTo(_publicKeyParams.D);
+                actual.DP.Should().BeEquivalentTo(_publicKeyParams.DP);
+                actual.DQ.Should().BeEquivalentTo(_publicKeyParams.DQ);
+                actual.Exponent.Should().BeEquivalentTo(_publicKeyParams.Exponent);
+                actual.InverseQ.Should().BeEquivalentTo(_publicKeyParams.InverseQ);
+                actual.Modulus.Should().BeEquivalentTo(_publicKeyParams.Modulus);
+                actual.P.Should().BeEquivalentTo(_publicKeyParams.P);
+                actual.Q.Should().BeEquivalentTo(_publicKeyParams.Q);
+            }
+            [Fact]
+            public void DoesNotReturnPrivateKeyParameters() {
+                var actual = _sut.GetPublicKey();
+                actual.D.Should().BeNull();
+                actual.DP.Should().BeNull();
+                actual.DQ.Should().BeNull();
+                actual.InverseQ.Should().BeNull();
+                actual.P.Should().BeNull();
+                actual.Q.Should().BeNull();
+            }
+        }
     }
 }
