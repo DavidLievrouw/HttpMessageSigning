@@ -45,9 +45,9 @@ test_script:
     
     dotnet build ./src/HttpMessageSigning.Verification.Owin.Tests/HttpMessageSigning.Verification.Owin.Tests.csproj
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"""test"" ""src\HttpMessageSigning.Tests\bin\Release\netcoreapp2.2\Dalion.HttpMessageSigning.Tests.dll"" --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:".*" -oldStyle -output:opencoverCoverage.xml
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\HttpMessageSigning.Tests\bin\Release\netcoreapp2.2\Dalion.HttpMessageSigning.Tests.dll --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:".*" -oldStyle -output:opencoverCoverage.xml
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"""test"" ""src\HttpMessageSigning.Verification.Owin.Tests\bin\Release\net472\Dalion.HttpMessageSigning.Verification.Owin.Tests.dll"" --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:".*" -oldStyle -output:opencoverCoverage.xml -mergeoutput
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\HttpMessageSigning.Verification.Owin.Tests\bin\Release\net472\Dalion.HttpMessageSigning.Verification.Owin.Tests.dll --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:".*" -oldStyle -output:opencoverCoverage.xml -mergeoutput
     
     $coveralls = ".\tools\csmacnz.coveralls.exe"
     
