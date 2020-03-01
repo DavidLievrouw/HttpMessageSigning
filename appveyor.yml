@@ -45,7 +45,7 @@ test_script:
     
     .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""src\HttpMessageSigning.Tests\bin\Release\netcoreapp2.2\Dalion.HttpMessageSigning.Tests.dll"" -noshadow -appveyor" -filter:".*" -oldStyle -output:opencoverCoverage.xml
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""src\HttpMessageSigning.Verification.Owin.Tests\bin\Release\netcoreapp2.2\Dalion.HttpMessageSigning.Verification.Owin.Tests.dll"" -noshadow -appveyor" -filter:".*" -oldStyle --output:opencoverCoverage.xml -mergeoutput
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe "-targetargs:"".\packages\xunit.runner.console.2.4.1\tools\netcoreapp2.0\xunit.console.dll"" ""src\HttpMessageSigning.Verification.Owin.Tests\bin\Release\net472\Dalion.HttpMessageSigning.Verification.Owin.Tests.dll"" -noshadow -appveyor" -filter:".*" -oldStyle --output:opencoverCoverage.xml -mergeoutput
     
     $coveralls = ".\tools\csmacnz.coveralls.exe"
     
