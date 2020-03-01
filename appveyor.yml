@@ -28,13 +28,6 @@ build_script:
 
 test_script:
 - ps: >-
-    dotnet restore ./src/$env:PRODUCT.sln --verbosity m
-    
-    dotnet test ./src/$env:PRODUCT.Tests/$env:PRODUCT.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor
-    
-    dotnet test ./src/$env:PRODUCT.Verification.Owin.Tests/$env:PRODUCT.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor
-    
-- ps: >-
     nuget install xunit.runner.console -OutputDirectory packages -Version 2.4.1
     
     nuget install OpenCover -OutputDirectory packages -Version 4.7.922
@@ -47,7 +40,7 @@ test_script:
     
     dotnet build ./src/$env:PRODUCT.Verification.Owin.Tests/$env:PRODUCT.Verification.Owin.Tests.csproj
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Tests\$env:PRODUCT.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -mergeoutput
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Tests\$env:PRODUCT.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml
     
     .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test src\$env:PRODUCT.Verification.Owin.Tests\$env:PRODUCT.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -mergeoutput
     
