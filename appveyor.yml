@@ -1,7 +1,6 @@
 version: 4.0.0.{build}
 image: Visual Studio 2019
 configuration: Release
-platform: Any CPU
 nuget:
   disable_publish_on_pr: true
 build_script:
