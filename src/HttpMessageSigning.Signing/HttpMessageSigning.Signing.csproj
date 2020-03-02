@@ -9,7 +9,7 @@
         <Description>HTTP request signing extensions for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
         <Product>Dalion.HttpMessageSigning.Signing</Product>
         <Title>Dalion.HttpMessageSigning.Signing</Title>
-        <DebugType>full</DebugType>
+        <DebugType>portable</DebugType>
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
 

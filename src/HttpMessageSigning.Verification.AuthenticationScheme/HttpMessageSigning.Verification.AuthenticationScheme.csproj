@@ -9,7 +9,7 @@
         <Description>ASP.NET Core Authentication scheme for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
         <Product>Dalion.HttpMessageSigning.Verification.AuthenticationScheme</Product>
         <Title>Dalion.HttpMessageSigning.Verification.AuthenticationScheme</Title>
-        <DebugType>full</DebugType>
+        <DebugType>portable</DebugType>
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
 

@@ -6,8 +6,6 @@
         <RootNamespace>Dalion.HttpMessageSigning.Verification.Owin</RootNamespace>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
-        <DebugType>full</DebugType>
-        <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
 
     <Target Name="InitVersion" BeforeTargets="BeforeBuild">

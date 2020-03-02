@@ -9,7 +9,7 @@
         <Description>Owin shim for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
         <Product>Dalion.HttpMessageSigning.Verification.Owin</Product>
         <Title>Dalion.HttpMessageSigning.Verification.Owin</Title>
-        <DebugType>full</DebugType>
+        <DebugType>portable</DebugType>
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
 
