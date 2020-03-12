@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class DateHeaderAppender : IHeaderAppender {

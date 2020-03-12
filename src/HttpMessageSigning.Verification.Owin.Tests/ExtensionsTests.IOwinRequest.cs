@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using FluentAssertions;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Owin;
 using Xunit;
 

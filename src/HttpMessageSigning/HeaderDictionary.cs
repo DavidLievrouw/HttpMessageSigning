@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning {
     internal class HeaderDictionary : IEnumerable<KeyValuePair<string, StringValues>> {

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning {
     public static partial class Extensions {
