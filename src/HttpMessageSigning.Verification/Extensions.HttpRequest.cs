@@ -28,7 +28,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             if (ShouldReadBody(request, signature) && request.Body != null) {
-                request.EnableRewind();
+                request.EnableBuffering();
 
                 using (var reader = new StreamReader(
                     request.Body,
