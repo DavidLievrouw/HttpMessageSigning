@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification {
@@ -21,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             private readonly DateTimeOffset _expires;
 
             public Parse() {
-                _request = new DefaultHttpRequest(new DefaultHttpContext());
+                _request = new DefaultHttpContext().Request;
                 _now = new DateTimeOffset(2020, 2, 25, 10, 29, 29, TimeSpan.Zero);
                 _expires = _now.AddMinutes(10);
                 _nowEpoch = _now.ToUnixTimeSeconds();

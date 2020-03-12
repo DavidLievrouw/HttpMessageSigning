@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
@@ -25,14 +24,13 @@ namespace Dalion.HttpMessageSigning.Verification {
         }
 
         public class VerifySignature : RequestSignatureVerifierTests {
-            private readonly DefaultHttpRequest _httpRequest;
+            private readonly HttpRequest _httpRequest;
 
             public VerifySignature() {
-                _httpRequest = new DefaultHttpRequest(new DefaultHttpContext()) {
-                    Method = "POST",
-                    Scheme = "https",
-                    Host = new HostString("unittest.com", 9000)
-                };
+                _httpRequest = new DefaultHttpContext().Request;
+                _httpRequest.Method = "POST";
+                _httpRequest.Scheme = "https";
+                _httpRequest.Host = new HostString("unittest.com", 9000);
             }
 
             [Fact]

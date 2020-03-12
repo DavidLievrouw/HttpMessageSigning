@@ -95,7 +95,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value == new StringValues("SHA-256=abc123"));
+                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value == new Microsoft.Extensions.Primitives.StringValues("SHA-256=abc123"));
             }
             
             [Fact]
@@ -104,7 +104,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().Contain(h => h.Key == "digest" && h.Value == new StringValues("SHA-256=abc123"));
+                _httpRequest.Headers.Should().Contain(h => h.Key == "digest" && h.Value == new Microsoft.Extensions.Primitives.StringValues("SHA-256=abc123"));
                 _httpRequest.Headers.Should().NotContain("Digest");
             }
 
@@ -131,7 +131,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
                 
-                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value == new StringValues("SHA-512=xyz=="));
+                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value == new Microsoft.Extensions.Primitives.StringValues("SHA-512=xyz=="));
             }
         }
     }
