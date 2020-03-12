@@ -19,12 +19,13 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        /// <remarks>This overload assumes that you registered an <see cref="IClientStore" />.</remarks>
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
-            return services.AddHttpMessageSignatureVerification(prov => new InMemoryClientStore());
+            return services.AddHttpMessageSignatureVerification(prov => prov.GetRequiredService<IClientStore>());
         }
-        
+
         /// <summary>
         ///     Adds http message signature verification registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -44,7 +45,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
             return services.AddHttpMessageSignatureVerification(prov => allowedClients);
         }
-                
+
         /// <summary>
         ///     Adds http message signature verification registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -68,10 +69,11 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 foreach (var client in allowedClients) {
                     store.Register(client).GetAwaiter().GetResult();
                 }
+
                 return store;
             });
         }
-        
+
         /// <summary>
         ///     Adds http message signature verification registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -121,19 +123,19 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
                 .AddSingleton<ISignatureVerifier>(provider => new SignatureVerifier(
                     new KnownAlgorithmVerificationTask(
-                        provider.GetRequiredService<ILogger<KnownAlgorithmVerificationTask>>()), 
+                        provider.GetRequiredService<ILogger<KnownAlgorithmVerificationTask>>()),
                     new MatchingAlgorithmVerificationTask(
-                        provider.GetRequiredService<ILogger<MatchingAlgorithmVerificationTask>>()), 
-                    new CreatedHeaderGuardVerificationTask(), 
-                    new ExpiresHeaderGuardVerificationTask(), 
-                    new AllHeadersPresentVerificationTask(), 
+                        provider.GetRequiredService<ILogger<MatchingAlgorithmVerificationTask>>()),
+                    new CreatedHeaderGuardVerificationTask(),
+                    new ExpiresHeaderGuardVerificationTask(),
+                    new AllHeadersPresentVerificationTask(),
                     new CreationTimeVerificationTask(
-                        provider.GetRequiredService<ISystemClock>()), 
+                        provider.GetRequiredService<ISystemClock>()),
                     new ExpirationTimeVerificationTask(
-                        provider.GetRequiredService<ISystemClock>()), 
+                        provider.GetRequiredService<ISystemClock>()),
                     new DigestVerificationTask(
                         provider.GetRequiredService<IBase64Converter>(),
-                        provider.GetRequiredService<ILogger<DigestVerificationTask>>()), 
+                        provider.GetRequiredService<ILogger<DigestVerificationTask>>()),
                     new MatchingSignatureStringVerificationTask(
                         provider.GetRequiredService<ISigningStringComposer>(),
                         provider.GetRequiredService<IBase64Converter>(),
