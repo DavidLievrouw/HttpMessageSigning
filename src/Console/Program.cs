@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Sample {
+namespace Console {
     public class Program {
         private static async Task Main(string[] args) {
             await SampleHMAC.Run(args);

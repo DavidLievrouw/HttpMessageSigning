@@ -12,7 +12,7 @@ using Dalion.HttpMessageSigning.Verification;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Sample {
+namespace Console {
     public class SampleHMAC {
         public static async Task Run(string[] args) {
             using (var serviceProvider = new ServiceCollection().Configure(ConfigureServices).BuildServiceProvider()) {
@@ -64,8 +64,8 @@ namespace Sample {
             
             using (var httpClient = new HttpClient()) {
                 var response = await httpClient.SendAsync(request);
-                Console.WriteLine("Response:");
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                System.Console.WriteLine("Response:");
+                System.Console.WriteLine(await response.Content.ReadAsStringAsync());
             }
             
             return request;
@@ -76,14 +76,14 @@ namespace Sample {
 
             var verificationResult = await verifier.VerifySignature(receivedRequest);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                Console.WriteLine("Request signature verification succeeded:");
+                System.Console.WriteLine("Request signature verification succeeded:");
                 var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
                 var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
-                Console.WriteLine(claimsString);
+                System.Console.WriteLine(claimsString);
             }
             else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
-                Console.WriteLine("Request signature verification failed:");
-                Console.WriteLine(failureResult.SignatureVerificationException);
+                System.Console.WriteLine("Request signature verification failed:");
+                System.Console.WriteLine(failureResult.SignatureVerificationException);
             }
         }
     }

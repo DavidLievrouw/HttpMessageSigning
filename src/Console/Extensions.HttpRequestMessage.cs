@@ -5,7 +5,7 @@ using Dalion.HttpMessageSigning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 
-namespace Sample {
+namespace Console {
     public static partial class Extensions {
         public static async Task<HttpRequest> ToServerSideHttpRequest(this HttpRequestMessage clientRequest) {
             if (clientRequest == null) return null;

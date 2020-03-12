@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning", "HttpM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Tests", "HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj", "{DE15B2B8-993A-4307-9D19-22D796608DF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{C3C32183-DB79-404F-B3B3-EEB671CC3787}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.csproj", "{C3C32183-DB79-404F-B3B3-EEB671CC3787}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Signing", "HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj", "{EC01D12E-1297-4614-ACFB-EDE4DCE39189}"
 EndProject
@@ -17,6 +17,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.Owin.Tests", "HttpMessageSigning.Verification.Owin.Tests\HttpMessageSigning.Verification.Owin.Tests.csproj", "{2CE6490A-22C1-45D9-B1A5-68EA5A6E8B3B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.MongoDb", "HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj", "{404128F4-0035-4D8F-9A47-4050CD036720}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7F243637-0E5C-451F-9547-D0B75A47204F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,5 +62,8 @@ Global
 		{404128F4-0035-4D8F-9A47-4050CD036720}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{404128F4-0035-4D8F-9A47-4050CD036720}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{404128F4-0035-4D8F-9A47-4050CD036720}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C3C32183-DB79-404F-B3B3-EEB671CC3787} = {7F243637-0E5C-451F-9547-D0B75A47204F}
 	EndGlobalSection
 EndGlobal
