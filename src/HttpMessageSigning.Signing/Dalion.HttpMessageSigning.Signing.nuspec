@@ -18,8 +18,8 @@
     <tags>signing http messages ietf cavage lievrouw dalion</tags>
     <dependencies>
       <group targetFramework="netstandard2.0">
-        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[2.2.0,)" />
-        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="[2.2.0,)" />
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[3.1.2,)" />
+        <dependency id="Microsoft.Extensions.Logging.Abstractions" version="[3.1.2,)" />
         <dependency id="Dalion.HttpMessageSigning" version="[$version$,)" />
       </group> 
     </dependencies>
