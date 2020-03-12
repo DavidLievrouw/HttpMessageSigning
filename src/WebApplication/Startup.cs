@@ -2,7 +2,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Dalion.HttpMessageSigning;
 using Dalion.HttpMessageSigning.Verification;
-using Dalion.HttpMessageSigning.Verification.AuthenticationScheme;
+using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;

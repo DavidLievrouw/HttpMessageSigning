@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Signing"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification", "HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj", "{D1E2051F-B620-43E3-AC86-E647D3058B88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.AuthenticationScheme", "HttpMessageSigning.Verification.AuthenticationScheme\HttpMessageSigning.Verification.AuthenticationScheme.csproj", "{FB8B2469-6693-458B-9DF9-D904363B3A6E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.AspNetCore", "HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj", "{FB8B2469-6693-458B-9DF9-D904363B3A6E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.Owin", "HttpMessageSigning.Verification.Owin\HttpMessageSigning.Verification.Owin.csproj", "{4C44E410-EF49-4FB7-9F6D-C841162F624A}"
 EndProject

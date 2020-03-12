@@ -2,28 +2,28 @@
 
 <package xmlns:ns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>Dalion.HttpMessageSigning.Verification.AuthenticationScheme</id>
-    <title>Dalion HttpMessageSigning.Verification.AuthenticationScheme</title>
+    <id>Dalion.HttpMessageSigning.Verification.AspNetCore</id>
+    <title>Dalion HttpMessageSigning.Verification.AspNetCore</title>
     <icon>images\dalion128.png</icon>
     <iconUrl>https://dalion.eu/dalion128.png</iconUrl>
     <version>$version$</version>
-    <copyright>Copyright (c) 2020, David Lievrouw</copyright>
+    <copyright>Copyright (c) $year$, David Lievrouw</copyright>
     <authors>Dalion, David Lievrouw</authors>
     <owners>David Lievrouw</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/DavidLievrouw/HttpMessageSigning</projectUrl>
-    <description>ASP.NET Core Authentication scheme for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</description>
-    <summary>ASP.NET Core Authentication scheme for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</summary>
+    <description>ASP.NET Core extensions for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</description>
+    <summary>ASP.NET Core extensions for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</summary>
     <tags>signing http messages ietf cavage lievrouw dalion</tags>
     <dependencies>
       <group targetFramework="netcoreapp3.1">
-        <dependency id="Dalion.HttpMessageSigning.Verification" version="[$version$,)" />
+        <dependency id="Dalion.HttpMessageSigning" version="[$version$,)" />
       </group> 
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\$configuration$\netcoreapp3.1\Dalion.HttpMessageSigning.Verification.AuthenticationScheme*.*" target="lib\netcoreapp3.1" />
+    <file src="bin\$configuration$\netcoreapp3.1\Dalion.HttpMessageSigning.Verification*.*" target="lib\netcoreapp3.1" />
     <file src="..\..\dalion128.png" target="images" />
   </files>
 </package>

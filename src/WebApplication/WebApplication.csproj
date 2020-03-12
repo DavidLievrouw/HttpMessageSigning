@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HttpMessageSigning.Verification.AuthenticationScheme\HttpMessageSigning.Verification.AuthenticationScheme.csproj" />
+      <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
     </ItemGroup>
 
 </Project>

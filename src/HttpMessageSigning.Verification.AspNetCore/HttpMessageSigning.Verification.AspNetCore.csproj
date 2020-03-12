@@ -2,13 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <AssemblyName>Dalion.HttpMessageSigning.Verification.AuthenticationScheme</AssemblyName>
-        <RootNamespace>Dalion.HttpMessageSigning.Verification.AuthenticationScheme</RootNamespace>
+        <AssemblyName>Dalion.HttpMessageSigning.Verification.AspNetCore</AssemblyName>
+        <RootNamespace>Dalion.HttpMessageSigning.Verification.AspNetCore</RootNamespace>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <Company>Dalion</Company>
-        <Description>ASP.NET Core Authentication scheme for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
-        <Product>Dalion.HttpMessageSigning.Verification.AuthenticationScheme</Product>
-        <Title>Dalion.HttpMessageSigning.Verification.AuthenticationScheme</Title>
+        <Description>ASP.NET Core extensions for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
+        <Product>Dalion.HttpMessageSigning.Verification.AspNetCore</Product>
+        <Title>Dalion.HttpMessageSigning.Verification.AspNetCore</Title>
         <DebugType>portable</DebugType>
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
@@ -40,7 +40,7 @@
         <PropertyGroup>
             <PackagePublishDir Condition="'$(PackagePublishDir)'==''">$(MSBuildThisFileDirectory)bin\Packages\</PackagePublishDir>
         </PropertyGroup>
-        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Verification.AuthenticationScheme.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion)\&quot;" />
+        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Verification.AuthenticationScheme.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion);year=$([System.DateTime]::Now.ToString(yyyy))\&quot;" />
     </Target>
 
 </Project>

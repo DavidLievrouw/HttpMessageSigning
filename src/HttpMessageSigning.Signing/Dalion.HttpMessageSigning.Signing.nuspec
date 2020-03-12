@@ -7,7 +7,7 @@
     <icon>images\dalion128.png</icon>
     <iconUrl>https://dalion.eu/dalion128.png</iconUrl>
     <version>$version$</version>
-    <copyright>Copyright (c) 2020, David Lievrouw</copyright>
+    <copyright>Copyright (c) $year$, David Lievrouw</copyright>
     <authors>Dalion, David Lievrouw</authors>
     <owners>David Lievrouw</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

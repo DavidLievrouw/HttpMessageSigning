@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Dalion.HttpMessageSigning.Verification.AuthenticationScheme {
+namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public static class Extensions {
         /// <summary>
         /// Adds http message signing scheme registrations to the <see cref="AuthenticationBuilder"/>.

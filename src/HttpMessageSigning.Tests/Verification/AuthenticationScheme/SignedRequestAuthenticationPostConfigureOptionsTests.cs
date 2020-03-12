@@ -1,4 +1,5 @@
 using System;
+using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using FluentAssertions;
 using Xunit;
 

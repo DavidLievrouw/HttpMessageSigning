@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using FluentAssertions;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Owin;
 using Xunit;
 
