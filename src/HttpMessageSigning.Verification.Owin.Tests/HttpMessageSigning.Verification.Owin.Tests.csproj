@@ -27,9 +27,6 @@
         <PackageReference Include="coveralls.io" Version="1.4.2" />
         <PackageReference Include="FakeItEasy" Version="6.0.0" />
         <PackageReference Include="FluentAssertions" Version="5.10.2" />
-        <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
         <PackageReference Include="Microsoft.Owin.Security" Version="4.1.0" />
         <PackageReference Include="OpenCover" Version="4.7.922" />
