@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
-            return services.AddHttpMessageSignatureVerification(prov => prov.GetRequiredService<IClientStore>());
+            return services.AddHttpMessageSignatureVerificationPlumbing();
         }
 
         /// <summary>
@@ -112,13 +112,20 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (clientStoreFactory == null) throw new ArgumentNullException(nameof(clientStoreFactory));
 
             return services
+                .AddHttpMessageSignatureVerificationPlumbing()
+                .AddSingleton(clientStoreFactory);
+        }
+        
+        private static IServiceCollection AddHttpMessageSignatureVerificationPlumbing(this IServiceCollection services) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
+            return services
                 .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<ISignatureParser, SignatureParser>()
                 .AddSingleton<IClaimsPrincipalFactory>(new ClaimsPrincipalFactory(typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2)))
                 .AddSingleton<IDefaultSignatureHeadersProvider, DefaultSignatureHeadersProvider>()
                 .AddSingleton<ISignatureSanitizer, SignatureSanitizer>()
-                .AddSingleton(clientStoreFactory)
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
                 .AddSingleton<ISignatureVerifier>(provider => new SignatureVerifier(
