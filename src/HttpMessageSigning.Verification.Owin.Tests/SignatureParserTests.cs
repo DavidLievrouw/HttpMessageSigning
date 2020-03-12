@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Owin;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification {
+namespace Dalion.HttpMessageSigning.Verification.Owin {
     public class SignatureParserTests {
         private readonly SignatureParser _sut;
 
@@ -13,14 +13,14 @@ namespace Dalion.HttpMessageSigning.Verification {
         }
 
         public class Parse : SignatureParserTests {
-            private readonly HttpRequest _request;
+            private readonly IOwinRequest _request;
             private readonly long _nowEpoch;
             private readonly long _expiresEpoch;
             private readonly DateTimeOffset _now;
             private readonly DateTimeOffset _expires;
 
             public Parse() {
-                _request = new DefaultHttpContext().Request;
+                _request = new FakeOwinRequest();
                 _now = new DateTimeOffset(2020, 2, 25, 10, 29, 29, TimeSpan.Zero);
                 _expires = _now.AddMinutes(10);
                 _nowEpoch = _now.ToUnixTimeSeconds();
@@ -202,7 +202,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             private static void SetHeader(
-                HttpRequest request,
+                IOwinRequest request,
                 string keyId = null,
                 string algorithm = null,
                 string created = null,

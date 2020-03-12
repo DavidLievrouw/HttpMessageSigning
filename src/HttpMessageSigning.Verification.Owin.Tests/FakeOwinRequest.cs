@@ -30,9 +30,14 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         public PathString Path { get; set; }
         public QueryString QueryString { get; set; }
         public IReadableStringCollection Query { get; }
-        public Uri Uri { get; }
+
+        public Uri Uri =>
+            !QueryString.HasValue
+                ? new Uri(Scheme + "://" + GetHost() + PathBase + Path)
+                : new Uri(Scheme + "://" + GetHost() + PathBase + Path + "?" + QueryString);
+
         public string Protocol { get; set; }
-        public IHeaderDictionary Headers { get; } = new HeaderDictionary(new Dictionary<string, string[]>());
+        public IHeaderDictionary Headers { get; set; } = new Microsoft.Owin.HeaderDictionary(new Dictionary<string, string[]>());
         public RequestCookieCollection Cookies { get; }
         public string ContentType { get; set; }
         public string CacheControl { get; set; }
@@ -45,5 +50,18 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         public string RemoteIpAddress { get; set; }
         public int? RemotePort { get; set; }
         public IPrincipal User { get; set; }
+
+        public string GetHost() {
+            if (!string.IsNullOrEmpty(Host.Value)) return Host.Value;
+            
+            var hasHost = Headers.TryGetValue("Host", out var hostValues);
+            if (hasHost && hostValues != null) {
+                return string.Join(",", hostValues);
+            }
+
+            var localIpAddress = LocalIpAddress ?? "localhost";
+            var localPort = LocalPort;
+            return !localPort.HasValue ? localIpAddress : localIpAddress + ":" + localPort;
+        }
     }
 }

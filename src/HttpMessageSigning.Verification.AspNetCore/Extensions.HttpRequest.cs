@@ -5,9 +5,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 
-namespace Dalion.HttpMessageSigning.Verification {
+namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public static partial class Extensions {
         internal static async Task<HttpRequestForSigning> ToRequestForSigning(this HttpRequest request, ISignatureAlgorithm signatureAlgorithm, Signature signature) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));

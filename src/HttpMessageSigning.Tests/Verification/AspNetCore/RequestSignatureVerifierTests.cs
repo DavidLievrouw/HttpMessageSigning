@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification {
+namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public class RequestSignatureVerifierTests {
         private readonly IClaimsPrincipalFactory _claimsPrincipalFactory;
         private readonly IClientStore _clientStore;

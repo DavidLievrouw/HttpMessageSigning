@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Owin;
 
-namespace Dalion.HttpMessageSigning.Verification {
+namespace Dalion.HttpMessageSigning.Verification.Owin {
     /// <summary>
     /// Service that verifies a signature of the specified request, in the form of an Authorization header.
     /// </summary>
@@ -12,6 +12,6 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// </summary>
         /// <param name="request">The request to verify the signature for.</param>
         /// <returns>A verification result that indicates success or failure.</returns>
-        Task<RequestSignatureVerificationResult> VerifySignature(HttpRequest request);
+        Task<RequestSignatureVerificationResult> VerifySignature(IOwinRequest request);
     }
 }

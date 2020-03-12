@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public static partial class Extensions {
         /// <summary>
-        ///     Adds http message signature verification registrations to the specified
+        ///     Adds http message signature verification registrations for MongoDb to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
         /// </summary>
         /// <param name="services">
@@ -16,15 +16,15 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
-        public static IServiceCollection AddHttpMessageSignatureVerificationWithMongoDbSupport(this IServiceCollection services, MongoDbSettings settings) {
+        public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services, MongoDbSettings settings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
 
-            return services.AddHttpMessageSignatureVerificationWithMongoDbSupport(prov => settings);
+            return services.AddMongoDbClientStore(prov => settings);
         }
 
         /// <summary>
-        ///     Adds http message signature verification registrations to the specified
+        ///     Adds http message signature verification registrations for MongoDb to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
         /// </summary>
         /// <param name="services">
@@ -36,18 +36,18 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
-        public static IServiceCollection AddHttpMessageSignatureVerificationWithMongoDbSupport(this IServiceCollection services,
+        public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services,
             Func<IServiceProvider, MongoDbSettings> settingsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (settingsFactory == null) throw new ArgumentNullException(nameof(settingsFactory));
 
             return services
-                .AddHttpMessageSignatureVerification(prov => {
+                .AddSingleton<IClientStore>(prov => {
                     var mongoSettings = settingsFactory(prov);
                     if (mongoSettings == null) throw new ValidationException($"Invalid {nameof(MongoDbSettings)} were specified.");
                     mongoSettings.Validate();
                     return new MongoDbClientStore(
-                        new MongoDatabaseClientProvider(mongoSettings.ConnectionString), 
+                        new MongoDatabaseClientProvider(mongoSettings.ConnectionString),
                         mongoSettings.CollectionName);
                 });
         }

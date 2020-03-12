@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

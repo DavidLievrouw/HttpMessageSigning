@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Dalion.HttpMessageSigning;
 using Dalion.HttpMessageSigning.Signing;
 using Dalion.HttpMessageSigning.Verification;
+using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

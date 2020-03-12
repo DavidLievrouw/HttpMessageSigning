@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
@@ -41,4 +41,7 @@
         <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Reference Include="System.Net.Http" />
+    </ItemGroup>
 </Project>

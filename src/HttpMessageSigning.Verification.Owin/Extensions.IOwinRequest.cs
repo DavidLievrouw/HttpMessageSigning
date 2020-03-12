@@ -1,18 +1,15 @@
 ﻿using System.IO;
+using System.Net.Http;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Owin;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
     public static partial class Extensions {
-        internal static HttpRequest ToHttpRequest(this IOwinRequest owinRequest) {
-            var request = new DefaultHttpContext().Request;
-
-            request.Method = owinRequest.Method;
-            request.Scheme = owinRequest.Scheme;
-            request.Host = new Microsoft.AspNetCore.Http.HostString(owinRequest.Host.Value);
-            if (owinRequest.PathBase.HasValue) request.PathBase = new Microsoft.AspNetCore.Http.PathString(owinRequest.PathBase.Value);
-            if (owinRequest.Path.HasValue) request.Path = new Microsoft.AspNetCore.Http.PathString(owinRequest.Path.Value);
+        internal static HttpRequestForSigning ToHttpRequestForSigning(this IOwinRequest owinRequest) {
+            var request = new HttpRequestForSigning {
+                Method = new HttpMethod(owinRequest.Method), 
+                RequestUri = owinRequest.Uri
+            };
 
             foreach (var header in owinRequest.Headers) {
                 request.Headers[header.Key] = header.Value;
@@ -20,12 +17,12 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             if (ShouldReadBody(owinRequest) && owinRequest.Body != null) {
                 var bodyString = new StreamReader(owinRequest.Body).ReadToEnd();
+                
                 var requestData = Encoding.UTF8.GetBytes(bodyString);
-
                 owinRequest.Body?.Dispose();
                 owinRequest.Body = new MemoryStream(requestData);
 
-                request.Body = new MemoryStream(requestData);
+                request.Body = bodyString;
             }
 
             return request;

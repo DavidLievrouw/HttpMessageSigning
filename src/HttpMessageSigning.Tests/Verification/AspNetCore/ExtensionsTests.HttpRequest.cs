@@ -8,7 +8,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification {
+namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public partial class ExtensionsTests {
         public class HttpRequest : ExtensionTests {
             public class ToRequestForSigning : HttpRequest {

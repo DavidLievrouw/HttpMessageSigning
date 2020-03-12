@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Dalion.HttpMessageSigning.Verification {
+namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     internal class RequestSignatureVerifier : IRequestSignatureVerifier {
         private readonly ISignatureParser _signatureParser;
         private readonly IClientStore _clientStore;

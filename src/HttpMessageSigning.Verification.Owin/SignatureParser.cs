@@ -1,10 +1,9 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
+using Microsoft.Owin;
 
-namespace Dalion.HttpMessageSigning.Verification {
+namespace Dalion.HttpMessageSigning.Verification.Owin {
     internal class SignatureParser : ISignatureParser {
         private const string AuthorizationHeaderName = "Authorization";
         private const string AuthorizationScheme = "SignedHttpRequest";
@@ -16,28 +15,27 @@ namespace Dalion.HttpMessageSigning.Verification {
         private static readonly Regex HeadersRegEx = new Regex("headers=\"(?<headers>[a-z0-9-\\(\\) ]+)\"", RegexOptions.Compiled);
         private static readonly Regex SignatureRegEx = new Regex("signature=\"(?<signature>[a-zA-Z0-9+/]+={0,2})\"", RegexOptions.Compiled);
 
-        public Signature Parse(HttpRequest request) {
+        public Signature Parse(IOwinRequest request) {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             var authHeader = request.Headers[AuthorizationHeaderName];
-            if (authHeader == Microsoft.Extensions.Primitives.StringValues.Empty)
+            if (string.IsNullOrEmpty(authHeader))
                 throw new SignatureVerificationException($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
 
-            var rawAuthHeader = (string) authHeader;
-            var separatorIndex = rawAuthHeader.IndexOf(' ');
+            var separatorIndex = authHeader.IndexOf(' ');
             if (separatorIndex < 0) {
                 throw new SignatureVerificationException(
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             }
-            var authScheme = rawAuthHeader.Substring(0, separatorIndex);
+            var authScheme = authHeader.Substring(0, separatorIndex);
             if (authScheme != AuthorizationScheme)
                 throw new SignatureVerificationException(
                     $"The specified request does not specify the {AuthorizationScheme} scheme in the {AuthorizationHeaderName} header.");
 
-            if (separatorIndex >= rawAuthHeader.Length - 1)
+            if (separatorIndex >= authHeader.Length - 1)
                 throw new SignatureVerificationException(
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
-            var authParam = rawAuthHeader.Substring(separatorIndex + 1);
+            var authParam = authHeader.Substring(separatorIndex + 1);
 
             var keyId = KeyId.Empty;
             var keyIdMatch = KeyIdRegEx.Match(authParam);

@@ -6,8 +6,9 @@ namespace Dalion.HttpMessageSigning.Verification {
     internal class ClaimsPrincipalFactory : IClaimsPrincipalFactory {
         private readonly string _version;
 
-        public ClaimsPrincipalFactory() {
-            _version = typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2);
+        public ClaimsPrincipalFactory(string version) {
+            if (string.IsNullOrEmpty(version)) throw new ArgumentException("Value cannot be null or empty.", nameof(version));
+            _version = version;
         }
 
         public ClaimsPrincipal CreateForClient(Client client) {

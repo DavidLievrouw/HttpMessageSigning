@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.WebEncoders.Testing;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification.AuthenticationScheme {
+namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public class SignedRequestAuthenticationHandlerTests {
         private readonly Microsoft.AspNetCore.Authentication.ISystemClock _clock;
         private readonly UrlEncoder _encoder;

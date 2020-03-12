@@ -2,6 +2,7 @@ using System;
 using System.Security.Cryptography;
 using Dalion.HttpMessageSigning.Signing;
 using Dalion.HttpMessageSigning.Verification;
+using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

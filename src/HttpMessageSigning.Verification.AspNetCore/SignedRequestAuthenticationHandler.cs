@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             IOptionsMonitor<SignedRequestAuthenticationOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            ISystemClock clock,
+            Microsoft.AspNetCore.Authentication.ISystemClock clock,
             IRequestSignatureVerifier requestSignatureVerifier) : base(options, logger, encoder, clock) {
             _requestSignatureVerifier = requestSignatureVerifier ?? throw new ArgumentNullException(nameof(requestSignatureVerifier));
         }

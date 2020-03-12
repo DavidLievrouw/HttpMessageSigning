@@ -5,7 +5,7 @@ using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Dalion.HttpMessageSigning.Verification {
+namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public static partial class Extensions {
         /// <summary>
         ///     Adds http message signature verification registrations to the specified
@@ -113,7 +113,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<ISignatureParser, SignatureParser>()
-                .AddSingleton<IClaimsPrincipalFactory, ClaimsPrincipalFactory>()
+                .AddSingleton<IClaimsPrincipalFactory>(new ClaimsPrincipalFactory(typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2)))
                 .AddSingleton<IDefaultSignatureHeadersProvider, DefaultSignatureHeadersProvider>()
                 .AddSingleton<ISignatureSanitizer, SignatureSanitizer>()
                 .AddSingleton(clientStoreFactory)

@@ -1,9 +1,8 @@
 using System;
-using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification.AuthenticationScheme {
+namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public class SignedRequestAuthenticationPostConfigureOptionsTests {
         private readonly SignedRequestAuthenticationPostConfigureOptions _sut;
 

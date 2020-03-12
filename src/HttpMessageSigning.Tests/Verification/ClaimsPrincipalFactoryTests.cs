@@ -1,15 +1,18 @@
 using System;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification {
     public class ClaimsPrincipalFactoryTests {
         private readonly ClaimsPrincipalFactory _sut;
+        private readonly string _version;
 
         public ClaimsPrincipalFactoryTests() {
-            _sut = new ClaimsPrincipalFactory();
+            _version = "2.0";
+            _sut = new ClaimsPrincipalFactory(_version);
         }
 
         public class CreateForClient : ClaimsPrincipalFactoryTests {
@@ -32,7 +35,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var expectedClaims = new[] {
                     new Claim("appid", "id1"),
                     new Claim("name", "Unit test app"),
-                    new Claim("ver", typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2))
+                    new Claim("ver", _version)
                 };
                 actual.Claims.Should().BeEquivalentTo(expectedClaims, options => options.Including(c => c.Type).Including(c => c.Value));
             }
@@ -49,7 +52,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var expectedClaims = new[] {
                     new Claim("appid", "id1"),
                     new Claim("name", "Unit test app"),
-                    new Claim("ver", typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2))
+                    new Claim("ver", _version)
                 };
                 actual.Claims.Should().BeEquivalentTo(expectedClaims, options => options.Including(c => c.Type).Including(c => c.Value));
             }
@@ -69,7 +72,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var expectedClaims = new[] {
                     new Claim("appid", "id1"),
                     new Claim("name", "Unit test app"),
-                    new Claim("ver", typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2)),
+                    new Claim("ver", _version),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
                     new Claim("c2", "v2")

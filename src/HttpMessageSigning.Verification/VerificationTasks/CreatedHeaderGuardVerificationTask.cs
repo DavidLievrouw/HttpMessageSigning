@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class CreatedHeaderGuardVerificationTask : IVerificationTask {

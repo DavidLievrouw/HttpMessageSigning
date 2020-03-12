@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using FluentAssertions;
 using Microsoft.Owin;
 using Xunit;
@@ -8,10 +9,10 @@ using Xunit;
 namespace Dalion.HttpMessageSigning.Verification.Owin {
     public class ExtensionsTests {
         public class ForIOwinRequest : ExtensionsTests {
-            public class ToHttpRequest : ForIOwinRequest {
+            public class ToHttpRequestForSigning : ForIOwinRequest {
                 private readonly IOwinRequest _owinRequest;
 
-                public ToHttpRequest() {
+                public ToHttpRequestForSigning() {
                     _owinRequest = new FakeOwinRequest {
                         Method = "GET",
                         Scheme = "https",
@@ -30,52 +31,20 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 [InlineData("PATCH")]
                 public void CopiesMethod(string method) {
                     _owinRequest.Method = method;
-                    var actual = _owinRequest.ToHttpRequest();
-                    actual.Method.Should().Be(method);
-                }
-
-                [Theory]
-                [InlineData("http")]
-                [InlineData("https")]
-                public void CopiesScheme(string scheme) {
-                    _owinRequest.Scheme = scheme;
-                    var actual = _owinRequest.ToHttpRequest();
-                    actual.Scheme.Should().Be(scheme);
+                    var actual = _owinRequest.ToHttpRequestForSigning();
+                    actual.Method.Should().Be(new HttpMethod(method));
                 }
 
                 [Fact]
-                public void CopiesHost() {
+                public void CopiesUri() {
+                    _owinRequest.Scheme = "https";
                     _owinRequest.Host = new HostString("unittest.com:9000");
-                    var actual = _owinRequest.ToHttpRequest();
-                    actual.Host.Should().Be(new Microsoft.AspNetCore.Http.HostString("unittest.com", 9000));
-                }
-
-                [Fact]
-                public void CopiesPath() {
-                    _owinRequest.Path = new PathString("/api/test");
-                    var actual = _owinRequest.ToHttpRequest();
-                    actual.Path.Should().Be(new Microsoft.AspNetCore.Http.PathString("/api/test"));
-                }
-
-                [Fact]
-                public void WhenThereIsNoPath_SetsPathToNull() {
-                    _owinRequest.Path = PathString.Empty;
-                    var actual = _owinRequest.ToHttpRequest();
-                    actual.Path.Should().Be(Microsoft.AspNetCore.Http.PathString.Empty);
-                }
-
-                [Fact]
-                public void CopiesPathBase() {
-                    _owinRequest.PathBase = new PathString("/policies");
-                    var actual = _owinRequest.ToHttpRequest();
-                    actual.PathBase.Should().Be(new Microsoft.AspNetCore.Http.PathString("/policies"));
-                }
-
-                [Fact]
-                public void WhenThereIsNoPathBase_SetsPathToNull() {
-                    _owinRequest.PathBase = PathString.Empty;
-                    var actual = _owinRequest.ToHttpRequest();
-                    actual.PathBase.Should().Be(Microsoft.AspNetCore.Http.PathString.Empty);
+                    _owinRequest.PathBase = new PathString("/api");
+                    _owinRequest.Path = new PathString("/policies/test");
+                    
+                    var actual = _owinRequest.ToHttpRequestForSigning();
+                    
+                    actual.RequestUri.Should().Be(new Uri("https://unittest.com:9000/api/policies/test"));
                 }
 
                 [Fact]
@@ -84,43 +53,38 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     _owinRequest.Headers.Add("multiple-value", new[] {"v1", "v2"});
                     _owinRequest.Headers.Add("no-value", Array.Empty<string>());
 
-                    var actual = _owinRequest.ToHttpRequest();
+                    var actual = _owinRequest.ToHttpRequestForSigning();
 
-                    actual.Headers.Should().BeEquivalentTo(new Microsoft.AspNetCore.Http.HeaderDictionary(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues> {
-                        {"simple-value", new[] {"v1"}},
-                        {"multiple-value", new[] {"v1", "v2"}},
-                        {"Host", new[] {"unittest.com:9000"}}
-                    }));
+                    actual.Headers.ToDictionary().Should().BeEquivalentTo(new Dictionary<string, StringValues> {
+                        {"simple-value", (StringValues)new[] {"v1"}},
+                        {"multiple-value", (StringValues)new[] {"v1", "v2"}},
+                        {"no-value", StringValues.Empty}
+                    });
                 }
 
                 [Fact]
-                public void WhenThereAreNoHeaders_SetsOnlyHostHeader() {
+                public void WhenThereAreNoHeaders_SetsEmptyHeaders() {
                     _owinRequest.Headers.Clear();
 
-                    var actual = _owinRequest.ToHttpRequest();
+                    var actual = _owinRequest.ToHttpRequestForSigning();
 
-                    actual.Headers.Should().BeEquivalentTo(new Microsoft.AspNetCore.Http.HeaderDictionary(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues> {
-                        {"Host", new[] {"unittest.com:9000"}}
-                    }));
+                    actual.Headers.ToDictionary().Should().NotBeNull().And.BeEmpty();
                 }
 
                 [Fact]
                 public void WhenThereIsADigestHeader_CopiesBodyAndHeader() {
-                    using (var bodyStream = new MemoryStream(new byte[] {0x01, 0x02, 0x03})) {
+                    var bodyString = "abc";
+                    var bodyBytes = System.Text.Encoding.UTF8.GetBytes(bodyString);
+                    
+                    using (var bodyStream = new MemoryStream(bodyBytes)) {
                         _owinRequest.Headers.Add("simple-value", new[] {"v1"});
                         _owinRequest.Headers.Add("digest", new[] {"SHA-256=xyz123="});
                         _owinRequest.Body = bodyStream;
 
-                        var actual = _owinRequest.ToHttpRequest();
+                        var actual = _owinRequest.ToHttpRequestForSigning();
 
-                        actual.Headers.Should().Contain("digest", "SHA-256=xyz123=");
-                        
-                        using(var actualStream = new MemoryStream())
-                        {
-                            actual.Body.CopyTo(actualStream);
-                            var actualBytes = actualStream.ToArray();
-                            actualBytes.Should().BeEquivalentTo(new byte[] {0x01, 0x02, 0x03});
-                        }
+                        actual.Headers.Should().Contain(_ => _.Key == "digest" && _.Value == "SHA-256=xyz123=");
+                        actual.Body.Should().Be(bodyString);
                     }
                 }
 
@@ -130,44 +94,53 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     _owinRequest.Headers.Add("digest", new[] {"SHA-256=xyz123="});
                     _owinRequest.Body = null;
 
-                    var actual = _owinRequest.ToHttpRequest();
+                    var actual = _owinRequest.ToHttpRequestForSigning();
 
-                    actual.Body.Should().Be(Stream.Null);
+                    actual.Body.Should().BeNull();
                 }
 
                 [Fact]
-                public void WhenThereIsNoDigestHeader_DoesNotCopyBody() {
-                    using (var bodyStream = new MemoryStream(new byte[] {0x01, 0x02, 0x03})) {
+                public void WhenThereIsNoDigestHeader_DoesNotCopyBody() {                   
+                    var bodyString = "abc";
+                    var bodyBytes = System.Text.Encoding.UTF8.GetBytes(bodyString);
+                    
+                    using (var bodyStream = new MemoryStream(bodyBytes)) {
                         _owinRequest.Headers.Add("simple-value", new[] {"v1"});
                         _owinRequest.Body = bodyStream;
 
-                        var actual = _owinRequest.ToHttpRequest();
+                        var actual = _owinRequest.ToHttpRequestForSigning();
 
-                        actual.Body.Should().Be(Stream.Null);
+                        actual.Body.Should().BeNull();
                     }
                 }
 
                 [Fact]
-                public void WhenBodyIsCopied_TheBodyStreamOfTheOriginalRequestShouldBeAtZero() {
-                    using (var bodyStream = new MemoryStream(new byte[] {0x01, 0x02, 0x03})) {
+                public void WhenBodyIsCopied_TheBodyStreamOfTheOriginalRequestShouldBeAtZero() {             
+                    var bodyString = "abc";
+                    var bodyBytes = System.Text.Encoding.UTF8.GetBytes(bodyString);
+                    
+                    using (var bodyStream = new MemoryStream(bodyBytes)) {
                         _owinRequest.Headers.Add("simple-value", new[] {"v1"});
                         _owinRequest.Headers.Add("digest", new[] {"SHA-256=xyz123="});
                         _owinRequest.Body = bodyStream;
 
-                        _owinRequest.ToHttpRequest();
+                        _owinRequest.ToHttpRequestForSigning();
 
                         _owinRequest.Body.Position.Should().Be(0);
                     }
                 }
 
                 [Fact]
-                public void WhenBodyWasCopied_ShouldHaveDisposedTheOriginalStream() {
-                    using (var bodyStream = new MemoryStream(new byte[] {0x01, 0x02, 0x03})) {
+                public void WhenBodyWasCopied_ShouldHaveDisposedTheOriginalStream() {             
+                    var bodyString = "abc";
+                    var bodyBytes = System.Text.Encoding.UTF8.GetBytes(bodyString);
+                    
+                    using (var bodyStream = new MemoryStream(bodyBytes)) {
                         _owinRequest.Headers.Add("simple-value", new[] {"v1"});
                         _owinRequest.Headers.Add("digest", new[] {"SHA-256=xyz123="});
                         _owinRequest.Body = bodyStream;
 
-                        _owinRequest.ToHttpRequest();
+                        _owinRequest.ToHttpRequestForSigning();
 
                         Action act = () => bodyStream.ReadByte();
                         act.Should().Throw<ObjectDisposedException>();
@@ -175,12 +148,15 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 }
 
                 [Fact]
-                public void WhenBodyWasNotCopied_DoesNotDisposeOriginalStream() {
-                    using (var bodyStream = new MemoryStream(new byte[] {0x01, 0x02, 0x03})) {
+                public void WhenBodyWasNotCopied_DoesNotDisposeOriginalStream() {             
+                    var bodyString = "abc";
+                    var bodyBytes = System.Text.Encoding.UTF8.GetBytes(bodyString);
+                    
+                    using (var bodyStream = new MemoryStream(bodyBytes)) {
                         _owinRequest.Headers.Add("simple-value", new[] {"v1"});
                         _owinRequest.Body = bodyStream;
 
-                        _owinRequest.ToHttpRequest();
+                        _owinRequest.ToHttpRequestForSigning();
 
                         Action act = () => bodyStream.ReadByte();
                         act.Should().NotThrow();

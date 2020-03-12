@@ -12,33 +12,27 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             if (!AuthenticationHeaderValue.TryParse(Request.Headers["Authorization"], out var headerValue)) return null;
             if (!Options.Scheme.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase)) return null;
 
-            var httpRequest = Request.ToHttpRequest();
-            try {
-                var verificationResult = await Options.RequestSignatureVerifier.VerifySignature(httpRequest);
+            var verificationResult = await Options.RequestSignatureVerifier.VerifySignature(Request);
 
-                if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                    var onIdentityVerifiedTask = Options.OnIdentityVerified?.Invoke(successResult);
-                    if (onIdentityVerifiedTask != null) await onIdentityVerifiedTask;
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var onIdentityVerifiedTask = Options.OnIdentityVerified?.Invoke(successResult);
+                if (onIdentityVerifiedTask != null) await onIdentityVerifiedTask;
 
-                    var ticket = new AuthenticationTicket(
-                        (ClaimsIdentity) successResult.Principal.Identity,
-                        new AuthenticationProperties());
+                var ticket = new AuthenticationTicket(
+                    (ClaimsIdentity) successResult.Principal.Identity,
+                    new AuthenticationProperties());
 
-                    return ticket;
-                }
+                return ticket;
+            }
 
-                if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
-                    var onIdentityVerificationFailedTask = Options.OnIdentityVerificationFailed?.Invoke(failureResult);
-                    if (onIdentityVerificationFailedTask != null) await onIdentityVerificationFailedTask;
-
-                    return null;
-                }
+            if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                var onIdentityVerificationFailedTask = Options.OnIdentityVerificationFailed?.Invoke(failureResult);
+                if (onIdentityVerificationFailedTask != null) await onIdentityVerificationFailedTask;
 
                 return null;
             }
-            finally {
-                httpRequest?.Body?.Dispose();
-            }
+
+            return null;
         }
 
         protected override Task ApplyResponseChallengeAsync() {
