@@ -1,9 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning {
-    internal class HeaderDictionary {
+    internal class HeaderDictionary : IEnumerable<KeyValuePair<string, StringValues>> {
         private readonly IDictionary<string, StringValues> _innerDictionary;
 
         public HeaderDictionary() {
@@ -49,6 +49,14 @@ namespace Dalion.HttpMessageSigning {
 
         public IDictionary<string, StringValues> ToDictionary() {
             return new Dictionary<string, StringValues>(_innerDictionary, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public IEnumerator<KeyValuePair<string, StringValues>> GetEnumerator() {
+            return _innerDictionary.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
         }
     }
 }
