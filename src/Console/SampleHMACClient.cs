@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Console {
     public class SampleHMACClient {
-        private const string KeyId = "Dashboard";
+        private const string KeyId = "e0e8dcd638334c409e1b88daf821d135";
         private const string Secret = "G#6l$!D16E2UPoYKu&oL@AjAOj9vipKJTSII%*8iY*q6*MOis2R";
 
         public static async Task Run(string[] args) {
@@ -34,7 +34,7 @@ namespace Console {
         private static async Task Send(IRequestSignerFactory requestSignerFactory) {
             var request = new HttpRequestMessage {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri("http://localhost:54004/api/userinfo")
+                RequestUri = new Uri("http://localhost:5000/userinfo")
             };
 
             var requestSigner = requestSignerFactory.CreateFor(KeyId);

@@ -20,6 +20,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verifica
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7F243637-0E5C-451F-9547-D0B75A47204F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "WebApplication\WebApplication.csproj", "{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.AspNetCore", "HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj", "{1436A117-D129-47A9-A674-16C6309541FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,8 +66,17 @@ Global
 		{404128F4-0035-4D8F-9A47-4050CD036720}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{404128F4-0035-4D8F-9A47-4050CD036720}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{404128F4-0035-4D8F-9A47-4050CD036720}.Release|Any CPU.Build.0 = Release|Any CPU
+		{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1436A117-D129-47A9-A674-16C6309541FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1436A117-D129-47A9-A674-16C6309541FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1436A117-D129-47A9-A674-16C6309541FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1436A117-D129-47A9-A674-16C6309541FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C3C32183-DB79-404F-B3B3-EEB671CC3787} = {7F243637-0E5C-451F-9547-D0B75A47204F}
+		{685D7E66-BCA7-4A86-ACD1-AD419DD4E333} = {7F243637-0E5C-451F-9547-D0B75A47204F}
 	EndGlobalSection
 EndGlobal
