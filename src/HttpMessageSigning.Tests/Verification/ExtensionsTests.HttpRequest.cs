@@ -14,6 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public class ToRequestForSigning : HttpRequest {
                 private readonly Microsoft.AspNetCore.Http.HttpRequest _httpRequest;
                 private readonly Client _client;
+                private readonly Signature _signature;
 
                 public ToRequestForSigning() {
                     _httpRequest = new DefaultHttpContext().Request;
@@ -25,19 +26,26 @@ namespace Dalion.HttpMessageSigning.Verification {
                     _httpRequest.QueryString = new QueryString("?query=1&cache=false");
                     _httpRequest.Headers[HeaderName.PredefinedHeaderNames.Digest] = "SHA-256=xyz123=";
                     _client = new Client("client", "Unit test app", new CustomSignatureAlgorithm("Custom"));
+                    _signature = new Signature {Headers = new[] {HeaderName.PredefinedHeaderNames.Digest}};
                 }
 
                 [Fact]
                 public async Task GivenNullInput_ReturnsNull() {
                     Microsoft.AspNetCore.Http.HttpRequest nullRequest = null;
                     // ReSharper disable once ExpressionIsAlwaysNull
-                    var actual = await nullRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    var actual = await nullRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
                     actual.Should().BeNull();
                 }
 
                 [Fact]
                 public void GivenNullSignatureAlgorithm_ThrowsArgumentNullException() {
-                    Func<Task> act = () => _httpRequest.ToRequestForSigning(null);
+                    Func<Task> act = () => _httpRequest.ToRequestForSigning(null, _signature);
+                    act.Should().Throw<ArgumentNullException>();
+                }
+
+                [Fact]
+                public void GivenNullSignature_ThrowsArgumentNullException() {
+                    Func<Task> act = () => _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, null);
                     act.Should().Throw<ArgumentNullException>();
                 }
 
@@ -45,14 +53,14 @@ namespace Dalion.HttpMessageSigning.Verification {
                 public async Task AllowsNullMethod() {
                     _httpRequest.Method = null;
 
-                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
 
                     actual.Method.Should().Be(HttpMethod.Get);
                 }
 
                 [Fact]
                 public async Task CopiesUri() {
-                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
                     var expectedUri = new Uri("https://dalion.eu:9000/tests/api/rsc1?query=1&cache=false", UriKind.Absolute);
                     actual.RequestUri.Should().Be(expectedUri);
                 }
@@ -69,7 +77,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 public async Task CopiesMethod(string method) {
                     _httpRequest.Method = method;
 
-                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
 
                     actual.Method.Should().Be(new HttpMethod(method));
                 }
@@ -80,7 +88,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     _httpRequest.Headers.Add("dalion-single-header", "one");
                     _httpRequest.Headers.Add("dalion-multi-header", new Microsoft.Extensions.Primitives.StringValues(new[] {"one", "2"}));
 
-                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
 
                     var expectedHeaders = new HeaderDictionary(new Dictionary<string, StringValues> {
                         {"dalion-empty-header", ""},
@@ -99,7 +107,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     _httpRequest.Headers.Add("dalion-multi-header", new Microsoft.Extensions.Primitives.StringValues(new[] {"one", "2"}));
                     _httpRequest.ContentType = "application/json";
 
-                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
 
                     var expectedHeaders = new HeaderDictionary(new Dictionary<string, StringValues> {
                         {"dalion-empty-header", ""},
@@ -114,7 +122,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 [Fact]
                 public async Task SetsSignatureAlgorithm() {
-                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
 
                     actual.SignatureAlgorithmName.Should().Be("Custom");
                 }
@@ -123,32 +131,34 @@ namespace Dalion.HttpMessageSigning.Verification {
                 public async Task WhenThereIsNoBody_SetsBodyToNull() {
                     _httpRequest.Body = null;
 
-                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
 
                     actual.Body.Should().BeNull();
                 }
 
                 [Fact]
-                public async Task ThereIsBody_ButDigestHeaderIsNotInRequest_SetsBodyToNullAndDoesNotReadIt() {
+                public async Task ThereIsBody_AndDigestHeaderIsIncludedInSignature_ButDigestHeaderIsNotInRequest_ReadsBody() {
                     var bodyPayload = "This is the body payload";
                     _httpRequest.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyPayload));
                     _httpRequest.ContentType = "text/plain";
 
                     _httpRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Digest);
                     
-                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
 
-                    actual.Body.Should().BeNull();
-                    _httpRequest.Body.Position.Should().Be(0);
+                    _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
+                    actual.Body.Should().Be(bodyPayload);
                 }
 
                 [Fact]
-                public async Task WhenThereIsBody_AndDigestHeaderIsInRequest_ReadsBody() {
+                public async Task WhenThereIsBody_AndDigestHeaderIsNotIncludedInSignature_ButDigestHeaderIsInRequest_ReadsBody() {
                     var bodyPayload = "This is the body payload";
                     _httpRequest.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyPayload));
                     _httpRequest.ContentType = "text/plain";
+
+                    _signature.Headers = Array.Empty<HeaderName>();
                     
-                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
 
                     _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
 
@@ -157,12 +167,41 @@ namespace Dalion.HttpMessageSigning.Verification {
                 }
 
                 [Fact]
+                public async Task WhenThereIsBody_AndDigestHeaderIsPresentInRequest_AndDigestHeaderIsPartOfTheSignature_ReadsBody() {
+                    var bodyPayload = "This is the body payload";
+                    _httpRequest.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyPayload));
+                    _httpRequest.ContentType = "text/plain";
+
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
+
+                    _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
+
+                    actual.Body.Should().NotBeNull();
+                    actual.Body.Should().Be(bodyPayload);
+                }
+                
+                [Fact]
+                public async Task WhenThereIsBody_ButDigestHeaderIsNotPresentAndNotIncludedInSignature_SetsBodyToNullAndDoesNotReadIt() {
+                    var bodyPayload = "This is the body payload";
+                    _httpRequest.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyPayload));
+                    _httpRequest.ContentType = "text/plain";
+
+                    _httpRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Digest);
+                    _signature.Headers = Array.Empty<HeaderName>();
+
+                    var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
+
+                    actual.Body.Should().BeNull();
+                    _httpRequest.Body.Position.Should().Be(0);
+                }
+
+                [Fact]
                 public async Task SetsRequestBodyStreamBackToPositionZero() {
                     var bodyPayload = "This is the body payload";
                     _httpRequest.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyPayload));
                     _httpRequest.ContentType = "text/plain";
 
-                    await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm);
+                    await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
 
                     _httpRequest.Body.Position.Should().Be(0);
                 }

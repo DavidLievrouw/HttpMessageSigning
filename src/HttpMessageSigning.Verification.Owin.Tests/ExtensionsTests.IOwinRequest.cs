@@ -87,7 +87,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequest();
 
-                    actual.Headers.Should().BeEquivalentTo(new Microsoft.AspNetCore.Http.HeaderDictionary(new Dictionary<string, StringValues> {
+                    actual.Headers.Should().BeEquivalentTo(new Microsoft.AspNetCore.Http.HeaderDictionary(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues> {
                         {"simple-value", new[] {"v1"}},
                         {"multiple-value", new[] {"v1", "v2"}},
                         {"Host", new[] {"unittest.com:9000"}}
@@ -100,7 +100,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequest();
 
-                    actual.Headers.Should().BeEquivalentTo(new Microsoft.AspNetCore.Http.HeaderDictionary(new Dictionary<string, StringValues> {
+                    actual.Headers.Should().BeEquivalentTo(new Microsoft.AspNetCore.Http.HeaderDictionary(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues> {
                         {"Host", new[] {"unittest.com:9000"}}
                     }));
                 }

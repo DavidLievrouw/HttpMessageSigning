@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             };
 
             foreach (var header in request.Headers) {
-                requestMessage.Headers[header.Key] = header.Value;
+                requestMessage.Headers[header.Key] = new StringValues((string[])header.Value);
             }
 
             if (ShouldReadBody(request, signature) && request.Body != null) {

@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             var authHeader = request.Headers[AuthorizationHeaderName];
-            if (authHeader == StringValues.Empty)
+            if (authHeader == Microsoft.Extensions.Primitives.StringValues.Empty)
                 throw new SignatureVerificationException($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
 
             var rawAuthHeader = (string) authHeader;
