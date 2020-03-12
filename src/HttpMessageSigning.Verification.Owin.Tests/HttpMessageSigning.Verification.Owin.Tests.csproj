@@ -37,12 +37,10 @@
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
         <PackageReference Include="coverlet.collector" Version="1.2.0" />
     </ItemGroup>
-
+    
     <ItemGroup>
         <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
-        <ProjectReference Include="..\HttpMessageSigning.Verification.AuthenticationScheme\HttpMessageSigning.Verification.AuthenticationScheme.csproj" />
         <ProjectReference Include="..\HttpMessageSigning.Verification.Owin\HttpMessageSigning.Verification.Owin.csproj" />
-        <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
         <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
     </ItemGroup>
 

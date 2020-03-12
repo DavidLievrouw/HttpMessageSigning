@@ -17,9 +17,7 @@
     <summary>Core library of the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</summary>
     <tags>signing http messages ietf cavage lievrouw dalion</tags>
     <dependencies>
-      <group targetFramework="netstandard2.0">
-        <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="[2.2.0,)" />
-      </group> 
+      <group targetFramework="netstandard2.0" />
     </dependencies>
   </metadata>
   <files>

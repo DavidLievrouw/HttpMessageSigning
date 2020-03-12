@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Dalion.HttpMessageSigning {
-    public class StringValues : IReadOnlyList<string>, IEquatable<StringValues> {
+    public struct StringValues : IReadOnlyList<string>, IEquatable<StringValues> {
         public static readonly StringValues Empty = new StringValues(Array.Empty<string>());
 
         private readonly string[] _values;
@@ -17,9 +18,6 @@ namespace Dalion.HttpMessageSigning {
         }
 
         public bool Equals(StringValues other) {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
             if (Count != other.Count) {
                 return false;
             }
@@ -34,7 +32,9 @@ namespace Dalion.HttpMessageSigning {
         }
 
         public IEnumerator<string> GetEnumerator() {
-            return new List<string>(_values).GetEnumerator();
+            return _values == null
+                ? Enumerable.Empty<string>().GetEnumerator()
+                : new List<string>(_values).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -69,7 +69,7 @@ namespace Dalion.HttpMessageSigning {
         }
 
         public override bool Equals(object obj) {
-            return ReferenceEquals(this, obj) || obj is StringValues other && Equals(other);
+            return obj is StringValues other && Equals(other);
         }
 
         public override int GetHashCode() {
