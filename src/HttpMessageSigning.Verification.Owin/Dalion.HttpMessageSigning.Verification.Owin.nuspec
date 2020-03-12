@@ -19,6 +19,7 @@
     <dependencies>
       <group targetFramework="net472">
         <dependency id="Dalion.HttpMessageSigning" version="[$version$,)" />
+        <dependency id="Dalion.HttpMessageSigning.Verification" version="[$version$,)" />
         <dependency id="Microsoft.Owin" version="[4.1.0,)" />
         <dependency id="Microsoft.Owin.Security" version="[4.1.0,)" />
         <dependency id="Owin" version="[1.0.0,)" />
@@ -26,7 +27,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\$configuration$\net472\Dalion.HttpMessageSigning.Verification*.*" target="lib\net472" />
+    <file src="bin\$configuration$\net472\Dalion.HttpMessageSigning.Verification.Owin*.*" target="lib\net472" />
     <file src="..\..\dalion128.png" target="images" />
   </files>
 </package>

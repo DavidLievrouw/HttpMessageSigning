@@ -36,4 +36,11 @@
         <Message Text="The $(Product) product version for $(TargetFramework) is '$(ProductVersion)'." Importance="High" />
     </Target>
 
+    <Target Name="PackNuGetPackages" AfterTargets="AfterBuild" Condition="'$(IsPublishing)' == 'true'">
+        <PropertyGroup>
+            <PackagePublishDir Condition="'$(PackagePublishDir)'==''">$(MSBuildThisFileDirectory)bin\Packages\</PackagePublishDir>
+        </PropertyGroup>
+        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Verification.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion);year=$([System.DateTime]::Now.ToString(yyyy))\&quot;" />
+    </Target>
+    
 </Project>
