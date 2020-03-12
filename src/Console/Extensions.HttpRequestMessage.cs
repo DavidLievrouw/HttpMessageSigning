@@ -3,22 +3,18 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 
 namespace Console {
     public static partial class Extensions {
         public static async Task<HttpRequest> ToServerSideHttpRequest(this HttpRequestMessage clientRequest) {
             if (clientRequest == null) return null;
 
-            var request = new DefaultHttpRequest(new DefaultHttpContext()) {
-                Method = clientRequest.Method.Method,
-                Scheme = clientRequest.RequestUri.Scheme,
-                Host = new HostString(clientRequest.RequestUri.Host, clientRequest.RequestUri.Port),
-                Path = clientRequest.RequestUri.LocalPath,
-                Headers = {
-                    {"Authorization", clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter}
-                }
-            };
+            var request = new DefaultHttpContext().Request;
+            request.Method = clientRequest.Method.Method;
+            request.Scheme = clientRequest.RequestUri.Scheme;
+            request.Host = new HostString(clientRequest.RequestUri.Host, clientRequest.RequestUri.Port);
+            request.Path = clientRequest.RequestUri.LocalPath;
+            request.Headers["Authorization"] = clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter;
 
             var bodyTask = clientRequest.Content?.ReadAsStreamAsync();
             if (bodyTask != null) request.Body = await bodyTask;
