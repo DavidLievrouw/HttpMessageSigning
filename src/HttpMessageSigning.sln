@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verifica
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7F243637-0E5C-451F-9547-D0B75A47204F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "WebApplication\WebApplication.csproj", "{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreWebApplication", "AspNetCoreWebApplication\AspNetCoreWebApplication.csproj", "{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
