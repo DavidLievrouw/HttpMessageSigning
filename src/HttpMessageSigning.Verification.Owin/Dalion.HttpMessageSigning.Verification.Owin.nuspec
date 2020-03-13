@@ -20,6 +20,7 @@
       <group targetFramework="net472">
         <dependency id="Dalion.HttpMessageSigning" version="[$version$,)" />
         <dependency id="Dalion.HttpMessageSigning.Verification" version="[$version$,)" />
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[3.1.2,)" />
         <dependency id="Microsoft.Owin" version="[4.1.0,)" />
         <dependency id="Microsoft.Owin.Security" version="[4.1.0,)" />
         <dependency id="Owin" version="[1.0.0,)" />
