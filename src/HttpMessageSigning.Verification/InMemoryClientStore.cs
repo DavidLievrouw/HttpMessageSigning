@@ -10,10 +10,22 @@ namespace Dalion.HttpMessageSigning.Verification {
     public class InMemoryClientStore : IClientStore {
         private readonly IList<Client> _entries;
 
+        /// <summary>
+        /// Create a new empty instance of the <see cref="InMemoryClientStore"/> class.
+        /// </summary>
         public InMemoryClientStore() {
             _entries = new List<Client>();
         }
-
+        
+        /// <summary>
+        /// Create a new instance of the <see cref="InMemoryClientStore"/> class, containing the specified <see cref="Client"/> instances.
+        /// </summary>
+        /// <param name="clients">The <see cref="Client"/> instances to register.</param>
+        public InMemoryClientStore(params Client[] clients) {
+            if (clients == null) clients = Array.Empty<Client>();
+            _entries = new List<Client>(clients);
+        }
+        
         /// <summary>
         /// Registers a client, and its settings to perform signature verification.
         /// </summary>
@@ -43,7 +55,10 @@ namespace Dalion.HttpMessageSigning.Verification {
             return Task.FromResult(match);
         }
 
-        public virtual void Dispose() {
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose() {
             foreach (var entry in _entries) {
                 entry?.Dispose();
             }
