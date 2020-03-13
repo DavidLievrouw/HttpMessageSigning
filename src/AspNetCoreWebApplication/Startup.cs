@@ -18,7 +18,7 @@ namespace WebApplication {
                     new KeyId("e0e8dcd638334c409e1b88daf821d135"),
                     "HttpMessageSigningSampleHMAC",
                     SignatureAlgorithm.CreateForVerification("G#6l$!D16E2UPoYKu&oL@AjAOj9vipKJTSII%*8iY*q6*MOis2R", HashAlgorithmName.SHA512),
-                    new Claim(SignedHttpRequestClaimTypes.Role, "users.read")))
+                    new Claim(SignedHttpRequestClaimTypes.Role, "user.read")))
                 .AddAuthentication(SignedHttpRequestDefaults.AuthenticationScheme)
                 .AddSignedRequests(options => {
                     options.Realm = "Sample web application";

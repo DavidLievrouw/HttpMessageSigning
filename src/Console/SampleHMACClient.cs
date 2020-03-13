@@ -34,7 +34,7 @@ namespace Console {
         private static async Task Send(IRequestSignerFactory requestSignerFactory) {
             var request = new HttpRequestMessage {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri("http://localhost:5000/userinfo")
+                RequestUri = new Uri("http://localhost:5001/userinfo")
             };
 
             var requestSigner = requestSignerFactory.CreateFor(KeyId);

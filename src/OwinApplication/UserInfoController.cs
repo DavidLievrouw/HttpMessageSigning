@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Web.Http;
 
 namespace OwinApplication {
+    [Authorize(Roles = "user.read")]
     public class UserInfoController : ApiController {
         public IHttpActionResult Get() {
             var authenticatedUser = User as ClaimsPrincipal;
