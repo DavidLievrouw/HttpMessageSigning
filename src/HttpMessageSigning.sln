@@ -1,26 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning", "HttpMessageSigning\HttpMessageSigning.csproj", "{197735F8-278B-4F9B-B417-193A10527E29}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpMessageSigning", "HttpMessageSigning\HttpMessageSigning.csproj", "{197735F8-278B-4F9B-B417-193A10527E29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Tests", "HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj", "{DE15B2B8-993A-4307-9D19-22D796608DF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpMessageSigning.Tests", "HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj", "{DE15B2B8-993A-4307-9D19-22D796608DF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.csproj", "{C3C32183-DB79-404F-B3B3-EEB671CC3787}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console", "Console\Console.csproj", "{C3C32183-DB79-404F-B3B3-EEB671CC3787}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Signing", "HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj", "{EC01D12E-1297-4614-ACFB-EDE4DCE39189}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpMessageSigning.Signing", "HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj", "{EC01D12E-1297-4614-ACFB-EDE4DCE39189}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification", "HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj", "{D1E2051F-B620-43E3-AC86-E647D3058B88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpMessageSigning.Verification", "HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj", "{D1E2051F-B620-43E3-AC86-E647D3058B88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.AspNetCore", "HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj", "{FB8B2469-6693-458B-9DF9-D904363B3A6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpMessageSigning.Verification.AspNetCore", "HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj", "{FB8B2469-6693-458B-9DF9-D904363B3A6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.Owin", "HttpMessageSigning.Verification.Owin\HttpMessageSigning.Verification.Owin.csproj", "{4C44E410-EF49-4FB7-9F6D-C841162F624A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpMessageSigning.Verification.Owin", "HttpMessageSigning.Verification.Owin\HttpMessageSigning.Verification.Owin.csproj", "{4C44E410-EF49-4FB7-9F6D-C841162F624A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.Owin.Tests", "HttpMessageSigning.Verification.Owin.Tests\HttpMessageSigning.Verification.Owin.Tests.csproj", "{2CE6490A-22C1-45D9-B1A5-68EA5A6E8B3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpMessageSigning.Verification.Owin.Tests", "HttpMessageSigning.Verification.Owin.Tests\HttpMessageSigning.Verification.Owin.Tests.csproj", "{2CE6490A-22C1-45D9-B1A5-68EA5A6E8B3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.MongoDb", "HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj", "{404128F4-0035-4D8F-9A47-4050CD036720}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HttpMessageSigning.Verification.MongoDb", "HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj", "{404128F4-0035-4D8F-9A47-4050CD036720}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7F243637-0E5C-451F-9547-D0B75A47204F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCoreWebApplication", "AspNetCoreWebApplication\AspNetCoreWebApplication.csproj", "{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreWebApplication", "AspNetCoreWebApplication\AspNetCoreWebApplication.csproj", "{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OwinApplication", "OwinApplication\OwinApplication.csproj", "{55764E6E-553A-4DDD-B00E-33E860810D6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,9 +73,20 @@ Global
 		{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{685D7E66-BCA7-4A86-ACD1-AD419DD4E333}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55764E6E-553A-4DDD-B00E-33E860810D6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55764E6E-553A-4DDD-B00E-33E860810D6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55764E6E-553A-4DDD-B00E-33E860810D6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55764E6E-553A-4DDD-B00E-33E860810D6D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C3C32183-DB79-404F-B3B3-EEB671CC3787} = {7F243637-0E5C-451F-9547-D0B75A47204F}
 		{685D7E66-BCA7-4A86-ACD1-AD419DD4E333} = {7F243637-0E5C-451F-9547-D0B75A47204F}
+		{55764E6E-553A-4DDD-B00E-33E860810D6D} = {7F243637-0E5C-451F-9547-D0B75A47204F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {63BB98B6-3033-441E-9DF6-007C8C6FE0C4}
 	EndGlobalSection
 EndGlobal
