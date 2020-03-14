@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Security.Cryptography;
@@ -66,7 +67,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().NotContain("Digest");
+                _httpRequest.Headers.Should().NotContain(_ => StringComparer.InvariantCultureIgnoreCase.Equals(_.Key, "Digest"));
             }
 
             [Fact]
@@ -75,16 +76,16 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().NotContain("Digest");
+                _httpRequest.Headers.Should().NotContain(_ => StringComparer.InvariantCultureIgnoreCase.Equals(_.Key, "Digest"));
             }
-            
+
             [Fact]
             public void WhenHashAlgorithmIsNotSupported_ThrowsNotSupportedException() {
                 _httpRequest.Content = new StringContent("abc123", Encoding.UTF8, MediaTypeNames.Application.Json);
-                
+
                 _settings.DigestHashAlgorithm = new HashAlgorithmName("Unsupported");
 
-                Func<Task> act = () =>  _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
+                Func<Task> act = () => _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
                 act.Should().Throw<NotSupportedException>();
             }
@@ -95,16 +96,16 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value == new Microsoft.Extensions.Primitives.StringValues("SHA-256=abc123"));
+                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value.SequenceEqual(new[] {"SHA-256=abc123"}));
             }
-            
+
             [Fact]
             public async Task WhenDigestIsAlreadyPresent_ButIncorrectlyCased_DoesNotChangeDigestHeader() {
                 _httpRequest.Headers.Add("digest", "SHA-256=abc123");
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().Contain(h => h.Key == "digest" && h.Value == new Microsoft.Extensions.Primitives.StringValues("SHA-256=abc123"));
+                _httpRequest.Headers.Should().Contain(h => h.Key == "digest" && h.Value.SequenceEqual(new[] {"SHA-256=abc123"}));
                 _httpRequest.Headers.Should().NotContain("Digest");
             }
 
@@ -114,24 +115,24 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().NotContain("Digest");
+                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value.SequenceEqual(new[] {""}));
             }
 
             [Fact]
             public async Task ReturnsExpectedString() {
-                _httpRequest.Content = new StringContent("abc123", Encoding.UTF8, MediaTypeNames.Application.Json);
-                var expectedBodyBytes = Encoding.UTF8.GetBytes("abc123");
-                
+                var bodyBytes = new byte[] {0x01, 0x02, 0x03};
+                _httpRequest.Content = new ByteArrayContent(bodyBytes);
+
                 _settings.DigestHashAlgorithm = HashAlgorithmName.SHA512;
-                var hashBytes = HashAlgorithm.Create(HashAlgorithmName.SHA512.Name)?.ComputeHash(expectedBodyBytes);
+                var hashBytes = HashAlgorithm.Create(HashAlgorithmName.SHA512.Name)?.ComputeHash(bodyBytes);
 
                 var base64 = "xyz==";
                 A.CallTo(() => _base64Converter.ToBase64(A<byte[]>.That.IsSameSequenceAs(hashBytes)))
                     .Returns(base64);
-                
+
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
-                
-                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value == new Microsoft.Extensions.Primitives.StringValues("SHA-512=xyz=="));
+
+                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value.SequenceEqual(new[] {"SHA-512=xyz=="}));
             }
         }
     }

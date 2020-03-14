@@ -1,6 +1,5 @@
 using System;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Signing {
@@ -24,10 +23,9 @@ namespace Dalion.HttpMessageSigning.Signing {
                 return;
             }
 
-            var bodyText = await request.Content.ReadAsStringAsync();
+            var bodyBytes = await request.Content.ReadAsByteArrayAsync();
             using (var hashAlgorithm = System.Security.Cryptography.HashAlgorithm.Create(signingSettings.DigestHashAlgorithm.Name)) {
                 if (hashAlgorithm == null) throw new NotSupportedException($"The specified hash algorithm ({signingSettings.DigestHashAlgorithm.Name}) for digest is currently not supported.");
-                var bodyBytes = Encoding.UTF8.GetBytes(bodyText);
                 var payloadBytes = hashAlgorithm.ComputeHash(bodyBytes);
                 var digest = _base64Converter.ToBase64(payloadBytes);
                 var digestAlgorithmName = Constants.DigestHashAlgorithmNames[signingSettings.DigestHashAlgorithm.Name];
