@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using FluentAssertions;
 using Microsoft.Extensions.Primitives;
@@ -85,7 +86,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                         var actual = _owinRequest.ToHttpRequestForSigning();
 
                         actual.Headers.Should().Contain(_ => _.Key == "digest" && _.Value == "SHA-256=xyz123=");
-                        actual.Body.Should().Be(bodyString);
+                        actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());
                     }
                 }
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -62,10 +61,8 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     return new SignatureVerificationException($"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is currently not supported.")
                         .ToTask<Exception>();
                 }
-
-                var bodyBytes = Encoding.UTF8.GetBytes(signedRequest.Body);
                 
-                var payloadBytes = hashAlgorithm.ComputeHash(bodyBytes);
+                var payloadBytes = hashAlgorithm.ComputeHash(signedRequest.Body);
                 var calculatedDigest = _base64Converter.ToBase64(payloadBytes);
                 var receivedDigest = digestParams[1];
 

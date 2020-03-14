@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Net.Http;
-using System.Text;
 using Microsoft.Owin;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
@@ -16,13 +15,13 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             }
 
             if (ShouldReadBody(owinRequest) && owinRequest.Body != null) {
-                var bodyString = new StreamReader(owinRequest.Body).ReadToEnd();
-                
-                var requestData = Encoding.UTF8.GetBytes(bodyString);
-                owinRequest.Body?.Dispose();
-                owinRequest.Body = new MemoryStream(requestData);
-
-                request.Body = bodyString;
+                using (var memoryStream = new MemoryStream()) {
+                    owinRequest.Body.CopyTo(memoryStream);
+                    request.Body = memoryStream.ToArray();
+                    
+                    owinRequest.Body?.Dispose();
+                    owinRequest.Body = new MemoryStream(request.Body);
+                }
             }
 
             return request;

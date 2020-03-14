@@ -30,10 +30,10 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
                 _client = (Client) TestModels.Client.Clone();
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
-
-                _signedRequest.Body = "I am the body payload";
+                
+                _signedRequest.Body = Encoding.UTF8.GetBytes("I am the body payload");
                 using (var hashAlgorithm = HashAlgorithm.Create("SHA-384")) {
-                    var digestBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(_signedRequest.Body));
+                    var digestBytes = hashAlgorithm.ComputeHash(_signedRequest.Body);
                     var digestString = new Base64Converter().ToBase64(digestBytes);
                     _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Digest, "SHA-384=" + digestString);
                 }

@@ -30,13 +30,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (ShouldReadBody(request, signature) && request.Body != null) {
                 request.EnableBuffering();
 
-                using (var reader = new StreamReader(
-                    request.Body,
-                    encoding: Encoding.UTF8,
-                    detectEncodingFromByteOrderMarks: false,
-                    bufferSize: 1024,
-                    leaveOpen: true)) {
-                    requestMessage.Body = await reader.ReadToEndAsync();
+                await using (var memoryStream = new MemoryStream()) {
+                    request.Body.CopyTo(memoryStream);
+                    requestMessage.Body = memoryStream.ToArray();
                     request.Body.Seek(0, SeekOrigin.Begin);
                 }
             }

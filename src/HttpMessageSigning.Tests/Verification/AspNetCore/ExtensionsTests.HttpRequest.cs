@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -140,7 +141,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 [Fact]
                 public async Task ThereIsBody_AndDigestHeaderIsIncludedInSignature_ButDigestHeaderIsNotInRequest_ReadsBody() {
                     var bodyPayload = "This is the body payload";
-                    _httpRequest.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyPayload));
+                    var bodyBytes = Encoding.UTF8.GetBytes(bodyPayload);
+                    _httpRequest.Body = new MemoryStream(bodyBytes);
                     _httpRequest.ContentType = "text/plain";
 
                     _httpRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Digest);
@@ -148,13 +150,14 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
 
                     _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
-                    actual.Body.Should().Be(bodyPayload);
+                    actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());
                 }
 
                 [Fact]
                 public async Task WhenThereIsBody_AndDigestHeaderIsNotIncludedInSignature_ButDigestHeaderIsInRequest_ReadsBody() {
                     var bodyPayload = "This is the body payload";
-                    _httpRequest.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyPayload));
+                    var bodyBytes = Encoding.UTF8.GetBytes(bodyPayload);
+                    _httpRequest.Body = new MemoryStream(bodyBytes);
                     _httpRequest.ContentType = "text/plain";
 
                     _signature.Headers = Array.Empty<HeaderName>();
@@ -164,13 +167,14 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
 
                     actual.Body.Should().NotBeNull();
-                    actual.Body.Should().Be(bodyPayload);
+                    actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());
                 }
 
                 [Fact]
                 public async Task WhenThereIsBody_AndDigestHeaderIsPresentInRequest_AndDigestHeaderIsPartOfTheSignature_ReadsBody() {
                     var bodyPayload = "This is the body payload";
-                    _httpRequest.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyPayload));
+                    var bodyBytes = Encoding.UTF8.GetBytes(bodyPayload);
+                    _httpRequest.Body = new MemoryStream(bodyBytes);
                     _httpRequest.ContentType = "text/plain";
 
                     var actual = await _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
@@ -178,7 +182,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
 
                     actual.Body.Should().NotBeNull();
-                    actual.Body.Should().Be(bodyPayload);
+                    actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());
                 }
                 
                 [Fact]
