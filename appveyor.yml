@@ -28,9 +28,9 @@ build_script:
 
 test_script:
 - ps: >-
-    dotnet test src\HttpMessageSigning.Verification.Owin.Tests\HttpMessageSigning.Verification.Owin.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:Include="[Dalion.HttpMessageSigning.Verification.Owin*]*" /p:Exclude="[*.Tests]*" /p:CoverletOutput="../coverage-owin.json" /maxcpucount:1
+    dotnet test src\HttpMessageSigning.Verification.Owin.Tests\HttpMessageSigning.Verification.Owin.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:Include="[Dalion.HttpMessageSigning.Verification.Owin*]*" /p:Exclude="[*.Tests]*" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-owin.json" /maxcpucount:1
     
-    dotnet test src\HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude="[*.Tests]*" /p:CoverletOutput="../coverage.xml" /p:MergeWith="../coverage-owin.json" /maxcpucount:1
+    dotnet test src\HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude="[*.Tests]*" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage.xml" /p:MergeWith="../coverage-owin.json" /maxcpucount:1
     
     dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
     
