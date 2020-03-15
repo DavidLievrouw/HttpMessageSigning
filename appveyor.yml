@@ -12,6 +12,14 @@ build_script:
 - ps: >-
     dotnet --version
     
+    $packageVersion = Get-Content version.txt -First 1
+    
+    $packageVersion = "$packageVersion.$env:APPVEYOR_BUILD_NUMBER"
+    
+    Add-AppveyorMessage -Message "Determined the version to be $packageVersion."
+    
+    Update-AppveyorBuild -Version $packageVersion
+    
     dotnet restore ./src/$env:PRODUCT.sln
     
     dotnet publish ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
