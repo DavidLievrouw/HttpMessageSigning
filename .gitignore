@@ -263,5 +263,6 @@ __pycache__/
 # Publish output
 dist/
 
-# OpenCover output
-opencover*.xml
+# Coverage output
+coverage*.xml
+coverage*.json
