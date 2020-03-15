@@ -164,5 +164,15 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 actual.As<RequestSignatureVerificationResultFailure>().SignatureVerificationException.Should().Be(failure);
             }
         }
+
+        public class Dispose : RequestSignatureVerifierTests {
+            [Fact]
+            public void DisposeClientStore() {
+                _sut.Dispose();
+
+                A.CallTo(() => _clientStore.Dispose())
+                    .MustHaveHappened();
+            }
+        }
     }
 }
