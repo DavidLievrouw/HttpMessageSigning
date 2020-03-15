@@ -193,5 +193,31 @@ namespace Dalion.HttpMessageSigning.Signing {
                 act.Should().NotThrow();
             }
         }
+
+        public class Dispose : RequestSignerTests {
+            private readonly ISignatureAlgorithm _signatureAlgorithm;
+
+            public Dispose() {
+                _signatureAlgorithm = A.Fake<ISignatureAlgorithm>();
+                _signingSettings.SignatureAlgorithm = _signatureAlgorithm;
+            }
+
+            [Fact]
+            public void DisposesOfSignatureAlgorithm() {
+                _sut.Dispose();
+                
+                A.CallTo(() => _signatureAlgorithm.Dispose())
+                    .MustHaveHappened();
+            }
+            
+            [Fact]
+            public void WhenSignatureAlgorithmIsNull_DoesNotThrow() {
+                _signingSettings.SignatureAlgorithm = null;
+
+                Action act = () => _sut.Dispose();
+                
+                act.Should().NotThrow();
+            }
+        }
     }
 }

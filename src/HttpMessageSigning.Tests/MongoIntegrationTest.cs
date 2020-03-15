@@ -4,7 +4,7 @@ using Xunit;
 namespace Dalion.HttpMessageSigning {
     [Collection("MongoDbCollection")]
     public class MongoIntegrationTest {
-        protected IMongoDatabase Database;
+        protected readonly IMongoDatabase Database;
 
         public MongoIntegrationTest(MongoSetup mongoSetup) {
             var client = MongoClient.Create(mongoSetup.MongoServerConnectionString);

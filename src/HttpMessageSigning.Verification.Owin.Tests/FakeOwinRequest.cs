@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security.Principal;
 using System.Threading;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Owin;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
+    [ExcludeFromCodeCoverage]
     public class FakeOwinRequest : IOwinRequest {
         public Task<IFormCollection> ReadFormAsync() {
             throw new NotSupportedException();

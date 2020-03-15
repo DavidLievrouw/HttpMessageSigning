@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using FakeItEasy;
 using FluentAssertions;
 using Xunit;
 
@@ -28,42 +29,42 @@ namespace Dalion.HttpMessageSigning {
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }
-            
+
             [Fact]
             public void WhenNoSignatureAlgorithmIsSpecified_ThrowsValidationException() {
                 _sut.SignatureAlgorithm = null;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }
-            
+
             [Fact]
             public void WhenHeadersIsNull_DoesNotThrow() {
                 _sut.Headers = null;
                 Action act = () => _sut.Validate();
                 act.Should().NotThrow();
             }
-            
+
             [Fact]
             public void WhenHeadersIsEmpty_DoesNotThrow() {
                 _sut.Headers = Array.Empty<HeaderName>();
                 Action act = () => _sut.Validate();
                 act.Should().NotThrow();
             }
-            
+
             [Fact]
             public void WhenExpiresIsNegative_ThrowsValidationException() {
                 _sut.Expires = TimeSpan.FromSeconds(-1);
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }
-            
+
             [Fact]
             public void WhenExpiresIsZero_ThrowsValidationException() {
                 _sut.Expires = TimeSpan.Zero;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }
-            
+
             [Fact]
             public void WhenEverythingIsValid_DoesNotThrow() {
                 Action act = () => _sut.Validate();
@@ -82,6 +83,29 @@ namespace Dalion.HttpMessageSigning {
                 _sut.Headers = new[] {HeaderName.PredefinedHeaderNames.Expires};
                 Action act = () => _sut.Validate();
                 act.Should().Throw<PlatformNotSupportedException>();
+            }
+        }
+
+        public class Dispose : SigningSettingsTests {
+            public Dispose() {
+                _sut.SignatureAlgorithm = A.Fake<ISignatureAlgorithm>();
+            }
+
+            [Fact]
+            public void DisposesOfSignatureAlgorithm() {
+                _sut.Dispose();
+
+                A.CallTo(() => _sut.SignatureAlgorithm.Dispose())
+                    .MustHaveHappened();
+            }
+
+            [Fact]
+            public void WhenSignatureAlgorithmIsNull_DoesNotThrow() {
+                _sut.SignatureAlgorithm = null;
+
+                Action act = () => _sut.Dispose();
+                
+                act.Should().NotThrow();
             }
         }
     }

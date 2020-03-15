@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
 namespace Dalion.HttpMessageSigning {
+    [ExcludeFromCodeCoverage]
     public class CustomSignatureAlgorithm : ISignatureAlgorithm {
         public CustomSignatureAlgorithm(string name) {
             if (string.IsNullOrEmpty(name)) name = "NOTSUPPORTED";

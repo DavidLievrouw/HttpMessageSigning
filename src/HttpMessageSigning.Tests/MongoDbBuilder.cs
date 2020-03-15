@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Mongo2Go;
 
 namespace Dalion.HttpMessageSigning {
+    [ExcludeFromCodeCoverage]
     public class MongoDbBuilder : IDisposable {
         private string _databaseName;
 

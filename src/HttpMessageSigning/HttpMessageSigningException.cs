@@ -10,6 +10,5 @@ namespace Dalion.HttpMessageSigning {
         public HttpMessageSigningException(string message) : base(message) { }
         public HttpMessageSigningException(string message, Exception innerException) : base(message, innerException) { }
         protected HttpMessageSigningException(SerializationInfo info, StreamingContext context) : base(info, context) { }
-        public HttpMessageSigningException(Exception inner) : base(DefaultMessage, inner) { }
     }
 }
