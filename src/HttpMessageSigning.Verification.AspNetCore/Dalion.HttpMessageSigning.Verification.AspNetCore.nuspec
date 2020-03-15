@@ -17,6 +17,11 @@
     <summary>ASP.NET Core extensions for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</summary>
     <tags>signing http messages ietf cavage lievrouw dalion</tags>
     <dependencies>
+      <group targetFramework="netcoreapp2.2">
+        <dependency id="Dalion.HttpMessageSigning" version="[$version$,)" />
+        <dependency id="Dalion.HttpMessageSigning.Verification" version="[$version$,)" />
+        <dependency id="Microsoft.AspNetCore.Authentication" version="[2.2.0,)" />
+      </group> 
       <group targetFramework="netcoreapp3.1">
         <dependency id="Dalion.HttpMessageSigning" version="[$version$,)" />
         <dependency id="Dalion.HttpMessageSigning.Verification" version="[$version$,)" />
@@ -25,6 +30,7 @@
   </metadata>
   <files>
     <file src="bin\$configuration$\netcoreapp3.1\Dalion.HttpMessageSigning.Verification.AspNetCore*.*" target="lib\netcoreapp3.1" />
+    <file src="bin\$configuration$\netcoreapp2.2\Dalion.HttpMessageSigning.Verification.AspNetCore*.*" target="lib\netcoreapp2.2" />
     <file src="..\..\dalion128.png" target="images" />
   </files>
 </package>

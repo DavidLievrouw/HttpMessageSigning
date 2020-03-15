@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFrameworks>netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.AspNetCore</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification.AspNetCore</RootNamespace>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -13,17 +13,21 @@
         <DebugSymbols>true</DebugSymbols>
     </PropertyGroup>
 
-    <ItemGroup>
-      <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.2'">
+        <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj"/>
     </ItemGroup>
 
     <Target Name="InitVersion" BeforeTargets="BeforeBuild">
         <ReadLinesFromFile File="..\..\version.txt">
-            <Output TaskParameter="Lines" PropertyName="PackageVersion" />
+            <Output TaskParameter="Lines" PropertyName="PackageVersion"/>
         </ReadLinesFromFile>
         <PropertyGroup>
             <BuildCounter Condition="'$(BuildCounter)'==''">0</BuildCounter>
@@ -32,15 +36,15 @@
             <Version>$(ProductVersion)</Version>
             <InformationalVersion>$(ProductVersion)</InformationalVersion>
         </PropertyGroup>
-        <Message Text="The $(Product) package version for $(TargetFramework) is '$(PackageVersion)'." Importance="High" />
-        <Message Text="The $(Product) product version for $(TargetFramework) is '$(ProductVersion)'." Importance="High" />
+        <Message Text="The $(Product) package version for $(TargetFramework) is '$(PackageVersion)'." Importance="High"/>
+        <Message Text="The $(Product) product version for $(TargetFramework) is '$(ProductVersion)'." Importance="High"/>
     </Target>
 
     <Target Name="PackNuGetPackages" AfterTargets="AfterBuild" Condition="'$(IsPublishing)' == 'true'">
         <PropertyGroup>
             <PackagePublishDir Condition="'$(PackagePublishDir)'==''">$(MSBuildThisFileDirectory)bin\Packages\</PackagePublishDir>
         </PropertyGroup>
-        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Verification.AspNetCore.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion);year=$([System.DateTime]::Now.ToString(yyyy))\&quot;" />
+        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Verification.AspNetCore.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion);year=$([System.DateTime]::Now.ToString(yyyy))\&quot;"/>
     </Target>
 
 </Project>

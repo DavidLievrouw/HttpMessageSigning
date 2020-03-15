@@ -9,7 +9,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public static partial class Extensions {
-        internal static async Task<HttpRequestForSigning> ToRequestForSigning(this HttpRequest request, ISignatureAlgorithm signatureAlgorithm, Signature signature) {
+        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequest request, ISignatureAlgorithm signatureAlgorithm, Signature signature) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
             if (signature == null) throw new ArgumentNullException(nameof(signature));
             
@@ -30,7 +30,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (ShouldReadBody(request, signature) && request.Body != null) {
                 request.EnableBuffering();
 
-                await using (var memoryStream = new MemoryStream()) {
+                // ReSharper disable once UseAwaitUsing
+                // ReSharper disable once ConvertToUsingDeclaration
+                using (var memoryStream = new MemoryStream()) {
                     request.Body.CopyTo(memoryStream);
                     requestMessage.Body = memoryStream.ToArray();
                     request.Body.Seek(0, SeekOrigin.Begin);

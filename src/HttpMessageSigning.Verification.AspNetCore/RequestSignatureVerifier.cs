@@ -38,7 +38,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 signature = _signatureParser.Parse(request);
                 client = await _clientStore.Get(signature.KeyId);
 
-                var requestForSigning = await request.ToRequestForSigning(client.SignatureAlgorithm, signature);
+                var requestForSigning = request.ToRequestForSigning(client.SignatureAlgorithm, signature);
 
                 var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client);
                 var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, sanitizedSignature, client);
