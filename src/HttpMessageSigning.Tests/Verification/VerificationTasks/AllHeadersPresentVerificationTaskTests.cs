@@ -103,6 +103,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _signature.Algorithm = "hs2019";
                 _signature.Headers = _signature.Headers
                     .Where(h => h != HeaderName.PredefinedHeaderNames.Expires)
+                    .Concat(new[] {HeaderName.PredefinedHeaderNames.Created})
                     .ToArray();
 
                 var actual = await _method(_signedRequest, _signature, client);
