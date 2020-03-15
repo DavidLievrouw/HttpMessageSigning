@@ -27,20 +27,20 @@ build_script:
     dotnet publish ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.Owin/net472" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
 
 test_script:
-- ps: >-
-    nuget install xunit.runner.console -OutputDirectory packages -Version 2.4.1
-    
+- ps: >-    
     nuget install OpenCover -OutputDirectory packages -Version 4.7.922
-    
-    dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
     
     dotnet restore ./src/$env:PRODUCT.sln
     
-    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test --configuration Debug src\$env:PRODUCT.sln --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.$env:PRODUCT*]* -[*.tests]* -[*.Tests]*" -output:opencoverCoverage.xml -oldStyle
+    dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
+    
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test --configuration Debug src\HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.HttpMessageSigning*]* -[*.tests]* -[*.Tests]*" -output:opencover.xml -oldStyle
+    
+    .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -target:dotnet.exe -targetargs:"test --configuration Debug src\HttpMessageSigning.Verification.Owin.Tests\HttpMessageSigning.Verification.Owin.Tests.csproj --verbosity m --test-adapter-path:. --logger:Appveyor" -filter:"+[Dalion.HttpMessageSigning*]* -[*.tests]* -[*.Tests]*" -output:opencover-owin.xml -oldStyle
     
     $coveralls = ".\tools\csmacnz.coveralls.exe"
     
-    & $coveralls --opencover -i opencoverCoverage.xml --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_JOB_ID
+    & $coveralls --opencover -i "opencover=opencover.xml;opencover=opencover-owin.xml" --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_JOB_ID
     
 artifacts:
 - path: ./dist
