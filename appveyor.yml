@@ -12,29 +12,29 @@ build_script:
 - ps: >-
     dotnet --version
     
-    $packageVersion = Get-Content version.txt -First 1
+    $PackageVersion = Get-Content version.txt -First 1
     
-    $packageVersion = "$packageVersion.$env:APPVEYOR_BUILD_NUMBER"
+    $ProductVersion = "$PackageVersion.$env:APPVEYOR_BUILD_NUMBER"
     
-    Add-AppveyorMessage -Message "Determined the version to be $packageVersion."
+    Add-AppveyorMessage -Message "Determined the version to be $ProductVersion."
     
-    Update-AppveyorBuild -Version $packageVersion
+    Update-AppveyorBuild -Version $ProductVersion
     
     dotnet restore ./src/$env:PRODUCT.sln
     
-    dotnet publish ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:ProductVersion="$ProductVersion"
     
-    dotnet publish ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Signing/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Signing/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:ProductVersion="$ProductVersion"
     
-    dotnet publish ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:ProductVersion="$ProductVersion"
     
-    dotnet publish ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration Release --framework netcoreapp2.2 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.AspNetCore/netcoreapp2.2" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration Release --framework netcoreapp2.2 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.AspNetCore/netcoreapp2.2" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:ProductVersion="$ProductVersion"
     
-    dotnet publish ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration Release --framework netcoreapp3.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.AspNetCore/netcoreapp3.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration Release --framework netcoreapp3.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.AspNetCore/netcoreapp3.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:ProductVersion="$ProductVersion"
     
-    dotnet publish ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.MongoDb/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.MongoDb/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:ProductVersion="$ProductVersion"
     
-    dotnet publish ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.Owin/net472" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.Owin/net472" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:ProductVersion="$ProductVersion"
 
 test_script:
 - ps: >-
