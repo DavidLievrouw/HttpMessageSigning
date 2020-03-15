@@ -30,7 +30,7 @@ namespace OwinApplication {
                 Formatting = Formatting.Indented,
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 Converters = new List<JsonConverter> {
-                    new StringEnumConverter {CamelCaseText = true},
+                    new StringEnumConverter {NamingStrategy = new CamelCaseNamingStrategy()}
                 }
             };
             JsonConvert.DefaultSettings = () => defaultSettings;
@@ -41,7 +41,7 @@ namespace OwinApplication {
             app
                 .UseHttpRequestSignatureAuthentication(new SignedHttpRequestAuthenticationOptions {
                     Realm = "Sample OWIN application",
-                    RequestSignatureVerifier = (IRequestSignatureVerifier)config.DependencyResolver.GetService(typeof(IRequestSignatureVerifier)),
+                    RequestSignatureVerifier = (IRequestSignatureVerifier) config.DependencyResolver.GetService(typeof(IRequestSignatureVerifier)),
                     OnIdentityVerified = successResult => {
                         var identity = (ClaimsIdentity) successResult.Principal.Identity;
                         Console.WriteLine("Identity '{0}' was authenticated by the request signature.", identity.Name ?? "[NULL]");
