@@ -205,5 +205,117 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 actual.Should().BeEquivalentTo(new Header("thename", "v1", "v2"));
             }
         }
+
+        public class TryParse : HeaderTests {
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void GivenNullOrEmptyString_Fails(string nullOrEmpty) {
+                var isParsed = Header.TryParse(nullOrEmpty, out var actual);
+                isParsed.Should().BeFalse();
+                actual.Should().NotBeNull().And.BeOfType<Header>();
+                actual.Should().BeEquivalentTo(Header.Empty);
+            }
+
+            [Fact]
+            public void CanParseValidString() {
+                var str = "thename: v1, v2";
+                var isParsed = Header.TryParse(str, out var actual);
+                isParsed.Should().BeTrue();
+                var expected = new Header("thename", "v1", "v2");
+                actual.Should().BeEquivalentTo(expected);
+            }
+
+            [Fact]
+            public void WhenStringDoesNotContainHeader_Fails() {
+                var isParsed = Header.TryParse("v1, v2", out _);
+                isParsed.Should().BeFalse();
+            }
+
+            [Fact]
+            public void WhenHeaderIsEmpty_Fails() {
+                var isParsed = Header.TryParse(": v1, v2", out _);
+                isParsed.Should().BeFalse();
+            }
+
+            [Fact]
+            public void WhenThereAreNoValues_ReturnsExpectedHeaderWithoutValues() {
+                var isParsed = Header.TryParse("thename: ", out var actual);
+                isParsed.Should().BeTrue();
+                actual.Should().BeEquivalentTo(new Header("thename", string.Empty));
+            }
+
+            [Fact]
+            public void TrimsValues() {
+                var isParsed = Header.TryParse("thename: v1,  v2 , v 3 \t ", out var actual);
+                isParsed.Should().BeTrue();
+                actual.Should().BeEquivalentTo(new Header("thename", "v1", "v2", "v 3"));
+            }
+
+            [Fact]
+            public void RemovesWhitespaceOnlyValues() {
+                var isParsed = Header.TryParse("thename: v1, , v2", out var actual);
+                isParsed.Should().BeTrue();
+                actual.Should().BeEquivalentTo(new Header("thename", "v1", "v2"));
+            }
+        }
+
+        public class Parse : HeaderTests {
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void GivenNullOrEmptyString_ReturnsEmptyHeader(string nullOrEmpty) {
+                Header? actual = null;
+                Action act = () => actual = Header.Parse(nullOrEmpty);
+                act.Should().NotThrow();
+                actual.Should().NotBeNull().And.Be(Header.Empty);
+            }
+
+            [Fact]
+            public void IsParsableFromString() {
+                var str = "thename: v1, v2";
+                var actual = Header.Parse(str);
+                var expected = new Header("thename", "v1", "v2");
+                actual.Should().BeEquivalentTo(expected);
+            }
+
+            [Fact]
+            public void WhenStringDoesNotContainHeader_ThrowsFormatException() {
+                var actual = Header.Empty;
+                Action act = () => actual = Header.Parse("v1, v2");
+                act.Should().Throw<FormatException>();
+            }
+
+            [Fact]
+            public void WhenHeaderIsEmpty_ThrowsFormatException() {
+                var actual = Header.Empty;
+                Action act = () => actual = Header.Parse(": v1, v2");
+                act.Should().Throw<FormatException>();
+            }
+
+            [Fact]
+            public void WhenThereAreNoValues_ReturnsExpectedHeaderWithoutValues() {
+                var actual = Header.Empty;
+                Action act = () => actual = Header.Parse("thename: ");
+                act.Should().NotThrow();
+                actual.Should().BeEquivalentTo(new Header("thename", string.Empty));
+            }
+
+            [Fact]
+            public void TrimsValues() {
+                var actual = Header.Empty;
+                Action act = () => actual = Header.Parse("thename: v1,  v2 , v 3 \t ");
+                act.Should().NotThrow();
+                actual.Should().BeEquivalentTo(new Header("thename", "v1", "v2", "v 3"));
+            }
+
+            [Fact]
+            public void RemovesWhitespaceOnlyValues() {
+                var actual = Header.Empty;
+                Action act = () => actual = Header.Parse("thename: v1, , v2");
+                act.Should().NotThrow();
+                actual.Should().BeEquivalentTo(new Header("thename", "v1", "v2"));
+            }
+        }
     }
 }

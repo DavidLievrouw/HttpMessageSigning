@@ -47,10 +47,6 @@ namespace Dalion.HttpMessageSigning {
             return keyId;
         }
         
-        public static KeyId Parse(string value) {
-            return (KeyId) value;
-        }
-        
         public static implicit operator string(KeyId id) {
             return id.ToString();
         }

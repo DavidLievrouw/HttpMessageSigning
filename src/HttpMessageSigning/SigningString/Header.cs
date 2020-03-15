@@ -43,7 +43,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             if (string.IsNullOrEmpty(value)) return Empty;
             
             if (!TryParse(value, out var header)) {
-                throw new FormatException($"The specified value ({value ?? "[null]"}) is not a valid string representation of a header.");
+                throw new FormatException($"The specified value ({value}) is not a valid string representation of a header.");
             }
             return header;
         }

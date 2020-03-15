@@ -1,3 +1,4 @@
+using System;
 using System.Security.Cryptography;
 using FluentAssertions;
 using Xunit;
@@ -10,6 +11,22 @@ namespace Dalion.HttpMessageSigning {
             _sut = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
         }
 
+        public class Constructor : HMACSignatureAlgorithmTests {
+            [Fact]
+            public void GivenNullSecret_ThrowsArgumentNullException() {
+                // ReSharper disable once ObjectCreationAsStatement
+                Action act = () => new HMACSignatureAlgorithm(null, HashAlgorithmName.SHA256);
+                act.Should().Throw<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void AcceptsEmptySecret() {
+                // ReSharper disable once ObjectCreationAsStatement
+                Action act = () => new HMACSignatureAlgorithm("", HashAlgorithmName.SHA256);
+                act.Should().NotThrow();
+            }
+        }
+
         public class Name : HMACSignatureAlgorithmTests {
             [Fact]
             public void ReturnsHMAC() {
@@ -18,6 +35,18 @@ namespace Dalion.HttpMessageSigning {
         }
         
         public class VerifySignature : HMACSignatureAlgorithmTests {
+            [Fact]
+            public void GivenNullContentToSign_ThrowsArgumentNullException() {
+                Action act = () => _sut.VerifySignature(null, new byte[] {0x01, 0x02});
+                act.Should().Throw<ArgumentNullException>();
+            }
+            
+            [Fact]
+            public void GivenNullSignature_ThrowsArgumentNullException() {
+                Action act = () => _sut.VerifySignature("payload", null);
+                act.Should().Throw<ArgumentNullException>();
+            }
+
             [Fact]
             public void CanUseEmptySecret() {
                 var sut = new HMACSignatureAlgorithm("", HashAlgorithmName.SHA384);
