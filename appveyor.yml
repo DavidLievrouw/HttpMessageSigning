@@ -20,7 +20,9 @@ build_script:
     
     dotnet publish ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
     
-    dotnet publish ./src/$env:PRODUCT.Verification.AuthenticationScheme/$env:PRODUCT.Verification.AuthenticationScheme.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.AuthenticationScheme/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
+    dotnet publish ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration Release --framework netcoreapp2.2 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.AspNetCore/netcoreapp2.2" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
+    
+    dotnet publish ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration Release --framework netcoreapp3.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.AspNetCore/netcoreapp3.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
     
     dotnet publish ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.MongoDb/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages"
     
