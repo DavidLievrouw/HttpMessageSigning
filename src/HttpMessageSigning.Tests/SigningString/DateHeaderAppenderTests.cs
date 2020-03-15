@@ -24,6 +24,15 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             [Fact]
+            public void WhenDateHeaderContainsNonsense_ReturnsEmptyStrings() {
+                _httpRequest.Headers["Date"] = "Not even close to being a date";
+                
+                var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Expires);
+                
+                actual.Should().NotBeNull().And.BeEmpty();
+            }
+
+            [Fact]
             public void ReturnsExpectedString() {
                 var now = new DateTimeOffset(2020, 2, 24, 10, 20, 14, TimeSpan.FromHours(0));
                 _httpRequest.Headers["Date"] = now.ToString("R");
