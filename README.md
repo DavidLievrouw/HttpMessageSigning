@@ -1,4 +1,4 @@
-# HttpMessageSigning
+## HttpMessageSigning [<img src="https://dalion.eu/dalion128.png" align="right" width="48">](https://www.dalion.eu)
 
 A C# implementation of the "Authorization" scheme of the IETF Internet-Draft [Signing HTTP Messages](https://tools.ietf.org/html/draft-cavage-http-signatures-12).
 
