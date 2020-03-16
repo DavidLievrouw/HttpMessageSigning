@@ -19,8 +19,9 @@ namespace Console {
             using (var serviceProvider = new ServiceCollection().Configure(ConfigureServices).BuildServiceProvider()) {
                 using (var signerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>()) {
                     using (var verifier = serviceProvider.GetRequiredService<IRequestSignatureVerifier>()) {
+                        var logger = serviceProvider.GetService<ILogger<SampleHMAC>>();
                         var signedRequestForHMAC = await SampleSignHMAC(signerFactory);
-                        await SampleVerify(verifier, signedRequestForHMAC);
+                        await SampleVerify(verifier, signedRequestForHMAC, logger);
                     }
                 }
             }
@@ -63,28 +64,20 @@ namespace Console {
             var requestSigner = requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
             
-            using (var httpClient = new HttpClient()) {
-                var response = await httpClient.SendAsync(request);
-                System.Console.WriteLine("Response:");
-                System.Console.WriteLine(await response.Content.ReadAsStringAsync());
-            }
-            
             return request;
         }
 
-        private static async Task SampleVerify(IRequestSignatureVerifier verifier, HttpRequestMessage clientRequest) {
+        private static async Task SampleVerify(IRequestSignatureVerifier verifier, HttpRequestMessage clientRequest, ILogger<SampleHMAC> logger) {
             var receivedRequest = await clientRequest.ToServerSideHttpRequest();
 
             var verificationResult = await verifier.VerifySignature(receivedRequest);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                System.Console.WriteLine("Request signature verification succeeded:");
                 var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
                 var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
-                System.Console.WriteLine(claimsString);
+                logger?.LogInformation("Request signature verification succeeded: {0}", claimsString);
             }
             else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
-                System.Console.WriteLine("Request signature verification failed:");
-                System.Console.WriteLine(failureResult.SignatureVerificationException);
+                logger?.LogWarning(failureResult.SignatureVerificationException, "Request signature verification failed.");
             }
         }
     }

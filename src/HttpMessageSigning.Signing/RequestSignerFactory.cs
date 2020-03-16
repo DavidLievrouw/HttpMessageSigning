@@ -17,13 +17,13 @@ namespace Dalion.HttpMessageSigning.Signing {
             ISignatureHeaderEnsurer dateHeaderEnsurer,
             ISignatureHeaderEnsurer digestHeaderEnsurer,
             ISystemClock systemClock,
-            ILogger<RequestSigner> logger,
-            IRegisteredSignerSettingsStore registeredSignerSettingsStore) {
+            IRegisteredSignerSettingsStore registeredSignerSettingsStore,
+            ILogger<RequestSigner> logger = null) {
             _signatureCreator = signatureCreator ?? throw new ArgumentNullException(nameof(signatureCreator));
             _authorizationHeaderParamCreator = authorizationHeaderParamCreator ?? throw new ArgumentNullException(nameof(authorizationHeaderParamCreator));
             _dateHeaderEnsurer = dateHeaderEnsurer ?? throw new ArgumentNullException(nameof(dateHeaderEnsurer));
             _digestHeaderEnsurer = digestHeaderEnsurer ?? throw new ArgumentNullException(nameof(digestHeaderEnsurer));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger;
             _registeredSignerSettingsStore = registeredSignerSettingsStore ?? throw new ArgumentNullException(nameof(registeredSignerSettingsStore));
             _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
         }

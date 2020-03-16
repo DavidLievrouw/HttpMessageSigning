@@ -11,9 +11,9 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
         public DigestVerificationTask(
             IBase64Converter base64Converter,
-            ILogger<DigestVerificationTask> logger) {
+            ILogger<DigestVerificationTask> logger = null) {
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger;
         }
 
         public Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             if (!signedRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
-                _logger.LogDebug("{0} header verification is not required, because it is not present in the request to verify.", HeaderName.PredefinedHeaderNames.Digest);
+                _logger?.LogDebug("{0} header verification is not required, because it is not present in the request to verify.", HeaderName.PredefinedHeaderNames.Digest);
                 return Task.FromResult<Exception>(null);
             }
 

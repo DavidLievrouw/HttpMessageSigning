@@ -14,7 +14,6 @@ namespace Dalion.HttpMessageSigning.Verification {
             _rsa = new RSACryptoServiceProvider();
             var services = new ServiceCollection();
             services
-                .AddLogging()
                 .AddSingleton<IClientStore, InMemoryClientStore>()
                 .AddHttpMessageSignatureVerification();
             _provider = services.BuildServiceProvider();

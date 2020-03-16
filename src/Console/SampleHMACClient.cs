@@ -15,7 +15,8 @@ namespace Console {
         public static async Task Run(string[] args) {
             using (var serviceProvider = new ServiceCollection().Configure(ConfigureServices).BuildServiceProvider()) {
                 using (var signerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>()) {
-                    await Send(signerFactory);
+                    var logger = serviceProvider.GetService<ILogger<SampleHMACClient>>();
+                    await Send(signerFactory, logger);
                 }
             }
         }
@@ -31,7 +32,7 @@ namespace Console {
                     });
         }
 
-        private static async Task Send(IRequestSignerFactory requestSignerFactory) {
+        private static async Task Send(IRequestSignerFactory requestSignerFactory, ILogger<SampleHMACClient> logger) {
             var request = new HttpRequestMessage {
                 Method = HttpMethod.Get,
                 RequestUri = new Uri("http://localhost:5001/userinfo")
@@ -42,10 +43,10 @@ namespace Console {
 
             using (var httpClient = new HttpClient()) {
                 var response = await httpClient.SendAsync(request);
-                System.Console.WriteLine("Response: " + response.StatusCode);
+                logger?.LogInformation("Response: " + response.StatusCode);
                 var responseContentTask = response.Content?.ReadAsStringAsync();
                 var responseContent = responseContentTask == null ? null : await responseContentTask;
-                if (responseContent != null) System.Console.WriteLine(responseContent);
+                if (responseContent != null) logger?.LogInformation(responseContent);
             }
         }
     }

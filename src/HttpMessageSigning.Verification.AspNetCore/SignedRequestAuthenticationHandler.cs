@@ -12,10 +12,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
         public SignedRequestAuthenticationHandler(
             IOptionsMonitor<SignedRequestAuthenticationOptions> options,
-            ILoggerFactory logger,
             UrlEncoder encoder,
             Microsoft.AspNetCore.Authentication.ISystemClock clock,
-            IRequestSignatureVerifier requestSignatureVerifier) : base(options, logger, encoder, clock) {
+            IRequestSignatureVerifier requestSignatureVerifier,
+            ILoggerFactory loggerFactory = null) : base(options, loggerFactory, encoder, clock) {
             _requestSignatureVerifier = requestSignatureVerifier ?? throw new ArgumentNullException(nameof(requestSignatureVerifier));
         }
 

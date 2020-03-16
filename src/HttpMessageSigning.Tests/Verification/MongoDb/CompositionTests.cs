@@ -12,7 +12,6 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         public CompositionTests() {
             var services = new ServiceCollection();
             services
-                .AddLogging()
                 .AddMongoDbClientStore(new MongoDbSettings {
                     CollectionName = "clients",
                     ConnectionString = "mongodb://localhost:27017/Auth"

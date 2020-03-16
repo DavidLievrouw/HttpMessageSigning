@@ -23,14 +23,14 @@ namespace Dalion.HttpMessageSigning.Signing {
             ISignatureHeaderEnsurer dateHeaderEnsurer, 
             ISignatureHeaderEnsurer digestHeaderEnsurer,
             ISystemClock systemClock,
-            ILogger<RequestSigner> logger) {
+            ILogger<RequestSigner> logger = null) {
             _signatureCreator = signatureCreator ?? throw new ArgumentNullException(nameof(signatureCreator));
             _authorizationHeaderParamCreator = authorizationHeaderParamCreator ?? throw new ArgumentNullException(nameof(authorizationHeaderParamCreator));
             _signingSettings = signingSettings ?? throw new ArgumentNullException(nameof(signingSettings));
             _dateHeaderEnsurer = dateHeaderEnsurer ?? throw new ArgumentNullException(nameof(dateHeaderEnsurer));
             _digestHeaderEnsurer = digestHeaderEnsurer ?? throw new ArgumentNullException(nameof(digestHeaderEnsurer));
             _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger;
         }
 
         public async Task Sign(HttpRequestMessage request) {
@@ -50,7 +50,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 var signature = _signatureCreator.CreateSignature(request, clonedSettings, timeOfSigning);
                 var authParam = _authorizationHeaderParamCreator.CreateParam(signature);
 
-                _logger.LogDebug("Setting Authorization scheme to '{0}' and param to '{1}'.", AuthorizationScheme, authParam);
+                _logger?.LogDebug("Setting Authorization scheme to '{0}' and param to '{1}'.", AuthorizationScheme, authParam);
 
                 request.Headers.Authorization = new AuthenticationHeaderValue(AuthorizationScheme, authParam);
                 
@@ -58,12 +58,12 @@ namespace Dalion.HttpMessageSigning.Signing {
                 if (onRequestSignedTask != null) await onRequestSignedTask;
             }
             catch (Exception ex) {
-                _logger.LogError(ex, "Could not sign the specified request. See inner exception.");
+                _logger?.LogError(ex, "Could not sign the specified request. See inner exception.");
                 throw;
             }
         }
 
-        public virtual void Dispose() {
+        public void Dispose() {
             _signingSettings?.Dispose();
         }
     }

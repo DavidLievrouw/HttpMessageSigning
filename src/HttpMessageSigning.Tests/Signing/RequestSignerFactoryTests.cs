@@ -31,8 +31,8 @@ namespace Dalion.HttpMessageSigning.Signing {
                 _dateHeaderEnsurer,
                 _digestHeaderEnsurer,
                 _systemClock,
-                _logger,
-                _registeredSignerSettingsStore);
+                _registeredSignerSettingsStore,
+                _logger);
         }
 
         public class Create : RequestSignerFactoryTests {

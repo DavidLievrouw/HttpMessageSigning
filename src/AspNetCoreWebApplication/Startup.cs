@@ -17,15 +17,16 @@ namespace WebApplication {
                 .AddControllersWithViews().Services
                 .AddAuthentication(SignedHttpRequestDefaults.AuthenticationScheme)
                 .AddSignedRequests(options => { options.Realm = "Sample web application"; }).Services
+
                 /* Sample for InMemoryClientStore */
                 .AddHttpMessageSignatureVerification(new InMemoryClientStore());
 
-            /* Sample for MongoDbClientStore */
-            /*.AddHttpMessageSignatureVerification()
-            .AddMongoDbClientStore(provider => new MongoDbSettings {
-                ConnectionString = "mongodb://localhost:27017/HttpMessageSigningDb",
-                CollectionName = "known_clients"
-            });*/
+                /* Sample for MongoDbClientStore */
+                /*.AddHttpMessageSignatureVerification()
+                .AddMongoDbClientStore(provider => new MongoDbSettings {
+                    ConnectionString = "mongodb://localhost:27017/HttpMessageSigningDb",
+                    CollectionName = "known_clients"
+                });*/
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

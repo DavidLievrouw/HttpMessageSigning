@@ -7,14 +7,14 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class MatchingAlgorithmVerificationTask : IVerificationTask {
         private readonly ILogger<MatchingAlgorithmVerificationTask> _logger;
         
-        public MatchingAlgorithmVerificationTask(ILogger<MatchingAlgorithmVerificationTask> logger) {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        public MatchingAlgorithmVerificationTask(ILogger<MatchingAlgorithmVerificationTask> logger = null) {
+            _logger = logger;
         }
 
         public Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             // Algorithm parameter is not required
             if (string.IsNullOrEmpty(signature.Algorithm)) {
-                _logger.LogDebug("Algorithm match verification is not required, because there is no algorithm specified in the signature.");
+                _logger?.LogDebug("Algorithm match verification is not required, because there is no algorithm specified in the signature.");
                 return Task.FromResult<Exception>(null);
             }
 

@@ -130,9 +130,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
                 .AddSingleton<ISignatureVerifier>(provider => new SignatureVerifier(
                     new KnownAlgorithmVerificationTask(
-                        provider.GetRequiredService<ILogger<KnownAlgorithmVerificationTask>>()),
+                        provider.GetService<ILogger<KnownAlgorithmVerificationTask>>()),
                     new MatchingAlgorithmVerificationTask(
-                        provider.GetRequiredService<ILogger<MatchingAlgorithmVerificationTask>>()),
+                        provider.GetService<ILogger<MatchingAlgorithmVerificationTask>>()),
                     new CreatedHeaderGuardVerificationTask(),
                     new ExpiresHeaderGuardVerificationTask(),
                     new AllHeadersPresentVerificationTask(),
@@ -142,11 +142,11 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                         provider.GetRequiredService<ISystemClock>()),
                     new DigestVerificationTask(
                         provider.GetRequiredService<IBase64Converter>(),
-                        provider.GetRequiredService<ILogger<DigestVerificationTask>>()),
+                        provider.GetService<ILogger<DigestVerificationTask>>()),
                     new MatchingSignatureStringVerificationTask(
                         provider.GetRequiredService<ISigningStringComposer>(),
                         provider.GetRequiredService<IBase64Converter>(),
-                        provider.GetRequiredService<ILogger<MatchingSignatureStringVerificationTask>>())))
+                        provider.GetService<ILogger<MatchingSignatureStringVerificationTask>>())))
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
         }
     }

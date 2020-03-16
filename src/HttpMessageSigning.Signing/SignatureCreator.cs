@@ -14,11 +14,11 @@ namespace Dalion.HttpMessageSigning.Signing {
             ISigningSettingsSanitizer signingSettingsSanitizer,
             ISigningStringComposer signingStringComposer,
             IBase64Converter base64Converter,
-            ILogger<SignatureCreator> logger) {
+            ILogger<SignatureCreator> logger = null) {
             _signingSettingsSanitizer = signingSettingsSanitizer ?? throw new ArgumentNullException(nameof(signingSettingsSanitizer));
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger;
         }
 
         public Signature CreateSignature(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfSigning) {
@@ -32,12 +32,12 @@ namespace Dalion.HttpMessageSigning.Signing {
             var requestForSigning = request.ToRequestForSigning(settings.SignatureAlgorithm);
             var signingString = _signingStringComposer.Compose(requestForSigning, settings.Headers, timeOfSigning, settings.Expires);
 
-            _logger.LogDebug("Composed the following signing string for request signing: {0}", signingString);
+            _logger?.LogDebug("Composed the following signing string for request signing: {0}", signingString);
 
             var signatureHash = settings.SignatureAlgorithm.ComputeHash(signingString);
             var signatureString = _base64Converter.ToBase64(signatureHash);
 
-            _logger.LogDebug("The base64 hash of the signature string for signing is '{0}'.", signatureString);
+            _logger?.LogDebug("The base64 hash of the signature string for signing is '{0}'.", signatureString);
 
             var signature = new Signature {
                 KeyId = settings.KeyId,

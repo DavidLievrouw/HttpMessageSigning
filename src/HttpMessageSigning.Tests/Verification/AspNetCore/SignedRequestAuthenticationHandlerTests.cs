@@ -26,7 +26,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             _encoder = new UrlTestEncoder();
             _schemeName = "tests-scheme";
             A.CallTo(() => _options.Get(_schemeName)).Returns(new SignedRequestAuthenticationOptions {Realm = "test-app"});
-            _sut = new SignedRequestAuthenticationHandlerForTests(_options, _logger, _encoder, _clock, _requestSignatureVerifier);
+            _sut = new SignedRequestAuthenticationHandlerForTests(_options, _encoder, _clock, _requestSignatureVerifier, _logger);
             _httpRequest = new DefaultHttpContext().Request;
             _sut.InitializeAsync(
                 new Microsoft.AspNetCore.Authentication.AuthenticationScheme(
@@ -131,9 +131,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         }
 
         private class SignedRequestAuthenticationHandlerForTests : SignedRequestAuthenticationHandler {
-            public SignedRequestAuthenticationHandlerForTests(IOptionsMonitor<SignedRequestAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder,
-                Microsoft.AspNetCore.Authentication.ISystemClock clock, IRequestSignatureVerifier requestSignatureVerifier) : base(options, logger, encoder, clock,
-                requestSignatureVerifier) { }
+            public SignedRequestAuthenticationHandlerForTests(IOptionsMonitor<SignedRequestAuthenticationOptions> options, UrlEncoder encoder,
+                Microsoft.AspNetCore.Authentication.ISystemClock clock, IRequestSignatureVerifier requestSignatureVerifier, ILoggerFactory logger = null) : base(options, encoder, clock, requestSignatureVerifier, logger) { }
 
             internal Task DoChallenge() {
                 return HandleChallengeAsync(new AuthenticationProperties());

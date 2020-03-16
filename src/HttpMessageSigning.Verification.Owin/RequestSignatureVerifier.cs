@@ -18,13 +18,13 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             ISignatureVerifier signatureVerifier,
             IClaimsPrincipalFactory claimsPrincipalFactory,
             ISignatureSanitizer signatureSanitizer,
-            ILogger<RequestSignatureVerifier> logger) {
+            ILogger<RequestSignatureVerifier> logger = null) {
             _signatureParser = signatureParser ?? throw new ArgumentNullException(nameof(signatureParser));
             _clientStore = clientStore ?? throw new ArgumentNullException(nameof(clientStore));
             _signatureVerifier = signatureVerifier ?? throw new ArgumentNullException(nameof(signatureVerifier));
             _claimsPrincipalFactory = claimsPrincipalFactory ?? throw new ArgumentNullException(nameof(claimsPrincipalFactory));
             _signatureSanitizer = signatureSanitizer ?? throw new ArgumentNullException(nameof(signatureSanitizer));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger;
         }
 
         public async Task<RequestSignatureVerificationResult> VerifySignature(IOwinRequest request) {
@@ -56,16 +56,16 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             }
 
             if (result is RequestSignatureVerificationResultSuccess success) {
-                _logger.LogDebug($"Request verification succeeded for principal {success.Principal?.Identity?.Name ?? "[null]"}.");
+                _logger?.LogDebug($"Request verification succeeded for principal {success.Principal?.Identity?.Name ?? "[null]"}.");
             }
             else if (result is RequestSignatureVerificationResultFailure failure) {
-                _logger.LogWarning(failure.SignatureVerificationException, "Request verification failed. See exception for details.");
+                _logger?.LogWarning(failure.SignatureVerificationException, "Request verification failed. See exception for details.");
             }
             
             return result;
         }
 
-        public virtual void Dispose() {
+        public void Dispose() {
             _clientStore?.Dispose();
         }
     }

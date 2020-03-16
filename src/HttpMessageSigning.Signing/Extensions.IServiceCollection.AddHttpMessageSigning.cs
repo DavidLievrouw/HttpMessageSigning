@@ -95,8 +95,8 @@ namespace Dalion.HttpMessageSigning.Signing {
                     new DigestSignatureHeaderEnsurer(
                         prov.GetRequiredService<IBase64Converter>()),
                     prov.GetRequiredService<ISystemClock>(),
-                    prov.GetRequiredService<ILogger<RequestSigner>>(),
-                    prov.GetRequiredService<IRegisteredSignerSettingsStore>()));
+                    prov.GetRequiredService<IRegisteredSignerSettingsStore>(),
+                    prov.GetService<ILogger<RequestSigner>>()));
         }
     }
 }

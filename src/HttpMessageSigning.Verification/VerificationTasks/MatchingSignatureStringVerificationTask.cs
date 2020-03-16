@@ -12,10 +12,10 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         public MatchingSignatureStringVerificationTask(
             ISigningStringComposer signingStringComposer, 
             IBase64Converter base64Converter,
-            ILogger<MatchingSignatureStringVerificationTask> logger) {
+            ILogger<MatchingSignatureStringVerificationTask> logger = null) {
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger;
         }
 
         public Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
@@ -32,12 +32,12 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             var expires = signature.Expires.Value - signature.Created.Value;
             var signingString = _signingStringComposer.Compose(signedRequest, signature.Headers, signature.Created.Value, expires);
             
-            _logger.LogDebug("Composed the following signing string for request verification: {0}", signingString);
+            _logger?.LogDebug("Composed the following signing string for request verification: {0}", signingString);
 
             var receivedSignature = _base64Converter.FromBase64(signature.String);
             var isValidSignature = client.SignatureAlgorithm.VerifySignature(signingString, receivedSignature);
 
-            _logger.LogDebug("The verification of the signature {0}.", isValidSignature ? "succeeded" : "failed");
+            _logger?.LogDebug("The verification of the signature {0}.", isValidSignature ? "succeeded" : "failed");
             
             if (!isValidSignature) {
                 return new SignatureVerificationException("The signature string does not match the expected value.")

@@ -13,7 +13,6 @@ namespace Dalion.HttpMessageSigning.Signing {
             _rsa = new RSACryptoServiceProvider();
             var services = new ServiceCollection();
             services
-                .AddLogging()
                 .AddHttpMessageSigning("unit-test-app", settings => { settings.SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("s3cr3t"); })
                 .AddHMACHttpMessageSigning("unit-test-app-hmac", "s3cr3t")
                 .AddRSAHttpMessageSigning("unit-test-app-rsa", _rsa);
