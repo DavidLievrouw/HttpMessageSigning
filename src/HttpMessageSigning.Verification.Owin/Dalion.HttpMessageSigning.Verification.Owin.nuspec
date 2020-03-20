@@ -18,7 +18,6 @@
     <tags>signing http messages ietf cavage lievrouw dalion owin</tags>
     <dependencies>
       <group targetFramework="net472">
-        <dependency id="Dalion.HttpMessageSigning" version="[$version$,)" />
         <dependency id="Dalion.HttpMessageSigning.Verification" version="[$version$,)" />
         <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[3.1.2,)" />
         <dependency id="Microsoft.Owin" version="[4.1.0,)" />
