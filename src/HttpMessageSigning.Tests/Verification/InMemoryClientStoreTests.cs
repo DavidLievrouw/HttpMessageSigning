@@ -89,7 +89,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var sut = new InMemoryClientStore(entries);
                 sut.Dispose();
 
-                Action act = () => sut.Get("entry1");
+                Func<Task> act = () => sut.Get("entry1");
                 act.Should().Throw<SignatureVerificationException>();
             }
         }
