@@ -27,6 +27,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             var record = new ClientDataRecord {
                 Id = client.Id,
                 Name = client.Name,
+                NonceExpiration = client.NonceLifetime.TotalSeconds,
                 Claims = client.Claims?.Select(c => ClaimDataRecord.FromClaim(c))?.ToArray(),
                 SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm)
             };
@@ -47,10 +48,15 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             var match = matches.Single();
 
+            var nonceExpiration = !match.NonceExpiration.HasValue || match.NonceExpiration.Value <= 0.0
+                ? Client.DefaultNonceLifetime
+                : TimeSpan.FromSeconds(match.NonceExpiration.Value);
+            
             return new Client(
                 match.Id,
                 match.Name,
                 match.SignatureAlgorithm.ToSignatureAlgorithm(),
+                nonceExpiration,
                 match.Claims?.Select(c => c.ToClaim())?.ToArray());
         }
     }

@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         public string Type { get; set; }
         public string Value { get; set; }
         public string ValueType { get; set; }
-
+        
         public Claim ToClaim() {
             return new Claim(Type, Value, ValueType, Issuer, OriginalIssuer);
         }

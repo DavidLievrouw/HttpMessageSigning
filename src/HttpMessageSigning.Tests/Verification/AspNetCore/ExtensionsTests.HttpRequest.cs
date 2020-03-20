@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.Path = new PathString("/api/rsc1");
                     _httpRequest.QueryString = new QueryString("?query=1&cache=false");
                     _httpRequest.Headers[HeaderName.PredefinedHeaderNames.Digest] = "SHA-256=xyz123=";
-                    _client = new Client("client", "Unit test app", new CustomSignatureAlgorithm("Custom"));
+                    _client = new Client("client", "Unit test app", new CustomSignatureAlgorithm("Custom"), TimeSpan.FromMinutes(1));
                     _signature = new Signature {Headers = new[] {HeaderName.PredefinedHeaderNames.Digest}};
                 }
 

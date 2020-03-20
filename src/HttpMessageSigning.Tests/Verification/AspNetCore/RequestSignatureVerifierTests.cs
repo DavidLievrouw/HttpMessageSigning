@@ -45,7 +45,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest))
                     .Returns(signature);
 
-                var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
+                var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 
@@ -71,7 +71,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest))
                     .Returns(signature);
 
-                var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
+                var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 
@@ -95,7 +95,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest))
                     .Returns(signature);
 
-                var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
+                var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
                 
@@ -116,7 +116,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest))
                     .Returns(signature);
 
-                var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
+                var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
                 

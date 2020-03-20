@@ -29,7 +29,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             public Verify() {
                 _signature = (Signature) TestModels.Signature.Clone();
                 _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
-                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, A.Fake<ISignatureAlgorithm>());
+                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1));
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
 
                 _composedSignatureString = "abc123";

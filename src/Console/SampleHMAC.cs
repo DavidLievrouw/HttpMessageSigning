@@ -46,6 +46,7 @@ namespace Console {
                         new KeyId("e0e8dcd638334c409e1b88daf821d135"),
                         "HttpMessageSigningSampleHMAC",
                         SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
+                        TimeSpan.FromMinutes(5),
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 });

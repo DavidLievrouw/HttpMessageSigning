@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public void WhenEntryAlreadyExists_ThrowsInvalidOperationException() {
-                var entry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), new Claim("c1", "v1"));
+                var entry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), new Claim("c1", "v1"));
                 _sut.Register(entry);
                 Func<Task> act = () => _sut.Register(entry);
                 act.Should().Throw<InvalidOperationException>();
@@ -31,7 +31,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task AddsEntry() {
-                var entry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), new Claim("c1", "v1"));
+                var entry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), new Claim("c1", "v1"));
                 await _sut.Register(entry);
                 var registeredEntry = await _sut.Get(entry.Id);
                 registeredEntry.Should().Be(entry);
@@ -55,7 +55,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenItemIsFound_ReturnsFoundItem() {
-                var entry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), new Claim("c1", "v1"));
+                var entry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), new Claim("c1", "v1"));
                 await _sut.Register(entry);
                 var registeredEntry = await _sut.Get(entry.Id);
                 registeredEntry.Should().Be(entry);
@@ -66,8 +66,8 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void DisposesAllEntries() {
                 var entries = new[] {
-                    new Client((KeyId) "entry1", "Unit test app 1", A.Fake<ISignatureAlgorithm>(), new Claim("c1", "v1")),
-                    new Client((KeyId) "entry2", "Unit test app 2", A.Fake<ISignatureAlgorithm>(), new Claim("c1", "v1"))
+                    new Client((KeyId) "entry1", "Unit test app 1", A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1), new Claim("c1", "v1")),
+                    new Client((KeyId) "entry2", "Unit test app 2", A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1), new Claim("c1", "v1"))
                 };
                 
                 var sut = new InMemoryClientStore(entries);
@@ -82,8 +82,8 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void ClearsEntries() {
                 var entries = new[] {
-                    new Client((KeyId) "entry1", "Unit test app 1", A.Fake<ISignatureAlgorithm>(), new Claim("c1", "v1")),
-                    new Client((KeyId) "entry2", "Unit test app 2", A.Fake<ISignatureAlgorithm>(), new Claim("c1", "v1"))
+                    new Client((KeyId) "entry1", "Unit test app 1", A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1), new Claim("c1", "v1")),
+                    new Client((KeyId) "entry2", "Unit test app 2", A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1), new Claim("c1", "v1"))
                 };
                 
                 var sut = new InMemoryClientStore(entries);

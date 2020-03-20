@@ -28,7 +28,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         public class Register : CachingMongoDbClientStoreTests {
             [Fact]
             public async Task DelegatesToDecoratedInstance() {
-                var newClient = new Client("c1", "client one", new CustomSignatureAlgorithm("cAlg"));
+                var newClient = new Client("c1", "client one", new CustomSignatureAlgorithm("cAlg"), TimeSpan.FromMinutes(1));
 
                 await _sut.Register(newClient);
 
@@ -47,8 +47,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 _keyId = new KeyId("c1");
                 _cacheKey = $"CacheEntry_Client_{_keyId}";
 
-                _cachedClient = new Client(_keyId, "cached", new CustomSignatureAlgorithm("cAlg"));
-                _newClient = new Client(_keyId, "new", new CustomSignatureAlgorithm("cAlg"));
+                _cachedClient = new Client(_keyId, "cached", new CustomSignatureAlgorithm("cAlg"), TimeSpan.FromMinutes(1));
+                _newClient = new Client(_keyId, "new", new CustomSignatureAlgorithm("cAlg"), TimeSpan.FromMinutes(1));
                 A.CallTo(() => _decorated.Get(_keyId)).Returns(_newClient);
             }
 

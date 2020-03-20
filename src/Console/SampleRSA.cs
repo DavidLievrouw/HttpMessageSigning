@@ -44,6 +44,7 @@ namespace Console {
                         new KeyId("4d8f14b6c4184dc1b677c88a2b60bfd2"),
                         "HttpMessageSigningSampleRSA",
                         SignatureAlgorithm.CreateForVerification(cert),
+                        TimeSpan.FromMinutes(5),
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 });
