@@ -23,7 +23,7 @@ namespace Console {
 
         public static void ConfigureServices(IServiceCollection services) {
             services
-                .AddLogging(configure => configure.AddConsole())
+                .AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
                 .AddHttpMessageSigning(
                     new KeyId(KeyId),
                     provider => new SigningSettings {
@@ -35,7 +35,7 @@ namespace Console {
         private static async Task Send(IRequestSignerFactory requestSignerFactory, ILogger<SampleHMACClient> logger) {
             var request = new HttpRequestMessage {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri("http://localhost:5001/userinfo")
+                RequestUri = new Uri("http://localhost:5000/userinfo")
             };
 
             var requestSigner = requestSignerFactory.CreateFor(KeyId);

@@ -125,7 +125,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 .AddSingleton<INonceStore, InMemoryNonceStore>()
                 .AddSingleton<INonceAppender, NonceAppender>()
                 .AddSingleton<ISystemClock, RealSystemClock>()
-                .AddSingleton<ISignatureParser, SignatureParser>()
+                .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))
                 .AddSingleton<IClaimsPrincipalFactory>(new ClaimsPrincipalFactory(typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2)))
                 .AddSingleton<IDefaultSignatureHeadersProvider, DefaultSignatureHeadersProvider>()
                 .AddSingleton<ISignatureSanitizer, SignatureSanitizer>()

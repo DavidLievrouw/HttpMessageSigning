@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
     internal class SignatureParser : ISignatureParser {
+        private readonly ILogger<SignatureParser> _logger;
         private const string AuthorizationHeaderName = "Authorization";
         private const string AuthorizationScheme = "SignedHttpRequest";
 
@@ -15,6 +17,10 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         private static readonly Regex HeadersRegEx = new Regex("headers=\"(?<headers>[a-z0-9-\\(\\) ]+)\"", RegexOptions.Compiled);
         private static readonly Regex SignatureRegEx = new Regex("signature=\"(?<signature>[a-zA-Z0-9+/]+={0,2})\"", RegexOptions.Compiled);
         private static readonly Regex NonceRegEx = new Regex("nonce=\"(?<nonce>[A-z0-9, =-]+)\"", RegexOptions.Compiled);
+
+        public SignatureParser(ILogger<SignatureParser> logger = null) {
+            _logger = logger;
+        }
 
         public Signature Parse(IOwinRequest request) {
             if (request == null) throw new ArgumentNullException(nameof(request));
@@ -38,6 +44,8 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             var authParam = authHeader.Substring(separatorIndex + 1);
 
+            _logger?.LogDebug("Parsing authorization header parameter for verification: {0}.", authParam);
+            
             var keyId = KeyId.Empty;
             var keyIdMatch = KeyIdRegEx.Match(authParam);
             if (keyIdMatch.Success) keyId = (KeyId) keyIdMatch.Groups["keyId"].Value;

@@ -32,7 +32,7 @@ namespace Console {
             var cert = new X509Certificate2(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
             
             services
-                .AddLogging(configure => configure.AddConsole())
+                .AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
                 .AddHttpMessageSigning(
                     new KeyId("4d8f14b6c4184dc1b677c88a2b60bfd2"),
                     provider => new SigningSettings {

@@ -15,8 +15,8 @@ namespace OwinApplication {
             services
                 .AddLogging(builder => {
                     builder
-                        .SetMinimumLevel(LogLevel.Trace)
-                        .AddConsole();
+                        .AddConsole()
+                        .SetMinimumLevel(LogLevel.Debug);
                 })
                 .AddHttpMessageSignatureVerification(
                     new Client(

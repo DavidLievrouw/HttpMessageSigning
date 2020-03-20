@@ -1,15 +1,18 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Owin;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
     public class SignatureParserTests {
+        private readonly ILogger<SignatureParser> _logger;
         private readonly SignatureParser _sut;
 
         public SignatureParserTests() {
-            _sut = new SignatureParser();
+            FakeFactory.Create(out _logger);
+            _sut = new SignatureParser(_logger);
         }
 
         public class Parse : SignatureParserTests {

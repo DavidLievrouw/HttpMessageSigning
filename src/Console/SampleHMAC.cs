@@ -29,7 +29,7 @@ namespace Console {
 
         public static void ConfigureServices(IServiceCollection services) {
             services
-                .AddLogging(configure => configure.AddConsole())
+                .AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
                 .AddHttpMessageSigning(
                     new KeyId("e0e8dcd638334c409e1b88daf821d135"),
                     provider => new SigningSettings {

@@ -2,14 +2,17 @@ using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public class SignatureParserTests {
+        private readonly ILogger<SignatureParser> _logger;
         private readonly SignatureParser _sut;
 
         public SignatureParserTests() {
-            _sut = new SignatureParser();
+            FakeFactory.Create(out _logger);
+            _sut = new SignatureParser(_logger);
         }
 
         public class Parse : SignatureParserTests {
