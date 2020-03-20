@@ -86,6 +86,20 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             }
 
             [Fact]
+            public async Task WhenClientIsNotCached_AndIsNotFound_CachesNullValue() {
+                var cacheKey = "CacheEntry_Client_c2";
+                _cache.TryGetValue(cacheKey, out _).Should().BeFalse();
+                A.CallTo(() => _decorated.Get(new KeyId("c2"))).Returns((Client)null);
+                
+                var actual = await _sut.Get(new KeyId("c2"));
+
+                actual.Should().BeNull();
+                _cache.TryGetEntry(cacheKey, out var actualEntry).Should().BeTrue();
+                actualEntry.As<ICacheEntry>().Value.Should().BeNull();
+                actualEntry.As<ICacheEntry>().AbsoluteExpirationRelativeToNow.Should().Be(_expiration);
+            }
+            
+            [Fact]
             public async Task WhenClientIsNotCached_CachesAcquiredFromDecoratedInstance_WithExpectedExpiration() {
                 _cache.TryGetValue(_cacheKey, out _).Should().BeFalse();
 
