@@ -80,6 +80,8 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             return services
                 .AddSingleton<ISystemClock, RealSystemClock>()
+                .AddSingleton<INonceAppender, NonceAppender>()
+                .AddSingleton<INonceGenerator, NonceGenerator>()
                 .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<ISignatureCreator, SignatureCreator>()
                 .AddSingleton<ISigningSettingsSanitizer, SigningSettingsSanitizer>()

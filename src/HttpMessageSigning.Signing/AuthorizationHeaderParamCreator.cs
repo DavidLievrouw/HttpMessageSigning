@@ -26,6 +26,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (!string.IsNullOrEmpty(created)) sb.Append(",created=" + created);
             if (!string.IsNullOrEmpty(expires)) sb.Append(",expires=" + expires);
             if (!string.IsNullOrEmpty(headers)) sb.Append(",headers=\"" + headers + "\"");
+            if (!string.IsNullOrEmpty(signature.Nonce)) sb.Append(",nonce=\"" + signature.Nonce + "\"");
             sb.Append(",signature=\"" + signature.String + "\"");
 
             var param = sb.ToString();

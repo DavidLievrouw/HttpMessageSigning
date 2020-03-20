@@ -121,6 +121,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             return services
                 .AddSingleton<IBase64Converter, Base64Converter>()
+                .AddSingleton<INonceAppender, NonceAppender>()
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<ISignatureParser, SignatureParser>()
                 .AddSingleton<IClaimsPrincipalFactory>(new ClaimsPrincipalFactory(typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2)))

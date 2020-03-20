@@ -33,7 +33,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
 
                 _composedSignatureString = "abc123";
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan>._))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan>._, A<string>._))
                     .Returns(_composedSignatureString);
                 _signature.String = _base64Converter.ToBase64(_client.SignatureAlgorithm.ComputeHash(_composedSignatureString));
             }
@@ -63,7 +63,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 DateTimeOffset? interceptedCreated = null;
                 TimeSpan? interceptedExpires = null;
 
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan>._))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan>._, A<string>._))
                     .Invokes(call => {
                         interceptedRequest = call.GetArgument<HttpRequestForSigning>(0);
                         interceptedHeaderNames = call.GetArgument<HeaderName[]>(1);

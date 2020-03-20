@@ -32,7 +32,13 @@ namespace Dalion.HttpMessageSigning {
         public HeaderName[] Headers { get; set; }
 
         /// <summary>
-        /// Gets or sets the signature string to be verified by the server.
+        /// OPTIONAL: Gets or sets a unique string, that is part of the signature, to prevent replay attacks.
+        /// </summary>
+        /// <remarks>When null or empty, this value will not be part of the signature.</remarks>
+        public string Nonce { get; set; }
+        
+        /// <summary>
+        /// REQUIRED: Gets or sets the signature string to be verified by the server.
         /// </summary>
         public string String { get; set; }
 
@@ -52,6 +58,7 @@ namespace Dalion.HttpMessageSigning {
                 Created = Created,
                 Expires = Expires,
                 Headers = (HeaderName[]) Headers?.Clone(),
+                Nonce = Nonce,
                 String = String
             };
         }
