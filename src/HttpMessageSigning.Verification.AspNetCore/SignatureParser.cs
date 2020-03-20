@@ -14,6 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         private static readonly Regex ExpiresRegEx = new Regex("expires=(?<expires>[0-9]+)", RegexOptions.Compiled);
         private static readonly Regex HeadersRegEx = new Regex("headers=\"(?<headers>[a-z0-9-\\(\\) ]+)\"", RegexOptions.Compiled);
         private static readonly Regex SignatureRegEx = new Regex("signature=\"(?<signature>[a-zA-Z0-9+/]+={0,2})\"", RegexOptions.Compiled);
+        private static readonly Regex NonceRegEx = new Regex("nonce=\"(?<nonce>[A-z0-9, =-]+)\"", RegexOptions.Compiled);
 
         public Signature Parse(HttpRequest request) {
             if (request == null) throw new ArgumentNullException(nameof(request));
@@ -58,6 +59,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             var headersMatch = HeadersRegEx.Match(authParam);
             if (headersMatch.Success) headersString = headersMatch.Groups["headers"].Value;
 
+            string nonce = null;
+            var nonceMatch = NonceRegEx.Match(authParam);
+            if (nonceMatch.Success) nonce = nonceMatch.Groups["nonce"].Value;
+            
             var signature = string.Empty;
             var signatureMatch = SignatureRegEx.Match(authParam);
             if (signatureMatch.Success) signature = signatureMatch.Groups["signature"].Value;
@@ -85,6 +90,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 Created = created,
                 Expires = expires,
                 Headers = headerNames.Any() ? headerNames : null,
+                Nonce = nonce,
                 String = signature
             };
             

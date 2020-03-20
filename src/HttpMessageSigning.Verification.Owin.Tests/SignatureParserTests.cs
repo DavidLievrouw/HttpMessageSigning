@@ -71,7 +71,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             [Fact]
             public void GivenACompleteParam_ParsesAllProperties() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
 
                 var actual = _sut.Parse(_request);
 
@@ -85,14 +85,15 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                         new HeaderName("date"),
                         new HeaderName("content-length")
                     },
-                    String = "xyz123=="
+                    String = "xyz123==",
+                    Nonce = "abc123"
                 };
                 actual.Should().BeEquivalentTo(expected);
             }
 
             [Fact]
             public void IgnoresAdditionalSettings() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
                 _request.Headers["Authorization"] = _request.Headers["Authorization"] + ",additional=true";
 
                 var actual = _sut.Parse(_request);
@@ -107,14 +108,15 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                         new HeaderName("date"),
                         new HeaderName("content-length")
                     },
-                    String = "xyz123=="
+                    String = "xyz123==",
+                    Nonce = "abc123"
                 };
                 actual.Should().BeEquivalentTo(expected);
             }
 
             [Fact]
             public void WhenCreatedIsNotSpecified_SetsCreatedToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", null, _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
+                SetHeader(_request, "app1", "rsa-sha256", null, _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
 
                 var actual = _sut.Parse(_request);
 
@@ -123,7 +125,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             [Fact]
             public void WhenCreatedIsNotAnEpoch_SetsCreatedToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", "some invalid value", _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
+                SetHeader(_request, "app1", "rsa-sha256", "some invalid value", _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
 
                 var actual = _sut.Parse(_request);
 
@@ -132,7 +134,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             [Fact]
             public void WhenExpiresIsNotSpecified_SetsExpiresToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), null, "(request-target) date content-length", "xyz123==");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), null, "(request-target) date content-length", "xyz123==", "abc123");
 
                 var actual = _sut.Parse(_request);
 
@@ -141,7 +143,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             [Fact]
             public void WhenExpiresIsNotAnEpoch_SetsExpiresToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), "some invalid value", "(request-target) date content-length", "xyz123==");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), "some invalid value", "(request-target) date content-length", "xyz123==", "abc123");
 
                 var actual = _sut.Parse(_request);
 
@@ -150,7 +152,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             [Fact]
             public void WhenAlgorithmIsNotSpecified_SetsAlgorithmToNull() {
-                SetHeader(_request, "app1", null, _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
+                SetHeader(_request, "app1", null, _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
 
                 var actual = _sut.Parse(_request);
 
@@ -159,7 +161,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             [Fact]
             public void WhenHeadersIsNotSpecified_SetsHeadersToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), null, "xyz123==");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), null, "xyz123==", "abc123");
 
                 var actual = _sut.Parse(_request);
 
@@ -168,7 +170,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             [Fact]
             public void WhenKeIdIsNotSpecified_ThrowsSignatureVerificationException() {
-                SetHeader(_request, null, "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
+                SetHeader(_request, null, "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
 
                 Action act = () => _sut.Parse(_request);
 
@@ -177,26 +179,37 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             [Fact]
             public void WhenStringNotSpecified_ThrowsSignatureVerificationException() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", null, "abc123");
 
                 Action act = () => _sut.Parse(_request);
 
                 act.Should().Throw<SignatureVerificationException>();
             }
 
+            [Fact]
+            public void WhenNonceIsNotSpecified_SetsNonceToNull() {
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
+
+                var actual = _sut.Parse(_request);
+
+                actual.Nonce.Should().BeNull();
+            }
+            
             private static string Compose(
                 string keyId = null,
                 string algorithm = null,
                 string created = null,
                 string expires = null,
                 string headers = null,
-                string sig = null) {
+                string sig = null,
+                string nonce = null) {
                 var parts = new List<string>();
                 if (!string.IsNullOrEmpty(keyId)) parts.Add("keyId=\"" + keyId + "\"");
                 if (!string.IsNullOrEmpty(algorithm)) parts.Add("algorithm=\"" + algorithm + "\"");
                 if (!string.IsNullOrEmpty(created)) parts.Add("created=" + created);
                 if (!string.IsNullOrEmpty(expires)) parts.Add("expires=" + expires);
                 if (!string.IsNullOrEmpty(headers)) parts.Add("headers=\"" + headers + "\"");
+                if (!string.IsNullOrEmpty(nonce)) parts.Add("nonce=\"" + nonce + "\"");
                 if (!string.IsNullOrEmpty(sig)) parts.Add("signature=\"" + sig + "\"");
                 return string.Join(",", parts);
             }
@@ -208,8 +221,9 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 string created = null,
                 string expires = null,
                 string headers = null,
-                string sig = null) {
-                var param = Compose(keyId, algorithm, created, expires, headers, sig);
+                string sig = null,
+                string nonce = null) {
+                var param = Compose(keyId, algorithm, created, expires, headers, sig, nonce);
                 request.Headers["Authorization"] = "SignedHttpRequest " + param;
             }
         }
