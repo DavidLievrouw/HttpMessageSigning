@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using Dalion.HttpMessageSigning.Signing;
 using Dalion.HttpMessageSigning.Verification;
 using Dalion.HttpMessageSigning.Verification.AspNetCore;
+using Dalion.HttpMessageSigning.Verification.MongoDb;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -18,7 +19,16 @@ namespace Dalion.HttpMessageSigning {
                     provider => new SigningSettings {
                         SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384)
                     })
-                .AddHttpMessageSignatureVerification(new InMemoryClientStore());
+                .AddHttpMessageSignatureVerification()
+                .AddMongoDbClientStore(new MongoDbClientStoreSettings {
+                    CollectionName = "testclients",
+                    ConnectionString = "mongodb://unit-test:27017/HttpMessageSigningDb",
+                    ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
+                })
+                .AddMongoDbNonceStore(new MongoDbNonceStoreSettings {
+                    CollectionName = "testnonces",
+                    ConnectionString = "mongodb://unit-test:27017/HttpMessageSigningDb"
+                });
             _serviceProvider = services.BuildServiceProvider();
         }
 
@@ -33,6 +43,14 @@ namespace Dalion.HttpMessageSigning {
         public void CanResolveType(Type requestedType) {
             var instance = _serviceProvider.GetRequiredService(requestedType);
             instance.Should().NotBeNull().And.BeAssignableTo(requestedType);
+        }
+        
+        [Theory]
+        [InlineData(typeof(IClientStore), typeof(CachingMongoDbClientStore))]
+        [InlineData(typeof(INonceStore), typeof(MongoDbNonceStore))]
+        public void CanResolveExpectedType(Type requestedType, Type expectedType) {
+            var instance = _serviceProvider.GetRequiredService(requestedType);
+            instance.Should().NotBeNull().And.BeAssignableTo(expectedType);
         }
     }
 }
