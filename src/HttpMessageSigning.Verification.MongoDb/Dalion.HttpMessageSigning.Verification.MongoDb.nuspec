@@ -18,8 +18,8 @@
     <tags>signing http messages ietf cavage lievrouw dalion mongodb mongo</tags>
     <dependencies>
       <group targetFramework="netstandard2.0">
-        <dependency id="Dalion.HttpMessageSigning" version="[$version$,)" />
         <dependency id="Dalion.HttpMessageSigning.Verification" version="[$version$,)" />
+        <dependency id="Microsoft.Extensions.Caching.Memory" version="[3.1.2,)" />
         <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="[3.1.2,)" />
         <dependency id="MongoDB.Driver" version="[2.10.2,)" />
       </group> 

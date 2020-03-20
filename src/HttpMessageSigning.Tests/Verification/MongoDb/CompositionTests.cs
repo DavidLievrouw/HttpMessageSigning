@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography;
-using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -14,7 +12,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             services
                 .AddMongoDbClientStore(new MongoDbSettings {
                     CollectionName = "clients",
-                    ConnectionString = "mongodb://localhost:27017/Auth"
+                    ConnectionString = "mongodb://localhost:27017/Auth",
+                    ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
                 });
             _provider = services.BuildServiceProvider();
         }
@@ -34,7 +33,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
         
         [Theory]
-        [InlineData(typeof(IClientStore), typeof(MongoDbClientStore))]
+        [InlineData(typeof(IClientStore), typeof(CachingMongoDbClientStore))]
         public void CanResolveExactType(Type requestedType, Type expectedType) {
             object actualInstance = null;
             Action act = () => actualInstance = _provider.GetRequiredService(requestedType);

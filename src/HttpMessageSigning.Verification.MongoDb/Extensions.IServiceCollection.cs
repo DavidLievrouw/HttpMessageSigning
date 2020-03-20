@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
@@ -42,13 +43,17 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             if (settingsFactory == null) throw new ArgumentNullException(nameof(settingsFactory));
 
             return services
+                .AddMemoryCache()
                 .AddSingleton<IClientStore>(prov => {
                     var mongoSettings = settingsFactory(prov);
                     if (mongoSettings == null) throw new ValidationException($"Invalid {nameof(MongoDbSettings)} were specified.");
                     mongoSettings.Validate();
-                    return new MongoDbClientStore(
-                        new MongoDatabaseClientProvider(mongoSettings.ConnectionString),
-                        mongoSettings.CollectionName);
+                    return new CachingMongoDbClientStore(
+                        new MongoDbClientStore(
+                            new MongoDatabaseClientProvider(mongoSettings.ConnectionString),
+                            mongoSettings.CollectionName),
+                        prov.GetRequiredService<IMemoryCache>(),
+                        mongoSettings.ClientCacheEntryExpiration);
                 });
         }
     }

@@ -9,7 +9,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         public MongoDbSettingsTests() {
             _sut = new MongoDbSettings {
                 ConnectionString = "mongodb://localhost:27017/DbForTests?connectTimeoutMS=60000",
-                CollectionName = "signatureclients"
+                CollectionName = "signatureclients",
+                ClientCacheEntryExpiration = TimeSpan.FromMinutes(3)
             };
         }
 
@@ -32,6 +33,16 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 act.Should().Throw<ValidationException>();
             }
 
+            [Theory]
+            [InlineData(0)]
+            [InlineData(-1)]
+            [InlineData(-99)]
+            public void GivenZeroOrNegativeCacheEntryExpiration_DoesNotThrow(int expirationSeconds) {
+                _sut.ClientCacheEntryExpiration = TimeSpan.FromSeconds(expirationSeconds);
+                Action act = () => _sut.Validate();
+                act.Should().NotThrow();
+            }
+            
             [Fact]
             public void GivenValidOptions_DoesNotThrow() {
                 Action act = () => _sut.Validate();

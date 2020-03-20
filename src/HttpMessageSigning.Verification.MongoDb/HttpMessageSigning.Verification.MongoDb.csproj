@@ -14,18 +14,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj"/>
+        <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2"/>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
-        <PackageReference Include="MongoDB.Driver" Version="2.10.2"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+        <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
     </ItemGroup>
 
     <Target Name="InitVersion" BeforeTargets="BeforeBuild">
         <ReadLinesFromFile File="..\..\version.txt">
-            <Output TaskParameter="Lines" PropertyName="PackageVersion"/>
+            <Output TaskParameter="Lines" PropertyName="PackageVersion" />
         </ReadLinesFromFile>
         <PropertyGroup>
             <BuildCounter Condition="'$(BuildCounter)'==''">0</BuildCounter>
@@ -34,15 +35,15 @@
             <Version>$(ProductVersion)</Version>
             <InformationalVersion>$(ProductVersion)</InformationalVersion>
         </PropertyGroup>
-        <Message Text="The $(Product) package version for $(TargetFramework) is '$(PackageVersion)'." Importance="High"/>
-        <Message Text="The $(Product) product version for $(TargetFramework) is '$(ProductVersion)'." Importance="High"/>
+        <Message Text="The $(Product) package version for $(TargetFramework) is '$(PackageVersion)'." Importance="High" />
+        <Message Text="The $(Product) product version for $(TargetFramework) is '$(ProductVersion)'." Importance="High" />
     </Target>
 
     <Target Name="PackNuGetPackages" AfterTargets="AfterBuild" Condition="'$(IsPublishing)' == 'true'">
         <PropertyGroup>
             <PackagePublishDir Condition="'$(PackagePublishDir)'==''">$(MSBuildThisFileDirectory)bin\Packages\</PackagePublishDir>
         </PropertyGroup>
-        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Verification.MongoDb.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion);year=$([System.DateTime]::Now.ToString(yyyy))\&quot;"/>
+        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Verification.MongoDb.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion);year=$([System.DateTime]::Now.ToString(yyyy))\&quot;" />
     </Target>
 
 </Project>
