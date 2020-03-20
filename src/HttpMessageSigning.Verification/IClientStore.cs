@@ -7,16 +7,16 @@ namespace Dalion.HttpMessageSigning.Verification {
     /// </summary>
     public interface IClientStore : IDisposable {
         /// <summary>
-        /// Registers a client, and its settings to perform signature verification.
+        /// Registers a <see cref="Client"/>, and its settings to perform <see cref="Signature"/> verification.
         /// </summary>
         /// <param name="client">The entry that represents a known client.</param>
         Task Register(Client client);
         
         /// <summary>
-        /// Gets the registered client that corresponds to the specified identifier.
+        /// Gets the registered <see cref="Client"/> that corresponds to the specified identifier.
         /// </summary>
-        /// <param name="id">The identifier of the registered client to get.</param>
+        /// <param name="clientId">The identifier of the registered client to get.</param>
         /// <returns>The registered client that corresponds to the specified identifier.</returns>
-        Task<Client> Get(KeyId id);
+        Task<Client> Get(KeyId clientId);
     }
 }

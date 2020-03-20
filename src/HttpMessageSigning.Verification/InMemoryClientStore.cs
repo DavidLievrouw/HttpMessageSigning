@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         }
         
         /// <summary>
-        /// Registers a client, and its settings to perform signature verification.
+        /// Registers a <see cref="Client"/>, and its settings to perform <see cref="Signature"/> verification.
         /// </summary>
         /// <param name="client">The entry that represents a known client.</param>
         public Task Register(Client client) {
@@ -41,16 +41,16 @@ namespace Dalion.HttpMessageSigning.Verification {
         }
 
         /// <summary>
-        /// Gets the registered client that corresponds to the specified identifier.
+        /// Gets the registered <see cref="Client"/> that corresponds to the specified identifier.
         /// </summary>
-        /// <param name="id">The identifier of the registered client to get.</param>
+        /// <param name="clientId">The identifier of the registered client to get.</param>
         /// <returns>The registered client that corresponds to the specified identifier.</returns>
-        public Task<Client> Get(KeyId id) {
-            if (id == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
+        public Task<Client> Get(KeyId clientId) {
+            if (clientId == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(clientId));
             
-            var match = _entries.FirstOrDefault(_ => _.Id == id);
+            var match = _entries.FirstOrDefault(_ => _.Id == clientId);
 
-            if (match == null) throw new SignatureVerificationException($"No {nameof(Client)}s with id '{id}' are registered in the server store.");
+            if (match == null) throw new SignatureVerificationException($"No {nameof(Client)}s with id '{clientId}' are registered in the server store.");
 
             return Task.FromResult(match);
         }

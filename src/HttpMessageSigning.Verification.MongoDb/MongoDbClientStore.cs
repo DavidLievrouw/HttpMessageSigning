@@ -37,14 +37,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             return collection.ReplaceOneAsync(r => r.Id == record.Id, record, new ReplaceOptions {IsUpsert = true});
         }
 
-        public async Task<Client> Get(KeyId id) {
-            if (id == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
+        public async Task<Client> Get(KeyId clientId) {
+            if (clientId == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(clientId));
 
             var collection = _lazyCollection.Value;
 
-            var findResult = await collection.FindAsync(r => r.Id == id);
+            var findResult = await collection.FindAsync(r => r.Id == clientId);
             var matches = await findResult.ToListAsync();
-            if (!matches.Any()) throw new SignatureVerificationException($"No {nameof(Client)}s with id '{id}' are registered in the server store.");
+            if (!matches.Any()) throw new SignatureVerificationException($"No {nameof(Client)}s with id '{clientId}' are registered in the server store.");
 
             var match = matches.Single();
 

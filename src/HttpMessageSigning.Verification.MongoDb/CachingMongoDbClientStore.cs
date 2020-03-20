@@ -22,15 +22,15 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             return _decorated.Register(client);
         }
 
-        public async Task<Client> Get(KeyId id) {
-            if (_expiration <= TimeSpan.Zero) return await _decorated.Get(id);
+        public async Task<Client> Get(KeyId clientId) {
+            if (_expiration <= TimeSpan.Zero) return await _decorated.Get(clientId);
 
             await Semaphore.WaitAsync(MaxLockWaitTime);
 
-            var cacheKey = $"CacheEntry_Client_{id}";
+            var cacheKey = $"CacheEntry_Client_{clientId}";
             try {
                 if (!_cache.TryGetValue<Client>(cacheKey, out var cachedClient)) {
-                    var retrievedClient = await _decorated.Get(id);
+                    var retrievedClient = await _decorated.Get(clientId);
                     _cache.Set(cacheKey, retrievedClient, _expiration);
                     return retrievedClient;
                 }
