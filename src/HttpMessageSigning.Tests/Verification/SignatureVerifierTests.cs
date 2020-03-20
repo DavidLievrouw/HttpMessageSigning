@@ -16,6 +16,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         private readonly IVerificationTask _expiresHeaderGuardVerificationTask;
         private readonly IVerificationTask _digestVerificationTask;
         private readonly IVerificationTask _knownAlgorithmVerificationTask;
+        private readonly IVerificationTask _nonceVerificationTask;
         private readonly IVerificationTask _matchingAlgorithmVerificationTask;
         private readonly IVerificationTask _matchingSignatureStringVerificationTask;
         private readonly SignatureVerifier _sut;
@@ -29,6 +30,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 out _expiresHeaderGuardVerificationTask,
                 out _allHeadersPresentVerificationTask,
                 out _expirationTimeVerificationTask,
+                out _nonceVerificationTask,
                 out _digestVerificationTask,
                 out _matchingSignatureStringVerificationTask);
             _sut = new SignatureVerifier(
@@ -39,6 +41,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 _allHeadersPresentVerificationTask,
                 _creationTimeVerificationTask,
                 _expirationTimeVerificationTask,
+                _nonceVerificationTask,
                 _digestVerificationTask,
                 _matchingSignatureStringVerificationTask);
         }
@@ -65,6 +68,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => _allHeadersPresentVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
                 A.CallTo(() => _creationTimeVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
                 A.CallTo(() => _expirationTimeVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
+                A.CallTo(() => _nonceVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
                 A.CallTo(() => _digestVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
                 A.CallTo(() => _matchingSignatureStringVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
             }
@@ -127,6 +131,12 @@ namespace Dalion.HttpMessageSigning.Verification {
             public async Task VerifiesThatTheSignatureIsNotExpired() {
                 await _sut.VerifySignature(_signedRequest, _signature, _client);
                 A.CallTo(() => _expirationTimeVerificationTask.Verify(_signedRequest, _signature, _client)).MustHaveHappened();
+            }
+
+            [Fact]
+            public async Task VerifiesTheNonceValue() {
+                await _sut.VerifySignature(_signedRequest, _signature, _client);
+                A.CallTo(() => _nonceVerificationTask.Verify(_signedRequest, _signature, _client)).MustHaveHappened();
             }
 
             [Fact]

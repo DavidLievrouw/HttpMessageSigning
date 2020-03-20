@@ -29,7 +29,7 @@ namespace Dalion.HttpMessageSigning {
 
         public ICacheEntry CreateEntry(object key) {
             var newEntry = new FakeCacheEntry(key);
-            InternalData.Add(key, newEntry);
+            InternalData[key] = newEntry;
             return newEntry;
         }
 

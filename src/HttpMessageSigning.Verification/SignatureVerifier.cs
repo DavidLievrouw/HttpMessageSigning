@@ -11,6 +11,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         private readonly IVerificationTask _allHeadersPresentVerificationTask;
         private readonly IVerificationTask _creationTimeVerificationTask;
         private readonly IVerificationTask _expirationTimeVerificationTask;
+        private readonly IVerificationTask _nonceVerificationTask;
         private readonly IVerificationTask _digestVerificationTask;
         private readonly IVerificationTask _matchingSignatureStringVerificationTask;
 
@@ -22,6 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             IVerificationTask allHeadersPresentVerificationTask,
             IVerificationTask creationTimeVerificationTask,
             IVerificationTask expirationTimeVerificationTask,
+            IVerificationTask nonceVerificationTask,
             IVerificationTask digestVerificationTask,
             IVerificationTask matchingSignatureStringVerificationTask) {
             _knownAlgorithmVerificationTask = knownAlgorithmVerificationTask ?? throw new ArgumentNullException(nameof(knownAlgorithmVerificationTask));
@@ -32,6 +34,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             _creationTimeVerificationTask = creationTimeVerificationTask ?? throw new ArgumentNullException(nameof(creationTimeVerificationTask));
             _expirationTimeVerificationTask = expirationTimeVerificationTask ?? throw new ArgumentNullException(nameof(expirationTimeVerificationTask));
             _digestVerificationTask = digestVerificationTask ?? throw new ArgumentNullException(nameof(digestVerificationTask));
+            _nonceVerificationTask = nonceVerificationTask ?? throw new ArgumentNullException(nameof(nonceVerificationTask));
             _matchingSignatureStringVerificationTask = matchingSignatureStringVerificationTask ?? throw new ArgumentNullException(nameof(matchingSignatureStringVerificationTask));
         }
 
@@ -47,6 +50,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                           await _allHeadersPresentVerificationTask.Verify(signedRequest, signature, client) ??
                           await _creationTimeVerificationTask.Verify(signedRequest, signature, client) ??
                           await _expirationTimeVerificationTask.Verify(signedRequest, signature, client) ??
+                          await _nonceVerificationTask.Verify(signedRequest, signature, client) ??
                           await _digestVerificationTask.Verify(signedRequest, signature, client) ??
                           await _matchingSignatureStringVerificationTask.Verify(signedRequest, signature, client);
 

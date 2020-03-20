@@ -15,7 +15,8 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             },
             Created = new DateTimeOffset(2020, 2, 27, 14, 18, 22, TimeSpan.Zero),
             Expires = new DateTimeOffset(2020, 2, 27, 14, 21, 22, TimeSpan.Zero),
-            String = "xyz123="
+            String = "xyz123=",
+            Nonce = "abc123"
         };
 
         public static readonly HttpRequestForSigning Request = new HttpRequestForSigning {

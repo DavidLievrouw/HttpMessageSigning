@@ -120,7 +120,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             return services
+                .AddMemoryCache()
                 .AddSingleton<IBase64Converter, Base64Converter>()
+                .AddSingleton<INonceStore, InMemoryNonceStore>()
                 .AddSingleton<INonceAppender, NonceAppender>()
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<ISignatureParser, SignatureParser>()
@@ -141,6 +143,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                         provider.GetRequiredService<ISystemClock>()),
                     new ExpirationTimeVerificationTask(
                         provider.GetRequiredService<ISystemClock>()),
+                    new NonceVerificationTask(
+                        provider.GetRequiredService<INonceStore>(),
+                        provider.GetRequiredService<ISystemClock>()), 
                     new DigestVerificationTask(
                         provider.GetRequiredService<IBase64Converter>(),
                         provider.GetService<ILogger<DigestVerificationTask>>()),
