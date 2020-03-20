@@ -9,6 +9,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         public string Id { get; set; }
         public string ClientId { get; set; }
         public string Value { get; set; }
-        public DateTimeOffset Expiration { get; set; }
+        [BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
+        public DateTime Expiration { get; set; }
     }
 }

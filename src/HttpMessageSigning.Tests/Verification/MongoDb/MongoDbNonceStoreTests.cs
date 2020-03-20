@@ -28,13 +28,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             [Fact]
             public async Task CanRoundTrip() {
-                var nonce = new Nonce(new KeyId("c1"), "abc123", DateTimeOffset.UtcNow.AddMinutes(1));
+                var nonce = new Nonce(new KeyId("c1"), "abc123", DateTimeOffset.UtcNow.AddSeconds(30));
 
                 await _sut.Register(nonce);
 
                 var actual = await _sut.Get(nonce.ClientId, nonce.Value);
 
                 actual.Should().BeEquivalentTo(nonce);
+                actual.Expiration.Offset.Should().Be(TimeSpan.Zero);
             }
 
             [Fact]

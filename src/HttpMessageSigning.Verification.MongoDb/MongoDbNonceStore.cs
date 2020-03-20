@@ -52,7 +52,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 Id = nonceId,
                 ClientId = nonce.ClientId,
                 Value = nonce.Value,
-                Expiration = nonce.Expiration
+                Expiration = nonce.Expiration.UtcDateTime
             };
 
             var collection = _lazyCollection.Value;
