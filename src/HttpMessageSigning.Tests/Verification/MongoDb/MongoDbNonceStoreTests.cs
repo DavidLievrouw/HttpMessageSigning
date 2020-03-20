@@ -7,10 +7,21 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class MongoDbNonceStoreTests : MongoIntegrationTest, IDisposable {
         private readonly string _collectionName;
         private readonly MongoDbNonceStore _sut;
+        private readonly DateTimeOffset _now;
 
         public MongoDbNonceStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
             _collectionName = "nonces";
             _sut = new MongoDbNonceStore(new MongoDatabaseClientProvider(Database), _collectionName);
+            
+            _now = new DateTimeOffset(
+                DateTimeOffset.UtcNow.Year, 
+                DateTimeOffset.UtcNow.Month, 
+                DateTimeOffset.UtcNow.Day, 
+                DateTimeOffset.UtcNow.Hour, 
+                DateTimeOffset.UtcNow.Minute, 
+                DateTimeOffset.UtcNow.Second, 
+                DateTimeOffset.UtcNow.Millisecond, 
+                TimeSpan.Zero);
         }
 
         public void Dispose() {
@@ -18,6 +29,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
 
         public class Register : MongoDbNonceStoreTests {
+
             public Register(MongoSetup mongoSetup) : base(mongoSetup) { }
 
             [Fact]
@@ -28,7 +40,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             [Fact]
             public async Task CanRoundTrip() {
-                var nonce = new Nonce(new KeyId("c1"), "abc123", DateTimeOffset.UtcNow.AddSeconds(30));
+                var nonce = new Nonce(new KeyId("c1"), "abc123", _now.AddSeconds(30));
 
                 await _sut.Register(nonce);
 
@@ -40,10 +52,10 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             [Fact]
             public async Task Upserts() {
-                var nonce1 = new Nonce(new KeyId("c1"), "abc123", DateTimeOffset.UtcNow.AddMinutes(1));
+                var nonce1 = new Nonce(new KeyId("c1"), "abc123", _now.AddMinutes(1));
                 await _sut.Register(nonce1);
 
-                var nonce2 = new Nonce(nonce1.ClientId, nonce1.Value, DateTimeOffset.UtcNow.AddMinutes(2));
+                var nonce2 = new Nonce(nonce1.ClientId, nonce1.Value, _now.AddMinutes(2));
                 await _sut.Register(nonce2);
 
                 var actual = await _sut.Get(nonce1.ClientId, nonce1.Value);
@@ -82,13 +94,13 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 var clientId = new KeyId("c1");
                 var nonceValue = "abc123";
 
-                var nonce1 = new Nonce(clientId, nonceValue, DateTimeOffset.UtcNow.AddMinutes(-1));
+                var nonce1 = new Nonce(clientId, nonceValue, _now.AddMinutes(-1));
                 await _sut.Register(nonce1);
-                var nonce2 = new Nonce(clientId, nonceValue, DateTimeOffset.UtcNow.AddMinutes(1));
+                var nonce2 = new Nonce(clientId, nonceValue, _now.AddMinutes(1));
                 await _sut.Register(nonce2);
-                var nonce3 = new Nonce(clientId, nonceValue, DateTimeOffset.UtcNow.AddMinutes(2));
+                var nonce3 = new Nonce(clientId, nonceValue, _now.AddMinutes(2));
                 await _sut.Register(nonce3);
-                var nonce4 = new Nonce(clientId, nonceValue, DateTimeOffset.UtcNow.AddMinutes(1.5));
+                var nonce4 = new Nonce(clientId, nonceValue, _now.AddMinutes(1.5));
                 await _sut.Register(nonce4);
 
                 var actual = await _sut.Get(clientId, nonceValue);
@@ -98,7 +110,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             [Fact]
             public async Task CanGetAndDeserializeExistingNonce() {
-                var nonce = new Nonce(new KeyId("c1"), "abc123", DateTimeOffset.UtcNow.AddMinutes(1));
+                var nonce = new Nonce(new KeyId("c1"), "abc123", _now.AddMinutes(1));
                 await _sut.Register(nonce);
 
                 var actual = await _sut.Get(nonce.ClientId, nonce.Value);
