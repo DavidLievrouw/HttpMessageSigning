@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Dalion.HttpMessageSigning;
@@ -25,7 +26,8 @@ namespace WebApplication {
                 /*.AddHttpMessageSignatureVerification()
                 .AddMongoDbClientStore(provider => new MongoDbSettings {
                     ConnectionString = "mongodb://localhost:27017/HttpMessageSigningDb",
-                    CollectionName = "known_clients"
+                    CollectionName = "known_clients",
+                    ClientCacheEntryExpiration = TimeSpan.FromMinutes(3)
                 });*/
         }
 
