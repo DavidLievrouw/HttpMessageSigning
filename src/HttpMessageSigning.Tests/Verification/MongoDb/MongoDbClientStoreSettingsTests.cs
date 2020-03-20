@@ -3,19 +3,18 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    [Obsolete("Please use the " + nameof(MongoDbClientStoreSettings) + " class instead.")]
-    public class MongoDbSettingsTests {
-        private readonly MongoDbSettings _sut;
+    public class MongoDbClientStoreSettingsTests {
+        private readonly MongoDbClientStoreSettings _sut;
 
-        public MongoDbSettingsTests() {
-            _sut = new MongoDbSettings {
+        public MongoDbClientStoreSettingsTests() {
+            _sut = new MongoDbClientStoreSettings {
                 ConnectionString = "mongodb://localhost:27017/DbForTests?connectTimeoutMS=60000",
                 CollectionName = "signatureclients",
                 ClientCacheEntryExpiration = TimeSpan.FromMinutes(3)
             };
         }
 
-        public class Validate : MongoDbSettingsTests {
+        public class Validate : MongoDbClientStoreSettingsTests {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
