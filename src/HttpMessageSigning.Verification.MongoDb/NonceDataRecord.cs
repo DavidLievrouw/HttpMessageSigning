@@ -1,0 +1,14 @@
+﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.IdGenerators;
+
+namespace Dalion.HttpMessageSigning.Verification.MongoDb {
+    [BsonIgnoreExtraElements]
+    internal class NonceDataRecord {
+        [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
+        public string Id { get; set; }
+        public string ClientId { get; set; }
+        public string Value { get; set; }
+        public DateTimeOffset Expiration { get; set; }
+    }
+}
