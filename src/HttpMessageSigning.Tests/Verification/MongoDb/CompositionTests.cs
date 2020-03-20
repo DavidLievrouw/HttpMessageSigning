@@ -14,6 +14,10 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     CollectionName = "clients",
                     ConnectionString = "mongodb://localhost:27017/Auth",
                     ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
+                })
+                .AddMongoDbNonceStore(new MongoDbNonceStoreSettings {
+                    CollectionName = "nonces",
+                    ConnectionString = "mongodb://localhost:27017/Auth"
                 });
             _provider = services.BuildServiceProvider();
         }
@@ -24,6 +28,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
         [Theory]
         [InlineData(typeof(IClientStore))]
+        [InlineData(typeof(INonceStore))]
         public void CanResolveType(Type requestedType) {
             object actualInstance = null;
             Action act = () => actualInstance = _provider.GetRequiredService(requestedType);
@@ -34,6 +39,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         
         [Theory]
         [InlineData(typeof(IClientStore), typeof(CachingMongoDbClientStore))]
+        [InlineData(typeof(INonceStore), typeof(CachingMongoDbNonceStore))]
         public void CanResolveExactType(Type requestedType, Type expectedType) {
             object actualInstance = null;
             Action act = () => actualInstance = _provider.GetRequiredService(requestedType);

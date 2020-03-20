@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    internal class MongoDbNonceStore : INonceStore {
+    internal class MongoDbNonceStore : IMongoDbNonceStore {
         private readonly Lazy<IMongoCollection<NonceDataRecord>> _lazyCollection;
 
         public MongoDbNonceStore(IMongoDatabaseClientProvider clientProvider, string collectionName) {
