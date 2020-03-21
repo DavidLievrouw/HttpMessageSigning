@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
-    internal class DigestVerificationTask : IVerificationTask {
+    internal class DigestVerificationTask : VerificationTask {
         private readonly IBase64Converter _base64Converter;
         private readonly ILogger<DigestVerificationTask> _logger;
 
@@ -16,21 +15,19 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _logger = logger;
         }
 
-        public Task<SignatureVerificationFailure> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public override SignatureVerificationFailure VerifySync(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest) &&
                 !signedRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
-                return SignatureVerificationFailure.HeaderMissing($"The {HeaderName.PredefinedHeaderNames.Digest} header is indicated as part of the signature, but it is not included in the request.")
-                    .ToTask<SignatureVerificationFailure>();
+                return SignatureVerificationFailure.HeaderMissing($"The {HeaderName.PredefinedHeaderNames.Digest} header is indicated as part of the signature, but it is not included in the request.");
             }
 
             if (!signedRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
                 _logger?.LogDebug("{0} header verification is not required, because it is not present in the request to verify.", HeaderName.PredefinedHeaderNames.Digest);
-                return Task.FromResult<SignatureVerificationFailure>(null);
+                return null;
             }
 
             if (signedRequest.Body == null) {
-                return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} header verification failed. The request has no body.")
-                    .ToTask<SignatureVerificationFailure>();
+                return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} header verification failed. The request has no body.");
             }
 
             var digestHeaderValue = signedRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Digest).FirstOrDefault();
@@ -47,19 +44,16 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             if (digestParams.Count < 2) {
-                return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} request header is invalid.")
-                    .ToTask<SignatureVerificationFailure>();
+                return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} request header is invalid.");
             }
 
             if (!Constants.DigestHashAlgorithms.TryGetValue(digestParams[0], out var digestAlgorithmName)) {
-                return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is invalid.")
-                    .ToTask<SignatureVerificationFailure>();
+                return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is invalid.");
             }
             
             using (var hashAlgorithm = System.Security.Cryptography.HashAlgorithm.Create(digestAlgorithmName)) {
                 if (hashAlgorithm == null) {
-                    return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is currently not supported.")
-                        .ToTask<SignatureVerificationFailure>();
+                    return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is currently not supported.");
                 }
                 
                 var payloadBytes = hashAlgorithm.ComputeHash(signedRequest.Body);
@@ -67,12 +61,11 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 var receivedDigest = digestParams[1];
 
                 if (calculatedDigest != receivedDigest) {
-                    return SignatureVerificationFailure.InvalidDigestHeader("The digest header verification failed.")
-                        .ToTask<SignatureVerificationFailure>();
+                    return SignatureVerificationFailure.InvalidDigestHeader("The digest header verification failed.");
                 }
             }
             
-            return Task.FromResult<SignatureVerificationFailure>(null);
+            return null;
         }
     }
 }

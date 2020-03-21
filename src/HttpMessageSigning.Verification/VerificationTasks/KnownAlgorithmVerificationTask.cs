@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
-    internal class KnownAlgorithmVerificationTask : IVerificationTask {
+    internal class KnownAlgorithmVerificationTask : VerificationTask {
         private readonly ILogger<KnownAlgorithmVerificationTask> _logger;
         
         private static readonly string[] SupportedSignatureAlgorithmNames = {"rsa", "hmac"};
@@ -13,11 +12,11 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _logger = logger;
         }
 
-        public Task<SignatureVerificationFailure> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public override SignatureVerificationFailure VerifySync(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             // Algorithm parameter is not required
             if (string.IsNullOrEmpty(signature.Algorithm)) {
                 _logger?.LogDebug("Algorithm verification is not required, because there is no algorithm specified in the signature.");
-                return Task.FromResult<SignatureVerificationFailure>(null);
+                return null;
             }
 
             var algorithmParts = new List<string>();
@@ -33,22 +32,19 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             if (algorithmParts.Count < 2) {
-                return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified signature algorithm ({signature.Algorithm}) is not supported.")
-                    .ToTask<SignatureVerificationFailure>();
+                return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified signature algorithm ({signature.Algorithm}) is not supported.");
             }
 
             if (!SupportedSignatureAlgorithmNames.Contains(algorithmParts[0])) {
-                return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified signature algorithm ({signature.Algorithm}) is not supported.")
-                    .ToTask<SignatureVerificationFailure>();
+                return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified signature algorithm ({signature.Algorithm}) is not supported.");
             }
 
             var hashAlgorithm = System.Security.Cryptography.HashAlgorithm.Create(algorithmParts[1].ToUpperInvariant());
             if (hashAlgorithm == null) {
-                return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified hash algorithm ({algorithmParts[1]}) is not supported.")
-                    .ToTask<SignatureVerificationFailure>();
+                return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified hash algorithm ({algorithmParts[1]}) is not supported.");
             }
             
-            return Task.FromResult<SignatureVerificationFailure>(null);
+            return null;
         }
     }
 }

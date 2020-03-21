@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
-    internal class NonceVerificationTask : IVerificationTask {
+    internal class NonceVerificationTask : VerificationTask {
         private readonly INonceStore _nonceStore;
         private readonly ISystemClock _systemClock;
 
@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
         }
 
-        public async Task<SignatureVerificationFailure> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public override async Task<SignatureVerificationFailure> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (string.IsNullOrEmpty(signature.Nonce)) return null;
 
             var previousNonce = await _nonceStore.Get(client.Id, signature.Nonce);

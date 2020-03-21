@@ -1,10 +1,9 @@
 using System;
-using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.SigningString;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
-    internal class MatchingSignatureStringVerificationTask : IVerificationTask {
+    internal class MatchingSignatureStringVerificationTask : VerificationTask {
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IBase64Converter _base64Converter;
         private readonly ILogger<MatchingSignatureStringVerificationTask> _logger;
@@ -18,15 +17,13 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _logger = logger;
         }
 
-        public Task<SignatureVerificationFailure> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public override SignatureVerificationFailure VerifySync(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (!signature.Created.HasValue) {
-                return SignatureVerificationFailure.InvalidSignature($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.")
-                    .ToTask<SignatureVerificationFailure>();
+                return SignatureVerificationFailure.InvalidSignature($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.");
             }           
             
             if (!signature.Expires.HasValue) {
-                return SignatureVerificationFailure.InvalidSignature($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.")
-                    .ToTask<SignatureVerificationFailure>();
+                return SignatureVerificationFailure.InvalidSignature($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.");
             }
 
             var expires = signature.Expires.Value - signature.Created.Value;
@@ -40,11 +37,10 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _logger?.LogDebug("The verification of the signature {0}.", isValidSignature ? "succeeded" : "failed");
             
             if (!isValidSignature) {
-                return SignatureVerificationFailure.InvalidSignatureString("The signature string does not match the expected value.")
-                    .ToTask<SignatureVerificationFailure>();
+                return SignatureVerificationFailure.InvalidSignatureString("The signature string does not match the expected value.");
             }
-            
-            return Task.FromResult<SignatureVerificationFailure>(null);
+
+            return null;
         }
     }
 }
