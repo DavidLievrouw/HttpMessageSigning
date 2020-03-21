@@ -77,6 +77,36 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(_settings, _httpRequestMessage))
                     .MustHaveHappened();
             }
+
+            [Fact]
+            public void WhenNonceIsDisabled_UsesGeneratedNonceNonce() {
+                _settings.EnableNonce = false;
+                
+                var composedString = "{the composed string}";
+                string interceptedNonce = null;
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning, _settings.Expires, _nonce))
+                    .Invokes(call => interceptedNonce = call.GetArgument<string>(4))
+                    .Returns(composedString);
+
+                _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+
+                interceptedNonce.Should().BeNull();
+            }
+            
+            [Fact]
+            public void WhenNonceIsDisabled_UsesNullNonce() {
+                _settings.EnableNonce = true;
+                
+                var composedString = "{the composed string}";
+                string interceptedNonce = null;
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning, _settings.Expires, _nonce))
+                    .Invokes(call => interceptedNonce = call.GetArgument<string>(4))
+                    .Returns(composedString);
+
+                _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+
+                interceptedNonce.Should().Be(_nonce);
+            }
             
             [Fact]
             public void CalculatesSignatureForExpectedRequestForSigning() {

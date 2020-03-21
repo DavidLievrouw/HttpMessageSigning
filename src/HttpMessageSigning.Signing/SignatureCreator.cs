@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             
             settings.Validate();
 
-            var nonce = _nonceGenerator.GenerateNonce();
+            var nonce = settings.EnableNonce ? _nonceGenerator.GenerateNonce() : null;
             var requestForSigning = request.ToRequestForSigning(settings.SignatureAlgorithm);
             var signingString = _signingStringComposer.Compose(requestForSigning, settings.Headers, timeOfSigning, settings.Expires, nonce);
 

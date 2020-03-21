@@ -23,6 +23,12 @@ namespace Dalion.HttpMessageSigning {
         public TimeSpan Expires { get; set; } = TimeSpan.FromMinutes(5);
 
         /// <summary>
+        /// Gets or sets a value indicating whether a 'Nonce' value will be included in the request signature.
+        /// </summary>
+        /// <remarks>A 'Nonce' value is used to avoid replay attacks.</remarks>
+        public bool EnableNonce { get; set; } = true;
+        
+        /// <summary>
         /// Gets or sets the hash algorithm to use to generate a Digest http header, to be able to verify that the body has not been modified.
         /// </summary>
         /// <remarks>Set to 'default' to disable Digest header generation.</remarks>
@@ -56,7 +62,7 @@ namespace Dalion.HttpMessageSigning {
             }
         }
 
-        public virtual void Dispose() {
+        public void Dispose() {
             SignatureAlgorithm?.Dispose();
         }
 
