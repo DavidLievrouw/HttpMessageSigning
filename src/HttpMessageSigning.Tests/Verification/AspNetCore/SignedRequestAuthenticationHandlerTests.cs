@@ -30,7 +30,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             _sut = new SignedRequestAuthenticationHandlerForTests(_options, _encoder, _clock, _requestSignatureVerifier, _logger);
             _httpRequest = new DefaultHttpContext().Request;
             _sut.InitializeAsync(
-                new Microsoft.AspNetCore.Authentication.AuthenticationScheme(
+                new AuthenticationScheme(
                     _schemeName,
                     _schemeName,
                     _sut.GetType()),
@@ -72,7 +72,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             public async Task WhenVerificationFails_ReturnsFailureResult() {
                 _httpRequest.Headers["Authorization"] = "tests-scheme abc123";
 
-                var cause = new SignatureVerificationException("Invalid signature");
+                var cause = SignatureVerificationFailure.InvalidSignatureString("Invalid signature");
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest))
                     .Returns(new RequestSignatureVerificationResultFailure(
                         new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1)),
@@ -82,7 +82,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 var actual = await _sut.DoAuthenticate();
 
                 actual.Succeeded.Should().BeFalse();
-                actual.Failure.Should().Be(cause);
+                actual.Failure.Should().BeAssignableTo<SignatureVerificationException>();
+                actual.Failure.Message.Should().Be(cause.ToString());
             }
 
             [Fact]

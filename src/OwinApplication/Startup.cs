@@ -48,7 +48,7 @@ namespace OwinApplication {
                         return Task.CompletedTask;
                     },
                     OnIdentityVerificationFailed = failure => {
-                        Console.WriteLine("The request signature could not be verified. Authentication failed: {0}", failure.SignatureVerificationException.Message);
+                        Console.WriteLine("The request signature could not be verified. Authentication failed: {0}", failure.Failure.Message);
                         return Task.CompletedTask;
                     }
                 })

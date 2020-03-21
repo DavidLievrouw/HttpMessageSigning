@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
@@ -97,7 +96,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 var failureResult = new RequestSignatureVerificationResultFailure(
                     new Client("c1", "test", SignatureAlgorithm.CreateForVerification("s3cr3t"), TimeSpan.FromMinutes(1)),
                     new Signature(),
-                    new SignatureVerificationException("Failure"));
+                    SignatureVerificationFailure.HeaderMissing("A header is missing."));
                 A.CallTo(() => _options.RequestSignatureVerifier.VerifySignature(A<IOwinRequest>.That.Matches(ConvertedRequest)))
                     .Returns(failureResult);
 

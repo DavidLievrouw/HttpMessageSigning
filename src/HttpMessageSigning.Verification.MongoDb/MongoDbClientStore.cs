@@ -44,7 +44,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             var findResult = await collection.FindAsync(r => r.Id == clientId);
             var matches = await findResult.ToListAsync();
-            if (!matches.Any()) throw new SignatureVerificationException($"No {nameof(Client)}s with id '{clientId}' are registered in the server store.");
+            if (!matches.Any()) throw new InvalidClientException($"No {nameof(Client)}s with id '{clientId}' are registered in the server store.");
 
             var match = matches.Single();
 

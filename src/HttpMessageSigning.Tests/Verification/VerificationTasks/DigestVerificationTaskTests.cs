@@ -21,7 +21,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
         public class Verify : DigestVerificationTaskTests {
             private readonly Client _client;
-            private readonly Func<HttpRequestForSigning, Signature, Client, Task<Exception>> _method;
+            private readonly Func<HttpRequestForSigning, Signature, Client, Task<SignatureVerificationFailure>> _method;
             private readonly Signature _signature;
             private readonly HttpRequestForSigning _signedRequest;
 
@@ -47,7 +47,8 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationException>();
+                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
+                    .Which.Code.Should().Be("HEADER_MISSING");
             }
 
             [Fact]
@@ -66,7 +67,8 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationException>();
+                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
+                    .Which.Code.Should().Be("INVALID_DIGEST_HEADER");
             }
 
             [Fact]
@@ -75,7 +77,8 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationException>();
+                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
+                    .Which.Code.Should().Be("INVALID_DIGEST_HEADER");
             }
 
             [Fact]
@@ -84,7 +87,8 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationException>();
+                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
+                    .Which.Code.Should().Be("INVALID_DIGEST_HEADER");
             }
 
             [Fact]
@@ -97,7 +101,8 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationException>();
+                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
+                    .Which.Code.Should().Be("INVALID_DIGEST_HEADER");
             }
 
             [Fact]

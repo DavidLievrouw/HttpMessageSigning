@@ -27,20 +27,20 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             var authHeader = request.Headers[AuthorizationHeaderName];
             if (string.IsNullOrEmpty(authHeader))
-                throw new SignatureVerificationException($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
+                throw new InvalidSignatureException($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
 
             var separatorIndex = authHeader.IndexOf(' ');
             if (separatorIndex < 0) {
-                throw new SignatureVerificationException(
+                throw new InvalidSignatureException(
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             }
             var authScheme = authHeader.Substring(0, separatorIndex);
             if (authScheme != AuthorizationScheme)
-                throw new SignatureVerificationException(
+                throw new InvalidSignatureException(
                     $"The specified request does not specify the {AuthorizationScheme} scheme in the {AuthorizationHeaderName} header.");
 
             if (separatorIndex >= authHeader.Length - 1)
-                throw new SignatureVerificationException(
+                throw new InvalidSignatureException(
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             var authParam = authHeader.Substring(separatorIndex + 1);
 
@@ -105,7 +105,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 parsedSignature.Validate();
             }
             catch (ValidationException ex) {
-                throw new SignatureVerificationException(
+                throw new InvalidSignatureException(
                     $"The specified request does not specify a valid signature in the {AuthorizationHeaderName} header. See inner exception.",
                     ex);
             }

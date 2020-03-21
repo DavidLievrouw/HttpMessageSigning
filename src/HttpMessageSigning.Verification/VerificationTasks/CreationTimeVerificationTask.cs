@@ -9,18 +9,18 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
         }
 
-        public Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public Task<SignatureVerificationFailure> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (!signature.Created.HasValue) {
-                return new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.")
-                    .ToTask<Exception>();
+                return SignatureVerificationFailure.InvalidCreatedHeader($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.")
+                    .ToTask<SignatureVerificationFailure>();
             }
             
             if (signature.Created.Value > _systemClock.UtcNow) {
-                return new SignatureVerificationException("The signature is not valid yet. Its creation time is in the future.")
-                    .ToTask<Exception>();
+                return SignatureVerificationFailure.InvalidCreatedHeader("The signature is not valid yet. Its creation time is in the future.")
+                    .ToTask<SignatureVerificationFailure>();
             }
             
-            return Task.FromResult<Exception>(null);
+            return Task.FromResult<SignatureVerificationFailure>(null);
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     .Returns(sanitizedSignature);
 
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
-                    .Returns((Exception)null);
+                    .Returns((SignatureVerificationFailure)null);
                 
                 await _sut.VerifySignature(_httpRequest);
 
@@ -81,7 +81,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     .Returns(principal);
                 
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
-                    .Returns((Exception)null);
+                    .Returns((SignatureVerificationFailure)null);
                 
                 var actual = await _sut.VerifySignature(_httpRequest);
 
@@ -100,7 +100,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
                 
-                var failure = new SignatureVerificationException("Invalid signature.");
+                var failure = SignatureVerificationFailure.InvalidSignatureString("Invalid signature.");
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Returns(failure);
 
@@ -108,7 +108,43 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
-                actual.As<RequestSignatureVerificationResultFailure>().SignatureVerificationException.Should().Be(failure);
+                actual.As<RequestSignatureVerificationResultFailure>().Failure.Should().Be(failure);
+            }
+            
+            [Fact]
+            public async Task WhenSignatureCannotBeParsed_ReturnsFailureResult() {
+                var failure = new InvalidSignatureException("Cannot parse signature.");
+                A.CallTo(() => _signatureParser.Parse(_httpRequest))
+                    .Throws(failure);
+
+                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
+                    .Returns((SignatureVerificationFailure)null);
+                
+                var actual = await _sut.VerifySignature(_httpRequest);
+
+                actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
+                actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
+                actual.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("INVALID_SIGNATURE");
+            }
+
+            [Fact]
+            public async Task WhenClientDoesNotExist_ReturnsFailureResult() {
+                var signature = new Signature {KeyId = new KeyId("app001")};
+                A.CallTo(() => _signatureParser.Parse(_httpRequest))
+                    .Returns(signature);
+
+                var failure = new InvalidClientException("Don't know that client.");
+                A.CallTo(() => _clientStore.Get(signature.KeyId))
+                    .Throws(failure);
+
+                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
+                    .Returns((SignatureVerificationFailure)null);
+                
+                var actual = await _sut.VerifySignature(_httpRequest);
+
+                actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
+                actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
+                actual.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("INVALID_CLIENT");
             }
 
             [Fact]
@@ -123,46 +159,10 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 
                 var failure = new InvalidOperationException("Not something to do with verification.");
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
-                    .Returns(failure);
+                    .Throws(failure);
 
                 Func<Task> act = () => _sut.VerifySignature(_httpRequest);
                 act.Should().Throw<InvalidOperationException>().Where(ex => ex == failure);
-            }
-            
-            [Fact]
-            public async Task WhenSignatureCannotBeParsed_ReturnsFailureResult() {
-                var failure = new SignatureVerificationException("Cannot parse signature.");
-                A.CallTo(() => _signatureParser.Parse(_httpRequest))
-                    .Throws(failure);
-
-                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
-                    .Returns((Exception)null);
-                
-                var actual = await _sut.VerifySignature(_httpRequest);
-
-                actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
-                actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
-                actual.As<RequestSignatureVerificationResultFailure>().SignatureVerificationException.Should().Be(failure);
-            }
-
-            [Fact]
-            public async Task WhenClientDoesNotExist_ReturnsFailureResult() {
-                var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(_httpRequest))
-                    .Returns(signature);
-
-                var failure = new SignatureVerificationException("Don't know that client.");
-                A.CallTo(() => _clientStore.Get(signature.KeyId))
-                    .Throws(failure);
-
-                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
-                    .Returns((Exception)null);
-                
-                var actual = await _sut.VerifySignature(_httpRequest);
-
-                actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
-                actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
-                actual.As<RequestSignatureVerificationResultFailure>().SignatureVerificationException.Should().Be(failure);
             }
         }
     }

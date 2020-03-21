@@ -37,39 +37,39 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             }
 
             [Fact]
-            public void WhenRequestHasNoAuthorizationHeader_ThrowsSignatureVerificationException() {
+            public void WhenRequestHasNoAuthorizationHeader_ThrowsInvalidSignatureException() {
                 _request.Headers.Clear();
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<SignatureVerificationException>();
+                act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
-            public void WhenRequestHasAnInvalidAuthorizationHeader_ThrowsSignatureVerificationException() {
+            public void WhenRequestHasAnInvalidAuthorizationHeader_ThrowsInvalidSignatureException() {
                 _request.Headers["Authorization"] = "{nonsense}";
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<SignatureVerificationException>();
+                act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
-            public void WhenRequestHasAnAuthorizationHeaderForAnotherScheme_ThrowsSignatureVerificationException() {
+            public void WhenRequestHasAnAuthorizationHeaderForAnotherScheme_ThrowsInvalidSignatureException() {
                 _request.Headers["Authorization"] = "Custom abc123";
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<SignatureVerificationException>();
+                act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
-            public void WhenRequestHasAnAuthorizationHeaderWithoutParam_ThrowsSignatureVerificationException() {
+            public void WhenRequestHasAnAuthorizationHeaderWithoutParam_ThrowsInvalidSignatureException() {
                 _request.Headers["Authorization"] = "SignedHttpRequest ";
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<SignatureVerificationException>();
+                act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
@@ -172,21 +172,21 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             }
 
             [Fact]
-            public void WhenKeIdIsNotSpecified_ThrowsSignatureVerificationException() {
+            public void WhenKeIdIsNotSpecified_ThrowsInvalidSignatureException() {
                 SetHeader(_request, null, "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<SignatureVerificationException>();
+                act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
-            public void WhenStringNotSpecified_ThrowsSignatureVerificationException() {
+            public void WhenStringNotSpecified_ThrowsInvalidSignatureException() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", null, "abc123");
 
                 Action act = () => _sut.Parse(_request);
 
-                act.Should().Throw<SignatureVerificationException>();
+                act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]

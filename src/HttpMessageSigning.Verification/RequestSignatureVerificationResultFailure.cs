@@ -8,14 +8,14 @@ namespace Dalion.HttpMessageSigning.Verification {
         public RequestSignatureVerificationResultFailure(
             Client client, 
             Signature signature,
-            SignatureVerificationException signatureVerificationException) : base(client, signature) {
-            SignatureVerificationException = signatureVerificationException ?? throw new ArgumentNullException(nameof(signatureVerificationException));
+            SignatureVerificationFailure failure) : base(client, signature) {
+            Failure = failure ?? throw new ArgumentNullException(nameof(failure));
         }
 
         /// <summary>
-        /// Gets the exception that caused the verification failure.
+        /// Gets an object that indicates why the verification failed.
         /// </summary>
-        public SignatureVerificationException SignatureVerificationException { get; }
+        public SignatureVerificationFailure Failure { get; }
         
         /// <summary>
         /// Gets a value indicating whether the signature was successfully verified.

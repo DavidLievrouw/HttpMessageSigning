@@ -11,12 +11,12 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
         }
 
-        public async Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public async Task<SignatureVerificationFailure> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (string.IsNullOrEmpty(signature.Nonce)) return null;
 
             var previousNonce = await _nonceStore.Get(client.Id, signature.Nonce);
             if (previousNonce != null && previousNonce.Expiration >= _systemClock.UtcNow) {
-                return new SignatureVerificationException($"The nonce '{previousNonce.Value}' for client {client.Id} ({client.Name}) is not unique and has been used before. It expires at {previousNonce.Expiration:R}.");
+                return SignatureVerificationFailure.InvalidNonce($"The nonce '{previousNonce.Value}' for client {client.Id} ({client.Name}) is not unique and has been used before. It expires at {previousNonce.Expiration:R}.");
             }
             
             var nonce = new Nonce(

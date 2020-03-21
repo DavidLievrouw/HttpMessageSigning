@@ -18,15 +18,15 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _logger = logger;
         }
 
-        public Task<Exception> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public Task<SignatureVerificationFailure> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (!signature.Created.HasValue) {
-                return new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.")
-                    .ToTask<Exception>();
+                return SignatureVerificationFailure.InvalidSignature($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.")
+                    .ToTask<SignatureVerificationFailure>();
             }           
             
             if (!signature.Expires.HasValue) {
-                return new SignatureVerificationException($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.")
-                    .ToTask<Exception>();
+                return SignatureVerificationFailure.InvalidSignature($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.")
+                    .ToTask<SignatureVerificationFailure>();
             }
 
             var expires = signature.Expires.Value - signature.Created.Value;
@@ -40,11 +40,11 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _logger?.LogDebug("The verification of the signature {0}.", isValidSignature ? "succeeded" : "failed");
             
             if (!isValidSignature) {
-                return new SignatureVerificationException("The signature string does not match the expected value.")
-                    .ToTask<Exception>();
+                return SignatureVerificationFailure.InvalidSignatureString("The signature string does not match the expected value.")
+                    .ToTask<SignatureVerificationFailure>();
             }
             
-            return Task.FromResult<Exception>(null);
+            return Task.FromResult<SignatureVerificationFailure>(null);
         }
     }
 }

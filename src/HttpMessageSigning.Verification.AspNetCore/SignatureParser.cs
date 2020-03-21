@@ -28,21 +28,21 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
             var authHeader = request.Headers[AuthorizationHeaderName];
             if (authHeader == Microsoft.Extensions.Primitives.StringValues.Empty)
-                throw new SignatureVerificationException($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
+                throw new InvalidSignatureException($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
 
             var rawAuthHeader = (string) authHeader;
             var separatorIndex = rawAuthHeader.IndexOf(' ');
             if (separatorIndex < 0) {
-                throw new SignatureVerificationException(
+                throw new InvalidSignatureException(
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             }
             var authScheme = rawAuthHeader.Substring(0, separatorIndex);
             if (authScheme != AuthorizationScheme)
-                throw new SignatureVerificationException(
+                throw new InvalidSignatureException(
                     $"The specified request does not specify the {AuthorizationScheme} scheme in the {AuthorizationHeaderName} header.");
 
             if (separatorIndex >= rawAuthHeader.Length - 1)
-                throw new SignatureVerificationException(
+                throw new InvalidSignatureException(
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             var authParam = rawAuthHeader.Substring(separatorIndex + 1);
 
@@ -107,7 +107,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 parsedSignature.Validate();
             }
             catch (ValidationException ex) {
-                throw new SignatureVerificationException(
+                throw new InvalidSignatureException(
                     $"The specified request does not specify a valid signature in the {AuthorizationHeaderName} header. See inner exception.",
                     ex);
             }

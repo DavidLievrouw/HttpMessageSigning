@@ -61,16 +61,16 @@ namespace Dalion.HttpMessageSigning.Verification {
                 
                 _client = new Client("client1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
                 
-                A.CallTo(() => _knownAlgorithmVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
-                A.CallTo(() => _matchingAlgorithmVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
-                A.CallTo(() => _createdHeaderGuardVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
-                A.CallTo(() => _expiresHeaderGuardVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
-                A.CallTo(() => _allHeadersPresentVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
-                A.CallTo(() => _creationTimeVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
-                A.CallTo(() => _expirationTimeVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
-                A.CallTo(() => _nonceVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
-                A.CallTo(() => _digestVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
-                A.CallTo(() => _matchingSignatureStringVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((Exception)null);
+                A.CallTo(() => _knownAlgorithmVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _matchingAlgorithmVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _createdHeaderGuardVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _expiresHeaderGuardVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _allHeadersPresentVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _creationTimeVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _expirationTimeVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _nonceVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _digestVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _matchingSignatureStringVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
             }
 
             [Fact]
@@ -159,11 +159,11 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenAVerificationTaskFails_ReturnsFirstFailure_DoesNotRunSubsequentTasks() {
-                var firstFailure = new SignatureVerificationException("Invalid");
+                var firstFailure = SignatureVerificationFailure.HeaderMissing("Invalid");
                 A.CallTo(() => _matchingAlgorithmVerificationTask.Verify(_signedRequest, _signature, _client))
                     .Returns(firstFailure);
 
-                var secondFailure = new SignatureVerificationException("Invalid");
+                var secondFailure = SignatureVerificationFailure.SignatureExpired("Invalid");
                 A.CallTo(() => _createdHeaderGuardVerificationTask.Verify(_signedRequest, _signature, _client))
                     .Returns(secondFailure);
 

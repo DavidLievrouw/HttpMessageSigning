@@ -78,7 +78,7 @@ namespace Console {
                 logger?.LogInformation("Request signature verification succeeded: {0}", claimsString);
             }
             else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
-                logger?.LogWarning(failureResult.SignatureVerificationException, "Request signature verification failed.");
+                logger?.LogWarning("Request signature verification failed: {0}", failureResult.Failure);
             }
         }
     }

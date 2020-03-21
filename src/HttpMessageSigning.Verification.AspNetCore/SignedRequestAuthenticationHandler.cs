@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             }
 
             if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
-                return AuthenticateResult.Fail(failureResult.SignatureVerificationException);
+                return AuthenticateResult.Fail(new SignatureVerificationException(failureResult.Failure.ToString()));
             }
 
             return AuthenticateResult.Fail("Request signature verification failed.");

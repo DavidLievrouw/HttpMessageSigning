@@ -48,9 +48,9 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public void WhenItemIsNotFound_ThrowsSignatureVerificationException() {
+            public void WhenItemIsNotFound_ThrowsInvalidClientException() {
                 Func<Task> act = () => _sut.Get("IDontExist");
-                act.Should().Throw<SignatureVerificationException>();
+                act.Should().Throw<InvalidClientException>();
             }
 
             [Fact]
@@ -90,7 +90,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 sut.Dispose();
 
                 Func<Task> act = () => sut.Get("entry1");
-                act.Should().Throw<SignatureVerificationException>();
+                act.Should().Throw<InvalidClientException>();
             }
         }
     }

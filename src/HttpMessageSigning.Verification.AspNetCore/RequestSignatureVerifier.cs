@@ -30,10 +30,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         public async Task<RequestSignatureVerificationResult> VerifySignature(HttpRequest request) {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            RequestSignatureVerificationResult result;
             Client client = null;
             Signature signature = null;
-            
+
             try {
                 signature = _signatureParser.Parse(request);
                 client = await _clientStore.Get(signature.KeyId);
@@ -43,26 +42,29 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client);
                 var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, sanitizedSignature, client);
 
-                if (verificationFailure != null && !(verificationFailure is SignatureVerificationException)) {
-                    throw verificationFailure;
+                var result = verificationFailure == null
+                    ? (RequestSignatureVerificationResult) new RequestSignatureVerificationResultSuccess(client, signature, _claimsPrincipalFactory.CreateForClient(client))
+                    : (RequestSignatureVerificationResult) new RequestSignatureVerificationResultFailure(client, signature, verificationFailure);
+
+                if (result is RequestSignatureVerificationResultSuccess success) {
+                    _logger?.LogDebug($"Request signature verification succeeded for principal {success.Principal?.Identity?.Name ?? "[null]"}.");
+                }
+                else if (result is RequestSignatureVerificationResultFailure failure) {
+                    _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Failure.Code, failure.Failure.Message);
                 }
 
-                result = verificationFailure == null
-                    ? (RequestSignatureVerificationResult) new RequestSignatureVerificationResultSuccess(client, signature, _claimsPrincipalFactory.CreateForClient(client))
-                    : (RequestSignatureVerificationResult) new RequestSignatureVerificationResultFailure(client, signature, (SignatureVerificationException) verificationFailure);
+                return result;
             }
-            catch (SignatureVerificationException ex) {
-                result = new RequestSignatureVerificationResultFailure(client, signature, ex);
+            catch (InvalidClientException ex) {
+                var failure = SignatureVerificationFailure.InvalidClient(ex.Message);
+                _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
+                return new RequestSignatureVerificationResultFailure(client, signature, failure);
             }
-
-            if (result is RequestSignatureVerificationResultSuccess success) {
-                _logger?.LogDebug($"Request verification succeeded for principal {success.Principal?.Identity?.Name ?? "[null]"}.");
+            catch (InvalidSignatureException ex) {
+                var failure = SignatureVerificationFailure.InvalidSignature(ex.Message);
+                _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
+                return new RequestSignatureVerificationResultFailure(client, signature, failure);
             }
-            else if (result is RequestSignatureVerificationResultFailure failure) {
-                _logger?.LogWarning(failure.SignatureVerificationException, "Request verification failed. See exception for details.");
-            }
-            
-            return result;
         }
 
         public void Dispose() {
