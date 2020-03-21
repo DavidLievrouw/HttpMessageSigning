@@ -76,7 +76,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 var actual = await _method(_signedRequest, _signature, _client);
 
                 actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("INVALID_NONCE");
+                    .Which.Code.Should().Be("REPLAYED_REQUEST");
             }
 
             [Fact]

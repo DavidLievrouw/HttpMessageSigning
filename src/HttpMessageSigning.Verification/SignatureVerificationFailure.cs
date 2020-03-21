@@ -91,8 +91,8 @@ namespace Dalion.HttpMessageSigning.Verification {
             return new InvalidSignatureStringSignatureVerificationFailure(message, ex);
         }
         
-        public static InvalidNonceSignatureVerificationFailure InvalidNonce(string message, Exception ex = null) {
-            return new InvalidNonceSignatureVerificationFailure(message, ex);
+        public static ReplayedRequestSignatureVerificationFailure ReplayedRequest(string message, Exception ex = null) {
+            return new ReplayedRequestSignatureVerificationFailure(message, ex);
         }
     }
 }

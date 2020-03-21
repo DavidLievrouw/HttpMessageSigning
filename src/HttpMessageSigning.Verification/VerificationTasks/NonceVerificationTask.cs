@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             var previousNonce = await _nonceStore.Get(client.Id, signature.Nonce);
             if (previousNonce != null && previousNonce.Expiration >= _systemClock.UtcNow) {
-                return SignatureVerificationFailure.InvalidNonce($"The nonce '{previousNonce.Value}' for client {client.Id} ({client.Name}) is not unique and has been used before. It expires at {previousNonce.Expiration:R}.");
+                return SignatureVerificationFailure.ReplayedRequest($"The nonce '{previousNonce.Value}' for client {client.Id} ({client.Name}) is not unique and has been used before. It expires at {previousNonce.Expiration:R}.");
             }
             
             var nonce = new Nonce(
