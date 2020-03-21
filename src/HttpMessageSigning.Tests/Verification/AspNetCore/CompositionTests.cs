@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Security.Cryptography;
-using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification {
+namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public class CompositionTests : IDisposable {
         private readonly ServiceProvider _provider;
         private readonly RSACryptoServiceProvider _rsa;
@@ -14,8 +13,8 @@ namespace Dalion.HttpMessageSigning.Verification {
             _rsa = new RSACryptoServiceProvider();
             var services = new ServiceCollection();
             services
-                .AddSingleton<IClientStore, InMemoryClientStore>()
-                .AddHttpMessageSignatureVerification();
+                .AddHttpMessageSignatureVerification()
+                .AddSingleton<IClientStore, InMemoryClientStore>();
             _provider = services.BuildServiceProvider();
         }
 

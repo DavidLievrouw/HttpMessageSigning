@@ -42,11 +42,10 @@ namespace Dalion.HttpMessageSigning {
         /// </summary>
         public string String { get; set; }
 
-        void IValidatable.Validate() {
-            Validate();
-        }
-
-        internal void Validate() {
+        /// <summary>
+        /// Validates the properties of this instance, and throws an <see cref="ValidationException"/> when any of them have invalid values.
+        /// </summary>
+        public void Validate() {
             if (KeyId == KeyId.Empty) throw new ValidationException($"The {nameof(Signature)} do not specify a valid {nameof(KeyId)}.");
             if (string.IsNullOrEmpty(String)) throw new ValidationException($"The {nameof(Signature)} do not specify a valid signature {nameof(String)}.");
         }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning {
-    internal class HeaderDictionary : IEnumerable<KeyValuePair<string, StringValues>> {
+    public class HeaderDictionary : IEnumerable<KeyValuePair<string, StringValues>> {
         private readonly IDictionary<string, StringValues> _innerDictionary;
 
         public HeaderDictionary() {

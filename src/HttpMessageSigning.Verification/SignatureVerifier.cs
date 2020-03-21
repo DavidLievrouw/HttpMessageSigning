@@ -4,6 +4,7 @@ using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 
 namespace Dalion.HttpMessageSigning.Verification {
     internal class SignatureVerifier : ISignatureVerifier {
+        private readonly ISignatureSanitizer _signatureSanitizer;
         private readonly IVerificationTask _knownAlgorithmVerificationTask;
         private readonly IVerificationTask _matchingAlgorithmVerificationTask;
         private readonly IVerificationTask _createdHeaderGuardVerificationTask;
@@ -16,6 +17,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         private readonly IVerificationTask _matchingSignatureStringVerificationTask;
 
         public SignatureVerifier(
+            ISignatureSanitizer signatureSanitizer,
             IVerificationTask knownAlgorithmVerificationTask,
             IVerificationTask matchingAlgorithmVerificationTask,
             IVerificationTask createdHeaderGuardVerificationTask,
@@ -26,6 +28,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             IVerificationTask nonceVerificationTask,
             IVerificationTask digestVerificationTask,
             IVerificationTask matchingSignatureStringVerificationTask) {
+            _signatureSanitizer = signatureSanitizer ?? throw new ArgumentNullException(nameof(signatureSanitizer));
             _knownAlgorithmVerificationTask = knownAlgorithmVerificationTask ?? throw new ArgumentNullException(nameof(knownAlgorithmVerificationTask));
             _matchingAlgorithmVerificationTask = matchingAlgorithmVerificationTask ?? throw new ArgumentNullException(nameof(matchingAlgorithmVerificationTask));
             _createdHeaderGuardVerificationTask = createdHeaderGuardVerificationTask ?? throw new ArgumentNullException(nameof(createdHeaderGuardVerificationTask));
@@ -43,16 +46,18 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
             if (client == null) throw new ArgumentNullException(nameof(client));
 
-            var failure = await _knownAlgorithmVerificationTask.Verify(signedRequest, signature, client) ??
-                          await _matchingAlgorithmVerificationTask.Verify(signedRequest, signature, client) ??
-                          await _createdHeaderGuardVerificationTask.Verify(signedRequest, signature, client) ??
-                          await _expiresHeaderGuardVerificationTask.Verify(signedRequest, signature, client) ??
-                          await _allHeadersPresentVerificationTask.Verify(signedRequest, signature, client) ??
-                          await _creationTimeVerificationTask.Verify(signedRequest, signature, client) ??
-                          await _expirationTimeVerificationTask.Verify(signedRequest, signature, client) ??
-                          await _nonceVerificationTask.Verify(signedRequest, signature, client) ??
-                          await _digestVerificationTask.Verify(signedRequest, signature, client) ??
-                          await _matchingSignatureStringVerificationTask.Verify(signedRequest, signature, client);
+            var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client);
+            
+            var failure = await _knownAlgorithmVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
+                          await _matchingAlgorithmVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
+                          await _createdHeaderGuardVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
+                          await _expiresHeaderGuardVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
+                          await _allHeadersPresentVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
+                          await _creationTimeVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
+                          await _expirationTimeVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
+                          await _nonceVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
+                          await _digestVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
+                          await _matchingSignatureStringVerificationTask.Verify(signedRequest, sanitizedSignature, client);
 
             return failure;
         }

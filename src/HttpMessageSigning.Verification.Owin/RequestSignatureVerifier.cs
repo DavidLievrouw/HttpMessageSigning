@@ -8,22 +8,19 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         private readonly ISignatureParser _signatureParser;
         private readonly IClientStore _clientStore;
         private readonly ISignatureVerifier _signatureVerifier;
-        private readonly IClaimsPrincipalFactory _claimsPrincipalFactory;
-        private readonly ISignatureSanitizer _signatureSanitizer;
+        private readonly IVerificationResultCreatorFactory _verificationResultCreatorFactory;
         private readonly ILogger<RequestSignatureVerifier> _logger;
 
         public RequestSignatureVerifier(
             ISignatureParser signatureParser,
             IClientStore clientStore,
-            ISignatureVerifier signatureVerifier,
-            IClaimsPrincipalFactory claimsPrincipalFactory,
-            ISignatureSanitizer signatureSanitizer,
+            ISignatureVerifier signatureVerifier, 
+            IVerificationResultCreatorFactory verificationResultCreatorFactory, 
             ILogger<RequestSignatureVerifier> logger = null) {
             _signatureParser = signatureParser ?? throw new ArgumentNullException(nameof(signatureParser));
             _clientStore = clientStore ?? throw new ArgumentNullException(nameof(clientStore));
             _signatureVerifier = signatureVerifier ?? throw new ArgumentNullException(nameof(signatureVerifier));
-            _claimsPrincipalFactory = claimsPrincipalFactory ?? throw new ArgumentNullException(nameof(claimsPrincipalFactory));
-            _signatureSanitizer = signatureSanitizer ?? throw new ArgumentNullException(nameof(signatureSanitizer));
+            _verificationResultCreatorFactory = verificationResultCreatorFactory ?? throw new ArgumentNullException(nameof(verificationResultCreatorFactory));
             _logger = logger;
         }
 
@@ -38,13 +35,12 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 client = await _clientStore.Get(signature.KeyId);
 
                 var requestForSigning = request.ToHttpRequestForSigning();
+                var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, signature, client);
 
-                var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client);
-                var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, sanitizedSignature, client);
-
+                var verificationResultCreator = _verificationResultCreatorFactory.Create(client, signature);
                 var result = verificationFailure == null
-                    ? (RequestSignatureVerificationResult) new RequestSignatureVerificationResultSuccess(client, signature, _claimsPrincipalFactory.CreateForClient(client))
-                    : (RequestSignatureVerificationResult) new RequestSignatureVerificationResultFailure(client, signature, verificationFailure);
+                    ? verificationResultCreator.CreateForSuccess()
+                    : verificationResultCreator.CreateForFailure(verificationFailure);
 
                 if (result is RequestSignatureVerificationResultSuccess success) {
                     _logger?.LogDebug($"Request signature verification succeeded for principal {success.Principal?.Identity?.Name ?? "[null]"}.");

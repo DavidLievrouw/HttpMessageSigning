@@ -10,17 +10,16 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
     public class RequestSignatureVerifierTests {
-        private readonly IClaimsPrincipalFactory _claimsPrincipalFactory;
         private readonly IClientStore _clientStore;
         private readonly ISignatureParser _signatureParser;
-        private readonly ISignatureSanitizer _signatureSanitizer;
         private readonly ISignatureVerifier _signatureVerifier;
+        private readonly IVerificationResultCreatorFactory _verificationResultCreatorFactory;
         private readonly ILogger<RequestSignatureVerifier> _logger;
         private readonly RequestSignatureVerifier _sut;
 
         public RequestSignatureVerifierTests() {
-            FakeFactory.Create(out _signatureParser, out _clientStore, out _signatureVerifier, out _claimsPrincipalFactory, out _signatureSanitizer, out _logger);
-            _sut = new RequestSignatureVerifier(_signatureParser, _clientStore, _signatureVerifier, _claimsPrincipalFactory, _signatureSanitizer, _logger);
+            FakeFactory.Create(out _signatureParser, out _clientStore, out _signatureVerifier, out _verificationResultCreatorFactory, out _logger);
+            _sut = new RequestSignatureVerifier(_signatureParser, _clientStore, _signatureVerifier, _verificationResultCreatorFactory, _logger);
         }
 
         public class VerifySignature : RequestSignatureVerifierTests {
@@ -50,10 +49,10 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 
-                var sanitizedSignature = new Signature {KeyId = new KeyId("app001"), Headers = new[] {new HeaderName("h1")}};
-                A.CallTo(() => _signatureSanitizer.Sanitize(signature, client))
-                    .Returns(sanitizedSignature);
-
+                var verificationResultCreator = A.Fake<IVerificationResultCreator>();
+                A.CallTo(() => _verificationResultCreatorFactory.Create(client, signature))
+                    .Returns(verificationResultCreator);
+                
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
                 
@@ -61,7 +60,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                 A.CallTo(() => _signatureVerifier.VerifySignature(
                         A<HttpRequestForSigning>.That.Matches(_ => _.RequestUri == new Uri("https://unittest.com:9000/")), 
-                        sanitizedSignature, 
+                        signature, 
                         client))
                     .MustHaveHappened();
             }
@@ -76,9 +75,13 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
 
+                var verificationResultCreator = A.Fake<IVerificationResultCreator>();
+                A.CallTo(() => _verificationResultCreatorFactory.Create(client, signature))
+                    .Returns(verificationResultCreator);
+
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
-                A.CallTo(() => _claimsPrincipalFactory.CreateForClient(client))
-                    .Returns(principal);
+                A.CallTo(() => verificationResultCreator.CreateForSuccess())
+                    .Returns(new RequestSignatureVerificationResultSuccess(client, signature, principal));
                 
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
@@ -99,10 +102,17 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
+
+                var verificationResultCreator = A.Fake<IVerificationResultCreator>();
+                A.CallTo(() => _verificationResultCreatorFactory.Create(client, signature))
+                    .Returns(verificationResultCreator);
                 
                 var failure = SignatureVerificationFailure.InvalidSignatureString("Invalid signature.");
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Returns(failure);
+                
+                A.CallTo(() => verificationResultCreator.CreateForFailure(failure))
+                    .Returns(new RequestSignatureVerificationResultFailure(client, signature, failure));
 
                 var actual = await _sut.VerifySignature(_httpRequest);
 
@@ -156,6 +166,10 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
                 A.CallTo(() => _clientStore.Get(signature.KeyId))
                     .Returns(client);
+
+                var verificationResultCreator = A.Fake<IVerificationResultCreator>();
+                A.CallTo(() => _verificationResultCreatorFactory.Create(client, signature))
+                    .Returns(verificationResultCreator);
                 
                 var failure = new InvalidOperationException("Not something to do with verification.");
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))

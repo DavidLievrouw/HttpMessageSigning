@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Dalion.HttpMessageSigning.SigningString;
-using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +21,10 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
-            return services.AddHttpMessageSignatureVerificationPlumbing();
+            return services
+                .AddHttpMessageSignatureVerifier()
+                .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))
+                .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
         }
 
         /// <summary>
@@ -112,47 +113,9 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             if (clientStoreFactory == null) throw new ArgumentNullException(nameof(clientStoreFactory));
 
             return services
-                .AddHttpMessageSignatureVerificationPlumbing()
-                .AddSingleton(clientStoreFactory);
-        }
-        
-        private static IServiceCollection AddHttpMessageSignatureVerificationPlumbing(this IServiceCollection services) {
-            if (services == null) throw new ArgumentNullException(nameof(services));
-
-            return services
-                .AddMemoryCache()
-                .AddSingleton<IBase64Converter, Base64Converter>()
-                .AddSingleton<INonceStore, InMemoryNonceStore>()
-                .AddSingleton<INonceAppender, NonceAppender>()
-                .AddSingleton<ISystemClock, RealSystemClock>()
+                .AddHttpMessageSignatureVerifier()
                 .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))
-                .AddSingleton<IClaimsPrincipalFactory>(new ClaimsPrincipalFactory(typeof(IRequestSignatureVerifier).Assembly.GetName().Version.ToString(2)))
-                .AddSingleton<IDefaultSignatureHeadersProvider, DefaultSignatureHeadersProvider>()
-                .AddSingleton<ISignatureSanitizer, SignatureSanitizer>()
-                .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
-                .AddSingleton<ISigningStringComposer, SigningStringComposer>()
-                .AddSingleton<ISignatureVerifier>(provider => new SignatureVerifier(
-                    new KnownAlgorithmVerificationTask(
-                        provider.GetService<ILogger<KnownAlgorithmVerificationTask>>()),
-                    new MatchingAlgorithmVerificationTask(
-                        provider.GetService<ILogger<MatchingAlgorithmVerificationTask>>()),
-                    new CreatedHeaderGuardVerificationTask(),
-                    new ExpiresHeaderGuardVerificationTask(),
-                    new AllHeadersPresentVerificationTask(),
-                    new CreationTimeVerificationTask(
-                        provider.GetRequiredService<ISystemClock>()),
-                    new ExpirationTimeVerificationTask(
-                        provider.GetRequiredService<ISystemClock>()),
-                    new NonceVerificationTask(
-                        provider.GetRequiredService<INonceStore>(),
-                        provider.GetRequiredService<ISystemClock>()), 
-                    new DigestVerificationTask(
-                        provider.GetRequiredService<IBase64Converter>(),
-                        provider.GetService<ILogger<DigestVerificationTask>>()),
-                    new MatchingSignatureStringVerificationTask(
-                        provider.GetRequiredService<ISigningStringComposer>(),
-                        provider.GetRequiredService<IBase64Converter>(),
-                        provider.GetService<ILogger<MatchingSignatureStringVerificationTask>>())))
+                .AddSingleton(clientStoreFactory)
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
         }
     }
