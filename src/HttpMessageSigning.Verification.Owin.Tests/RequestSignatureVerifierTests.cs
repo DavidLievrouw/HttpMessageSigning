@@ -107,7 +107,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 A.CallTo(() => _verificationResultCreatorFactory.Create(client, signature))
                     .Returns(verificationResultCreator);
                 
-                var failure = SignatureVerificationFailure.InvalidSignatureString("Invalid signature.");
+                var failure = SignatureVerificationFailure.InvalidSignatureString("Invalid signature.", null);
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Returns(failure);
                 
@@ -135,6 +135,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
                 actual.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("INVALID_SIGNATURE");
+                actual.As<RequestSignatureVerificationResultFailure>().Failure.Exception.Should().Be(failure);
             }
 
             [Fact]
@@ -155,6 +156,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
                 actual.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("INVALID_CLIENT");
+                actual.As<RequestSignatureVerificationResultFailure>().Failure.Exception.Should().Be(failure);
             }
 
             [Fact]

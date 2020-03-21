@@ -134,6 +134,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
                 actual.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("INVALID_SIGNATURE");
+                actual.As<RequestSignatureVerificationResultFailure>().Failure.Exception.Should().Be(failure);
             }
 
             [Fact]
@@ -154,6 +155,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
                 actual.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("INVALID_CLIENT");
+                actual.As<RequestSignatureVerificationResultFailure>().Failure.Exception.Should().Be(failure);
             }
             
             [Fact]

@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [InlineData("RSA")]
             [InlineData("HMAC")]
             [InlineData("ECDSA")]
-            public async Task WhenSignatureIncludesCreatedHeader_ButItShouldNot_ReturnsSignatureVerificationException(string algorithm) {
+            public async Task WhenSignatureIncludesCreatedHeader_ButItShouldNot_ReturnsSignatureVerificationFailure(string algorithm) {
                 var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = algorithm + "-sha256";
 
@@ -43,7 +43,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyACreationTime_ReturnsSignatureVerificationException() {
+            public async Task WhenSignatureDoesNotSpecifyACreationTime_ReturnsSignatureVerificationFailure() {
                 _signature.Created = null;
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -53,7 +53,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenCreatedHeaderIsNotAValidTimestamp_ReturnsSignatureVerificationException() {
+            public async Task WhenCreatedHeaderIsNotAValidTimestamp_ReturnsSignatureVerificationFailure() {
                 _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Created] = "{Nonsense}";
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -63,7 +63,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenCreatedHeaderDoesNotMatchSignatureCreation_ReturnsSignatureVerificationException() {
+            public async Task WhenCreatedHeaderDoesNotMatchSignatureCreation_ReturnsSignatureVerificationFailure() {
                 _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Created] = (long.Parse(_signedRequest.Headers[HeaderName.PredefinedHeaderNames.Created]) + 1).ToString();
 
                 var actual = await _method(_signedRequest, _signature, _client);

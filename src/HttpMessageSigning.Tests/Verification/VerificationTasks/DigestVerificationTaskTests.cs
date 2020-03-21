@@ -42,7 +42,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenDigestHeaderIsNotSpecified_ButItIsIncludedInTheSignature_ReturnsSignatureVerificationException() {
+            public async Task WhenDigestHeaderIsNotSpecified_ButItIsIncludedInTheSignature_ReturnsSignatureVerificationFailure() {
                 _signedRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Digest);
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -62,7 +62,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenDigestHeaderIsSpecified_AndTheBodyIsNull_ReturnsSignatureVerificationException() {
+            public async Task WhenDigestHeaderIsSpecified_AndTheBodyIsNull_ReturnsSignatureVerificationFailure() {
                 _signedRequest.Body = null;
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -72,7 +72,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenDigestHeaderIsNonsense_ReturnsSignatureVerificationException() {
+            public async Task WhenDigestHeaderIsNonsense_ReturnsSignatureVerificationFailure() {
                 _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Digest] = "{nonsense}";
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -82,7 +82,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenDigestHeaderAlgorithmIsNotSupported_ReturnsSignatureVerificationException() {
+            public async Task WhenDigestHeaderAlgorithmIsNotSupported_ReturnsSignatureVerificationFailure() {
                 _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Digest] = "Custom=abc123";
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -92,7 +92,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenDigestHeaderDoesNotMatchCalculatedBodyDigest_ReturnsSignatureVerificationException() {
+            public async Task WhenDigestHeaderDoesNotMatchCalculatedBodyDigest_ReturnsSignatureVerificationFailure() {
                 using (var hashAlgorithm = HashAlgorithm.Create("SHA-384")) {
                     var digestBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(_signedRequest.Body + "a"));
                     var digestString = new Base64Converter().ToBase64(digestBytes);

@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyACreationTime_ReturnsSignatureVerificationException() {
+            public async Task WhenSignatureDoesNotSpecifyACreationTime_ReturnsSignatureVerificationFailure() {
                 _signature.Created = null;
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -42,7 +42,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureCreationTimeIsInTheFuture_ReturnsSignatureVerificationException() {
+            public async Task WhenSignatureCreationTimeIsInTheFuture_ReturnsSignatureVerificationFailure() {
                 _signature.Created = _now.AddSeconds(1);
 
                 var actual = await _method(_signedRequest, _signature, _client);

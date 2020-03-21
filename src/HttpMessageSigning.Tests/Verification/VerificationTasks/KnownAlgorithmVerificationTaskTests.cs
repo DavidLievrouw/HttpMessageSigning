@@ -37,7 +37,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             [Fact]
-            public async Task WhenAlgorithmDoesNotConsistOfSignatureAndHash_ReturnsSignatureVerificationException() {
+            public async Task WhenAlgorithmDoesNotConsistOfSignatureAndHash_ReturnsSignatureVerificationFailure() {
                 _signature.Algorithm = "hmac";
                 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -47,7 +47,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             [Fact]
-            public async Task WhenSignatureAlgorithmIsNotSupported_ReturnsSignatureVerificationException() {
+            public async Task WhenSignatureAlgorithmIsNotSupported_ReturnsSignatureVerificationFailure() {
                 _signature.Algorithm = "custom-sha256";
                 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -57,7 +57,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             [Fact]
-            public async Task WhenHashAlgorithmIsNotSupported_ReturnsSignatureVerificationException() {
+            public async Task WhenHashAlgorithmIsNotSupported_ReturnsSignatureVerificationFailure() {
                 _signature.Algorithm = "rsa-custom";
                 
                 var actual = await _method(_signedRequest, _signature, _client);

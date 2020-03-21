@@ -52,12 +52,12 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 return result;
             }
             catch (InvalidClientException ex) {
-                var failure = SignatureVerificationFailure.InvalidClient(ex.Message);
+                var failure = SignatureVerificationFailure.InvalidClient(ex.Message, ex);
                 _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
                 return new RequestSignatureVerificationResultFailure(client, signature, failure);
             }
             catch (InvalidSignatureException ex) {
-                var failure = SignatureVerificationFailure.InvalidSignature(ex.Message);
+                var failure = SignatureVerificationFailure.InvalidSignature(ex.Message, ex);
                 _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
                 return new RequestSignatureVerificationResultFailure(client, signature, failure);
             }

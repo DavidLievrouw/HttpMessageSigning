@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyAExpirationTime_ReturnsSignatureVerificationException() {
+            public async Task WhenSignatureDoesNotSpecifyAExpirationTime_ReturnsSignatureVerificationFailure() {
                 _signature.Expires = null;
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -42,7 +42,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureExpirationTimeIsInThePast_ReturnsSignatureVerificationException() {
+            public async Task WhenSignatureExpirationTimeIsInThePast_ReturnsSignatureVerificationFailure() {
                 _signature.Expires = _now.AddSeconds(-1);
 
                 var actual = await _method(_signedRequest, _signature, _client);

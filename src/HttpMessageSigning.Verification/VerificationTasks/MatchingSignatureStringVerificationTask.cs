@@ -31,7 +31,14 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             
             _logger?.LogDebug("Composed the following signing string for request verification: {0}", signingString);
 
-            var receivedSignature = _base64Converter.FromBase64(signature.String);
+            byte[] receivedSignature;
+            try {
+                receivedSignature = _base64Converter.FromBase64(signature.String);
+            }
+            catch (FormatException ex) {
+                return SignatureVerificationFailure.InvalidSignatureString(ex.Message, ex);
+            }
+            
             var isValidSignature = client.SignatureAlgorithm.VerifySignature(signingString, receivedSignature);
 
             _logger?.LogDebug("The verification of the signature {0}.", isValidSignature ? "succeeded" : "failed");

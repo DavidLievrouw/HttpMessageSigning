@@ -68,7 +68,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenThereIsAPreviousNonce_ThatIsNotExpired_ReturnsSignatureVerificationException() {
+            public async Task WhenThereIsAPreviousNonce_ThatIsNotExpired_ReturnsSignatureVerificationFailure() {
                 var nonce = new Nonce(_client.Id, _signature.Nonce, _now.AddSeconds(1));
                 A.CallTo(() => _nonceStore.Get(_client.Id, _signature.Nonce))
                     .Returns(nonce);

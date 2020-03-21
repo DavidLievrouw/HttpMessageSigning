@@ -39,7 +39,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyACreationTime_ReturnsSignatureVerificationException() {
+            public async Task WhenSignatureDoesNotSpecifyACreationTime_ReturnsSignatureVerificationFailure() {
                 _signature.Created = null;
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -49,7 +49,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyAExpirationTime_ReturnsSignatureVerificationException() {
+            public async Task WhenSignatureDoesNotSpecifyAExpirationTime_ReturnsSignatureVerificationFailure() {
                 _signature.Expires = null;
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -83,7 +83,20 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureStringCannotBeVerified_ReturnsSignatureVerificationException() {
+            public async Task WhenSignatureStringIsNotAValidBase64String_ReturnsSignatureVerificationFailure() {
+                var formatEx = new FormatException("Invalid base64 string.");
+                A.CallTo(() => _base64Converter.FromBase64(_signature.String))
+                    .Throws(formatEx);
+
+                var actual = await _method(_signedRequest, _signature, _client);
+
+                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>();
+                actual.As<SignatureVerificationFailure>().Code.Should().Be("INVALID_SIGNATURE_STRING");
+                actual.As<SignatureVerificationFailure>().Exception.Should().Be(formatEx);
+            }
+
+            [Fact]
+            public async Task WhenSignatureStringCannotBeVerified_ReturnsSignatureVerificationFailure() {
                 var receivedSignature = new byte[] {0x01, 0x02, 0x03};
                 A.CallTo(() => _base64Converter.FromBase64(_signature.String))
                     .Returns(receivedSignature);
@@ -105,7 +118,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
                 A.CallTo(() => _client.SignatureAlgorithm.VerifySignature(_composedSignatureString, A<byte[]>.That.IsSameSequenceAs(receivedSignature)))
                     .Returns(true);
-                
+
                 var actual = await _method(_signedRequest, _signature, _client);
 
                 actual.Should().BeNull();
