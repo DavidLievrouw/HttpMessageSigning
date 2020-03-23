@@ -24,7 +24,7 @@ This repository is a C# implementation of that specification.
 ## NuGet
 [![NuGet Status](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Signing?label=Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/)
 
-[![NuGet Status](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification.AspNetCore?label=Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AuthenticationScheme/)
+[![NuGet Status](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification.AspNetCore?label=Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/)
 
 [![NuGet Status](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification.Owin?label=Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/)
 
