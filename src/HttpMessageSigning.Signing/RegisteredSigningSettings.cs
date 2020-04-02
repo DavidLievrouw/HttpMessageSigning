@@ -3,6 +3,7 @@ using System;
 namespace Dalion.HttpMessageSigning.Signing {
     internal class RegisteredSigningSettings : IDisposable {
         public RegisteredSigningSettings(KeyId keyId, SigningSettings signingSettings) {
+            if (keyId == KeyId.Empty) throw new ArgumentException($"The specified {nameof(keyId)} cannot be empty.", nameof(keyId));
             KeyId = keyId;
             SigningSettings = signingSettings ?? throw new ArgumentNullException(nameof(signingSettings));
         }
@@ -10,7 +11,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         public KeyId KeyId { get; }
         public SigningSettings SigningSettings { get; }
 
-        public virtual void Dispose() {
+        public void Dispose() {
             SigningSettings?.Dispose();
         }
     }
