@@ -9,6 +9,24 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
         /// </summary>
+        /// <param name="services">
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
+        ///     registrations to.
+        /// </param>
+        /// <returns>
+        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
+        ///     were added.
+        /// </returns>
+        public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
+            return services.AddHttpMessageSigningPlumbing();
+        }
+        
+        /// <summary>
+        ///     Adds http message signing registrations to the specified
+        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
+        /// </summary>
         /// <param name="keyId">
         ///     The <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client
         ///     application.
@@ -135,6 +153,14 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (signingSettingsFactory == null) throw new ArgumentNullException(nameof(signingSettingsFactory));
             
             return services
+                .AddHttpMessageSigningPlumbing()
+                .AddTransient(prov => new RegisteredSigningSettings(keyIdFactory(prov), signingSettingsFactory(prov)));
+        }
+        
+        private static IServiceCollection AddHttpMessageSigningPlumbing(this IServiceCollection services) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+            
+            return services
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<INonceAppender, NonceAppender>()
                 .AddSingleton<INonceGenerator, NonceGenerator>()
@@ -145,7 +171,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
                 .AddSingleton<IRegisteredSignerSettingsStore, RegisteredSignerSettingsStore>()
-                .AddTransient(prov => new RegisteredSigningSettings(keyIdFactory(prov), signingSettingsFactory(prov)))
                 .AddSingleton<IRequestSignerFactory>(prov => new RequestSignerFactory(
                     prov.GetRequiredService<ISignatureCreator>(),
                     prov.GetRequiredService<IAuthorizationHeaderParamCreator>(),
