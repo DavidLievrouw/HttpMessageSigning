@@ -22,13 +22,13 @@ When communicating over the Internet using the HTTP protocol, it can be desirabl
 This repository is a C# implementation of that specification.
 
 ## NuGet
-[![NuGet Status](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Signing?label=Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/)
 
-[![NuGet Status](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification.AspNetCore?label=Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/)
-
-[![NuGet Status](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification.Owin?label=Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/)
-
-[![NuGet Status](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification.MongoDb?label=Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/)
+| Package | NuGet status |
+| --- | --- |
+| `Dalion.HttpMessageSigning.Signing` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) |
+| `Dalion.HttpMessageSigning.Verification.AspNetCore` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) |
+| `Dalion.HttpMessageSigning.Verification.Owin` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) |
+| `Dalion.HttpMessageSigning.Verification.MongoDb` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) |
 
 ## Documentation
 
