@@ -42,12 +42,12 @@ namespace OwinApplication {
                 .UseHttpRequestSignatureAuthentication(new SignedHttpRequestAuthenticationOptions {
                     Realm = "Sample OWIN application",
                     RequestSignatureVerifier = (IRequestSignatureVerifier) config.DependencyResolver.GetService(typeof(IRequestSignatureVerifier)),
-                    OnIdentityVerified = successResult => {
+                    OnIdentityVerified = (request, successResult) => {
                         var identity = (ClaimsIdentity) successResult.Principal.Identity;
                         Console.WriteLine("Identity '{0}' was authenticated by the request signature.", identity.Name ?? "[NULL]");
                         return Task.CompletedTask;
                     },
-                    OnIdentityVerificationFailed = failure => {
+                    OnIdentityVerificationFailed = (request, failure) => {
                         Console.WriteLine("The request signature could not be verified. Authentication failed: {0}", failure.Failure.Message);
                         return Task.CompletedTask;
                     }

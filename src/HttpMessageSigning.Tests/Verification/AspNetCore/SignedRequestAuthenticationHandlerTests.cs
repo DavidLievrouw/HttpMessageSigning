@@ -17,17 +17,19 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         private readonly UrlEncoder _encoder;
         private readonly HttpRequest _httpRequest;
         private readonly ILoggerFactory _logger;
-        private readonly IOptionsMonitor<SignedRequestAuthenticationOptions> _options;
+        private readonly SignedRequestAuthenticationOptions _options;
         private readonly IRequestSignatureVerifier _requestSignatureVerifier;
         private readonly string _schemeName;
         private readonly SignedRequestAuthenticationHandlerForTests _sut;
 
         public SignedRequestAuthenticationHandlerTests() {
-            FakeFactory.Create(out _options, out _logger, out _clock, out _requestSignatureVerifier);
+            FakeFactory.Create(out _logger, out _clock, out _requestSignatureVerifier);
             _encoder = new UrlTestEncoder();
             _schemeName = "tests-scheme";
-            A.CallTo(() => _options.Get(_schemeName)).Returns(new SignedRequestAuthenticationOptions {Realm = "test-app"});
-            _sut = new SignedRequestAuthenticationHandlerForTests(_options, _encoder, _clock, _requestSignatureVerifier, _logger);
+            _options = new SignedRequestAuthenticationOptions {Realm = "test-app"};
+            var optionsMonitor = A.Fake<IOptionsMonitor<SignedRequestAuthenticationOptions>>();
+            A.CallTo(() => optionsMonitor.Get(_schemeName)).Returns(_options);
+            _sut = new SignedRequestAuthenticationHandlerForTests(optionsMonitor, _encoder, _clock, _requestSignatureVerifier, _logger);
             _httpRequest = new DefaultHttpContext().Request;
             _sut.InitializeAsync(
                 new AuthenticationScheme(
@@ -87,6 +89,29 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             }
 
             [Fact]
+            public async Task WhenVerificationFails_InvokesConfiguredCallback() {
+                _httpRequest.Headers["Authorization"] = "tests-scheme abc123";
+
+                var cause = SignatureVerificationFailure.InvalidSignatureString("Invalid signature");
+                var failureResult = new RequestSignatureVerificationResultFailure(
+                    new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1)),
+                    new Signature(), 
+                    cause);
+                A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest))
+                    .Returns(failureResult);
+                
+                RequestSignatureVerificationResult resultFromCallback = null;
+                _options.OnIdentityVerificationFailed = (request, failure) => {
+                    resultFromCallback = failure;
+                    return Task.CompletedTask;
+                };
+                
+                await _sut.DoAuthenticate();
+
+                resultFromCallback.Should().Be(failureResult);
+            }
+
+            [Fact]
             public async Task WhenVerificationReturnsAnUnknownResult_ReturnsFailureResult() {
                 _httpRequest.Headers["Authorization"] = "tests-scheme abc123";
 
@@ -114,6 +139,29 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 actual.Succeeded.Should().BeTrue();
                 actual.Ticket.Principal.Should().Be(principal);
                 actual.Ticket.AuthenticationScheme.Should().Be("tests-scheme");
+            }
+            
+            [Fact]
+            public async Task WhenVerificationSucceeds_InvokesConfiguredCallback() {
+                _httpRequest.Headers["Authorization"] = "tests-scheme abc123";
+
+                var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
+                var successResult = new RequestSignatureVerificationResultSuccess(
+                    new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1)),
+                    new Signature(), 
+                    principal);
+                A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest))
+                    .Returns(successResult);
+
+                RequestSignatureVerificationResult resultFromCallback = null;
+                _options.OnIdentityVerified = (request, success) => {
+                    resultFromCallback = success;
+                    return Task.CompletedTask;
+                };
+
+                await _sut.DoAuthenticate();
+
+                resultFromCallback.Should().Be(successResult);
             }
 
             private class UnknownResult : RequestSignatureVerificationResult {

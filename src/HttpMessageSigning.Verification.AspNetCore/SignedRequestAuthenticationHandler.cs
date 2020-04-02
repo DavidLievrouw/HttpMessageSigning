@@ -13,7 +13,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         public SignedRequestAuthenticationHandler(
             IOptionsMonitor<SignedRequestAuthenticationOptions> options,
             UrlEncoder encoder,
-            Microsoft.AspNetCore.Authentication.ISystemClock clock,
+            ISystemClock clock,
             IRequestSignatureVerifier requestSignatureVerifier,
             ILoggerFactory loggerFactory = null) : base(options, loggerFactory, encoder, clock) {
             _requestSignatureVerifier = requestSignatureVerifier ?? throw new ArgumentNullException(nameof(requestSignatureVerifier));
@@ -27,11 +27,17 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             var verificationResult = await _requestSignatureVerifier.VerifySignature(Request);
 
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var onIdentityVerifiedTask = Options.OnIdentityVerified?.Invoke(Request, successResult);
+                if (onIdentityVerifiedTask != null) await onIdentityVerifiedTask;
+                
                 var ticket = new AuthenticationTicket(successResult.Principal, Scheme.Name);
                 return AuthenticateResult.Success(ticket);
             }
 
             if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                var onIdentityVerificationFailedTask = Options.OnIdentityVerificationFailed?.Invoke(Request, failureResult);
+                if (onIdentityVerificationFailedTask != null) await onIdentityVerificationFailedTask;
+                
                 return AuthenticateResult.Fail(new SignatureVerificationException(failureResult.Failure.ToString()));
             }
 

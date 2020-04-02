@@ -90,6 +90,29 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             }
 
             [Fact]
+            public async Task WhenSignatureVerificationSucceeds_InvokesConfiguredCallback() {
+                _request.Headers["Authorization"] = "TestScheme abc123";
+
+                var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
+                var successResult = new RequestSignatureVerificationResultSuccess(
+                    new Client("c1", "test", SignatureAlgorithm.CreateForVerification("s3cr3t"), TimeSpan.FromMinutes(1)),
+                    new Signature(),
+                    principal);
+                A.CallTo(() => _options.RequestSignatureVerifier.VerifySignature(A<IOwinRequest>.That.Matches(ConvertedRequest)))
+                    .Returns(successResult);
+
+                RequestSignatureVerificationResult resultFromCallback = null;
+                _options.OnIdentityVerified = (request, success) => {
+                    resultFromCallback = success;
+                    return Task.CompletedTask;
+                };
+                
+                await _method();
+
+                resultFromCallback.Should().Be(successResult);
+            }
+            
+            [Fact]
             public async Task WhenSignatureVerificationFails_ReturnsNull() {
                 _request.Headers["Authorization"] = "TestScheme abc123";
 
@@ -103,6 +126,28 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 var actual = await _method();
 
                 actual.Should().BeNull();
+            }
+            
+            [Fact]
+            public async Task WhenSignatureVerificationFails_InvokesConfiguredCallback() {
+                _request.Headers["Authorization"] = "TestScheme abc123";
+
+                var failureResult = new RequestSignatureVerificationResultFailure(
+                    new Client("c1", "test", SignatureAlgorithm.CreateForVerification("s3cr3t"), TimeSpan.FromMinutes(1)),
+                    new Signature(),
+                    SignatureVerificationFailure.HeaderMissing("A header is missing.", null));
+                A.CallTo(() => _options.RequestSignatureVerifier.VerifySignature(A<IOwinRequest>.That.Matches(ConvertedRequest)))
+                    .Returns(failureResult);
+
+                RequestSignatureVerificationResult resultFromCallback = null;
+                _options.OnIdentityVerificationFailed = (request, failure) => {
+                    resultFromCallback = failure;
+                    return Task.CompletedTask;
+                };
+                
+                await _method();
+
+                resultFromCallback.Should().Be(failureResult);
             }
 
             internal Expression<Func<IOwinRequest, bool>> ConvertedRequest => r => r.Host == new HostString("unittest.com:9000");

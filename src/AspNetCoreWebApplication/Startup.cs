@@ -1,6 +1,7 @@
 using System;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Dalion.HttpMessageSigning;
 using Dalion.HttpMessageSigning.Verification;
 using Dalion.HttpMessageSigning.Verification.AspNetCore;
@@ -17,7 +18,18 @@ namespace WebApplication {
                 .AddRouting(options => { })
                 .AddControllersWithViews().Services
                 .AddAuthentication(SignedHttpRequestDefaults.AuthenticationScheme)
-                .AddSignedRequests(options => { options.Realm = "Sample web application"; }).Services
+                .AddSignedRequests(options => {
+                    options.Realm = "Sample web application";
+                    options.OnIdentityVerified = (request, successResult) => {
+                        var identity = (ClaimsIdentity) successResult.Principal.Identity;
+                        Console.WriteLine("Identity '{0}' was authenticated by the request signature.", identity.Name ?? "[NULL]");
+                        return Task.CompletedTask;
+                    };
+                    options.OnIdentityVerificationFailed = (request, failure) => {
+                        Console.WriteLine("The request signature could not be verified. Authentication failed: {0}", failure.Failure.Message);
+                        return Task.CompletedTask;
+                    };
+                }).Services
 
                 /* Sample for InMemoryClientStore */
                 .AddHttpMessageSignatureVerification(new InMemoryClientStore());
