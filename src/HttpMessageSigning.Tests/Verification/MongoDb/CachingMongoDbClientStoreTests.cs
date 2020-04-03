@@ -26,14 +26,45 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
 
         public class Register : CachingMongoDbClientStoreTests {
+            private readonly KeyId _keyId;
+            private readonly string _cacheKey;
+            private readonly Client _cachedClient;
+            private readonly Client _newClient;
+            
+            public Register() {
+                _keyId = new KeyId("c1");
+                _cacheKey = $"CacheEntry_Client_{_keyId}";
+                _cachedClient = new Client(_keyId, "cached", new CustomSignatureAlgorithm("cAlg"), TimeSpan.FromMinutes(1));
+                _newClient = new Client(_keyId, "client one", new CustomSignatureAlgorithm("cAlg"), TimeSpan.FromMinutes(1));
+            }
+            
             [Fact]
             public async Task DelegatesToDecoratedInstance() {
-                var newClient = new Client("c1", "client one", new CustomSignatureAlgorithm("cAlg"), TimeSpan.FromMinutes(1));
+                await _sut.Register(_newClient);
 
-                await _sut.Register(newClient);
-
-                A.CallTo(() => _decorated.Register(newClient))
+                A.CallTo(() => _decorated.Register(_newClient))
                     .MustHaveHappened();
+            }
+
+            [Fact]
+            public async Task WhenClientIsNotCached_AddsEntryToCache() {
+                _cache.TryGetValue(_cacheKey, out _).Should().BeFalse();
+
+                await _sut.Register(_newClient);
+
+                _cache.TryGetEntry(_cacheKey, out var actualEntry).Should().BeTrue();
+                actualEntry.As<ICacheEntry>().AbsoluteExpirationRelativeToNow.Should().Be(_expiration);
+            }
+            
+            [Fact]
+            public async Task WhenClientIsCached_ReplacesEntryInCache() {
+                var cacheEntry = _cache.CreateEntry(_cacheKey);
+                cacheEntry.Value = _cachedClient;
+
+                await _sut.Register(_newClient);
+
+                _cache.TryGetEntry(_cacheKey, out var actualEntry).Should().BeTrue();
+                actualEntry.Value.Should().Be(_newClient);
             }
         }
 

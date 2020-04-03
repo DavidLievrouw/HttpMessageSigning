@@ -18,8 +18,11 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             _expiration = expiration;
         }
 
-        public Task Register(Client client) {
-            return _decorated.Register(client);
+        public async Task Register(Client client) {
+            await _decorated.Register(client);
+            
+            var cacheKey = $"CacheEntry_Client_{client.Id}";
+            _cache.Set(cacheKey, client, _expiration);
         }
 
         public async Task<Client> Get(KeyId clientId) {
