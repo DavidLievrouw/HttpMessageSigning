@@ -32,11 +32,15 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// <param name="client">The entry that represents a known client.</param>
         public Task Register(Client client) {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            
-            if (_entries.Contains(client)) throw new InvalidOperationException($"A {nameof(Client)} with id '{client.Id}' is already registered in the server store.");
-            
-            _entries.Add(client);
-            
+
+            var idx = _entries.IndexOf(client);
+            if (idx < 0) {
+                _entries.Add(client);
+            }
+            else {
+                _entries[idx] = client;
+            }
+
             return Task.CompletedTask;
         }
 

@@ -22,11 +22,15 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public void WhenEntryAlreadyExists_ThrowsInvalidOperationException() {
-                var entry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), new Claim("c1", "v1"));
-                _sut.Register(entry);
-                Func<Task> act = () => _sut.Register(entry);
-                act.Should().Throw<InvalidOperationException>();
+            public async Task WhenEntryAlreadyExists_ReplacesValue() {
+                var existingEntry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), new Claim("c1", "v1"));
+                await _sut.Register(existingEntry);
+                
+                var updatedEntry = new Client((KeyId) "entry1", "Unit test app - updated", new HMACSignatureAlgorithm("s3cr3t_002", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(2), new Claim("c1", "v2"));
+                await _sut.Register(updatedEntry);
+                
+                var registeredEntry = await _sut.Get(existingEntry.Id);
+                registeredEntry.Should().Be(updatedEntry);
             }
 
             [Fact]
