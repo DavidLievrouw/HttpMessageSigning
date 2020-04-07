@@ -178,6 +178,34 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 actualResponse.Headers.Should().ContainKey("WWW-Authenticate");
                 actualResponse.Headers["WWW-Authenticate"].ToString().Should().Be("tests-scheme realm=\"test-app\"");
             }
+            
+            [Fact]
+            public async Task SetsResponseCodeTo401() {
+                await _sut.DoChallenge();
+                var actualResponse = _sut.GetResponse();
+                actualResponse.StatusCode.Should().Be(401);
+            }
+            
+            [Fact]
+            public async Task WhenResponseHasBeenSetByOtherMiddleware_AddsWWWAuthenticateToResponse() {
+                _sut.GetResponse().StatusCode = 302;
+                
+                await _sut.DoChallenge();
+                
+                var actualResponse = _sut.GetResponse();
+                actualResponse.Headers.Should().ContainKey("WWW-Authenticate");
+                actualResponse.Headers["WWW-Authenticate"].ToString().Should().Be("tests-scheme realm=\"test-app\"");
+            }
+            
+            [Fact]
+            public async Task WhenResponseHasBeenSetByOtherMiddleware_DoesNotChangeResponseStatusCode() {
+                _sut.GetResponse().StatusCode = 302;
+                
+                await _sut.DoChallenge();
+                
+                var actualResponse = _sut.GetResponse();
+                actualResponse.StatusCode.Should().Be(302);
+            }
         }
 
         private class SignedRequestAuthenticationHandlerForTests : SignedRequestAuthenticationHandler {

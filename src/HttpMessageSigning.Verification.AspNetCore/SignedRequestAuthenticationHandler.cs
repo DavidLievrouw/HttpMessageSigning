@@ -44,9 +44,12 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             return AuthenticateResult.Fail("Request signature verification failed.");
         }
 
-        protected override async Task HandleChallengeAsync(AuthenticationProperties properties) {
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties) {
             Response.Headers["WWW-Authenticate"] = $"{Scheme.Name} realm=\"{Options.Realm}\"";
-            await base.HandleChallengeAsync(properties);
+            if (Response.StatusCode == 200) {
+                return base.HandleChallengeAsync(properties);
+            }
+            return Task.CompletedTask;
         }
     }
 }
