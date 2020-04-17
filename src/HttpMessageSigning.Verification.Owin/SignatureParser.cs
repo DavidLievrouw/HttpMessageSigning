@@ -10,13 +10,13 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         private const string AuthorizationHeaderName = "Authorization";
         private const string AuthorizationScheme = "SignedHttpRequest";
 
-        private static readonly Regex KeyIdRegEx = new Regex("keyId=\"(?<keyId>[A-z0-9, =-]+)\"", RegexOptions.Compiled);
-        private static readonly Regex AlgorithmRegEx = new Regex("algorithm=\"(?<algorithm>[a-z0-9-]+)\"", RegexOptions.Compiled);
-        private static readonly Regex CreatedRegEx = new Regex("created=(?<created>[0-9]+)", RegexOptions.Compiled);
-        private static readonly Regex ExpiresRegEx = new Regex("expires=(?<expires>[0-9]+)", RegexOptions.Compiled);
-        private static readonly Regex HeadersRegEx = new Regex("headers=\"(?<headers>[a-z0-9-\\(\\) ]+)\"", RegexOptions.Compiled);
-        private static readonly Regex SignatureRegEx = new Regex("signature=\"(?<signature>[a-zA-Z0-9+/]+={0,2})\"", RegexOptions.Compiled);
-        private static readonly Regex NonceRegEx = new Regex("nonce=\"(?<nonce>[A-z0-9, =-]+)\"", RegexOptions.Compiled);
+        private static readonly Regex KeyIdRegEx = new Regex("keyId=\"(?<keyId>[A-z0-9, =-]+)\"");
+        private static readonly Regex AlgorithmRegEx = new Regex("algorithm=\"(?<algorithm>[a-z0-9-]+)\"");
+        private static readonly Regex CreatedRegEx = new Regex("created=(?<created>[0-9]+)");
+        private static readonly Regex ExpiresRegEx = new Regex("expires=(?<expires>[0-9]+)");
+        private static readonly Regex HeadersRegEx = new Regex("headers=\"(?<headers>[a-z0-9-\\(\\) ]+)\"");
+        private static readonly Regex SignatureRegEx = new Regex("signature=\"(?<signature>[a-zA-Z0-9+/]+={0,2})\"");
+        private static readonly Regex NonceRegEx = new Regex("nonce=\"(?<nonce>[A-z0-9, =-]+)\"");
 
         public SignatureParser(ILogger<SignatureParser> logger = null) {
             _logger = logger;
