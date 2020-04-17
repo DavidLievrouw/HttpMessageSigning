@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
@@ -7,6 +8,13 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         private readonly ILogger<KnownAlgorithmVerificationTask> _logger;
         
         private static readonly string[] SupportedSignatureAlgorithmNames = {"rsa", "hmac"};
+        private static readonly string[] SupportedHashAlgorithmNames = {
+            HashAlgorithmName.MD5.Name,
+            HashAlgorithmName.SHA1.Name,
+            HashAlgorithmName.SHA256.Name,
+            HashAlgorithmName.SHA384.Name,
+            HashAlgorithmName.SHA512.Name
+        };
 
         public KnownAlgorithmVerificationTask(ILogger<KnownAlgorithmVerificationTask> logger = null) {
             _logger = logger;
@@ -39,8 +47,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified signature algorithm ({signature.Algorithm}) is not supported.");
             }
 
-            var hashAlgorithm = System.Security.Cryptography.HashAlgorithm.Create(algorithmParts[1].ToUpperInvariant());
-            if (hashAlgorithm == null) {
+            if (!SupportedHashAlgorithmNames.Contains(algorithmParts[1].ToUpperInvariant())) {
                 return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified hash algorithm ({algorithmParts[1]}) is not supported.");
             }
             
