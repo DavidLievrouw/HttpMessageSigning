@@ -46,7 +46,9 @@ namespace Benchmark {
 
         [Benchmark]
         public async Task Sign() {
-            await _requestSigner.Sign(_request);
+            for (var i = 0; i < 10000; i++) {
+                await _requestSigner.Sign(_request);
+            }
         }
         
         public async Task SignABunchOfTimes() {

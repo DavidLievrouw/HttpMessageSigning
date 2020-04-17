@@ -62,7 +62,9 @@ namespace Benchmark {
 
         [Benchmark]
         public async Task Verify() {
-            await _verifier.VerifySignature(_request);
+            for (var i = 0; i < 10000; i++) {
+                await _verifier.VerifySignature(_request);
+            }
         }
         
         public async Task VerifyABunchOfTimes() {
