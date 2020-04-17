@@ -48,7 +48,13 @@ namespace Benchmark {
         public async Task Sign() {
             await _requestSigner.Sign(_request);
         }
-
+        
+        public async Task SignAHundredTimes() {
+            for (var i = 0; i < 100; i++) {
+                await _requestSigner.Sign(_request);
+            }
+        }
+        
         private class Config : ManualConfig {
             public Config() {
                 AddDiagnoser(MemoryDiagnoser.Default);
