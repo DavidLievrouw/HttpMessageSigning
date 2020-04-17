@@ -46,7 +46,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     
                     var actual = _owinRequest.ToHttpRequestForSigning();
                     
-                    actual.RequestUri.Should().Be(new Uri("https://unittest.com:9000/api/policies/test"));
+                    actual.RequestUri.Should().Be("/api/policies/test");
                 }
 
                 [Fact]

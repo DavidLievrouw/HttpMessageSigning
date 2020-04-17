@@ -4,7 +4,7 @@ using System.Net.Http;
 namespace Dalion.HttpMessageSigning {
     public class HttpRequestForSigning : ICloneable {
         public HttpMethod Method { get; set; } = HttpMethod.Get;
-        public Uri RequestUri { get; set; }
+        public string RequestUri { get; set; }
         public HeaderDictionary Headers { get; set; } = new HeaderDictionary();
         public string SignatureAlgorithmName { get; set; }
         public byte[] Body { get; set; }

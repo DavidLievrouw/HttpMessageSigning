@@ -58,7 +58,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 await _sut.VerifySignature(_httpRequest);
 
                 A.CallTo(() => _signatureVerifier.VerifySignature(
-                        A<HttpRequestForSigning>.That.Matches(_ => _.RequestUri == new Uri("https://unittest.com:9000/")), 
+                        A<HttpRequestForSigning>.That.Matches(_ => _.RequestUri == "/"), 
                         signature, 
                         client))
                     .MustHaveHappened();

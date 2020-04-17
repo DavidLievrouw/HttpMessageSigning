@@ -44,12 +44,42 @@ namespace Dalion.HttpMessageSigning {
                 }
 
                 [Fact]
-                public void CopiesUri() {
+                public void CopiesUriPath() {
                     var actual = _httpRequestMessage.ToRequestForSigning( _signingSettings.SignatureAlgorithm);
-                    var expectedUri = new Uri("https://dalion.eu:9000/tests/api/rsc1?query=1&cache=false", UriKind.Absolute);
+                    var expectedUri = "/tests/api/rsc1";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void OmitsQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("http://dalion.eu/api/resource/id1?blah=true");
+
+                    var actual = _httpRequestMessage.ToRequestForSigning( _signingSettings.SignatureAlgorithm);
+                    
+                    var expectedUri = "/api/resource/id1";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
 
+                [Fact]
+                public void CanHandleRelativeUris() {
+                    _httpRequestMessage.RequestUri = new Uri("/api/resource/id1", UriKind.Relative);
+
+                    var actual = _httpRequestMessage.ToRequestForSigning( _signingSettings.SignatureAlgorithm);
+                    
+                    var expectedUri = "/api/resource/id1";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void CanHandleRelativeUrisWithQuery() {
+                    _httpRequestMessage.RequestUri = new Uri("/api/resource/id1?blah=true", UriKind.Relative);
+
+                    var actual = _httpRequestMessage.ToRequestForSigning( _signingSettings.SignatureAlgorithm);
+                    
+                    var expectedUri = "/api/resource/id1";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
                 [Theory]
                 [InlineData("POST")]
                 [InlineData("PUT")]

@@ -60,7 +60,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 
                 _signedRequest = new HttpRequestForSigning {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri("https://unittest.com:9001")
+                    RequestUri = "https://unittest.com:9001"
                 };
                 
                 _client = new Client("client1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));

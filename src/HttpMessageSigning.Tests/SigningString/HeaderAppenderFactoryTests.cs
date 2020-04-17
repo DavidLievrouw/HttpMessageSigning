@@ -21,7 +21,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 _expires = TimeSpan.FromMinutes(5);
                 _httpRequest = new HttpRequestForSigning {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri("http://dalion.eu/api/resource/id1")
+                    RequestUri = "http://dalion.eu/api/resource/id1"
                 };
             }
 

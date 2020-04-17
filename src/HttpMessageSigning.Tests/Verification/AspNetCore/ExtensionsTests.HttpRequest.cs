@@ -61,9 +61,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 }
 
                 [Fact]
-                public void CopiesUri() {
+                public void CopiesUriPath() {
                     var actual = _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
-                    var expectedUri = new Uri("https://dalion.eu:9000/tests/api/rsc1?query=1&cache=false", UriKind.Absolute);
+                    var expectedUri = "/tests/api/rsc1";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
 

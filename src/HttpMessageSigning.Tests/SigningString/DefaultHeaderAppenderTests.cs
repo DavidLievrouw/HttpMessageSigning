@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         public DefaultHeaderAppenderTests() {
             _httpRequest = new HttpRequestForSigning {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri("http://dalion.eu/api/resource/id1")
+                RequestUri = "http://dalion.eu/api/resource/id1"
             };
             _sut = new DefaultHeaderAppender(_httpRequest);
         }

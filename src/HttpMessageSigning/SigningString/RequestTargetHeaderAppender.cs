@@ -9,9 +9,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public string BuildStringToAppend(HeaderName header) {
-            var path = _request.RequestUri.IsAbsoluteUri
-                ? _request.RequestUri.AbsolutePath
-                : _request.RequestUri.OriginalString;
+            var path = _request.RequestUri;
                 
             return "\n" + new Header(
                        HeaderName.PredefinedHeaderNames.RequestTarget,

@@ -17,7 +17,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             
             var requestMessage = new HttpRequestForSigning {
                 SignatureAlgorithmName = signatureAlgorithm.Name,
-                RequestUri = BuildAbsoluteUri(request),
+                RequestUri = GetRequestUri(request),
                 Method = string.IsNullOrEmpty(request.Method)
                     ? HttpMethod.Get
                     : new HttpMethod(request.Method)
@@ -48,34 +48,12 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                    (request.Headers?.ContainsKey(HeaderName.PredefinedHeaderNames.Digest) ?? false);
         }
 
-        private static Uri BuildAbsoluteUri(HttpRequest request) {
-            var scheme = request.Scheme;
-            var host = request.Host;
+        private static string GetRequestUri(HttpRequest request) {
             var pathBase = request.PathBase;
             var path = request.Path;
-            var query = request.QueryString;
-            
             var combinedPath = pathBase.HasValue || path.HasValue ? (pathBase + path).ToString() : "/";
-
-            var encodedHost = host.ToString();
-            var encodedQuery = query.ToString();
-
-            var schemeDelimiter = "://";
-            var length = scheme.Length + 
-                         schemeDelimiter.Length + 
-                         encodedHost.Length + 
-                         combinedPath.Length + 
-                         encodedQuery.Length;
-
-            var uriString = new StringBuilder(length)
-                .Append(scheme)
-                .Append(schemeDelimiter)
-                .Append(encodedHost)
-                .Append(combinedPath)
-                .Append(encodedQuery)
-                .ToString();
-
-            return new Uri(uriString, UriKind.Absolute);
+            
+            return combinedPath;
         }
     }
 }

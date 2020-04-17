@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         };
 
         public static readonly HttpRequestForSigning Request = new HttpRequestForSigning {
-            RequestUri = new Uri("https://dalion.eu/api/rsc1"),
+            RequestUri = "https://dalion.eu/api/rsc1",
             Method = HttpMethod.Get,
             SignatureAlgorithmName = "HMAC",
             Headers = new HeaderDictionary(new Dictionary<string, StringValues> {

@@ -9,10 +9,12 @@ namespace Dalion.HttpMessageSigning {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
             
             if (httpRequestMessage == null) return null;
-
+            
             var requestForSigning = new HttpRequestForSigning {
                 Method = httpRequestMessage.Method,
-                RequestUri = httpRequestMessage.RequestUri,
+                RequestUri = httpRequestMessage.RequestUri.IsAbsoluteUri
+                    ? httpRequestMessage.RequestUri.AbsolutePath
+                    : httpRequestMessage.RequestUri.OriginalString.Split('?')[0],
                 SignatureAlgorithmName = signatureAlgorithm.Name
             };
             

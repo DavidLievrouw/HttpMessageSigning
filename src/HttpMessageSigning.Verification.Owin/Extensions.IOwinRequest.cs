@@ -7,7 +7,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         internal static HttpRequestForSigning ToHttpRequestForSigning(this IOwinRequest owinRequest) {
             var request = new HttpRequestForSigning {
                 Method = new HttpMethod(owinRequest.Method), 
-                RequestUri = owinRequest.Uri
+                RequestUri = owinRequest.Uri.AbsolutePath
             };
 
             foreach (var header in owinRequest.Headers) {
