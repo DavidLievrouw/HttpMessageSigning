@@ -2,19 +2,23 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     internal struct Header : IEquatable<Header> {
+        public static Header Empty = new Header(string.Empty, Array.Empty<string>());
+
+        private string _stringRepresentation;
+
         public Header(string name, params string[] values) {
             if (values == null) values = Array.Empty<string>();
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Name = name?.ToLowerInvariant() ?? throw new ArgumentNullException(nameof(name));
             if (name == string.Empty && values.Any()) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
             Values = values;
+            _stringRepresentation = null;
         }
-        
-        public static Header Empty = new Header(string.Empty, Array.Empty<string>());
-        
+
         public string Name { get; }
 
         public string[] Values { get; }
@@ -41,18 +45,19 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
         public static explicit operator Header(string value) {
             if (string.IsNullOrEmpty(value)) return Empty;
-            
+
             if (!TryParse(value, out var header)) {
                 throw new FormatException($"The specified value ({value}) is not a valid string representation of a header.");
             }
+
             return header;
         }
 
         public static bool TryParse(string value, out Header parsed) {
             parsed = Empty;
-            
+
             if (string.IsNullOrEmpty(value)) return false;
-            
+
             var nameAndValues = new List<string>();
             if (!string.IsNullOrEmpty(value)) {
                 var separatorIndex = value.IndexOf(": ", StringComparison.InvariantCulture);
@@ -64,32 +69,39 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     nameAndValues.Add(value.Substring(separatorIndex + 1));
                 }
             }
-            
+
             if (nameAndValues.Count != 2) return false;
             var name = nameAndValues[0];
             if (string.IsNullOrEmpty(name.Trim())) return false;
             var values = nameAndValues[1]
-                .Split(new[]{", "}, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] {", "}, StringSplitOptions.RemoveEmptyEntries)
                 .Select(v => v.Trim())
                 .Where(v => !string.IsNullOrEmpty(v))
                 .ToArray();
-            
-            parsed =  new Header(name, values);
+
+            parsed = new Header(name, values);
 
             return true;
         }
-        
+
         public static Header Parse(string header) {
             return (Header) header;
         }
-        
+
         public static implicit operator string(Header header) {
             return header.ToString();
         }
 
         public override string ToString() {
-            var valuesString = string.Join(", ", Values.Where(v => !string.IsNullOrEmpty(v?.Trim())));
-            return $"{Name.ToLowerInvariant()}: {valuesString}";
+            if (_stringRepresentation == null) {
+                var sb = new StringBuilder();
+                sb.Append(Name);
+                sb.Append(": ");
+                sb.Append(string.Join(", ", Values));
+                _stringRepresentation = sb.ToString();
+            }
+
+            return _stringRepresentation;
         }
     }
 }

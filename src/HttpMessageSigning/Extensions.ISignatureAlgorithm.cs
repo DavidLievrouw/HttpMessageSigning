@@ -5,7 +5,7 @@ namespace Dalion.HttpMessageSigning {
         internal static bool ShouldIncludeDateHeader(this ISignatureAlgorithm signatureAlgorithm) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
             
-            var signatureAlgorithmString = signatureAlgorithm.Name.ToLower();
+            var signatureAlgorithmString = signatureAlgorithm.Name.ToLowerInvariant();
             return signatureAlgorithmString.StartsWith("rsa", StringComparison.Ordinal) || 
                    signatureAlgorithmString.StartsWith("hmac", StringComparison.Ordinal) ||
                    signatureAlgorithmString.StartsWith("ecdsa", StringComparison.Ordinal);
@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning {
         internal static bool ShouldIncludeCreatedHeader(this ISignatureAlgorithm signatureAlgorithm) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
             
-            var signatureAlgorithmString = signatureAlgorithm.Name.ToLower();
+            var signatureAlgorithmString = signatureAlgorithm.Name.ToLowerInvariant();
             return !signatureAlgorithmString.StartsWith("rsa", StringComparison.Ordinal) && 
                    !signatureAlgorithmString.StartsWith("hmac", StringComparison.Ordinal) &&
                    !signatureAlgorithmString.StartsWith("ecdsa", StringComparison.Ordinal);
@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning {
         internal static bool ShouldIncludeExpiresHeader(this ISignatureAlgorithm signatureAlgorithm) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
             
-            var signatureAlgorithmString = signatureAlgorithm.Name.ToLower();
+            var signatureAlgorithmString = signatureAlgorithm.Name.ToLowerInvariant();
             return !signatureAlgorithmString.StartsWith("rsa", StringComparison.Ordinal) && 
                    !signatureAlgorithmString.StartsWith("hmac", StringComparison.Ordinal) &&
                    !signatureAlgorithmString.StartsWith("ecdsa", StringComparison.Ordinal);

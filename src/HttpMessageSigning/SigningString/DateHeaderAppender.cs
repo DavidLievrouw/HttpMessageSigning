@@ -15,7 +15,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             var dateValues = _request.Headers[HeaderName.PredefinedHeaderNames.Date];
             
             if (dateValues == StringValues.Empty) return string.Empty;
-            if (!DateTimeOffset.TryParseExact(dateValues.First(), "R", CultureInfo.InvariantCulture.DateTimeFormat, DateTimeStyles.None, out var dateValue)) {
+            if (!DateTimeOffset.TryParseExact(dateValues.First(), "R", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateValue)) {
                 return string.Empty;
             }
             

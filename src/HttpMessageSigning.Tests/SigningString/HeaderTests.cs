@@ -12,16 +12,22 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             [Fact]
+            public void Constructor_CreatesHeaderWithLowercaseName() {
+                var actual = new Header("theName", "v1", "v2");
+                actual.Name.Should().Be("thename");
+            }
+
+            [Fact]
             public void Constructor_CreatesHeaderWithNameAndValues() {
                 var actual = new Header("theName", "v1", "v2");
-                actual.Name.Should().Be("theName");
+                actual.Name.Should().Be("thename");
                 actual.Values.Should().BeEquivalentTo("v1", "v2");
             }
 
             [Fact]
             public void Constructor_AcceptsSingleHeaderValue() {
                 var actual = new Header("theName", "v1");
-                actual.Name.Should().Be("theName");
+                actual.Name.Should().Be("thename");
                 actual.Values.Should().BeEquivalentTo("v1");
             }
 
@@ -38,7 +44,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 Header header = Header.Empty;
                 Action act = () => header = new Header("theName", null);
                 act.Should().NotThrow();
-                header.Name.Should().Be("theName");
+                header.Name.Should().Be("thename");
                 header.Values.Should().NotBeNull().And.BeEmpty();
             }
         }
