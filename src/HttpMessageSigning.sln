@@ -27,6 +27,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreWebApplication", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OwinApplication", "OwinApplication\OwinApplication.csproj", "{55764E6E-553A-4DDD-B00E-33E860810D6D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance", "Performance", "{E3CD7948-4D80-44B5-9304-112C2430C07A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark", "Benchmark\Benchmark.csproj", "{2D1FAE7C-EBB4-41F8-A02E-A1A8F41307AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +81,10 @@ Global
 		{55764E6E-553A-4DDD-B00E-33E860810D6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55764E6E-553A-4DDD-B00E-33E860810D6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55764E6E-553A-4DDD-B00E-33E860810D6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D1FAE7C-EBB4-41F8-A02E-A1A8F41307AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D1FAE7C-EBB4-41F8-A02E-A1A8F41307AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D1FAE7C-EBB4-41F8-A02E-A1A8F41307AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D1FAE7C-EBB4-41F8-A02E-A1A8F41307AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,6 +93,7 @@ Global
 		{C3C32183-DB79-404F-B3B3-EEB671CC3787} = {7F243637-0E5C-451F-9547-D0B75A47204F}
 		{685D7E66-BCA7-4A86-ACD1-AD419DD4E333} = {7F243637-0E5C-451F-9547-D0B75A47204F}
 		{55764E6E-553A-4DDD-B00E-33E860810D6D} = {7F243637-0E5C-451F-9547-D0B75A47204F}
+		{2D1FAE7C-EBB4-41F8-A02E-A1A8F41307AD} = {E3CD7948-4D80-44B5-9304-112C2430C07A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63BB98B6-3033-441E-9DF6-007C8C6FE0C4}
