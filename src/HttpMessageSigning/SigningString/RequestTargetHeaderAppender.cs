@@ -9,11 +9,13 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public string BuildStringToAppend(HeaderName header) {
-            if (!_request.RequestUri.IsAbsoluteUri) throw new ValidationException("Cannot sign a request that uses a relative uri.");
-            
+            var path = _request.RequestUri.IsAbsoluteUri
+                ? _request.RequestUri.AbsolutePath
+                : _request.RequestUri.OriginalString;
+                
             return "\n" + new Header(
                        HeaderName.PredefinedHeaderNames.RequestTarget,
-                       $"{_request.Method.Method.ToLowerInvariant()} {_request.RequestUri.LocalPath}");
+                       $"{_request.Method.Method.ToLower()} {path}");
         }
     }
 }

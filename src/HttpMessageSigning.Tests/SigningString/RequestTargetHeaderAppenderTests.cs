@@ -28,12 +28,12 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             [Fact]
-            public void CannotHandleRelativeUris() {
+            public void CanHandleRelativeUris() {
                 _httpRequest.RequestUri = new Uri("/api/resource/id1?blah=true", UriKind.Relative);
 
-                Action act = () => _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget);
+                var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget);
 
-                act.Should().Throw<ValidationException>();
+                actual.Should().Contain("/api/resource/id1");
             }
 
             [Fact]
