@@ -24,7 +24,7 @@ namespace Benchmark {
                     keyId,
                     provider => new SigningSettings {
                         SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("yumACY64r%hm"),
-                        DigestHashAlgorithm = HashAlgorithmName.SHA256,
+                        DigestHashAlgorithm = default,
                         EnableNonce = true,
                         Expires = TimeSpan.FromMinutes(1),
                         Headers = new [] {
@@ -49,8 +49,8 @@ namespace Benchmark {
             await _requestSigner.Sign(_request);
         }
         
-        public async Task SignAHundredTimes() {
-            for (var i = 0; i < 100; i++) {
+        public async Task SignAThousandTimes() {
+            for (var i = 0; i < 1000; i++) {
                 await _requestSigner.Sign(_request);
             }
         }

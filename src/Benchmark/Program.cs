@@ -3,11 +3,13 @@ using BenchmarkDotNet.Running;
 
 namespace Benchmark {
     internal class Program {
-        private static async Task Main(string[] args) {
-            //var summary = BenchmarkRunner.Run<SignRequestWithoutDigest>();
-            
+        //internal static void Main(string[] args) {
+        //    var summary = BenchmarkRunner.Run<SignRequestWithoutDigest>();
+        //}
+
+        internal static async Task Main(string[] args) {
             var testCase = new SignRequestWithoutDigest();
-            await testCase.SignAHundredTimes();
+            await testCase.SignAThousandTimes();
         }
     }
 }
