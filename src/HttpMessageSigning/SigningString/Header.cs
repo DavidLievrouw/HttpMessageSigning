@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             if (values == null) values = Array.Empty<string>();
             Name = name ?? throw new ArgumentNullException(nameof(name));
             if (name == string.Empty && values.Any()) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
-            Values = values.Select(v => v.Trim()).Where(v => !string.IsNullOrEmpty(v)).ToArray();
+            Values = values;
         }
         
         public static Header Empty = new Header(string.Empty, Array.Empty<string>());

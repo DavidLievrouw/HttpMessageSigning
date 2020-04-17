@@ -41,15 +41,6 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 header.Name.Should().Be("theName");
                 header.Values.Should().NotBeNull().And.BeEmpty();
             }
-
-            [Theory]
-            [InlineData("")]
-            [InlineData(" ")]
-            [InlineData(" \t ")]
-            public void EmptyOrWhitespaceValue_SetsValueToEmpty(string emptyOrWhitespace) {
-                var actual = new Header("theName", emptyOrWhitespace);
-                actual.Values.Should().NotBeNull().And.BeEmpty();
-            }
         }
 
         public class Equality : HeaderTests {
@@ -118,13 +109,6 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 var header = new Header(" the Name \t ", "v1", "v2");
                 var actual = header.ToString();
                 actual.Should().Be(" the name \t : v1, v2");
-            }
-
-            [Fact]
-            public void StripsWhitespaceFromValues() {
-                var header = new Header("theName", " v 1 \t ");
-                var actual = header.ToString();
-                actual.Should().Be("thename: v 1");
             }
 
             [Fact]

@@ -69,6 +69,15 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             [Fact]
+            public void DropsNullValues() {
+                _httpRequest.Headers.Add("Dalion-test", new[] {" forty-two", null, "forty-three"});
+
+                var actual = _sut.BuildStringToAppend(_headerName);
+
+                actual.Should().Be("\ndalion-test: forty-two, forty-three");
+            }
+
+            [Fact]
             public void StripsLineBreaksFromHeaderValues() {
                 _httpRequest.Headers.Add("Dalion-test", new[] {" forty-two \n with a linebreak", " forty-three \r\n with a linebreak"});
 
