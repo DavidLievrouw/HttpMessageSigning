@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -10,14 +9,6 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         
         private const string AuthorizationHeaderName = "Authorization";
         private const string AuthorizationScheme = "SignedHttpRequest";
-
-        private static readonly Regex KeyIdRegEx = new Regex("keyId=\"(?<keyId>[A-z0-9, =-]+)\"", RegexOptions.Compiled);
-        private static readonly Regex AlgorithmRegEx = new Regex("algorithm=\"(?<algorithm>[a-z0-9-]+)\"", RegexOptions.Compiled);
-        private static readonly Regex CreatedRegEx = new Regex("created=(?<created>[0-9]+)", RegexOptions.Compiled);
-        private static readonly Regex ExpiresRegEx = new Regex("expires=(?<expires>[0-9]+)", RegexOptions.Compiled);
-        private static readonly Regex HeadersRegEx = new Regex("headers=\"(?<headers>[a-z0-9-\\(\\) ]+)\"", RegexOptions.Compiled);
-        private static readonly Regex SignatureRegEx = new Regex("signature=\"(?<signature>[a-zA-Z0-9+/]+={0,2})\"", RegexOptions.Compiled);
-        private static readonly Regex NonceRegEx = new Regex("nonce=\"(?<nonce>[A-z0-9, =-]+)\"", RegexOptions.Compiled);
 
         public SignatureParser(ILogger<SignatureParser> logger = null) {
             _logger = logger;
@@ -47,35 +38,63 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             var authParam = rawAuthHeader.Substring(separatorIndex + 1);
 
             _logger?.LogDebug("Parsing authorization header parameter for verification: {0}.", authParam);
+
+            var authParamParts = authParam.Split(',');
             
             var keyId = KeyId.Empty;
-            var keyIdMatch = KeyIdRegEx.Match(authParam);
-            if (keyIdMatch.Success) keyId = (KeyId) keyIdMatch.Groups["keyId"].Value;
-
             var algorithm = string.Empty;
-            var algMatch = AlgorithmRegEx.Match(authParam);
-            if (algMatch.Success) algorithm = algMatch.Groups["algorithm"].Value;
-
             var createdString = string.Empty;
-            var createdMatch = CreatedRegEx.Match(authParam);
-            if (createdMatch.Success) createdString = createdMatch.Groups["created"].Value;
-
             var expiresString = string.Empty;
-            var expiresMatch = ExpiresRegEx.Match(authParam);
-            if (expiresMatch.Success) expiresString = expiresMatch.Groups["expires"].Value;
-
             var headersString = string.Empty;
-            var headersMatch = HeadersRegEx.Match(authParam);
-            if (headersMatch.Success) headersString = headersMatch.Groups["headers"].Value;
-
             string nonce = null;
-            var nonceMatch = NonceRegEx.Match(authParam);
-            if (nonceMatch.Success) nonce = nonceMatch.Groups["nonce"].Value;
-            
             var signature = string.Empty;
-            var signatureMatch = SignatureRegEx.Match(authParam);
-            if (signatureMatch.Success) signature = signatureMatch.Groups["signature"].Value;
-
+            
+            foreach (var authParamPart in authParamParts) {
+                if (authParamPart == null) continue;
+                
+                var keyIdSelector = "keyId=";
+                if (authParamPart.StartsWith(keyIdSelector, StringComparison.Ordinal)) {
+                    var value = authParamPart.Substring(keyIdSelector.Length).Trim('"');
+                    keyId = new KeyId(value);
+                }
+                
+                var algorithmSelector = "algorithm=";
+                if (authParamPart.StartsWith(algorithmSelector, StringComparison.Ordinal)) {
+                    var value = authParamPart.Substring(algorithmSelector.Length).Trim('"');
+                    algorithm = value;
+                }
+                
+                var createdSelector = "created=";
+                if (authParamPart.StartsWith(createdSelector, StringComparison.Ordinal)) {
+                    var value = authParamPart.Substring(createdSelector.Length).Trim('"');
+                    createdString = value;
+                }
+                
+                var expiresSelector = "expires=";
+                if (authParamPart.StartsWith(expiresSelector, StringComparison.Ordinal)) {
+                    var value = authParamPart.Substring(expiresSelector.Length).Trim('"');
+                    expiresString = value;
+                }
+                
+                var headersSelector = "headers=";
+                if (authParamPart.StartsWith(headersSelector, StringComparison.Ordinal)) {
+                    var value = authParamPart.Substring(headersSelector.Length).Trim('"');
+                    headersString = value;
+                }
+                
+                var nonceSelector = "nonce=";
+                if (authParamPart.StartsWith(nonceSelector, StringComparison.Ordinal)) {
+                    var value = authParamPart.Substring(nonceSelector.Length).Trim('"');
+                    nonce = value;
+                }
+                
+                var signatureSelector = "signature=";
+                if (authParamPart.StartsWith(signatureSelector, StringComparison.Ordinal)) {
+                    var value = authParamPart.Substring(signatureSelector.Length).Trim('"');
+                    signature = value;
+                }
+            }
+  
             DateTimeOffset? created = null;
             if (long.TryParse(createdString, out var createdEpoch)) {
                 created = DateTimeOffset.FromUnixTimeSeconds(createdEpoch);

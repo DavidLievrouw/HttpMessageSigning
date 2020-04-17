@@ -172,7 +172,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             }
 
             [Fact]
-            public void WhenKeIdIsNotSpecified_ThrowsInvalidSignatureException() {
+            public void WhenKeyIdIsNotSpecified_ThrowsInvalidSignatureException() {
                 SetHeader(_request, null, "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
 
                 Action act = () => _sut.Parse(_request);
