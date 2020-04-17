@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Security.Cryptography;
@@ -52,9 +53,12 @@ namespace Benchmark {
         }
         
         public async Task SignABunchOfTimes() {
+            var watch = Stopwatch.StartNew();
             for (var i = 0; i < 1000000; i++) {
                 await _requestSigner.Sign(_request);
             }
+            watch.Stop();
+            Console.WriteLine("Elapsed: {0}ms", watch.ElapsedMilliseconds);
         }
         
         private class Config : ManualConfig {
