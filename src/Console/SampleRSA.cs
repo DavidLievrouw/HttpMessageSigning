@@ -69,7 +69,7 @@ namespace Console {
         private static async Task SampleVerify(IRequestSignatureVerifier verifier, HttpRequestMessage clientRequest, ILogger<SampleRSA> logger) {
             var receivedRequest = await clientRequest.ToServerSideHttpRequest();
 
-            var verificationResult = await verifier.VerifySignature(receivedRequest);
+            var verificationResult = await verifier.VerifySignature(receivedRequest, new SignedRequestAuthenticationOptions());
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
                 var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));

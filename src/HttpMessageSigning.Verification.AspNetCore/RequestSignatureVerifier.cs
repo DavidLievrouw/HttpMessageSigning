@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             _logger = logger;
         }
 
-        public async Task<RequestSignatureVerificationResult> VerifySignature(HttpRequest request) {
+        public async Task<RequestSignatureVerificationResult> VerifySignature(HttpRequest request, SignedRequestAuthenticationOptions options) {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             Client client = null;

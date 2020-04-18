@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (!AuthenticationHeaderValue.TryParse(Request.Headers["Authorization"], out var headerValue)) return AuthenticateResult.NoResult();
             if (!Scheme.Name.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase)) return AuthenticateResult.NoResult();
 
-            var verificationResult = await _requestSignatureVerifier.VerifySignature(Request);
+            var verificationResult = await _requestSignatureVerifier.VerifySignature(Request, Options);
 
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var onIdentityVerifiedTask = Options.OnIdentityVerified?.Invoke(Request, successResult);

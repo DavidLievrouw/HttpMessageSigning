@@ -64,14 +64,14 @@ namespace Benchmark {
         [Benchmark]
         public async Task Verify() {
             for (var i = 0; i < 10000; i++) {
-                await _verifier.VerifySignature(_request);
+                await _verifier.VerifySignature(_request, new SignedRequestAuthenticationOptions());
             }
         }
         
         public async Task VerifyABunchOfTimes() {
             var watch = Stopwatch.StartNew();
             for (var i = 0; i < 1000000; i++) {
-                await _verifier.VerifySignature(_request);
+                await _verifier.VerifySignature(_request, new SignedRequestAuthenticationOptions());
             }
             watch.Stop();
             Console.WriteLine("Elapsed: {0}ms", watch.ElapsedMilliseconds);

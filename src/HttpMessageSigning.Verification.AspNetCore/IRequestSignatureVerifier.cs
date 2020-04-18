@@ -11,7 +11,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         /// Verify the signature of the specified request.
         /// </summary>
         /// <param name="request">The request to verify the signature for.</param>
+        /// <param name="options">The authentication options.</param>
         /// <returns>A verification result that indicates success or failure.</returns>
-        Task<RequestSignatureVerificationResult> VerifySignature(HttpRequest request);
+        Task<RequestSignatureVerificationResult> VerifySignature(HttpRequest request, SignedRequestAuthenticationOptions options);
     }
 }

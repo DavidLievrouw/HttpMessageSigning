@@ -24,6 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
         public class VerifySignature : RequestSignatureVerifierTests {
             private readonly IOwinRequest _httpRequest;
+            private readonly SignedHttpRequestAuthenticationOptions _options;
 
             public VerifySignature() {
                 _httpRequest = new FakeOwinRequest {
@@ -31,11 +32,12 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     Scheme = "https", 
                     Host = new HostString("unittest.com:9000")
                 };
+                _options = new SignedHttpRequestAuthenticationOptions();
             }
 
             [Fact]
             public void GivenNullRequest_ThrowsArgumentNullException() {
-                Func<Task> act = () => _sut.VerifySignature(null);
+                Func<Task> act = () => _sut.VerifySignature(null, _options);
                 act.Should().Throw<ArgumentNullException>();
             }
 
@@ -56,7 +58,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
                 
-                await _sut.VerifySignature(_httpRequest);
+                await _sut.VerifySignature(_httpRequest, _options);
 
                 A.CallTo(() => _signatureVerifier.VerifySignature(
                         A<HttpRequestForSigning>.That.Matches(_ => _.RequestUri == "/"), 
@@ -86,7 +88,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
                 
-                var actual = await _sut.VerifySignature(_httpRequest);
+                var actual = await _sut.VerifySignature(_httpRequest, _options);
 
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultSuccess>();
                 actual.As<RequestSignatureVerificationResultSuccess>().IsSuccess.Should().BeTrue();
@@ -114,7 +116,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 A.CallTo(() => verificationResultCreator.CreateForFailure(failure))
                     .Returns(new RequestSignatureVerificationResultFailure(client, signature, failure));
 
-                var actual = await _sut.VerifySignature(_httpRequest);
+                var actual = await _sut.VerifySignature(_httpRequest, _options);
 
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
@@ -130,7 +132,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
                 
-                var actual = await _sut.VerifySignature(_httpRequest);
+                var actual = await _sut.VerifySignature(_httpRequest, _options);
 
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
@@ -151,7 +153,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
                 
-                var actual = await _sut.VerifySignature(_httpRequest);
+                var actual = await _sut.VerifySignature(_httpRequest, _options);
 
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
@@ -177,7 +179,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Throws(failure);
 
-                Func<Task> act = () => _sut.VerifySignature(_httpRequest);
+                Func<Task> act = () => _sut.VerifySignature(_httpRequest, _options);
                 act.Should().Throw<InvalidOperationException>().Where(ex => ex == failure);
             }
         }

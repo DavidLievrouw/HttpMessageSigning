@@ -20,12 +20,14 @@ namespace Dalion.HttpMessageSigning.SystemTests.Nonce {
         private readonly IRequestSignerFactory _requestSignerFactory;
         private readonly IRequestSignatureVerifier _verifier;
         private bool _nonceEnabled;
+        private readonly SignedRequestAuthenticationOptions _authenticationOptions;
 
         public NonceSystemTests() {
             _serviceProvider = new ServiceCollection().Configure(ConfigureServices).BuildServiceProvider();
             _requestSignerFactory = _serviceProvider.GetRequiredService<IRequestSignerFactory>();
             _verifier = _serviceProvider.GetRequiredService<IRequestSignatureVerifier>();
             _nonceEnabled = true;
+            _authenticationOptions = new SignedRequestAuthenticationOptions();
         }
 
         public void Dispose() {
@@ -52,10 +54,10 @@ namespace Dalion.HttpMessageSigning.SystemTests.Nonce {
 
             var receivedRequest = await request.ToServerSideHttpRequest();
 
-            var verificationResult1 = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult1 = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
             verificationResult1.Should().BeAssignableTo<RequestSignatureVerificationResultSuccess>();
             
-            var verificationResult2 = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult2 = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
             verificationResult2.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
             verificationResult2.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("REPLAYED_REQUEST");
         }
@@ -78,10 +80,10 @@ namespace Dalion.HttpMessageSigning.SystemTests.Nonce {
 
             var receivedRequest = await request.ToServerSideHttpRequest();
 
-            var verificationResult1 = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult1 = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
             verificationResult1.Should().BeAssignableTo<RequestSignatureVerificationResultSuccess>();
             
-            var verificationResult2 = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult2 = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
             verificationResult2.Should().BeAssignableTo<RequestSignatureVerificationResultSuccess>();
         }
 
@@ -109,7 +111,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.Nonce {
             
             var receivedRequest = await request.ToServerSideHttpRequest();
 
-            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
             verificationResult.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
             verificationResult.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("INVALID_SIGNATURE_STRING");
         }
@@ -138,7 +140,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.Nonce {
             
             var receivedRequest = await request.ToServerSideHttpRequest();
 
-            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
             verificationResult.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
             verificationResult.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("INVALID_SIGNATURE_STRING");
         }

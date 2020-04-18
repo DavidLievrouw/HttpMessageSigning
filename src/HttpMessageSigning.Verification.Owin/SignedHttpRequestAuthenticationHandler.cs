@@ -12,7 +12,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             if (!AuthenticationHeaderValue.TryParse(Request.Headers["Authorization"], out var headerValue)) return null;
             if (!Options.Scheme.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase)) return null;
 
-            var verificationResult = await Options.RequestSignatureVerifier.VerifySignature(Request);
+            var verificationResult = await Options.RequestSignatureVerifier.VerifySignature(Request, Options);
 
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var onIdentityVerifiedTask = Options.OnIdentityVerified?.Invoke(Request, successResult);

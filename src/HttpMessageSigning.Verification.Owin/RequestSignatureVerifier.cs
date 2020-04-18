@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             _logger = logger;
         }
 
-        public async Task<RequestSignatureVerificationResult> VerifySignature(IOwinRequest request) {
+        public async Task<RequestSignatureVerificationResult> VerifySignature(IOwinRequest request, SignedHttpRequestAuthenticationOptions options) {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             Client client = null;

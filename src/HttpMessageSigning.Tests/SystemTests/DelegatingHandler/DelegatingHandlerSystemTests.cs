@@ -21,6 +21,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.DelegatingHandler {
         private readonly IRequestSignatureVerifier _verifier;
         private readonly SenderService _senderService;
         private HttpRequestMessage _signedRequest;
+        private readonly SignedRequestAuthenticationOptions _options;
 
         public DelegatingHandlerSystemTests(ITestOutputHelper output) {
             _output = output;
@@ -28,6 +29,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.DelegatingHandler {
             _requestSignerFactory = _serviceProvider.GetRequiredService<IRequestSignerFactory>();
             _verifier = _serviceProvider.GetRequiredService<IRequestSignatureVerifier>();
             _senderService = _serviceProvider.GetRequiredService<SenderService>();
+            _options = new SignedRequestAuthenticationOptions();
         }
 
         public void Dispose() {
@@ -47,7 +49,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.DelegatingHandler {
             
             var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
 
-            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
                 var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
@@ -70,7 +72,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.DelegatingHandler {
             
             var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
 
-            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
                 var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
@@ -93,7 +95,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.DelegatingHandler {
             
             var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
 
-            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
                 var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));

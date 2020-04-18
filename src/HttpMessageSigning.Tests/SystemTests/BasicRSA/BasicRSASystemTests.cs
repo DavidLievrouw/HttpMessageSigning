@@ -23,12 +23,14 @@ namespace Dalion.HttpMessageSigning.SystemTests.BasicRSA {
         private readonly ServiceProvider _serviceProvider;
         private readonly IRequestSignerFactory _requestSignerFactory;
         private readonly IRequestSignatureVerifier _verifier;
+        private readonly SignedRequestAuthenticationOptions _options;
 
         public BasicRSASystemTests(ITestOutputHelper output) {
             _output = output;
             _serviceProvider = new ServiceCollection().Configure(ConfigureServices).BuildServiceProvider();
             _requestSignerFactory = _serviceProvider.GetRequiredService<IRequestSignerFactory>();
             _verifier = _serviceProvider.GetRequiredService<IRequestSignatureVerifier>();
+            _options = new SignedRequestAuthenticationOptions();
         }
 
         public void Dispose() {
@@ -53,7 +55,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.BasicRSA {
 
             var receivedRequest = await request.ToServerSideHttpRequest();
 
-            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
                 var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
@@ -81,7 +83,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.BasicRSA {
 
             var receivedRequest = await request.ToServerSideHttpRequest();
 
-            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
                 var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
@@ -109,7 +111,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.BasicRSA {
 
             var receivedRequest = await request.ToServerSideHttpRequest();
 
-            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
                 var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
@@ -143,7 +145,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.BasicRSA {
             
             var receivedRequest = await request.ToServerSideHttpRequest();
 
-            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             verificationResult.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
             _output.WriteLine("Request signature verification failed: {0}", verificationResult.As<RequestSignatureVerificationResultFailure>().Failure);
         }
