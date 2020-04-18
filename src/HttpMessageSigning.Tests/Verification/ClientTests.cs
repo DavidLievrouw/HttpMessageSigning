@@ -51,6 +51,23 @@ namespace Dalion.HttpMessageSigning.Verification {
 
         public class Equality : ClientTests {
             [Fact]
+            public void IsNotEqualToNull() {
+                var first = new Client((KeyId)"id1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
+                Client second = null;
+
+                // ReSharper disable once ExpressionIsAlwaysNull
+                first.Equals(second).Should().BeFalse();
+            }
+            
+            [Fact]
+            public void IsEqualToSameReference() {
+                var first = new Client((KeyId)"id1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
+                
+                first.Equals(first).Should().BeTrue();
+                first.GetHashCode().Should().Be(first.GetHashCode());
+            }
+            
+            [Fact]
             public void WhenIdIsTheSame_AreEqual() {
                 var first = new Client((KeyId)"id1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
                 var second = new Client((KeyId)"id1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
