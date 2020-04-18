@@ -15,6 +15,17 @@ namespace Dalion.HttpMessageSigning.Verification {
             _sut = new ClaimsPrincipalFactory(_version);
         }
 
+        public class Construction : ClaimsPrincipalFactoryTests {
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void DoesNotAllowNullOrEmptyVersion(string nullOrEmpty) {
+                // ReSharper disable once ObjectCreationAsStatement
+                Action act = () => new ClaimsPrincipalFactory(nullOrEmpty);
+                act.Should().Throw<ArgumentException>();
+            }
+        }
+        
         public class CreateForClient : ClaimsPrincipalFactoryTests {
             [Fact]
             public void GivenNullClient_ThrowsArgumentNullException() {

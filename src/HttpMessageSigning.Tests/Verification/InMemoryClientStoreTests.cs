@@ -14,6 +14,25 @@ namespace Dalion.HttpMessageSigning.Verification {
             _sut = new InMemoryClientStore();
         }
 
+        public class Construction : InMemoryClientStoreTests {
+            [Fact]
+            public void AllowsForNullClients() {
+                // ReSharper disable once ObjectCreationAsStatement
+                Action act = () => new InMemoryClientStore(null);
+                act.Should().NotThrow();
+            }
+            
+            [Fact]
+            public async Task RegistersSpecifiedClients() {
+                var entry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), new Claim("c1", "v1"));
+                var sut = new InMemoryClientStore(entry);
+                
+                var registeredEntry = await sut.Get(entry.Id);
+                
+                registeredEntry.Should().Be(entry);
+            }
+        }
+        
         public class Register : InMemoryClientStoreTests {
             [Fact]
             public void WhenEntryIsNull_ThrowsArgumentNullException() {
