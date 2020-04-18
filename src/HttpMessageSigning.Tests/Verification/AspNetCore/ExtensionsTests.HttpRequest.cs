@@ -65,6 +65,27 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     var actual = _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
                     var expectedUri = "/tests/api/rsc1";
                     actual.RequestUri.Should().Be(expectedUri);
+                }               
+                
+                [Fact]
+                public void CanHandleEmptyPathBase() {
+                    _httpRequest.PathBase = PathString.Empty;
+                    
+                    var actual = _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
+                    
+                    var expectedUri = "/api/rsc1";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void DecodesUriPath() {
+                    _httpRequest.PathBase = new PathString("/api");
+                    _httpRequest.Path = new PathString("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
+                    
+                    var actual = _httpRequest.ToRequestForSigning(_client.SignatureAlgorithm, _signature);
+                    
+                    var expectedUri = "/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.";
+                    actual.RequestUri.Should().Be(expectedUri);
                 }
 
                 [Theory]

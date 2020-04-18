@@ -38,7 +38,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 }
 
                 [Fact]
-                public void CopiesUri() {
+                public void CopiesUriPath() {
                     _owinRequest.Scheme = "https";
                     _owinRequest.Host = new HostString("unittest.com:9000");
                     _owinRequest.PathBase = new PathString("/api");
@@ -47,6 +47,30 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     var actual = _owinRequest.ToHttpRequestForSigning();
                     
                     actual.RequestUri.Should().Be("/api/policies/test");
+                }
+                
+                [Fact]
+                public void CanHandleEmptyPathBase() {
+                    _owinRequest.Scheme = "https";
+                    _owinRequest.Host = new HostString("unittest.com:9000");
+                    _owinRequest.PathBase = PathString.Empty;
+                    _owinRequest.Path = new PathString("/policies/test");
+                    
+                    var actual = _owinRequest.ToHttpRequestForSigning();
+                    
+                    actual.RequestUri.Should().Be("/policies/test");
+                }
+                
+                [Fact]
+                public void DecodesUriPath() {
+                    _owinRequest.Scheme = "https";
+                    _owinRequest.Host = new HostString("unittest.com:9000");
+                    _owinRequest.PathBase = new PathString("/api");
+                    _owinRequest.Path = new PathString("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
+                    
+                    var actual = _owinRequest.ToHttpRequestForSigning();
+                    
+                    actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.");
                 }
 
                 [Fact]
