@@ -22,7 +22,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                         ExpireAfter = TimeSpan.FromSeconds(3)
                     });
                 try {
-                    collection.Indexes.CreateOneAsync(createIndexModel);
+                    collection.Indexes.CreateOne(createIndexModel);
                 }
                 catch (MongoCommandException ex) {
                     switch (ex.Code) {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using MongoDB.Driver;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
@@ -8,10 +9,12 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         private readonly string _collectionName;
         private readonly MongoDbNonceStore _sut;
         private readonly DateTimeOffset _now;
+        private readonly MongoDatabaseClientProvider _mongoDatabaseClientProvider;
 
         public MongoDbNonceStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
             _collectionName = "nonces";
-            _sut = new MongoDbNonceStore(new MongoDatabaseClientProvider(Database), _collectionName);
+            _mongoDatabaseClientProvider = new MongoDatabaseClientProvider(Database);
+            _sut = new MongoDbNonceStore(_mongoDatabaseClientProvider, _collectionName);
             
             _now = new DateTimeOffset(
                 DateTimeOffset.UtcNow.Year, 
@@ -29,7 +32,6 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
 
         public class Register : MongoDbNonceStoreTests {
-
             public Register(MongoSetup mongoSetup) : base(mongoSetup) { }
 
             [Fact]
@@ -38,6 +40,27 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 act.Should().Throw<ArgumentNullException>();
             }
 
+            [Fact]
+            public async Task CanHandleAlreadyExistingIndex() {
+                var createIndexModel = new CreateIndexModel<NonceDataRecord>(
+                    Builders<NonceDataRecord>.IndexKeys.Ascending(_ => _.Value),
+                    new CreateIndexOptions {
+                        Name = "idx_ttl",
+                        ExpireAfter = TimeSpan.FromSeconds(5)
+                    });
+                var collection = _mongoDatabaseClientProvider.Provide().GetCollection<NonceDataRecord>(_collectionName);
+                await collection.Indexes.CreateOneAsync(createIndexModel);
+                
+                var nonce = new Nonce(new KeyId("c1"), "abc123", _now.AddSeconds(30));
+
+                await _sut.Register(nonce);
+
+                var actual = await _sut.Get(nonce.ClientId, nonce.Value);
+
+                actual.Should().BeEquivalentTo(nonce);
+                actual.Expiration.Offset.Should().Be(TimeSpan.Zero);
+            }
+            
             [Fact]
             public async Task CanRoundTrip() {
                 var nonce = new Nonce(new KeyId("c1"), "abc123", _now.AddSeconds(30));
