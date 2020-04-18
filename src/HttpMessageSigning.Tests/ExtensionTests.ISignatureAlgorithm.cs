@@ -5,7 +5,7 @@ using Xunit;
 namespace Dalion.HttpMessageSigning {
     public partial class ExtensionTests {
         public class ForISignatureAlgorithm : ExtensionTests {
-            public class ShouldIncludeDateHeader : ForHttpMethod {
+            public class ShouldIncludeDateHeader : ForISignatureAlgorithm {
                 [Fact]
                 public void WhenSignatureAlgorithmIsNull_ThrowsArgumentNullException() {
                     Action act = () => Extensions.ShouldIncludeDateHeader(null);
@@ -33,7 +33,7 @@ namespace Dalion.HttpMessageSigning {
                 }
             }
             
-            public class ShouldIncludeCreatedHeader : ForHttpMethod {
+            public class ShouldIncludeCreatedHeader : ForISignatureAlgorithm {
                 [Fact]
                 public void WhenSignatureAlgorithmIsNull_ThrowsArgumentNullException() {
                     Action act = () => Extensions.ShouldIncludeCreatedHeader(null);
@@ -61,7 +61,7 @@ namespace Dalion.HttpMessageSigning {
                 }
             }
             
-            public class ShouldIncludeExpiresHeader : ForHttpMethod {
+            public class ShouldIncludeExpiresHeader : ForISignatureAlgorithm {
                 [Fact]
                 public void WhenSignatureAlgorithmIsNull_ThrowsArgumentNullException() {
                     Action act = () => Extensions.ShouldIncludeExpiresHeader(null);

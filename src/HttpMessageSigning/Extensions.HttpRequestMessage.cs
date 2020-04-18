@@ -13,8 +13,8 @@ namespace Dalion.HttpMessageSigning {
             var requestForSigning = new HttpRequestForSigning {
                 Method = httpRequestMessage.Method,
                 RequestUri = httpRequestMessage.RequestUri.IsAbsoluteUri
-                    ? httpRequestMessage.RequestUri.AbsolutePath
-                    : httpRequestMessage.RequestUri.OriginalString.Split('?')[0],
+                    ? httpRequestMessage.RequestUri.AbsolutePath.UrlDecode()
+                    : httpRequestMessage.RequestUri.OriginalString.Split('?')[0].UrlDecode(),
                 SignatureAlgorithmName = signatureAlgorithm.Name
             };
             

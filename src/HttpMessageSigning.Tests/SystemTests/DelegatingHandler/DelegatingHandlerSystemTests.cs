@@ -80,6 +80,29 @@ namespace Dalion.HttpMessageSigning.SystemTests.DelegatingHandler {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
+        }        
+        
+        [Fact]
+        public async Task CanHandleEncodedUris() {
+            var uri = new Uri("/anything/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.", UriKind.Relative);
+
+            var response = await _senderService.SendTo(uri);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            _signedRequest.RequestUri.Should().Be(new Uri("https://httpbin.org/anything/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co."));
+            
+            var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
+
+            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
+                var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
+                _output.WriteLine("Request signature verification succeeded: {0}", claimsString);
+            }
+            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
+                throw new SignatureVerificationException(failureResult.Failure.ToString());
+            }
         }
         
         private void ConfigureServices(IServiceCollection services) {
