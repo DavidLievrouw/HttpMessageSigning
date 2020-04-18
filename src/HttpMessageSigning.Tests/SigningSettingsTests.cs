@@ -24,6 +24,12 @@ namespace Dalion.HttpMessageSigning {
 
         public class Validate : SigningSettingsTests {
             [Fact]
+            public void IsIValidatable() {
+                Action act = () => ((IValidatable)_sut).Validate();
+                act.Should().NotThrow();
+            }
+            
+            [Fact]
             public void WhenKeyIdIsEmpty_ThrowsValidationException() {
                 _sut.KeyId = KeyId.Empty;
                 Action act = () => _sut.Validate();
