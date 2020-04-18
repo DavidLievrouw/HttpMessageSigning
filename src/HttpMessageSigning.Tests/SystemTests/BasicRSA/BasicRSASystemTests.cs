@@ -63,6 +63,34 @@ namespace Dalion.HttpMessageSigning.SystemTests.BasicRSA {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
+        }        
+        
+        [Fact]
+        public async Task SupportsRelativeUris() {
+            var request = new HttpRequestMessage {
+                RequestUri = new Uri("/post?id=42", UriKind.Relative),
+                Method = HttpMethod.Post,
+                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Headers = {
+                    {"Dalion-App-Id", "ringor"}
+                }
+            };
+            
+            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            await requestSigner.Sign(request);
+
+            var receivedRequest = await request.ToServerSideHttpRequest();
+
+            var verificationResult = await _verifier.VerifySignature(receivedRequest);
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
+                var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
+                _output.WriteLine("Request signature verification succeeded: {0}", claimsString);
+            }
+            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
+                throw new SignatureVerificationException(failureResult.Failure.ToString());
+            }
         }
 
         [Fact]

@@ -6,8 +6,8 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
     public static partial class Extensions {
         internal static HttpRequestForSigning ToHttpRequestForSigning(this IOwinRequest owinRequest) {
             var request = new HttpRequestForSigning {
-                Method = new HttpMethod(owinRequest.Method), 
-                RequestUri = owinRequest.Uri.AbsolutePath
+                Method = new HttpMethod(owinRequest.Method),
+                RequestUri = owinRequest.Uri.IsAbsoluteUri ? owinRequest.Uri.AbsolutePath : owinRequest.Uri.OriginalString.Split('?')[0]
             };
 
             foreach (var header in owinRequest.Headers) {
@@ -18,7 +18,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 using (var memoryStream = new MemoryStream()) {
                     owinRequest.Body.CopyTo(memoryStream);
                     request.Body = memoryStream.ToArray();
-                    
+
                     owinRequest.Body?.Dispose();
                     owinRequest.Body = new MemoryStream(request.Body);
                 }

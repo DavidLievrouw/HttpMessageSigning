@@ -10,9 +10,9 @@ namespace Dalion.HttpMessageSigning.SystemTests {
 
             var request = new DefaultHttpContext().Request;
             request.Method = clientRequest.Method.Method;
-            request.Scheme = clientRequest.RequestUri.Scheme;
-            request.Host = new HostString(clientRequest.RequestUri.Host, clientRequest.RequestUri.Port);
-            request.Path = clientRequest.RequestUri.LocalPath;
+            request.Scheme = clientRequest.RequestUri.IsAbsoluteUri ? clientRequest.RequestUri.Scheme : null;
+            request.Host = clientRequest.RequestUri.IsAbsoluteUri ? new HostString(clientRequest.RequestUri.Host, clientRequest.RequestUri.Port) : new HostString();
+            request.Path = clientRequest.RequestUri.IsAbsoluteUri ? clientRequest.RequestUri.AbsolutePath : clientRequest.RequestUri.OriginalString.Split('?')[0];
             request.Headers["Authorization"] = clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter;
 
             var bodyTask = clientRequest.Content?.ReadAsStreamAsync();
