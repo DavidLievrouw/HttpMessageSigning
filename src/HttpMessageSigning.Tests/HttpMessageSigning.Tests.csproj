@@ -36,7 +36,11 @@
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
         <PackageReference Include="coverlet.collector" Version="1.2.0" />
     </ItemGroup>
-    
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.2'">
+        <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
+    </ItemGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
       <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
