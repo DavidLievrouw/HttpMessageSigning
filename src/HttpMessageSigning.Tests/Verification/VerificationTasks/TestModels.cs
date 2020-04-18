@@ -22,7 +22,6 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         public static readonly HttpRequestForSigning Request = new HttpRequestForSigning {
             RequestUri = "https://dalion.eu/api/rsc1",
             Method = HttpMethod.Get,
-            SignatureAlgorithmName = "HMAC",
             Headers = new HeaderDictionary(new Dictionary<string, StringValues> {
                 {"dalion-app-id", "app-one"},
                 {HeaderName.PredefinedHeaderNames.Date, Signature.Created.Value.ToString("R")}

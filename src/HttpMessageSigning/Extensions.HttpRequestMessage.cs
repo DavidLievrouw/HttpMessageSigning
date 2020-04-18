@@ -5,17 +5,14 @@ using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning {
     public static partial class Extensions {
-        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequestMessage httpRequestMessage, ISignatureAlgorithm signatureAlgorithm) {
-            if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
-            
+        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequestMessage httpRequestMessage) {
             if (httpRequestMessage == null) return null;
             
             var requestForSigning = new HttpRequestForSigning {
                 Method = httpRequestMessage.Method,
                 RequestUri = httpRequestMessage.RequestUri.IsAbsoluteUri
                     ? httpRequestMessage.RequestUri.AbsolutePath.UrlDecode()
-                    : httpRequestMessage.RequestUri.OriginalString.Split('?')[0].UrlDecode(),
-                SignatureAlgorithmName = signatureAlgorithm.Name
+                    : httpRequestMessage.RequestUri.OriginalString.Split('?')[0].UrlDecode()
             };
             
             foreach (var header in httpRequestMessage.Headers) {

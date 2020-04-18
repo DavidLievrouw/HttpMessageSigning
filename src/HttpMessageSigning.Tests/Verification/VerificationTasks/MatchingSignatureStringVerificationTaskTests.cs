@@ -25,15 +25,17 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             private readonly Signature _signature;
             private readonly HttpRequestForSigning _signedRequest;
             private readonly string _composedSignatureString;
+            private readonly CustomSignatureAlgorithm _signatureAlgorithm;
 
             public Verify() {
                 _signature = (Signature) TestModels.Signature.Clone();
                 _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
-                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1));
+                _signatureAlgorithm = new CustomSignatureAlgorithm("TEST");
+                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, _signatureAlgorithm, TimeSpan.FromMinutes(1));
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
 
                 _composedSignatureString = "abc123";
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan>._, A<string>._))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<string>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan>._, A<string>._))
                     .Returns(_composedSignatureString);
                 _signature.String = _base64Converter.ToBase64(_client.SignatureAlgorithm.ComputeHash(_composedSignatureString));
             }
@@ -61,22 +63,25 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [Fact]
             public async Task CallsSigningStringComposerWithExpectedParameters() {
                 HttpRequestForSigning interceptedRequest = null;
+                string interceptedSignatureAlgorithmName = null;
                 HeaderName[] interceptedHeaderNames = null;
                 DateTimeOffset? interceptedCreated = null;
                 TimeSpan? interceptedExpires = null;
 
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan>._, A<string>._))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<string>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan>._, A<string>._))
                     .Invokes(call => {
                         interceptedRequest = call.GetArgument<HttpRequestForSigning>(0);
-                        interceptedHeaderNames = call.GetArgument<HeaderName[]>(1);
-                        interceptedCreated = call.GetArgument<DateTimeOffset>(2);
-                        interceptedExpires = call.GetArgument<TimeSpan>(3);
+                        interceptedSignatureAlgorithmName = call.GetArgument<string>(1);
+                        interceptedHeaderNames = call.GetArgument<HeaderName[]>(2);
+                        interceptedCreated = call.GetArgument<DateTimeOffset>(3);
+                        interceptedExpires = call.GetArgument<TimeSpan>(4);
                     })
                     .Returns(_composedSignatureString);
 
                 await _method(_signedRequest, _signature, _client);
 
                 interceptedCreated.Should().Be(_signature.Created);
+                interceptedSignatureAlgorithmName.Should().Be("TEST");
                 interceptedExpires.Should().Be(_signature.Expires.Value - _signature.Created.Value);
                 interceptedRequest.Should().Be(_signedRequest);
                 interceptedHeaderNames.Should().Equal(_signature.Headers);
@@ -101,8 +106,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 A.CallTo(() => _base64Converter.FromBase64(_signature.String))
                     .Returns(receivedSignature);
 
-                A.CallTo(() => _client.SignatureAlgorithm.VerifySignature(_composedSignatureString, A<byte[]>.That.IsSameSequenceAs(receivedSignature)))
-                    .Returns(false);
+                _signatureAlgorithm.SetVerificationResult(false);
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
@@ -115,9 +119,8 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 var receivedSignature = new byte[] {0x01, 0x02, 0x03};
                 A.CallTo(() => _base64Converter.FromBase64(_signature.String))
                     .Returns(receivedSignature);
-
-                A.CallTo(() => _client.SignatureAlgorithm.VerifySignature(_composedSignatureString, A<byte[]>.That.IsSameSequenceAs(receivedSignature)))
-                    .Returns(true);
+                
+                _signatureAlgorithm.SetVerificationResult(true);
 
                 var actual = await _method(_signedRequest, _signature, _client);
 

@@ -9,14 +9,11 @@ using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public static partial class Extensions {
-        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequest request, ISignatureAlgorithm signatureAlgorithm, Signature signature) {
-            if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
+        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequest request, Signature signature) {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
-            
             if (request == null) return null;
             
             var requestMessage = new HttpRequestForSigning {
-                SignatureAlgorithmName = signatureAlgorithm.Name,
                 RequestUri = GetRequestUri(request),
                 Method = string.IsNullOrEmpty(request.Method)
                     ? HttpMethod.Get

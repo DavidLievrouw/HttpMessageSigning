@@ -5,17 +5,17 @@ namespace Dalion.HttpMessageSigning.SigningString {
     internal class CreatedHeaderAppender : IHeaderAppender {
         private static readonly string[] AlgorithmNamesThatDoNotAllowCreatedHeader = {"rsa", "hmac", "ecdsa"};
         
-        private readonly HttpRequestForSigning _request;
+        private readonly string _signatureAlgorithmName;
         private readonly DateTimeOffset _timeOfComposing;
 
-        public CreatedHeaderAppender(HttpRequestForSigning request, DateTimeOffset timeOfComposing) {
-            _request = request ?? throw new ArgumentNullException(nameof(request));
+        public CreatedHeaderAppender(string signatureAlgorithmName, DateTimeOffset timeOfComposing) {
+            _signatureAlgorithmName = signatureAlgorithmName ?? throw new ArgumentNullException(nameof(signatureAlgorithmName));
             _timeOfComposing = timeOfComposing;
         }
 
         public string BuildStringToAppend(HeaderName header) {
-            if (AlgorithmNamesThatDoNotAllowCreatedHeader.Contains(_request.SignatureAlgorithmName, StringComparer.OrdinalIgnoreCase)) {
-                throw new HttpMessageSigningException($"It is not allowed to include the {HeaderName.PredefinedHeaderNames.Created} header in the signature, when the signature algorithm is '{_request.SignatureAlgorithmName}'.");
+            if (AlgorithmNamesThatDoNotAllowCreatedHeader.Contains(_signatureAlgorithmName, StringComparer.OrdinalIgnoreCase)) {
+                throw new HttpMessageSigningException($"It is not allowed to include the {HeaderName.PredefinedHeaderNames.Created} header in the signature, when the signature algorithm is '{_signatureAlgorithmName}'.");
             }
             
             // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable

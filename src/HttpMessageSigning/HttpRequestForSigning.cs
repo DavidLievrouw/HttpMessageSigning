@@ -6,7 +6,6 @@ namespace Dalion.HttpMessageSigning {
         public HttpMethod Method { get; set; } = HttpMethod.Get;
         public string RequestUri { get; set; }
         public HeaderDictionary Headers { get; set; } = new HeaderDictionary();
-        public string SignatureAlgorithmName { get; set; }
         public byte[] Body { get; set; }
         
         public object Clone() {
@@ -14,8 +13,7 @@ namespace Dalion.HttpMessageSigning {
                 Method = Method,
                 RequestUri = RequestUri,
                 Body = (byte[]) Body?.Clone(),
-                Headers = Headers == null ? null : new HeaderDictionary(Headers.ToDictionary()),
-                SignatureAlgorithmName = SignatureAlgorithmName
+                Headers = Headers == null ? null : new HeaderDictionary(Headers.ToDictionary())
             };
         }
     }

@@ -85,7 +85,13 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 var composedString = "{the composed string}";
                 string interceptedNonce = null;
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning, _settings.Expires, _nonce))
+                A.CallTo(() => _signingStringComposer.Compose(
+                        A<HttpRequestForSigning>._, 
+                        _settings.SignatureAlgorithm.Name,
+                        _settings.Headers, 
+                        _timeOfSigning, 
+                        _settings.Expires, 
+                        _nonce))
                     .Invokes(call => interceptedNonce = call.GetArgument<string>(4))
                     .Returns(composedString);
 
@@ -100,8 +106,14 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 var composedString = "{the composed string}";
                 string interceptedNonce = null;
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning, _settings.Expires, _nonce))
-                    .Invokes(call => interceptedNonce = call.GetArgument<string>(4))
+                A.CallTo(() => _signingStringComposer.Compose(
+                        A<HttpRequestForSigning>._, 
+                        _settings.SignatureAlgorithm.Name,
+                        _settings.Headers, 
+                        _timeOfSigning, 
+                        _settings.Expires, 
+                        _nonce))
+                    .Invokes(call => interceptedNonce = call.GetArgument<string>(5))
                     .Returns(composedString);
 
                 await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
@@ -113,7 +125,13 @@ namespace Dalion.HttpMessageSigning.Signing {
             public async Task CalculatesSignatureForExpectedRequestForSigning() {
                 var composedString = "{the composed string}";
                 HttpRequestForSigning interceptedRequest = null;
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning, _settings.Expires, _nonce))
+                A.CallTo(() => _signingStringComposer.Compose(
+                        A<HttpRequestForSigning>._, 
+                        _settings.SignatureAlgorithm.Name,
+                        _settings.Headers, 
+                        _timeOfSigning, 
+                        _settings.Expires, 
+                        _nonce))
                     .Invokes(call => interceptedRequest = call.GetArgument<HttpRequestForSigning>(0))
                     .Returns(composedString);
 
@@ -122,15 +140,20 @@ namespace Dalion.HttpMessageSigning.Signing {
                 interceptedRequest.Should().BeEquivalentTo(new HttpRequestForSigning {
                     Method = HttpMethod.Post,
                     RequestUri = "/api/resource/id1",
-                    Headers = new HeaderDictionary(new Dictionary<string, StringValues> {{"H1", "v1"}}),
-                    SignatureAlgorithmName = "Custom"
+                    Headers = new HeaderDictionary(new Dictionary<string, StringValues> {{"H1", "v1"}})
                 });
             }
 
             [Fact]
             public async Task ReturnsSignatureWithCalculatedSignatureString() {
                 var composedString = "{the composed string}";
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning, _settings.Expires, _nonce))
+                A.CallTo(() => _signingStringComposer.Compose(
+                        A<HttpRequestForSigning>._, 
+                        _settings.SignatureAlgorithm.Name,
+                        _settings.Headers, 
+                        _timeOfSigning, 
+                        _settings.Expires, 
+                        _nonce))
                     .Returns(composedString);
 
                 var signatureHash = new byte[] {0x03, 0x04};
@@ -189,7 +212,13 @@ namespace Dalion.HttpMessageSigning.Signing {
                 };
                 
                 var composedString = "{the composed string}";
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, _settings.Headers, _timeOfSigning, _settings.Expires, _nonce))
+                A.CallTo(() => _signingStringComposer.Compose(
+                        A<HttpRequestForSigning>._, 
+                        _settings.SignatureAlgorithm.Name,
+                        _settings.Headers, 
+                        _timeOfSigning, 
+                        _settings.Expires, 
+                        _nonce))
                     .Returns(composedString);
                 
                 await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
