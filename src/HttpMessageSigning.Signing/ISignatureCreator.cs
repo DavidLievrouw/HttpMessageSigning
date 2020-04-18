@@ -1,8 +1,9 @@
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal interface ISignatureCreator {
-        Signature CreateSignature(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfSigning);
+        Task<Signature> CreateSignature(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfSigning);
     }
 }
