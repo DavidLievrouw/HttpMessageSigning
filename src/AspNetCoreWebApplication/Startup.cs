@@ -16,7 +16,6 @@ namespace WebApplication {
     public class Startup {
         public void ConfigureServices(IServiceCollection services) {
             services
-                .Configure<KestrelServerOptions>(options => { options.AllowSynchronousIO = true; })
                 .AddRouting(options => { })
                 .AddControllersWithViews().Services
                 .AddAuthentication(SignedHttpRequestDefaults.AuthenticationScheme)
