@@ -3,14 +3,17 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public class SigningSettingsSanitizerTests {
+        private readonly FakeLogger<SigningSettingsSanitizer> _logger;
         private readonly SigningSettingsSanitizer _sut;
 
         public SigningSettingsSanitizerTests() {
-            _sut = new SigningSettingsSanitizer();
+            _logger = new FakeLogger<SigningSettingsSanitizer>();
+            _sut = new SigningSettingsSanitizer(_logger);
         }
 
         public class SanitizeHeaderNamesToInclude : SigningSettingsSanitizerTests {
@@ -75,7 +78,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 _settings.Headers.Should().NotContain(HeaderName.PredefinedHeaderNames.Date);
             }
-            
+
             [Fact]
             public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_AddsCreatedToHeaders() {
                 _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("SomethingElse");
@@ -173,6 +176,32 @@ namespace Dalion.HttpMessageSigning.Signing {
                 _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
 
                 _settings.Headers.Should().NotContain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
+            }
+
+            [Theory]
+            [InlineData("RSA")]
+            [InlineData("HMAC")]
+            [InlineData("ECDSA")]
+            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndCreatedHeaderIsPartOfTheSignature_LogsWarning(string algorithmName) {
+                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
+                _settings.Headers = new[] {HeaderName.PredefinedHeaderNames.RequestTarget, HeaderName.PredefinedHeaderNames.Created};
+
+                _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
+
+                _logger.LoggedEntries.Should().Contain(entry => entry.Level == LogLevel.Warning && entry.Message.Contains(HeaderName.PredefinedHeaderNames.Created));
+            }
+
+            [Theory]
+            [InlineData("RSA")]
+            [InlineData("HMAC")]
+            [InlineData("ECDSA")]
+            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndExpiresHeaderIsPartOfTheSignature_LogsWarning(string algorithmName) {
+                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
+                _settings.Headers = new[] {HeaderName.PredefinedHeaderNames.RequestTarget, HeaderName.PredefinedHeaderNames.Expires};
+
+                _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
+
+                _logger.LoggedEntries.Should().Contain(entry => entry.Level == LogLevel.Warning && entry.Message.Contains(HeaderName.PredefinedHeaderNames.Expires));
             }
         }
     }

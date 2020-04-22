@@ -1,9 +1,16 @@
 using System;
 using System.Linq;
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class SigningSettingsSanitizer : ISigningSettingsSanitizer {
+        private readonly ILogger<SigningSettingsSanitizer> _logger;
+        
+        public SigningSettingsSanitizer(ILogger<SigningSettingsSanitizer> logger = null) {
+            _logger = logger;
+        }
+
         public void SanitizeHeaderNamesToInclude(SigningSettings signingSettings, HttpRequestMessage request) {
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
             if (request == null) throw new ArgumentNullException(nameof(request));
@@ -32,6 +39,13 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (!string.IsNullOrEmpty(signingSettings.DigestHashAlgorithm.Name) && request.Method.SupportsBody() &&
                 !signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
                 signingSettings.Headers = AppendHeaderName(signingSettings.Headers, HeaderName.PredefinedHeaderNames.Digest);
+            }
+            
+            if (signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Created) && !signingSettings.SignatureAlgorithm.ShouldIncludeCreatedHeader()) {
+                _logger?.LogWarning($"When using signature algorithm '{signingSettings.SignatureAlgorithm.Name}', the '{HeaderName.PredefinedHeaderNames.Created}' header should not be included in the signing string.");
+            }
+            if (signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires) && !signingSettings.SignatureAlgorithm.ShouldIncludeExpiresHeader()) {
+                _logger?.LogWarning($"When using signature algorithm '{signingSettings.SignatureAlgorithm.Name}', the '{HeaderName.PredefinedHeaderNames.Expires}' header should not be included in the signing string.");
             }
         }
 
