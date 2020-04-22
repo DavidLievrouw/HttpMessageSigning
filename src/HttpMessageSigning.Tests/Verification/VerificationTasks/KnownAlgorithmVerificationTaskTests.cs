@@ -37,6 +37,15 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             [Fact]
+            public async Task WhenAlgorithmIsHS2019_ReturnsNull() {
+                _signature.Algorithm = "hs2019";
+                
+                var actual = await _method(_signedRequest, _signature, _client);
+
+                actual.Should().BeNull();
+            }
+            
+            [Fact]
             public async Task WhenAlgorithmDoesNotConsistOfSignatureAndHash_ReturnsSignatureVerificationFailure() {
                 _signature.Algorithm = "hmac";
                 

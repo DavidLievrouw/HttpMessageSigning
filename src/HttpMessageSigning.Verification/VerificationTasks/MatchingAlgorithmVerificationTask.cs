@@ -16,6 +16,9 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _logger?.LogDebug("Algorithm match verification is not required, because there is no algorithm specified in the signature.");
                 return null;
             }
+            
+            // hs2019 is always ok
+            if (signature.Algorithm == "hs2019") return null;
 
             var algorithmParts = new List<string>();
             if (!string.IsNullOrEmpty(signature.Algorithm)) {
