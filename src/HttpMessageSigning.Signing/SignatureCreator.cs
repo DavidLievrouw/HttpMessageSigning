@@ -26,8 +26,6 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             
-            settings.Validate();
-
             var nonce = settings.EnableNonce ? _nonceGenerator.GenerateNonce() : null;
             var requestForSigning = request.ToRequestForSigning();
             var signingString = _signingStringComposer.Compose(

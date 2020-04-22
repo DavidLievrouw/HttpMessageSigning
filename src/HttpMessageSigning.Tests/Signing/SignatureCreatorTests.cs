@@ -64,13 +64,6 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void GivenInvalidSettings_ThrowsValidationException() {
-                _settings.KeyId = KeyId.Empty; // Make invalid
-                Func<Task> act = () => _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
-                act.Should().Throw<ValidationException>();
-            }
-
-            [Fact]
             public async Task WhenNonceIsDisabled_UsesGeneratedNonceNonce() {
                 _settings.EnableNonce = false;
                 

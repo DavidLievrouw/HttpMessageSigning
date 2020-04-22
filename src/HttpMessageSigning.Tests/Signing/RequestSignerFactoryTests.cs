@@ -65,13 +65,6 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void GivenInvalidSettings_ThrowsValidationException() {
-                _signingSettings.SignatureAlgorithm = null; // Make invalid
-                Action act = () => _sut.Create(_keyId, _signingSettings);
-                act.Should().Throw<ValidationException>();
-            }
-
-            [Fact]
             public void CreatesNewInstanceOfExpectedType() {
                 var actual = _sut.Create(_keyId, _signingSettings);
                 actual.Should().NotBeNull().And.BeAssignableTo<RequestSigner>();

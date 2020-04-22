@@ -34,8 +34,6 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             signingSettings.KeyId = keyId;
 
-            signingSettings.Validate();
-
             return new RequestSigner(
                 _signingSettingsSanitizer,
                 _signatureCreator,
