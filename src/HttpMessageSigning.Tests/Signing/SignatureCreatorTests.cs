@@ -162,7 +162,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
 
-                actual.Algorithm.Should().Be("rsa-sha512");
+                actual.Algorithm.Should().Be("hs2019");
             }
 
             [Fact]
