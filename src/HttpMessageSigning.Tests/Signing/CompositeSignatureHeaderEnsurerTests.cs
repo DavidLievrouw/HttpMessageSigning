@@ -7,15 +7,13 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public class CompositeSignatureHeaderEnsurerTests {
-        private readonly ISignatureHeaderEnsurer _createdHeaderEnsurer;
         private readonly ISignatureHeaderEnsurer _dateHeaderEnsurer;
         private readonly ISignatureHeaderEnsurer _digestHeaderEnsurer;
-        private readonly ISignatureHeaderEnsurer _expiresHeaderEnsurer;
         private readonly CompositeSignatureHeaderEnsurer _sut;
 
         public CompositeSignatureHeaderEnsurerTests() {
-            FakeFactory.Create(out _dateHeaderEnsurer, out _digestHeaderEnsurer, out _createdHeaderEnsurer, out _expiresHeaderEnsurer);
-            _sut = new CompositeSignatureHeaderEnsurer(_dateHeaderEnsurer, _digestHeaderEnsurer, _createdHeaderEnsurer, _expiresHeaderEnsurer);
+            FakeFactory.Create(out _dateHeaderEnsurer, out _digestHeaderEnsurer);
+            _sut = new CompositeSignatureHeaderEnsurer(_dateHeaderEnsurer, _digestHeaderEnsurer);
         }
 
         public class EnsureHeader : CompositeSignatureHeaderEnsurerTests {
@@ -48,8 +46,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
                 A.CallTo(() => _dateHeaderEnsurer.EnsureHeader(_httpRequest, _settings, _timeOfSigning)).MustHaveHappened();
-                A.CallTo(() => _createdHeaderEnsurer.EnsureHeader(_httpRequest, _settings, _timeOfSigning)).MustHaveHappened();
-                A.CallTo(() => _expiresHeaderEnsurer.EnsureHeader(_httpRequest, _settings, _timeOfSigning)).MustHaveHappened();
                 A.CallTo(() => _digestHeaderEnsurer.EnsureHeader(_httpRequest, _settings, _timeOfSigning)).MustHaveHappened();
             }
         }

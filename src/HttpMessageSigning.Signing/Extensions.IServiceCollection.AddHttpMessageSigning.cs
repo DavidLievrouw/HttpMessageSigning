@@ -173,9 +173,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 .AddSingleton<IRegisteredSignerSettingsStore, RegisteredSignerSettingsStore>()
                 .AddSingleton<ISignatureHeaderEnsurer>(provider => new CompositeSignatureHeaderEnsurer(
                     new DateSignatureHeaderEnsurer(),
-                    new DigestSignatureHeaderEnsurer(provider.GetRequiredService<IBase64Converter>()),
-                    new CreatedSignatureHeaderEnsurer(),
-                    new ExpiresSignatureHeaderEnsurer()))
+                    new DigestSignatureHeaderEnsurer(provider.GetRequiredService<IBase64Converter>())))
                 .AddSingleton<IRequestSignerFactory, RequestSignerFactory>();
         }
     }

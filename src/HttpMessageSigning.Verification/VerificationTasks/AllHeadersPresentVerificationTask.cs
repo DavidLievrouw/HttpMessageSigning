@@ -2,6 +2,12 @@ using System.Linq;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class AllHeadersPresentVerificationTask : VerificationTask {
+        private static readonly HeaderName[] PseudoHeaders = {
+            HeaderName.PredefinedHeaderNames.RequestTarget,
+            HeaderName.PredefinedHeaderNames.Created,
+            HeaderName.PredefinedHeaderNames.Expires
+        };
+        
         public override SignatureVerificationFailure VerifySync(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (!signature.Headers.Contains(HeaderName.PredefinedHeaderNames.RequestTarget)) {
                 return SignatureVerificationFailure.HeaderMissing($"The {HeaderName.PredefinedHeaderNames.RequestTarget} header is required to be included in the signature.");
@@ -20,15 +26,10 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             foreach (var headerName in signature.Headers) {
-                var isPresent = false;
-                
-                switch (headerName) {
-                    case string str when str == HeaderName.PredefinedHeaderNames.RequestTarget:
-                        isPresent = true;
-                        break;
-                    default:
-                        isPresent = signedRequest.Headers.Contains(headerName) || signedRequest.Headers.Contains(headerName.ToSanitizedHttpHeaderName());
-                        break;
+                var isPresent = PseudoHeaders.Contains(headerName);
+
+                if (!isPresent) {
+                    isPresent = signedRequest.Headers.Contains(headerName);
                 }
                 
                 if (!isPresent) {

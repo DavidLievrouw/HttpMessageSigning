@@ -5,6 +5,7 @@ using System.Net.Mime;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.Signing;
 using Dalion.HttpMessageSigning.Verification;
@@ -65,39 +66,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.CreatedAndExpiresHeaders {
         }
         
         [Fact]
-        public async Task SupportsCreatedAndExpiresHeadersFromSpec() {
-            var request = new HttpRequestMessage {
-                RequestUri = new Uri("https://httpbin.org/post"),
-                Method = HttpMethod.Post,
-                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
-                Headers = {
-                    {"Dalion-App-Id", "ringor"}
-                }
-            };
-            
-            var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
-            await requestSigner.Sign(request);
-
-            var receivedRequest = await request.ToServerSideHttpRequest();
-            receivedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Created, receivedRequest.Headers[HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName()]);
-            receivedRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName());
-            receivedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Expires, receivedRequest.Headers[HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName()]);
-            receivedRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName());
-
-            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
-            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
-                var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
-                _output.WriteLine("Request signature verification succeeded: {0}", claimsString);
-            }
-            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
-                _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
-                throw new SignatureVerificationException(failureResult.Failure.ToString());
-            }
-        }
-        
-        [Fact]
-        public async Task WhenHeaderIsMissing_ReturnsFailure() {
+        public async Task WhenExpiresHeaderDoesNotMatch_ReturnsFailure() {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post"),
                 Method = HttpMethod.Post,
@@ -111,7 +80,13 @@ namespace Dalion.HttpMessageSigning.SystemTests.CreatedAndExpiresHeaders {
             await requestSigner.Sign(request);
             
             var receivedRequest = await request.ToServerSideHttpRequest();
-            receivedRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName());
+            
+            var signatureStringRegEx = new Regex("expires=(?<expiresValue>[0-9]+)", RegexOptions.Compiled);
+            var match = signatureStringRegEx.Match(receivedRequest.Headers["Authorization"]);
+            receivedRequest.Headers["Authorization"] = receivedRequest.Headers["Authorization"].First()
+                .Replace(
+                    match.Groups["expiresValue"].Value,
+                    (long.Parse(match.Groups["expiresValue"].Value) - 1).ToString());
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             verificationResult.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();

@@ -7,7 +7,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal static class TestModels {
         public static readonly Signature Signature = new Signature {
             KeyId = "app1",
-            Algorithm = "hmac-sha256",
+            Algorithm = "hs2019",
             Headers = new[] {
                 HeaderName.PredefinedHeaderNames.RequestTarget,
                 HeaderName.PredefinedHeaderNames.Date,

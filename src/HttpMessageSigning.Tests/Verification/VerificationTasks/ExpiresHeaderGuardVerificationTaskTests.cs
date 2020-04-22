@@ -20,32 +20,16 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             public Verify() {
                 _signature = (Signature)TestModels.Signature.Clone();
-                _signature.Algorithm = "hmac-sha256";
+                _signature.Algorithm = "hs2019";
                 _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
                 _signedRequest = (HttpRequestForSigning)TestModels.Request.Clone();
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName(), _signature.Expires.Value.ToUnixTimeSeconds().ToString());
                 _client = new Client(TestModels.Client.Id, TestModels.Client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
             }
 
-            [Theory]
-            [InlineData("RSA")]
-            [InlineData("HMAC")]
-            [InlineData("ECDSA")]
-            public async Task WhenSignatureIncludesExpiresHeader_ButItShouldNot_IsStillOk_ReturnsNull(string algorithm) {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1));
-                _signature.Algorithm = algorithm + "-sha256";
-
-                var actual = await _method(_signedRequest, _signature, client);
-
-                actual.Should().BeNull();
-            }
-            
             [Fact]
             public async Task WhenExpiresHeaderIsMissing_ButItIsRequired_ReturnsSignatureVerificationFailure() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
-                _signature.Algorithm = "hs2019-sha256";
-                _signedRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName());
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("CUSTOM"), TimeSpan.FromMinutes(1));
                 _signature.Expires = null;
                 
                 var actual = await _method(_signedRequest, _signature, client);
@@ -55,49 +39,31 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyAnExpirationTime_ReturnsSignatureVerificationFailure() {
+            public async Task WhenExpiresHeaderIsMissing_AndItIsNotRequired_ReturnsNull() {
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1));
                 _signature.Expires = null;
 
-                var actual = await _method(_signedRequest, _signature, _client);
-
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("INVALID_EXPIRES_HEADER");
-            }
-
-            [Fact]
-            public async Task WhenExpiresHeaderIsNotAValidTimestamp_ReturnsSignatureVerificationFailure() {
-                _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName()] = "{Nonsense}";
-
-                var actual = await _method(_signedRequest, _signature, _client);
-
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("INVALID_EXPIRES_HEADER");
-            }
-
-            [Fact]
-            public async Task WhenExpiresHeaderDoesNotMatchSignatureExpiration_ReturnsSignatureVerificationFailure() {
-                _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName()] = (long.Parse(_signedRequest.Headers[HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName()]) + 1).ToString();
-
-                var actual = await _method(_signedRequest, _signature, _client);
-
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("INVALID_EXPIRES_HEADER");
-            }
-
-            [Fact]
-            public async Task WhenExpiresHeaderMatchesSignatureExpiration_ReturnsNull() {
-                var actual = await _method(_signedRequest, _signature, _client);
+                var actual = await _method(_signedRequest, _signature, client);
 
                 actual.Should().BeNull();
             }
             
             [Fact]
-            public async Task SupportsExpiresHeaderFromSpec() {
-                // See https://stackoverflow.com/a/51039555
-                _signedRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName());
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Expires, _signature.Expires.Value.ToUnixTimeSeconds().ToString());
-                
-                var actual = await _method(_signedRequest, _signature, _client);
+            public async Task WhenExpiresHeaderIsPresent_AndItIsNotRequired_ReturnsNull() {
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1));
+                _signature.Expires = DateTimeOffset.UtcNow.AddMinutes(1);
+
+                var actual = await _method(_signedRequest, _signature, client);
+
+                actual.Should().BeNull();
+            }
+            
+            [Fact]
+            public async Task WhenExpiresHeaderIsPresent_AndItIsRequired_ReturnsNull() {
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("CUSTOM"), TimeSpan.FromMinutes(1));
+                _signature.Expires = DateTimeOffset.UtcNow.AddMinutes(1);
+
+                var actual = await _method(_signedRequest, _signature, client);
 
                 actual.Should().BeNull();
             }

@@ -63,8 +63,6 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Created})
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Expires})
                     .ToArray();
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName(), DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName(), DateTimeOffset.UtcNow.AddMinutes(1).ToUnixTimeSeconds().ToString());
                 
                 var actual = await _method(_signedRequest, _signature, client);
 
@@ -87,8 +85,6 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [Fact]
             public async Task WhenSignatureShouldContainCreatedHeader_AndItDoes_ReturnsNull() {
                 var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName(), DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName(), DateTimeOffset.UtcNow.AddMinutes(1).ToUnixTimeSeconds().ToString());
                 _signature.Headers = _signature.Headers
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Created})
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Expires})
@@ -102,8 +98,6 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [Fact]
             public async Task WhenSignatureShouldContainCreatedHeader_FromSpec_AndItDoes_ReturnsNull() {
                 var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Created, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Expires, DateTimeOffset.UtcNow.AddMinutes(1).ToUnixTimeSeconds().ToString());
                 _signature.Headers = _signature.Headers
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Created})
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Expires})
@@ -164,8 +158,6 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [Fact]
             public async Task WhenSignatureShouldContainExpiresHeader_AndItDoes_ReturnsNull() {
                 var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName(), DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName(), DateTimeOffset.UtcNow.AddMinutes(1).ToUnixTimeSeconds().ToString());
                 _signature.Headers = _signature.Headers
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Created})
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Expires})
