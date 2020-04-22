@@ -1,5 +1,5 @@
 namespace Dalion.HttpMessageSigning.Verification {
     public static class SignedHttpRequestDefaults {
-        public const string AuthenticationScheme = "SignedHttpRequest";
+        public const string AuthenticationScheme = "Signature";
     }
 }

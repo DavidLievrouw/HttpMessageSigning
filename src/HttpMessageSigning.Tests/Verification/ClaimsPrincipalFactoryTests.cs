@@ -1,7 +1,6 @@
 using System;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using FluentAssertions;
 using Xunit;
 

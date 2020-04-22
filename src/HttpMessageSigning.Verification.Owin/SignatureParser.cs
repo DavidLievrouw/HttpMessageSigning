@@ -7,7 +7,8 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
     internal class SignatureParser : ISignatureParser {
         private readonly ILogger<SignatureParser> _logger;
         private const string AuthorizationHeaderName = "Authorization";
-        private const string AuthorizationScheme = "SignedHttpRequest";
+        private const string LegacyAuthorizationScheme = "SignedHttpRequest";
+        private const string AuthorizationScheme = "Signature";
 
         public SignatureParser(ILogger<SignatureParser> logger = null) {
             _logger = logger;
@@ -26,9 +27,9 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             }
             var authScheme = authHeader.Substring(0, separatorIndex);
-            if (authScheme != AuthorizationScheme)
+            if (authScheme != AuthorizationScheme && authScheme != LegacyAuthorizationScheme)
                 throw new InvalidSignatureException(
-                    $"The specified request does not specify the {AuthorizationScheme} scheme in the {AuthorizationHeaderName} header.");
+                    $"The specified request does not specify the expected {AuthorizationScheme} scheme in the {AuthorizationHeaderName} header.");
 
             if (separatorIndex >= authHeader.Length - 1)
                 throw new InvalidSignatureException(

@@ -62,6 +62,28 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().Throw<InvalidSignatureException>();
             }
+            
+            [Fact]
+            public void SupportsLegacyScheme() {
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", "SignedHttpRequest");
+
+                var actual = _sut.Parse(_request);
+
+                var expected = new Signature {
+                    KeyId = new KeyId("app1"),
+                    Algorithm = "rsa-sha256",
+                    Created = _now,
+                    Expires = _expires,
+                    Headers = new[] {
+                        new HeaderName("(request-target)"),
+                        new HeaderName("date"),
+                        new HeaderName("content-length")
+                    },
+                    String = "xyz123==",
+                    Nonce = "abc123"
+                };
+                actual.Should().BeEquivalentTo(expected);
+            }
 
             [Fact]
             public void WhenRequestHasAnAuthorizationHeaderWithoutParam_ThrowsInvalidSignatureException() {
@@ -225,9 +247,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 string expires = null,
                 string headers = null,
                 string sig = null,
-                string nonce = null) {
+                string nonce = null,
+                string scheme = "Signature") {
                 var param = Compose(keyId, algorithm, created, expires, headers, sig, nonce);
-                request.Headers["Authorization"] = "SignedHttpRequest " + param;
+                request.Headers["Authorization"] = scheme + " " + param;
             }
         }
     }
