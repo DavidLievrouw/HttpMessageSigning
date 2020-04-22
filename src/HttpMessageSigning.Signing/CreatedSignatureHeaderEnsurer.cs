@@ -9,8 +9,12 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
 
-            if (signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Created) && !request.Headers.Contains(HeaderName.PredefinedHeaderNames.Created)) {
-                request.Headers.Add(HeaderName.PredefinedHeaderNames.Created, timeOfSigning.ToUnixTimeSeconds().ToString());
+            // Cannot send headers with braces in .NET
+            // See https://stackoverflow.com/a/51039555
+            var sanitizedHttpHeaderName = HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName();
+            
+            if (signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Created) && !request.Headers.Contains(sanitizedHttpHeaderName)) {
+                request.Headers.Add(sanitizedHttpHeaderName, timeOfSigning.ToUnixTimeSeconds().ToString());
             }
             
             return Task.CompletedTask;

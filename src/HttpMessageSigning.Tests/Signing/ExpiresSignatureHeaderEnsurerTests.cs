@@ -56,11 +56,9 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public void WhenExpiresHeaderIsRequired_ButItIsNotInRequest_AddsIt() {
-                _httpRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Expires);
-
                 _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().Contain(h => h.Key == HeaderName.PredefinedHeaderNames.Expires && h.Value.Single() == _expectedHeaderValue);
+                _httpRequest.Headers.Should().Contain(h => h.Key == HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName() && h.Value.Single() == _expectedHeaderValue);
             }
             
             [Fact]
@@ -69,7 +67,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().NotContain(h => h.Key == HeaderName.PredefinedHeaderNames.Expires);
+                _httpRequest.Headers.Should().NotContain(h => h.Key == HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName());
             }
         }
     }

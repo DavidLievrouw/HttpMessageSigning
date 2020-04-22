@@ -8,9 +8,13 @@ namespace Dalion.HttpMessageSigning.Signing {
         public Task EnsureHeader(HttpRequestMessage request, SigningSettings signingSettings, DateTimeOffset timeOfSigning) {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
+
+            // Cannot send headers with braces in .NET
+            // See https://stackoverflow.com/a/51039555
+            var sanitizedHttpHeaderName = HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName();
             
-            if (signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires) && !request.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires)) {
-                request.Headers.Add(HeaderName.PredefinedHeaderNames.Expires, timeOfSigning.Add(signingSettings.Expires).ToUnixTimeSeconds().ToString());
+            if (signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires) && !request.Headers.Contains(sanitizedHttpHeaderName)) {
+                request.Headers.Add(sanitizedHttpHeaderName, timeOfSigning.Add(signingSettings.Expires).ToUnixTimeSeconds().ToString());
             }
             
             return Task.CompletedTask;

@@ -11,7 +11,13 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 return SignatureVerificationFailure.InvalidCreatedHeader($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.");
             }
 
-            var createdHeaderValues = signedRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Created);
+            var createdHeaderValues = signedRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName());
+            
+            if (createdHeaderValues == StringValues.Empty) {
+                // Fallback to '(created)' header
+                createdHeaderValues = signedRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Created);
+            }
+            
             if (createdHeaderValues != StringValues.Empty && signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Created)) {
                 if (!long.TryParse(createdHeaderValues.First(), out var parsedCreatedValue)) {
                     return SignatureVerificationFailure.InvalidCreatedHeader(

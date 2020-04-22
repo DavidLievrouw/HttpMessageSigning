@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _signature.Algorithm = "hmac-sha256";
                 _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Created}).ToArray();
                 _signedRequest = (HttpRequestForSigning)TestModels.Request.Clone();
-                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Created, _signature.Created.Value.ToUnixTimeSeconds().ToString());
+                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName(), _signature.Created.Value.ToUnixTimeSeconds().ToString());
                 _client = new Client(TestModels.Client.Id, TestModels.Client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
             }
@@ -45,7 +45,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             public async Task WhenCreatedHeaderIsMissing_ButItIsRequired_ReturnsSignatureVerificationFailure() {
                 var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = "hs2019-sha256";
-                _signedRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Created);
+                _signedRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName());
                 _signature.Created = null;
                 
                 var actual = await _method(_signedRequest, _signature, client);
@@ -66,7 +66,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenCreatedHeaderIsNotAValidTimestamp_ReturnsSignatureVerificationFailure() {
-                _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Created] = "{Nonsense}";
+                _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName()] = "{Nonsense}";
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
@@ -76,7 +76,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenCreatedHeaderDoesNotMatchSignatureCreation_ReturnsSignatureVerificationFailure() {
-                _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Created] = (long.Parse(_signedRequest.Headers[HeaderName.PredefinedHeaderNames.Created]) + 1).ToString();
+                _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName()] = (long.Parse(_signedRequest.Headers[HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName()]) + 1).ToString();
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
@@ -86,6 +86,17 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenCreatedHeaderMatchesSignatureCreation_ReturnsNull() {
+                var actual = await _method(_signedRequest, _signature, _client);
+
+                actual.Should().BeNull();
+            }
+            
+            [Fact]
+            public async Task SupportsCreatedHeaderFromSpec() {
+                // See https://stackoverflow.com/a/51039555
+                _signedRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Created.ToSanitizedHttpHeaderName());
+                _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Created, _signature.Created.Value.ToUnixTimeSeconds().ToString());
+                
                 var actual = await _method(_signedRequest, _signature, _client);
 
                 actual.Should().BeNull();

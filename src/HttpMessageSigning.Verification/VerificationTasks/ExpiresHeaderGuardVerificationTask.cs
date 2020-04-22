@@ -11,7 +11,13 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 return SignatureVerificationFailure.InvalidExpiresHeader($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.");
             }
 
-            var expiresHeaderValues = signedRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Expires);
+            var expiresHeaderValues = signedRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Expires.ToSanitizedHttpHeaderName());
+
+            if (expiresHeaderValues == StringValues.Empty) {
+                // Fallback to '(expires)' header
+                expiresHeaderValues = signedRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Expires);
+            }
+            
             if (expiresHeaderValues != StringValues.Empty && signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires)) {
                 if (!long.TryParse(expiresHeaderValues.First(), out var parsedExpiresValue)) {
                     return SignatureVerificationFailure.InvalidExpiresHeader(

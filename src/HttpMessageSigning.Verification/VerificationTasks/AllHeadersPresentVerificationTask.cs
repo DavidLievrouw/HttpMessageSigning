@@ -18,12 +18,27 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             if (client.SignatureAlgorithm.ShouldIncludeExpiresHeader() && !signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires)) {
                 return SignatureVerificationFailure.HeaderMissing($"The inclusion of the {HeaderName.PredefinedHeaderNames.Expires} header is required when using security algorithm '{client.SignatureAlgorithm.Name}'.");
             }
-            
+
             foreach (var headerName in signature.Headers) {
-                if (headerName != HeaderName.PredefinedHeaderNames.RequestTarget) {
-                    if (!signedRequest.Headers.Contains(headerName)) {
-                        return SignatureVerificationFailure.HeaderMissing($"The request header {headerName} is missing, but it is required to validate the signature.");
-                    }
+                var isPresent = false;
+                
+                switch (headerName) {
+                    case string str when str == HeaderName.PredefinedHeaderNames.Expires:
+                        isPresent = signedRequest.Headers.Contains(headerName.ToSanitizedHttpHeaderName());
+                        break;
+                    case string str when str == HeaderName.PredefinedHeaderNames.Created:
+                        isPresent = signedRequest.Headers.Contains(headerName.ToSanitizedHttpHeaderName());
+                        break;
+                    case string str when str == HeaderName.PredefinedHeaderNames.RequestTarget:
+                        isPresent = true;
+                        break;
+                    default:
+                        isPresent = signedRequest.Headers.Contains(headerName);
+                        break;
+                }
+                
+                if (!isPresent) {
+                    return SignatureVerificationFailure.HeaderMissing($"The request header {headerName} is missing, but it is required to validate the signature.");
                 }
             }
             
