@@ -18,17 +18,14 @@ namespace Benchmark {
 
             var bodyTask = clientRequest.Content?.ReadAsStreamAsync();
             if (bodyTask != null) request.Body = await bodyTask;
-
-            if (clientRequest.Headers.Contains("Dalion-App-Id")) {
-                request.Headers.Add("Dalion-App-Id", clientRequest.Headers.GetValues("Dalion-App-Id").ToArray());
-            }
-
-            if (clientRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
-                request.Headers.Add(HeaderName.PredefinedHeaderNames.Digest, clientRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Digest).ToArray());
-            }
-
-            if (clientRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Date)) {
-                request.Headers.Add(HeaderName.PredefinedHeaderNames.Date, clientRequest.Headers.GetValues(HeaderName.PredefinedHeaderNames.Date).ToArray());
+            
+            foreach (var header in clientRequest.Headers) {
+                if (request.Headers.ContainsKey(header.Key)) {
+                    request.Headers[header.Key] = clientRequest.Headers.GetValues(header.Key).ToArray();
+                }
+                else {
+                    request.Headers.Add(header.Key, clientRequest.Headers.GetValues(header.Key).ToArray());
+                }
             }
 
             return request;

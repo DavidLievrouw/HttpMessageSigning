@@ -23,17 +23,11 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 var isPresent = false;
                 
                 switch (headerName) {
-                    case string str when str == HeaderName.PredefinedHeaderNames.Expires:
-                        isPresent = signedRequest.Headers.Contains(headerName.ToSanitizedHttpHeaderName());
-                        break;
-                    case string str when str == HeaderName.PredefinedHeaderNames.Created:
-                        isPresent = signedRequest.Headers.Contains(headerName.ToSanitizedHttpHeaderName());
-                        break;
                     case string str when str == HeaderName.PredefinedHeaderNames.RequestTarget:
                         isPresent = true;
                         break;
                     default:
-                        isPresent = signedRequest.Headers.Contains(headerName);
+                        isPresent = signedRequest.Headers.Contains(headerName) || signedRequest.Headers.Contains(headerName.ToSanitizedHttpHeaderName());
                         break;
                 }
                 

@@ -33,12 +33,12 @@ namespace Dalion.HttpMessageSigning {
         /// </summary>
         /// <remarks>Set to 'default' to disable Digest header generation.</remarks>
         public HashAlgorithmName DigestHashAlgorithm { get; set; } = default;
-        
+
         /// <summary>
         /// Gets or sets he ordered list of names of request headers to include when generating the signature for the message.
         /// </summary>
         /// <remarks>When empty, the default headers will be included, according to the spec.</remarks>
-        public HeaderName[] Headers { get; set; } = Array.Empty<HeaderName>();
+        public HeaderName[] Headers { get; set; } = {HeaderName.PredefinedHeaderNames.RequestTarget};
 
         /// <summary>
         /// Gets or sets the name of the authorization scheme for the authorization header.

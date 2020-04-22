@@ -33,7 +33,12 @@ namespace Console {
                     new KeyId(KeyId),
                     provider => new SigningSettings {
                         SignatureAlgorithm = SignatureAlgorithm.CreateForSigning(Secret, HashAlgorithmName.SHA512),
-                        DigestHashAlgorithm = HashAlgorithmName.SHA256
+                        DigestHashAlgorithm = HashAlgorithmName.SHA256,
+                        Headers = new [] {
+                            HeaderName.PredefinedHeaderNames.RequestTarget,
+                            HeaderName.PredefinedHeaderNames.Created,
+                            HeaderName.PredefinedHeaderNames.Expires
+                        }
                     });
         }
 

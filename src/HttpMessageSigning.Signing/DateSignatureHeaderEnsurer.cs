@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
 
-            if (!request.Headers.Date.HasValue) {
+            if (signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Date) && !request.Headers.Date.HasValue) {
                 request.Headers.Date = timeOfSigning;
             }
             

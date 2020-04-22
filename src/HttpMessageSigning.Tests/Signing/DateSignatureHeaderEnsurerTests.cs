@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -61,7 +62,17 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public async Task WhenRequestDoesNotHaveADateValue_SetsDateValueToTimeOfSigning() {
+            public async Task WhenRequestDoesNotHaveADateValue_AndItIsNotNeeded_DoesNotSetDateValue() {
+                _settings.Headers = _settings.Headers.Where(h => h != HeaderName.PredefinedHeaderNames.Date).ToArray();
+                _httpRequest.Headers.Date = null;
+
+                await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
+
+                _httpRequest.Headers.Date.Should().BeNull();
+            }
+            
+            [Fact]
+            public async Task WhenRequestDoesNotHaveADateValue_AndItIsRequested_SetsDateValueToTimeOfSigning() {
                 _httpRequest.Headers.Date = null;
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
