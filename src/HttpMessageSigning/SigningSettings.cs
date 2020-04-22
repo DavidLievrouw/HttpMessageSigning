@@ -35,11 +35,16 @@ namespace Dalion.HttpMessageSigning {
         public HashAlgorithmName DigestHashAlgorithm { get; set; } = default;
         
         /// <summary>
-        /// The ordered list of names of request headers to include when generating the signature for the message.
+        /// Gets or sets he ordered list of names of request headers to include when generating the signature for the message.
         /// </summary>
         /// <remarks>When empty, the default headers will be included, according to the spec.</remarks>
         public HeaderName[] Headers { get; set; } = Array.Empty<HeaderName>();
 
+        /// <summary>
+        /// Gets or sets the name of the authorization scheme for the authorization header.
+        /// </summary>
+        public string AuthorizationScheme { get; set; } = "Signature";
+        
         /// <summary>
         /// Gets or sets the <see cref="RequestSigningEvents"/> to notify when signing requests.
         /// </summary>
@@ -53,7 +58,8 @@ namespace Dalion.HttpMessageSigning {
             if (KeyId == KeyId.Empty) throw new ValidationException($"The signing settings do not specify a valid {nameof(KeyId)}.");
             if (SignatureAlgorithm == null) throw new ValidationException($"The signing settings do not specify a valid {nameof(SignatureAlgorithm)}.");
             if (Expires <= TimeSpan.Zero) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
-
+            if (string.IsNullOrEmpty(AuthorizationScheme)) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(AuthorizationScheme)}.");
+            
             if (Headers != null && Headers.Contains(HeaderName.PredefinedHeaderNames.Created)) {
                 throw new PlatformNotSupportedException($"The current platform disallows headers with token separator characters. Disallowed header: {HeaderName.PredefinedHeaderNames.Created}.");
             }
@@ -72,7 +78,9 @@ namespace Dalion.HttpMessageSigning {
                 Headers = (HeaderName[])Headers?.Clone(),
                 KeyId = KeyId,
                 SignatureAlgorithm = SignatureAlgorithm,
-                DigestHashAlgorithm = DigestHashAlgorithm
+                DigestHashAlgorithm = DigestHashAlgorithm,
+                AuthorizationScheme = AuthorizationScheme,
+                EnableNonce = EnableNonce
             };
         }
     }

@@ -18,7 +18,9 @@ namespace Dalion.HttpMessageSigning {
                     HeaderName.PredefinedHeaderNames.Date,
                     new HeaderName("dalion_app_id")
                 },
-                DigestHashAlgorithm = default
+                DigestHashAlgorithm = HashAlgorithmName.SHA256,
+                AuthorizationScheme = "UnitTestAuth",
+                EnableNonce = true
             };
         }
 
@@ -90,6 +92,15 @@ namespace Dalion.HttpMessageSigning {
                 Action act = () => _sut.Validate();
                 act.Should().Throw<PlatformNotSupportedException>();
             }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void GivenNullOrEmptyAuthorizationScheme_ThrowsValidationException(string nullOrEmpty) {
+                _sut.AuthorizationScheme = nullOrEmpty;
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
         }
 
         public class Dispose : SigningSettingsTests {
@@ -112,6 +123,14 @@ namespace Dalion.HttpMessageSigning {
                 Action act = () => _sut.Dispose();
                 
                 act.Should().NotThrow();
+            }
+        }
+
+        public class Clone : SigningSettingsTests {
+            [Fact]
+            public void ClonesAllPropertiesExceptEvents() {
+                var actual = (SigningSettings)_sut.Clone();
+                actual.Should().BeEquivalentTo(_sut, options => options.Excluding(_ => _.Events));
             }
         }
     }

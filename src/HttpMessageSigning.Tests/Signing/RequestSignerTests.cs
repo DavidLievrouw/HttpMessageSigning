@@ -36,7 +36,8 @@ namespace Dalion.HttpMessageSigning.Signing {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
                     HeaderName.PredefinedHeaderNames.Date,
                     new HeaderName("dalion_app_id")
-                }
+                },
+                AuthorizationScheme = "UnitTestAuth"
             };
             _sut = new RequestSigner(
                 _signatureCreator,
@@ -93,7 +94,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 await _sut.Sign(_httpRequest);
                 
-                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("SignedHttpRequest", "signature=abc123="));
+                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("UnitTestAuth", "signature=abc123="));
             }
             
             [Fact]
@@ -140,7 +141,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.Sign(_httpRequest);
 
-                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("SignedHttpRequest", "signature=abc123="));
+                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("UnitTestAuth", "signature=abc123="));
             }
 
             [Fact]
@@ -159,7 +160,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.Sign(_httpRequest);
 
-                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("SignedHttpRequest", "signature=abc123="));
+                _httpRequest.Headers.Authorization.Should().Be(new AuthenticationHeaderValue("UnitTestAuth", "signature=abc123="));
             }
 
             [Fact]

@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class RequestSigner : IRequestSigner {
-        private const string AuthorizationScheme = "SignedHttpRequest";
-        
         private readonly ISignatureCreator _signatureCreator;
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;
         private readonly SigningSettings _signingSettings;
@@ -50,9 +48,9 @@ namespace Dalion.HttpMessageSigning.Signing {
                 var signature = await _signatureCreator.CreateSignature(request, clonedSettings, timeOfSigning);
                 var authParam = _authorizationHeaderParamCreator.CreateParam(signature);
 
-                _logger?.LogDebug("Setting Authorization scheme to '{0}' and param to '{1}'.", AuthorizationScheme, authParam);
+                _logger?.LogDebug("Setting Authorization scheme to '{0}' and param to '{1}'.", clonedSettings.AuthorizationScheme, authParam);
 
-                request.Headers.Authorization = new AuthenticationHeaderValue(AuthorizationScheme, authParam);
+                request.Headers.Authorization = new AuthenticationHeaderValue(clonedSettings.AuthorizationScheme, authParam);
                 
                 var onRequestSignedTask = _signingSettings.Events?.OnRequestSigned?.Invoke(request, signature, clonedSettings);
                 if (onRequestSignedTask != null) await onRequestSignedTask;
