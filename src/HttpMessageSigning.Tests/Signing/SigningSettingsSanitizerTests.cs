@@ -8,12 +8,10 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public class SigningSettingsSanitizerTests {
-        private readonly FakeLogger<SigningSettingsSanitizer> _logger;
         private readonly SigningSettingsSanitizer _sut;
 
         public SigningSettingsSanitizerTests() {
-            _logger = new FakeLogger<SigningSettingsSanitizer>();
-            _sut = new SigningSettingsSanitizer(_logger);
+            _sut = new SigningSettingsSanitizer();
         }
 
         public class SanitizeHeaderNamesToInclude : SigningSettingsSanitizerTests {
@@ -176,32 +174,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                 _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
 
                 _settings.Headers.Should().NotContain(_ => _.Value == HeaderName.PredefinedHeaderNames.Digest);
-            }
-
-            [Theory]
-            [InlineData("RSA")]
-            [InlineData("HMAC")]
-            [InlineData("ECDSA")]
-            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndCreatedHeaderIsPartOfTheSignature_LogsWarning(string algorithmName) {
-                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
-                _settings.Headers = new[] {HeaderName.PredefinedHeaderNames.RequestTarget, HeaderName.PredefinedHeaderNames.Created};
-
-                _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
-
-                _logger.LoggedEntries.Should().Contain(entry => entry.Level == LogLevel.Warning && entry.Message.Contains(HeaderName.PredefinedHeaderNames.Created));
-            }
-
-            [Theory]
-            [InlineData("RSA")]
-            [InlineData("HMAC")]
-            [InlineData("ECDSA")]
-            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndExpiresHeaderIsPartOfTheSignature_LogsWarning(string algorithmName) {
-                _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
-                _settings.Headers = new[] {HeaderName.PredefinedHeaderNames.RequestTarget, HeaderName.PredefinedHeaderNames.Expires};
-
-                _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
-
-                _logger.LoggedEntries.Should().Contain(entry => entry.Level == LogLevel.Warning && entry.Message.Contains(HeaderName.PredefinedHeaderNames.Expires));
             }
         }
     }
