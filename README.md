@@ -34,7 +34,7 @@ When signing a request message, an _Authorization_ header is set in a http reque
 The signing will result in a request header that will look like:
 
 ```
-Authorization="SignedHttpRequest keyId=\"e0e8dcd638334c409e1b88daf821d135\",algorithm=\"hmac-sha256\",created=1584806516,expires=1584806576,headers=\"(request-target) dalion-app-id date digest\",nonce=\"38brRy8BLUajMbUqWumXPg\",signature=\"DUKQVjiirGMMaMOy9qIwKMro46R3BlLsvUQkw1/8sKQ=\""
+Authorization="Signature keyId=\"e0e8dcd638334c409e1b88daf821d135\",algorithm=\"hmac-sha256\",created=1584806516,expires=1584806576,headers=\"(request-target) dalion-app-id date digest\",nonce=\"38brRy8BLUajMbUqWumXPg\",signature=\"DUKQVjiirGMMaMOy9qIwKMro46R3BlLsvUQkw1/8sKQ=\""
 ```
 
 When configured, a _RequestSignerFactory_ is registered in your composition root. Example usage:
