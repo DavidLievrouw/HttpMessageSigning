@@ -59,13 +59,6 @@ namespace Dalion.HttpMessageSigning {
             if (SignatureAlgorithm == null) throw new ValidationException($"The signing settings do not specify a valid {nameof(SignatureAlgorithm)}.");
             if (Expires <= TimeSpan.Zero) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
             if (string.IsNullOrEmpty(AuthorizationScheme)) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(AuthorizationScheme)}.");
-            
-            if (Headers != null && Headers.Contains(HeaderName.PredefinedHeaderNames.Created)) {
-                throw new PlatformNotSupportedException($"The current platform disallows headers with token separator characters. Disallowed header: {HeaderName.PredefinedHeaderNames.Created}.");
-            }
-            if (Headers != null && Headers.Contains(HeaderName.PredefinedHeaderNames.Expires)) {
-                throw new PlatformNotSupportedException($"The current platform disallows headers with token separator characters. Disallowed header: {HeaderName.PredefinedHeaderNames.Expires}.");
-            }
         }
 
         public void Dispose() {

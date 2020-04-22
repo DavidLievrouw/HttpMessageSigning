@@ -7,29 +7,29 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public class RequestSignerFactoryTests {
+        private readonly ISigningSettingsSanitizer _signingSettingsSanitizer;
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;
         private readonly ILogger<RequestSigner> _logger;
         private readonly ISignatureCreator _signatureCreator;
-        private readonly ISignatureHeaderEnsurer _dateHeaderEnsurer;
-        private readonly ISignatureHeaderEnsurer _digestHeaderEnsurer;
+        private readonly ISignatureHeaderEnsurer _signatureHeaderEnsurer;
         private readonly ISystemClock _systemClock;
         private readonly IRegisteredSignerSettingsStore _registeredSignerSettingsStore;
         private readonly RequestSignerFactory _sut;
 
         public RequestSignerFactoryTests() {
             FakeFactory.Create(
+                out _signingSettingsSanitizer,
                 out _signatureCreator,
                 out _authorizationHeaderParamCreator,
-                out _dateHeaderEnsurer,
-                out _digestHeaderEnsurer,
+                out _signatureHeaderEnsurer,
                 out _systemClock,
                 out _logger,
                 out _registeredSignerSettingsStore);
             _sut = new RequestSignerFactory(
+                _signingSettingsSanitizer,
                 _signatureCreator,
                 _authorizationHeaderParamCreator,
-                _dateHeaderEnsurer,
-                _digestHeaderEnsurer,
+                _signatureHeaderEnsurer,
                 _systemClock,
                 _registeredSignerSettingsStore,
                 _logger);

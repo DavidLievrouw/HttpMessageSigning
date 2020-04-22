@@ -4,17 +4,10 @@ using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class CreatedHeaderGuardVerificationTask : VerificationTask {
-        private static readonly string[] AlgorithmNamesThatDoNotAllowCreatedHeader = {"rsa", "hmac", "ecdsa"};
+        private static readonly string[] AlgorithmNamesThatLookForDateHeaderHeader = {"rsa", "hmac", "ecdsa"};
 
         public override SignatureVerificationFailure VerifySync(HttpRequestForSigning signedRequest, Signature signature, Client client) {
-            if (
-                signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Created) &&
-                AlgorithmNamesThatDoNotAllowCreatedHeader.Contains(client.SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase)) {
-                return SignatureVerificationFailure.InvalidCreatedHeader(
-                    $"It is not allowed to take the {HeaderName.PredefinedHeaderNames.Created} into account, when the signature algorithm is {client.SignatureAlgorithm.Name}.");
-            }
-
-            if (!signature.Created.HasValue) {
+            if (!AlgorithmNamesThatLookForDateHeaderHeader.Contains(client.SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase) && !signature.Created.HasValue) {
                 return SignatureVerificationFailure.InvalidCreatedHeader($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.");
             }
 

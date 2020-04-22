@@ -6,19 +6,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class SignatureCreator : ISignatureCreator {
-        private readonly ISigningSettingsSanitizer _signingSettingsSanitizer;
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IBase64Converter _base64Converter;
         private readonly INonceGenerator _nonceGenerator;
         private readonly ILogger<SignatureCreator> _logger;
 
         public SignatureCreator(
-            ISigningSettingsSanitizer signingSettingsSanitizer,
             ISigningStringComposer signingStringComposer,
             IBase64Converter base64Converter,
             INonceGenerator nonceGenerator,
             ILogger<SignatureCreator> logger = null) {
-            _signingSettingsSanitizer = signingSettingsSanitizer ?? throw new ArgumentNullException(nameof(signingSettingsSanitizer));
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
             _nonceGenerator = nonceGenerator ?? throw new ArgumentNullException(nameof(nonceGenerator));
@@ -28,8 +25,6 @@ namespace Dalion.HttpMessageSigning.Signing {
         public async Task<Signature> CreateSignature(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfSigning) {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
-
-            _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(settings, request);
             
             settings.Validate();
 
@@ -37,7 +32,6 @@ namespace Dalion.HttpMessageSigning.Signing {
             var requestForSigning = request.ToRequestForSigning();
             var signingString = _signingStringComposer.Compose(
                 requestForSigning, 
-                settings.SignatureAlgorithm.Name, 
                 settings.Headers, 
                 timeOfSigning, 
                 settings.Expires, 

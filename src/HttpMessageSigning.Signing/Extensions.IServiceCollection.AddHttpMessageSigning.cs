@@ -171,15 +171,12 @@ namespace Dalion.HttpMessageSigning.Signing {
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
                 .AddSingleton<IRegisteredSignerSettingsStore, RegisteredSignerSettingsStore>()
-                .AddSingleton<IRequestSignerFactory>(prov => new RequestSignerFactory(
-                    prov.GetRequiredService<ISignatureCreator>(),
-                    prov.GetRequiredService<IAuthorizationHeaderParamCreator>(),
+                .AddSingleton<ISignatureHeaderEnsurer>(provider => new CompositeSignatureHeaderEnsurer(
                     new DateSignatureHeaderEnsurer(),
-                    new DigestSignatureHeaderEnsurer(
-                        prov.GetRequiredService<IBase64Converter>()),
-                    prov.GetRequiredService<ISystemClock>(),
-                    prov.GetRequiredService<IRegisteredSignerSettingsStore>(),
-                    prov.GetService<ILogger<RequestSigner>>()));
+                    new DigestSignatureHeaderEnsurer(provider.GetRequiredService<IBase64Converter>()),
+                    new CreatedSignatureHeaderEnsurer(),
+                    new ExpiresSignatureHeaderEnsurer()))
+                .AddSingleton<IRequestSignerFactory, RequestSignerFactory>();
         }
     }
 }

@@ -29,7 +29,6 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             var expires = signature.Expires.Value - signature.Created.Value;
             var signingString = _signingStringComposer.Compose(
                 signedRequest, 
-                client.SignatureAlgorithm.Name,
                 signature.Headers, 
                 signature.Created.Value, 
                 expires, 

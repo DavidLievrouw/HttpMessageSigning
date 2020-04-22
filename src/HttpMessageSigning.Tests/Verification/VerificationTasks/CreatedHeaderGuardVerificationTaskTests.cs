@@ -32,16 +32,28 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [InlineData("RSA")]
             [InlineData("HMAC")]
             [InlineData("ECDSA")]
-            public async Task WhenSignatureIncludesCreatedHeader_ButItShouldNot_ReturnsSignatureVerificationFailure(string algorithm) {
+            public async Task WhenSignatureIncludesCreatedHeader_ButItShouldNot_IsStillOk_ReturnsNull(string algorithm) {
                 var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = algorithm + "-sha256";
 
                 var actual = await _method(_signedRequest, _signature, client);
 
+                actual.Should().BeNull();
+            }
+
+            [Fact]
+            public async Task WhenCreatedHeaderIsMissing_ButItIsRequired_ReturnsSignatureVerificationFailure() {
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
+                _signature.Algorithm = "hs2019-sha256";
+                _signedRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Created);
+                _signature.Created = null;
+                
+                var actual = await _method(_signedRequest, _signature, client);
+
                 actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
                     .Which.Code.Should().Be("INVALID_CREATED_HEADER");
             }
-
+            
             [Fact]
             public async Task WhenSignatureDoesNotSpecifyACreationTime_ReturnsSignatureVerificationFailure() {
                 _signature.Created = null;

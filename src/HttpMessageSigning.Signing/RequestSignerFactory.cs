@@ -3,26 +3,26 @@ using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class RequestSignerFactory : IRequestSignerFactory {
+        private readonly ISigningSettingsSanitizer _signingSettingsSanitizer;
         private readonly ISignatureCreator _signatureCreator;
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;
-        private readonly ISignatureHeaderEnsurer _dateHeaderEnsurer;
-        private readonly ISignatureHeaderEnsurer _digestHeaderEnsurer;
+        private readonly ISignatureHeaderEnsurer _signatureHeaderEnsurer;
         private readonly ISystemClock _systemClock;
         private readonly ILogger<RequestSigner> _logger;
         private readonly IRegisteredSignerSettingsStore _registeredSignerSettingsStore;
 
         public RequestSignerFactory(
+            ISigningSettingsSanitizer signingSettingsSanitizer,
             ISignatureCreator signatureCreator,
             IAuthorizationHeaderParamCreator authorizationHeaderParamCreator,
-            ISignatureHeaderEnsurer dateHeaderEnsurer,
-            ISignatureHeaderEnsurer digestHeaderEnsurer,
+            ISignatureHeaderEnsurer signatureHeaderEnsurer,
             ISystemClock systemClock,
             IRegisteredSignerSettingsStore registeredSignerSettingsStore,
             ILogger<RequestSigner> logger = null) {
+            _signingSettingsSanitizer = signingSettingsSanitizer ?? throw new ArgumentNullException(nameof(signingSettingsSanitizer));
             _signatureCreator = signatureCreator ?? throw new ArgumentNullException(nameof(signatureCreator));
             _authorizationHeaderParamCreator = authorizationHeaderParamCreator ?? throw new ArgumentNullException(nameof(authorizationHeaderParamCreator));
-            _dateHeaderEnsurer = dateHeaderEnsurer ?? throw new ArgumentNullException(nameof(dateHeaderEnsurer));
-            _digestHeaderEnsurer = digestHeaderEnsurer ?? throw new ArgumentNullException(nameof(digestHeaderEnsurer));
+            _signatureHeaderEnsurer = signatureHeaderEnsurer ?? throw new ArgumentNullException(nameof(signatureHeaderEnsurer));
             _logger = logger;
             _registeredSignerSettingsStore = registeredSignerSettingsStore ?? throw new ArgumentNullException(nameof(registeredSignerSettingsStore));
             _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
@@ -37,11 +37,11 @@ namespace Dalion.HttpMessageSigning.Signing {
             signingSettings.Validate();
 
             return new RequestSigner(
+                _signingSettingsSanitizer,
                 _signatureCreator,
                 _authorizationHeaderParamCreator,
                 signingSettings,
-                _dateHeaderEnsurer,
-                _digestHeaderEnsurer,
+                _signatureHeaderEnsurer,
                 _systemClock,
                 _logger);
         }

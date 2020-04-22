@@ -11,21 +11,21 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public class RequestSignerTests {
+        private readonly ISigningSettingsSanitizer _signingSettingsSanitizer;
         private readonly IAuthorizationHeaderParamCreator _authorizationHeaderParamCreator;
         private readonly ISignatureCreator _signatureCreator;
         private readonly SigningSettings _signingSettings;
-        private readonly ISignatureHeaderEnsurer _dateHeaderEnsurer;
-        private readonly ISignatureHeaderEnsurer _digestHeaderEnsurer;
+        private readonly ISignatureHeaderEnsurer _signatureHeaderEnsurer;
         private readonly ISystemClock _systemClock;
         private readonly ILogger<RequestSigner> _logger;
         private readonly RequestSigner _sut;
 
         public RequestSignerTests() {
             FakeFactory.Create(
+                out _signingSettingsSanitizer,
                 out _signatureCreator,
                 out _authorizationHeaderParamCreator,
-                out _dateHeaderEnsurer,
-                out _digestHeaderEnsurer,
+                out _signatureHeaderEnsurer,
                 out _systemClock,
                 out _logger);
             _signingSettings = new SigningSettings {
@@ -40,11 +40,11 @@ namespace Dalion.HttpMessageSigning.Signing {
                 AuthorizationScheme = "UnitTestAuth"
             };
             _sut = new RequestSigner(
+                _signingSettingsSanitizer,
                 _signatureCreator,
                 _authorizationHeaderParamCreator,
                 _signingSettings,
-                _dateHeaderEnsurer,
-                _digestHeaderEnsurer,
+                _signatureHeaderEnsurer,
                 _systemClock,
                 _logger);
         }
@@ -76,6 +76,17 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
+            public async Task SanitizesHeaderNamesToInclude_BeforeCreatingSignature() {
+                Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == _signingSettings.Expires;
+
+                await _sut.Sign(_httpRequest);
+
+                A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(A<SigningSettings>.That.Matches(modifiedSigningSettings), _httpRequest)).MustHaveHappened()
+                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                        .MustHaveHappened());
+            }
+            
+            [Fact]
             public async Task SignsUsingSettingsThatCanBeModifiedByEvents() {
                 _signingSettings.Events.OnRequestSigning = (message, settings) => {
                     settings.Expires = TimeSpan.FromHours(3);
@@ -98,7 +109,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
             
             [Fact]
-            public async Task EnsuresDateHeader_BeforeSigning() {
+            public async Task EnsuresSignatureHeaders_BeforeSigning() {
                 Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == _signingSettings.Expires;
                 
                 var signature = new Signature {String = "abc123="};
@@ -107,23 +118,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.Sign(_httpRequest);
 
-                A.CallTo(() => _dateHeaderEnsurer.EnsureHeader(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning)).MustHaveHappened()
-                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning)).MustHaveHappened())
-                    .Then(A.CallTo(() => _authorizationHeaderParamCreator.CreateParam(signature)).MustHaveHappened());
-            }
-
-            [Fact]
-            public async Task EnsuresDigestHeader_BeforeSigning() {
-                Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == _signingSettings.Expires;
-                
-                var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
-                    .Returns(signature);
-
-                await _sut.Sign(_httpRequest);
-
-                A.CallTo(() => _digestHeaderEnsurer.EnsureHeader(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning)).MustHaveHappened()
-                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning)).MustHaveHappened())
+                A.CallTo(() => _signatureHeaderEnsurer.EnsureHeader(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning)).MustHaveHappened()
                     .Then(A.CallTo(() => _authorizationHeaderParamCreator.CreateParam(signature)).MustHaveHappened());
             }
 

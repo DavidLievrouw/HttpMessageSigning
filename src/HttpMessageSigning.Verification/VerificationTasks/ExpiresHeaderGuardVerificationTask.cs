@@ -4,17 +4,10 @@ using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class ExpiresHeaderGuardVerificationTask : VerificationTask {
-        private static readonly string[] AlgorithmNamesThatDoNotAllowExpiresHeader = {"rsa", "hmac", "ecdsa"};
+        private static readonly string[] AlgorithmNamesThatLookForDateHeaderHeader = {"rsa", "hmac", "ecdsa"};
 
         public override SignatureVerificationFailure VerifySync(HttpRequestForSigning signedRequest, Signature signature, Client client) {
-            if (
-                signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires) &&
-                AlgorithmNamesThatDoNotAllowExpiresHeader.Contains(client.SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase)) {
-                return SignatureVerificationFailure.InvalidExpiresHeader(
-                    $"It is not allowed to take the {HeaderName.PredefinedHeaderNames.Expires} into account, when the signature algorithm is {client.SignatureAlgorithm.Name}.");
-            }
-
-            if (!signature.Expires.HasValue) {
+            if (!AlgorithmNamesThatLookForDateHeaderHeader.Contains(client.SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase) && !signature.Expires.HasValue) {
                 return SignatureVerificationFailure.InvalidExpiresHeader($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.");
             }
 
