@@ -21,6 +21,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             private readonly long _expiresEpoch;
             private readonly DateTimeOffset _now;
             private readonly DateTimeOffset _expires;
+            private readonly SignedHttpRequestAuthenticationOptions _options;
 
             public Parse() {
                 _request = new FakeOwinRequest();
@@ -28,11 +29,20 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 _expires = _now.AddMinutes(10);
                 _nowEpoch = _now.ToUnixTimeSeconds();
                 _expiresEpoch = _expires.ToUnixTimeSeconds();
+                _options = new SignedHttpRequestAuthenticationOptions {
+                    Scheme = "TestScheme"
+                };
             }
 
             [Fact]
             public void WhenRequestIsNull_ThrowsArgumentNullException() {
-                Action act = () => _sut.Parse(null);
+                Action act = () => _sut.Parse(null, _options);
+                act.Should().Throw<ArgumentNullException>();
+            }
+            
+            [Fact]
+            public void WhenOptionsIsNull_ThrowsArgumentNullException() {
+                Action act = () => _sut.Parse(_request, null);
                 act.Should().Throw<ArgumentNullException>();
             }
 
@@ -40,7 +50,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             public void WhenRequestHasNoAuthorizationHeader_ThrowsInvalidSignatureException() {
                 _request.Headers.Clear();
 
-                Action act = () => _sut.Parse(_request);
+                Action act = () => _sut.Parse(_request, _options);
 
                 act.Should().Throw<InvalidSignatureException>();
             }
@@ -49,56 +59,34 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             public void WhenRequestHasAnInvalidAuthorizationHeader_ThrowsInvalidSignatureException() {
                 _request.Headers["Authorization"] = "{nonsense}";
 
-                Action act = () => _sut.Parse(_request);
+                Action act = () => _sut.Parse(_request, _options);
 
                 act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
             public void WhenRequestHasAnAuthorizationHeaderForAnotherScheme_ThrowsInvalidSignatureException() {
-                _request.Headers["Authorization"] = "Custom abc123";
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", "SomethingElse");
 
-                Action act = () => _sut.Parse(_request);
+                Action act = () => _sut.Parse(_request, _options);
 
                 act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
-            public void SupportLegacyScheme() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", "SignedHttpRequest");
-
-                var actual = _sut.Parse(_request);
-
-                var expected = new Signature {
-                    KeyId = new KeyId("app1"),
-                    Algorithm = "rsa-sha256",
-                    Created = _now,
-                    Expires = _expires,
-                    Headers = new[] {
-                        new HeaderName("(request-target)"),
-                        new HeaderName("date"),
-                        new HeaderName("content-length")
-                    },
-                    String = "xyz123==",
-                    Nonce = "abc123"
-                };
-                actual.Should().BeEquivalentTo(expected);
-            }
-            
-            [Fact]
             public void WhenRequestHasAnAuthorizationHeaderWithoutParam_ThrowsInvalidSignatureException() {
-                _request.Headers["Authorization"] = "SignedHttpRequest ";
+                _request.Headers["Authorization"] = _options.Scheme + " ";
 
-                Action act = () => _sut.Parse(_request);
+                Action act = () => _sut.Parse(_request, _options);
 
                 act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
             public void GivenACompleteParam_ParsesAllProperties() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
-                var actual = _sut.Parse(_request);
+                var actual = _sut.Parse(_request, _options);
 
                 var expected = new Signature {
                     KeyId = new KeyId("app1"),
@@ -118,10 +106,10 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             [Fact]
             public void IgnoresAdditionalSettings() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
                 _request.Headers["Authorization"] = _request.Headers["Authorization"] + ",additional=true";
 
-                var actual = _sut.Parse(_request);
+                var actual = _sut.Parse(_request, _options);
 
                 var expected = new Signature {
                     KeyId = new KeyId("app1"),
@@ -141,81 +129,81 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             [Fact]
             public void WhenCreatedIsNotSpecified_SetsCreatedToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", null, _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
+                SetHeader(_request, "app1", "rsa-sha256", null, _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
-                var actual = _sut.Parse(_request);
+                var actual = _sut.Parse(_request, _options);
 
                 actual.Created.Should().BeNull();
             }
 
             [Fact]
             public void WhenCreatedIsNotAnEpoch_SetsCreatedToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", "some invalid value", _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
+                SetHeader(_request, "app1", "rsa-sha256", "some invalid value", _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
-                var actual = _sut.Parse(_request);
+                var actual = _sut.Parse(_request, _options);
 
                 actual.Created.Should().BeNull();
             }
 
             [Fact]
             public void WhenExpiresIsNotSpecified_SetsExpiresToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), null, "(request-target) date content-length", "xyz123==", "abc123");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), null, "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
-                var actual = _sut.Parse(_request);
+                var actual = _sut.Parse(_request, _options);
 
                 actual.Expires.Should().BeNull();
             }
 
             [Fact]
             public void WhenExpiresIsNotAnEpoch_SetsExpiresToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), "some invalid value", "(request-target) date content-length", "xyz123==", "abc123");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), "some invalid value", "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
-                var actual = _sut.Parse(_request);
+                var actual = _sut.Parse(_request, _options);
 
                 actual.Expires.Should().BeNull();
             }
 
             [Fact]
             public void WhenAlgorithmIsNotSpecified_SetsAlgorithmToNull() {
-                SetHeader(_request, "app1", null, _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
+                SetHeader(_request, "app1", null, _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
-                var actual = _sut.Parse(_request);
+                var actual = _sut.Parse(_request, _options);
 
                 actual.Algorithm.Should().BeNull();
             }
 
             [Fact]
             public void WhenHeadersIsNotSpecified_SetsHeadersToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), null, "xyz123==", "abc123");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), null, "xyz123==", "abc123", _options.Scheme);
 
-                var actual = _sut.Parse(_request);
+                var actual = _sut.Parse(_request, _options);
 
                 actual.Headers.Should().BeNull();
             }
 
             [Fact]
             public void WhenKeIdIsNotSpecified_ThrowsInvalidSignatureException() {
-                SetHeader(_request, null, "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123");
+                SetHeader(_request, null, "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
-                Action act = () => _sut.Parse(_request);
+                Action act = () => _sut.Parse(_request, _options);
 
                 act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
             public void WhenStringNotSpecified_ThrowsInvalidSignatureException() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", null, "abc123");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", null, "abc123", _options.Scheme);
 
-                Action act = () => _sut.Parse(_request);
+                Action act = () => _sut.Parse(_request, _options);
 
                 act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
             public void WhenNonceIsNotSpecified_SetsNonceToNull() {
-                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==");
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", null, _options.Scheme);
 
-                var actual = _sut.Parse(_request);
+                var actual = _sut.Parse(_request, _options);
 
                 actual.Nonce.Should().BeNull();
             }

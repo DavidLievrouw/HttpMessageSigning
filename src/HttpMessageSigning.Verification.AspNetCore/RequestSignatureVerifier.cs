@@ -26,12 +26,13 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
         public async Task<RequestSignatureVerificationResult> VerifySignature(HttpRequest request, SignedRequestAuthenticationOptions options) {
             if (request == null) throw new ArgumentNullException(nameof(request));
+            if (options == null) throw new ArgumentNullException(nameof(options));
 
             Client client = null;
             Signature signature = null;
 
             try {
-                signature = _signatureParser.Parse(request);
+                signature = _signatureParser.Parse(request, options);
                 client = await _clientStore.Get(signature.KeyId);
 
                 var requestForSigning = await request.ToRequestForSigning(signature);

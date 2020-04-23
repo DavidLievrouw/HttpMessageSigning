@@ -39,11 +39,17 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 Func<Task> act = () => _sut.VerifySignature(null, _options);
                 act.Should().Throw<ArgumentNullException>();
             }
+            
+            [Fact]
+            public void GivenNullOptions_ThrowsArgumentNullException() {
+                Func<Task> act = () => _sut.VerifySignature(_httpRequest, null);
+                act.Should().Throw<ArgumentNullException>();
+            }
 
             [Fact]
             public async Task VerifiesSignatureOfClient_ThatMatchesTheKeyIdFromTheRequest() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(_httpRequest))
+                A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
                     .Returns(signature);
 
                 var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
@@ -69,7 +75,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public async Task WhenVerificationSucceeds_ReturnsSuccessResultWithClaimsPrincipal() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(_httpRequest))
+                A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
                     .Returns(signature);
 
                 var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
@@ -97,7 +103,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public async Task WhenVerificationFails_ReturnsFailureResult() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(_httpRequest))
+                A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
                     .Returns(signature);
 
                 var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
@@ -125,7 +131,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public async Task WhenSignatureCannotBeParsed_ReturnsFailureResult() {
                 var failure = new InvalidSignatureException("Cannot parse signature.");
-                A.CallTo(() => _signatureParser.Parse(_httpRequest))
+                A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
                     .Throws(failure);
 
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
@@ -142,7 +148,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public async Task WhenClientDoesNotExist_ReturnsFailureResult() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(_httpRequest))
+                A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
                     .Returns(signature);
 
                 var failure = new InvalidClientException("Don't know that client.");
@@ -163,7 +169,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public void WhenVerificationReturnsAnotherException_Rethrows() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
-                A.CallTo(() => _signatureParser.Parse(_httpRequest))
+                A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
                     .Returns(signature);
 
                 var client = new Client(signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));

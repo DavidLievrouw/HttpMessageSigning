@@ -55,7 +55,12 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
             if (configureOptions == null) configureOptions = options => { options.Realm = "App_" + authenticationScheme; };
 
-            return builder.AddScheme<SignedRequestAuthenticationOptions, SignedRequestAuthenticationHandler>(authenticationScheme, configureOptions);
+            void Config(SignedRequestAuthenticationOptions options) {
+                options.Scheme = authenticationScheme;
+                configureOptions.Invoke(options);
+            }
+
+            return builder.AddScheme<SignedRequestAuthenticationOptions, SignedRequestAuthenticationHandler>(authenticationScheme, Config);
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             if (string.IsNullOrEmpty(Scheme)) throw new ValidationException($"The {nameof(SignedHttpRequestAuthenticationOptions)} do not specify a valid {nameof(Scheme)}.");
             if (string.IsNullOrEmpty(Realm)) throw new ValidationException($"The {nameof(SignedHttpRequestAuthenticationOptions)} do not specify a valid {nameof(Realm)}.");
             if (RequestSignatureVerifier == null) throw new ValidationException($"The {nameof(SignedHttpRequestAuthenticationOptions)} do not specify a valid {nameof(RequestSignatureVerifier)}.");
+            if (Scheme.Contains(" ")) throw new ValidationException($"{nameof(Scheme)} cannot contain whitespace.");
         }
     }
 }

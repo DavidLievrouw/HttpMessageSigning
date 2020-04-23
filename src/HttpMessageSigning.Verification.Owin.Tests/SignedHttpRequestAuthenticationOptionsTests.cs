@@ -42,6 +42,13 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             }
 
             [Fact]
+            public void WhenSchemeContainsSpace_ThrowsInvalidOperationException() {
+                _sut.Scheme = "With Space";
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
+
+            [Fact]
             public void GivenValidOptions_DoesNotThrow() {
                 Action act = () => _sut.Validate();
                 act.Should().NotThrow();

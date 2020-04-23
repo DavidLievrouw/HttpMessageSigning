@@ -14,21 +14,39 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             private readonly SignedRequestAuthenticationOptions _options;
 
             public PostConfigure() {
-                _options = new SignedRequestAuthenticationOptions();
+                _options = new SignedRequestAuthenticationOptions {
+                    Realm = "r",
+                    Scheme = "s"
+                };
             }
 
             [Theory]
             [InlineData(null)]
             [InlineData("")]
-            public void IfRealmIsNullOrEmpty_ThrowsInvalidOperationException(string nullOrEmpty) {
+            public void IfRealmIsNullOrEmpty_ThrowsValidationException(string nullOrEmpty) {
                 _options.Realm = nullOrEmpty;
                 Action act = () => _sut.PostConfigure("tests", _options);
-                act.Should().Throw<InvalidOperationException>();
+                act.Should().Throw<ValidationException>();
+            }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void IfSchemeIsNullOrEmpty_ThrowsValidationException(string nullOrEmpty) {
+                _options.Scheme = nullOrEmpty;
+                Action act = () => _sut.PostConfigure("tests", _options);
+                act.Should().Throw<ValidationException>();
             }
 
             [Fact]
-            public void IfRealmIsProvided_DoesNotThrow() {
-                _options.Realm = "Unit tests";
+            public void WhenSchemeContainsSpace_ThrowsValidationException() {
+                _options.Scheme = "With Space";
+                Action act = () => _sut.PostConfigure("tests", _options);
+                act.Should().Throw<ValidationException>();
+            }
+            
+            [Fact]
+            public void IfRealmAndSchemeAreProvided_DoesNotThrow() {
                 Action act = () => _sut.PostConfigure("tests", _options);
                 act.Should().NotThrow();
             }
