@@ -8,7 +8,7 @@ SET VERSION=4.0.0
 ECHO Press [ENTER] to push the packages to nuget.org
 PAUSE
 
-REM dotnet nuget push %DIR%dist\NuGetPackages\Dalion.HttpMessageSigning.%VERSION%.nupkg -k %KEY% -s %SOURCE%
+dotnet nuget push %DIR%dist\NuGetPackages\Dalion.HttpMessageSigning.%VERSION%.nupkg -k %KEY% -s %SOURCE%
 dotnet nuget push %DIR%dist\NuGetPackages\Dalion.HttpMessageSigning.Signing.%VERSION%.nupkg -k %KEY% -s %SOURCE%
 dotnet nuget push %DIR%dist\NuGetPackages\Dalion.HttpMessageSigning.Verification.%VERSION%.nupkg -k %KEY% -s %SOURCE%
 dotnet nuget push %DIR%dist\NuGetPackages\Dalion.HttpMessageSigning.Verification.AspNetCore.%VERSION%.nupkg -k %KEY% -s %SOURCE%
