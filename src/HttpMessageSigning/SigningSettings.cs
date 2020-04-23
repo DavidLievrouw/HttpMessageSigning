@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning {
         public HashAlgorithmName DigestHashAlgorithm { get; set; } = default;
 
         /// <summary>
-        /// Gets or sets he ordered list of names of request headers to include when generating the signature for the message.
+        /// Gets or sets the ordered list of names of request headers to include when generating the signature for the message.
         /// </summary>
         /// <remarks>When empty, the default headers will be included, according to the spec.</remarks>
         public HeaderName[] Headers { get; set; } = {HeaderName.PredefinedHeaderNames.RequestTarget};
@@ -46,7 +46,7 @@ namespace Dalion.HttpMessageSigning {
         public string AuthorizationScheme { get; set; } = "Signature";
         
         /// <summary>
-        /// Gets or sets a value indicating whether the 'algorithm' parameter should reflect the actually used signature algorithm.
+        /// Gets or sets a value indicating whether the 'algorithm' parameter should report deprecated algorithm names, instead of 'hs2019', for backwards compatibility.
         /// </summary>
         /// <remarks>Setting this to 'false' causes the value of the 'algorithm' parameter to be 'hs2019'.</remarks>
         public bool UseDeprecatedAlgorithmParameter { get; set; } = false;
