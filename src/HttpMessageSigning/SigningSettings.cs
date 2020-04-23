@@ -46,6 +46,12 @@ namespace Dalion.HttpMessageSigning {
         public string AuthorizationScheme { get; set; } = "Signature";
         
         /// <summary>
+        /// Gets or sets a value indicating whether the 'algorithm' parameter should reflect the actually used signature algorithm.
+        /// </summary>
+        /// <remarks>Setting this to 'false' causes the value of the 'algorithm' parameter to be 'hs2019'.</remarks>
+        public bool UseDeprecatedAlgorithmParameter { get; set; } = false;
+        
+        /// <summary>
         /// Gets or sets the <see cref="RequestSigningEvents"/> to notify when signing requests.
         /// </summary>
         public RequestSigningEvents Events { get; set; } = new RequestSigningEvents();
@@ -73,7 +79,8 @@ namespace Dalion.HttpMessageSigning {
                 SignatureAlgorithm = SignatureAlgorithm,
                 DigestHashAlgorithm = DigestHashAlgorithm,
                 AuthorizationScheme = AuthorizationScheme,
-                EnableNonce = EnableNonce
+                EnableNonce = EnableNonce,
+                UseDeprecatedAlgorithmParameter = UseDeprecatedAlgorithmParameter
             };
         }
     }

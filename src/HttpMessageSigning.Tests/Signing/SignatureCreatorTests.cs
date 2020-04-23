@@ -43,7 +43,11 @@ namespace Dalion.HttpMessageSigning.Signing {
                         HeaderName.PredefinedHeaderNames.RequestTarget,
                         HeaderName.PredefinedHeaderNames.Date,
                         new HeaderName("dalion_app_id")
-                    }
+                    },
+                    UseDeprecatedAlgorithmParameter = false,
+                    AuthorizationScheme = "TestScheme",
+                    EnableNonce = true,
+                    DigestHashAlgorithm = HashAlgorithmName.SHA384
                 };
                 _timeOfSigning = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.Zero);
                 A.CallTo(() => _settings.SignatureAlgorithm.Name).Returns("Custom");
@@ -156,13 +160,25 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public async Task ReturnsSignatureWithExpectedAlgorithm() {
+            public async Task WhenDeprecatedAlgorithmParameterIsDisabled_ReturnsSignatureWithExpectedAlgorithm() {
+                _settings.UseDeprecatedAlgorithmParameter = false;
                 A.CallTo(() => _settings.SignatureAlgorithm.Name).Returns("RSA");
                 A.CallTo(() => _settings.SignatureAlgorithm.HashAlgorithm).Returns(HashAlgorithmName.SHA512);
 
                 var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
 
                 actual.Algorithm.Should().Be("hs2019");
+            }
+            
+            [Fact]
+            public async Task WhenDeprecatedAlgorithmParameterIsEnabled_ReturnsSignatureWithDeprecatedAlgorithm() {
+                _settings.UseDeprecatedAlgorithmParameter = true;
+                A.CallTo(() => _settings.SignatureAlgorithm.Name).Returns("RSA");
+                A.CallTo(() => _settings.SignatureAlgorithm.HashAlgorithm).Returns(HashAlgorithmName.SHA512);
+
+                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+
+                actual.Algorithm.Should().Be("rsa-sha512");
             }
 
             [Fact]

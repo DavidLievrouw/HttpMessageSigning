@@ -28,7 +28,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             // hs2019 is always allowed
-            if (signature.Algorithm == "hs2019") return null;
+            if (signature.Algorithm == Signature.DefaultSignatureAlgorithm) return null;
             
             var algorithmParts = new List<string>();
             if (!string.IsNullOrEmpty(signature.Algorithm)) {

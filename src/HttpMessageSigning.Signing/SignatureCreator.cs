@@ -47,7 +47,9 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             var signature = new Signature {
                 KeyId = settings.KeyId,
-                Algorithm = "hs2019",
+                Algorithm = settings.UseDeprecatedAlgorithmParameter
+                    ? $"{settings.SignatureAlgorithm.Name.ToLowerInvariant()}-{settings.SignatureAlgorithm.HashAlgorithm.ToString().ToLowerInvariant()}"
+                    : Signature.DefaultSignatureAlgorithm,
                 Created = timeOfSigning,
                 Expires = timeOfSigning.Add(settings.Expires),
                 Headers = settings.Headers,

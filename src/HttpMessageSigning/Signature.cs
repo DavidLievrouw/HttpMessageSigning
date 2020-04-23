@@ -6,6 +6,11 @@ namespace Dalion.HttpMessageSigning {
     /// </summary>
     public class Signature : IValidatable, ICloneable {
         /// <summary>
+        /// Represents the name of the default signature algorithm name to include in the signature.
+        /// </summary>
+        public const string DefaultSignatureAlgorithm = "hs2019";
+        
+        /// <summary>
         /// REQUIRED: Gets or sets the entity that the server can use to look up the component they need to verify the signature.
         /// </summary>
         public KeyId KeyId { get; set; }
