@@ -210,6 +210,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                     RequestUri = new Uri("http://dalion.eu/api/resource/id1")
                 };
                 _timeOfSigning = new DateTimeOffset(2020, 2, 24, 12, 20, 14, TimeSpan.Zero);
+                A.CallTo(() => _systemClock.UtcNow).Returns(_timeOfSigning);
                 _expires = TimeSpan.FromMinutes(10);
             }
 
@@ -347,6 +348,24 @@ namespace Dalion.HttpMessageSigning.Signing {
                 Func<Task> act = () => _sut.Sign(_httpRequest, _timeOfSigning, _expires);
                 
                 act.Should().NotThrow();
+            }
+
+            [Fact]
+            public void WhenSigningInTheFuture_ThrowsHttpMessageSigningException() {
+                A.CallTo(() => _systemClock.UtcNow).Returns(_timeOfSigning.AddMinutes(15));
+                
+                Func<Task> act = () => _sut.Sign(_httpRequest, _timeOfSigning, _expires);
+                
+                act.Should().Throw<HttpMessageSigningException>();
+            }
+            
+            [Fact]
+            public void WhenSigningInThePast_ThrowsHttpMessageSigningException() {
+                A.CallTo(() => _systemClock.UtcNow).Returns(_timeOfSigning.AddMinutes(-6));
+                
+                Func<Task> act = () => _sut.Sign(_httpRequest, _timeOfSigning, TimeSpan.FromMinutes(5));
+                
+                act.Should().Throw<HttpMessageSigningException>();
             }
         }
         

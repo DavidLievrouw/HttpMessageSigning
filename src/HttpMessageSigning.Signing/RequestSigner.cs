@@ -39,6 +39,14 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (request == null) throw new ArgumentNullException(nameof(request));
             
             try {
+                if (timeOfSigning > _systemClock.UtcNow) {
+                    throw new HttpMessageSigningException("Cannot create a signature that is created in the future.");
+                }
+                
+                if (timeOfSigning.Add(expires) < _systemClock.UtcNow) {
+                    throw new HttpMessageSigningException("Cannot create a signature that has already expired.");
+                }
+                
                 var clonedSettings = (SigningSettings)_signingSettings.Clone();
                 var onRequestSigningTask = _signingSettings.Events?.OnRequestSigning?.Invoke(request, clonedSettings);
                 if (onRequestSigningTask != null) await onRequestSigningTask;
