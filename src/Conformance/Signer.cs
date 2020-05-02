@@ -37,7 +37,7 @@ namespace Conformance {
                     DigestHashAlgorithm = default,
                     AutomaticallyAddRecommendedHeaders = false,
                     Headers = options.Headers
-                        .Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries)
+                        .Split(new [] {' ', ','}, StringSplitOptions.RemoveEmptyEntries)
                         .Select(h => new HeaderName(h))
                         .ToArray()
                 });
@@ -46,6 +46,8 @@ namespace Conformance {
             await signer.Sign(request);
             
             Log.Information(request.Headers.Authorization.Scheme + " " + request.Headers.Authorization.Parameter);
+            
+            Console.Out.Flush();
             
             return 1;
         }

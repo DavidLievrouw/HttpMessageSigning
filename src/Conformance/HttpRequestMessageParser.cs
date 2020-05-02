@@ -46,16 +46,16 @@ namespace Conformance {
                 var quit = false;
                 switch (GetLineType(i, line)) {
                     case LineType.Definition:
-                        var definitionParts = line.Split(' ');
+                        var definitionParts = line.Split(' ', 3);
                         request.Method = new HttpMethod(definitionParts[0]);
                         request.RequestUri = new Uri(definitionParts[1], UriKind.Relative);
-                        request.Version = new Version(definitionParts[2].Split('/')[1]);
+                        request.Version = new Version(definitionParts[2].Split('/', 2)[1]);
                         break;
                     case LineType.Header:
-                        var header = line.Split(": ");
+                        var header = line.Split(":", 2);
                         var values = RestrictedHeaders.Contains(header[0], StringComparer.OrdinalIgnoreCase)
-                            ? new[] {header[1]}
-                            : header[1].Split(", ");
+                            ? new[] {header.Length > 1 ? header[1] : string.Empty}
+                            : header.Length > 1 ? header[1].Split(", ") : Array.Empty<string>();
                         if (ContentHeaders.Contains(header[0], StringComparer.OrdinalIgnoreCase)) {
                             contentHeaders.Add(header[0], values);
                         }

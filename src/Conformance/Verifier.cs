@@ -36,7 +36,7 @@ namespace Conformance {
             var requestToVerify = await clientRequest.ToServerSideHttpRequest();
 
             var verificationResult = await verifier.VerifySignature(requestToVerify, new SignedRequestAuthenticationOptions());
-
+            
             return verificationResult is RequestSignatureVerificationResultSuccess
                 ? 0
                 : 1;

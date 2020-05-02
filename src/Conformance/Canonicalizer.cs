@@ -26,7 +26,7 @@ namespace Conformance {
                     DigestHashAlgorithm = default,
                     AutomaticallyAddRecommendedHeaders = false,
                     Headers = options.Headers
-                        .Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries)
+                        .Split(new [] {' ', ','}, StringSplitOptions.RemoveEmptyEntries)
                         .Select(h => new HeaderName(h))
                         .ToArray(),
                     Events = new RequestSigningEvents {
@@ -39,6 +39,8 @@ namespace Conformance {
 
             var request = HttpRequestMessageParser.Parse(httpMessage);
             await signer.Sign(request);
+            
+            Console.Out.Flush();
             
             return 0;
         }

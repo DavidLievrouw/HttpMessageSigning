@@ -2,9 +2,6 @@
 
 namespace Conformance {
     public class OptionsBase {
-        [Option('V', "version", Required = false)]
-        public bool Version { get; set; }
-
         [Option('d', "headers", Required = false)]
         public string Headers { get; set; }
 
