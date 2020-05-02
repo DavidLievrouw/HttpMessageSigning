@@ -31,10 +31,14 @@ namespace Dalion.HttpMessageSigning.Signing {
             _logger = logger;
         }
 
-        public async Task Sign(HttpRequestMessage request) {
-            try {
-                if (request == null) throw new ArgumentNullException(nameof(request));
+        public Task Sign(HttpRequestMessage request) {
+            return Sign(request, _systemClock.UtcNow, _signingSettings.Expires);
+        }
 
+        public async Task Sign(HttpRequestMessage request, DateTimeOffset timeOfSigning, TimeSpan expires) {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            
+            try {
                 var clonedSettings = (SigningSettings)_signingSettings.Clone();
                 var onRequestSigningTask = _signingSettings.Events?.OnRequestSigning?.Invoke(request, clonedSettings);
                 if (onRequestSigningTask != null) await onRequestSigningTask;
@@ -43,7 +47,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 clonedSettings.Validate();
                 
-                var timeOfSigning = _systemClock.UtcNow;
                 await _signatureHeaderEnsurer.EnsureHeader(request, clonedSettings, timeOfSigning);
                 
                 var signature = await _signatureCreator.CreateSignature(request, clonedSettings, timeOfSigning);
