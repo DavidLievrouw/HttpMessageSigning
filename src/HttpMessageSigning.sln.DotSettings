@@ -351,6 +351,7 @@ namespace $Namespace$ {&#xD;
 public void $TestName$() {&#xD;
     true.Should().BeFalse();&#xD;
 }</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Canonicalizer/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Dalion/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Lievrouw/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=nonces/@EntryIndexedValue">True</s:Boolean>

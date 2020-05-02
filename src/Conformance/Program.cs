@@ -1,17 +1,26 @@
 ﻿using System;
 using CommandLine;
 using Serilog;
+using Serilog.Events;
 
 namespace Conformance {
     public class Program {
         private static void Main(string[] args) {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
-                .WriteTo.Console(outputTemplate: "{Message}")
-                .WriteTo.File("Conformance.log")
+                .WriteTo.Console(
+                    outputTemplate: "{Message}",
+                    restrictedToMinimumLevel: LogEventLevel.Information)
+                .WriteTo.File(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(typeof(Program).Assembly.Location), "Conformance.log"))
                 .CreateLogger();
 
-            var input = Console.ReadLine()?.Replace("{NEWLINE}", "\n").Trim('"');
+            var input = "";
+            try {
+                var _ = Console.KeyAvailable;
+            }
+            catch (InvalidOperationException) {
+                input = Console.In.ReadToEnd();
+            }
 
             Parser.Default.ParseArguments<CanonicalizeOptions, SignOptions, VerifyOptions>(args)
                 .MapResult(
