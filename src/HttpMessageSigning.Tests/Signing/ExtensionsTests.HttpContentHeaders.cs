@@ -2,25 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Mime;
+using System.Text;
 using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public partial class ExtensionsTests {
-        public class HttpRequestHeaders : ExtensionsTests {
-            private readonly System.Net.Http.Headers.HttpRequestHeaders _headers;
+        public class HttpContentHeaders : ExtensionsTests {
+            private readonly System.Net.Http.Headers.HttpContentHeaders _headers;
 
-            public HttpRequestHeaders() {
-                _headers = new HttpRequestMessage().Headers;
+            public HttpContentHeaders() {
+                var msg = new HttpRequestMessage {Content = new StringContent("abc", Encoding.UTF8, MediaTypeNames.Text.Plain)};
+                _headers = msg.Content.Headers;
                 _headers.Add("existing_simple_header", "existing_value");
                 _headers.Add("existing_complex_header", new[] {"existing_value_01", "existing_value_02"});
             }
 
-            public class AddSingle : HttpRequestHeaders {
+            public class AddSingle : HttpContentHeaders {
                 [Fact]
                 public void GivenNullHeaders_ThrowsArgumentNullException() {
                     // ReSharper disable once InvokeAsExtensionMethod
-                    Action act = () => Extensions.Set((System.Net.Http.Headers.HttpRequestHeaders)null, "header01", "value01");
+                    Action act = () => Extensions.Set((System.Net.Http.Headers.HttpContentHeaders)null, "header01", "value01");
 
                     act.Should().Throw<ArgumentNullException>();
                 }
@@ -58,11 +61,11 @@ namespace Dalion.HttpMessageSigning.Signing {
                 }
             }
 
-            public class AddMultiple : HttpRequestHeaders {
+            public class AddMultiple : HttpContentHeaders {
                 [Fact]
                 public void GivenNullHeaders_ThrowsArgumentNullException() {
                     // ReSharper disable once InvokeAsExtensionMethod
-                    Action act = () => Extensions.Set((System.Net.Http.Headers.HttpRequestHeaders)null, "header01", new[] {"value01"});
+                    Action act = () => Extensions.Set((System.Net.Http.Headers.HttpContentHeaders)null, "header01", new[] {"value01"});
 
                     act.Should().Throw<ArgumentNullException>();
                 }
@@ -113,23 +116,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                     _headers.Set("existing_complex_header", Enumerable.Empty<string>());
 
                     _headers.Contains("existing_complex_header").Should().BeFalse();
-                }
-            }
-
-            public class RestrictedHeaders : HttpRequestHeaders {
-                [Fact]
-                public void CanAddDateHeaderWithValidValue() {
-                    Action act = () => _headers.Set("Date", "Sat, 02 May 2020 16:35:45 GMT");
-                    act.Should().NotThrow();
-
-                    _headers.Date.Should().Be(new DateTimeOffset(2020, 5, 2, 16, 35, 45, TimeSpan.Zero));
-                }
-
-                [Fact]
-                public void CannotAddDateHeaderWithInvalidValue() {
-                    Action act = () => _headers.Set("Date", "{nonsense}");
-
-                    act.Should().Throw<FormatException>();
                 }
             }
         }
