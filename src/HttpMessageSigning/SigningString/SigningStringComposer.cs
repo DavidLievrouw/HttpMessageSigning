@@ -25,7 +25,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             sb.Append(_nonceAppender.BuildStringToAppend(nonce));
             
-            return sb.ToString().Trim();
+            return sb.ToString().TrimStart();
         }
     }
 }

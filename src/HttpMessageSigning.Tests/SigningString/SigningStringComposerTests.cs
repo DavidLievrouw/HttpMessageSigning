@@ -97,6 +97,20 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 var expected = "(request-target),\ndate,\ndalion_app_id,abc123,";
                 actual.Should().Be(expected);
             }
+            
+            [Fact]
+            public void TrimsWhitespaceFromStart() {
+                A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
+                    .ReturnsLazily(call => "\n" + call.GetArgument<HeaderName>(0) + ",");
+
+                A.CallTo(() => _nonceAppender.BuildStringToAppend(_nonce))
+                    .Returns("abc123,");
+                
+                var actual = _sut.Compose(_httpRequest, _headerNames, _timeOfComposing, _expires, _nonce);
+
+                var expected = "(request-target),\ndate,\ndalion_app_id,abc123,";
+                actual.Should().Be(expected);
+            }
         }
     }
 }
