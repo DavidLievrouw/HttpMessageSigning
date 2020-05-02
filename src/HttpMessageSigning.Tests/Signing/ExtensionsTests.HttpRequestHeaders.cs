@@ -113,6 +113,23 @@ namespace Dalion.HttpMessageSigning.Signing {
                     _headers.Contains("existing_complex_header").Should().BeFalse();
                 }
             }
+
+            public class RestrictedHeaders : HttpRequestHeaders {
+                [Fact]
+                public void CanAddDateHeaderWithValidValue() {
+                    Action act = () => _headers.Set("Date", "Sat, 02 May 2020 16:35:45 GMT");
+                    act.Should().NotThrow();
+
+                    _headers.Date.Should().Be(new DateTimeOffset(2020, 5, 2, 16, 35, 45, TimeSpan.Zero));
+                }
+
+                [Fact]
+                public void CannotAddDateHeaderWithInvalidValue() {
+                    Action act = () => _headers.Set("Date", "{nonsense}");
+
+                    act.Should().Throw<FormatException>();
+                }
+            }
         }
     }
 }
