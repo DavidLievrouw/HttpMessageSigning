@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using Xunit;
@@ -117,6 +118,21 @@ namespace Dalion.HttpMessageSigning {
             public void ClonesAllPropertiesExceptEvents() {
                 var actual = (SigningSettings)_sut.Clone();
                 actual.Should().BeEquivalentTo(_sut, options => options.Excluding(_ => _.Events));
+            }
+
+            [Fact]
+            public void ClonesEvents() {
+                _sut.Events = new RequestSigningEvents {
+                    OnRequestSigned = (message, signature, settings) => Task.CompletedTask,
+                    OnRequestSigning = (message, settings) => Task.CompletedTask,
+                    OnSigningStringComposed = (message, signingString) => Task.CompletedTask
+                };
+                
+                var actual = (SigningSettings)_sut.Clone();
+
+                actual.Events.OnRequestSigned.Should().BeSameAs(_sut.Events.OnRequestSigned);
+                actual.Events.OnRequestSigning.Should().BeSameAs(_sut.Events.OnRequestSigning);
+                actual.Events.OnSigningStringComposed.Should().BeSameAs(_sut.Events.OnSigningStringComposed);
             }
         }
     }

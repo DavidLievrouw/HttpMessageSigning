@@ -80,7 +80,12 @@ namespace Dalion.HttpMessageSigning {
                 DigestHashAlgorithm = DigestHashAlgorithm,
                 AuthorizationScheme = AuthorizationScheme,
                 EnableNonce = EnableNonce,
-                UseDeprecatedAlgorithmParameter = UseDeprecatedAlgorithmParameter
+                UseDeprecatedAlgorithmParameter = UseDeprecatedAlgorithmParameter,
+                Events = new RequestSigningEvents {
+                    OnRequestSigned = Events?.OnRequestSigned,
+                    OnRequestSigning = Events?.OnRequestSigning,
+                    OnSigningStringComposed = Events?.OnSigningStringComposed
+                }
             };
         }
     }
