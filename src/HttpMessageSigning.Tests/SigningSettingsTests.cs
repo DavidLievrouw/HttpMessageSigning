@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning {
 
         public SigningSettingsTests() {
             _sut = new SigningSettings {
-                Expires = TimeSpan.FromMinutes(5),
+                Expires = TimeSpan.FromMinutes(9),
                 KeyId = new KeyId("client1"),
                 SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384),
                 Headers = new[] {
@@ -21,7 +21,14 @@ namespace Dalion.HttpMessageSigning {
                 },
                 DigestHashAlgorithm = HashAlgorithmName.SHA256,
                 AuthorizationScheme = "UnitTestAuth",
-                EnableNonce = true
+                EnableNonce = false,
+                AutomaticallyAddRecommendedHeaders = false,
+                Events = new RequestSigningEvents {
+                    OnRequestSigned = (message, signature, settings) => Task.CompletedTask,
+                    OnRequestSigning = (message, settings) => Task.CompletedTask,
+                    OnSigningStringComposed = (message, signingString) => Task.CompletedTask
+                },
+                UseDeprecatedAlgorithmParameter = true
             };
         }
 
@@ -47,17 +54,17 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void WhenHeadersIsNull_DoesNotThrow() {
+            public void WhenHeadersIsNull_ThrowsValidationException() {
                 _sut.Headers = null;
                 Action act = () => _sut.Validate();
-                act.Should().NotThrow();
+                act.Should().Throw<ValidationException>();
             }
 
             [Fact]
-            public void WhenHeadersIsEmpty_DoesNotThrow() {
+            public void WhenHeadersIsEmpty_ThrowsValidationException() {
                 _sut.Headers = Array.Empty<HeaderName>();
                 Action act = () => _sut.Validate();
-                act.Should().NotThrow();
+                act.Should().Throw<ValidationException>();
             }
 
             [Fact]
@@ -79,7 +86,7 @@ namespace Dalion.HttpMessageSigning {
                 Action act = () => _sut.Validate();
                 act.Should().NotThrow();
             }
-
+            
             [Theory]
             [InlineData(null)]
             [InlineData("")]
@@ -122,12 +129,6 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void ClonesEvents() {
-                _sut.Events = new RequestSigningEvents {
-                    OnRequestSigned = (message, signature, settings) => Task.CompletedTask,
-                    OnRequestSigning = (message, settings) => Task.CompletedTask,
-                    OnSigningStringComposed = (message, signingString) => Task.CompletedTask
-                };
-                
                 var actual = (SigningSettings)_sut.Clone();
 
                 actual.Events.OnRequestSigned.Should().BeSameAs(_sut.Events.OnRequestSigned);

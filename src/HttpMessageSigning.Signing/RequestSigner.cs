@@ -39,9 +39,9 @@ namespace Dalion.HttpMessageSigning.Signing {
                 var onRequestSigningTask = _signingSettings.Events?.OnRequestSigning?.Invoke(request, clonedSettings);
                 if (onRequestSigningTask != null) await onRequestSigningTask;
                 
-                clonedSettings.Validate();
-
                 _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(clonedSettings, request);
+                
+                clonedSettings.Validate();
                 
                 var timeOfSigning = _systemClock.UtcNow;
                 await _signatureHeaderEnsurer.EnsureHeader(request, clonedSettings, timeOfSigning);

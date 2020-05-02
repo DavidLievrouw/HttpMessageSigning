@@ -50,6 +50,17 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
+            public void WhenFeatureIsDisabled_DoesNotTakeAction() {
+                _settings.AutomaticallyAddRecommendedHeaders = false;
+                
+                _settings.Headers = Array.Empty<HeaderName>();
+
+                _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
+
+                _settings.Headers.Should().BeEmpty();
+            }
+            
+            [Fact]
             public void WhenHeadersDoesNotContainRequestTarget_AddsRequestTargetToHeaders() {
                 _settings.Headers = Array.Empty<HeaderName>();
 

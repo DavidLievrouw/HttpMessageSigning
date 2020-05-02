@@ -38,7 +38,7 @@ namespace Dalion.HttpMessageSigning {
         /// Gets or sets the ordered list of names of request headers to include when generating the signature for the message.
         /// </summary>
         /// <remarks>When empty, the default headers will be included, according to the spec.</remarks>
-        public HeaderName[] Headers { get; set; } = {HeaderName.PredefinedHeaderNames.RequestTarget};
+        public HeaderName[] Headers { get; set; } = Array.Empty<HeaderName>();
 
         /// <summary>
         /// Gets or sets the name of the authorization scheme for the authorization header.
@@ -50,6 +50,12 @@ namespace Dalion.HttpMessageSigning {
         /// </summary>
         /// <remarks>Setting this to 'false' causes the value of the 'algorithm' parameter to be 'hs2019'.</remarks>
         public bool UseDeprecatedAlgorithmParameter { get; set; } = false;
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether to automatically make the headers that are recommended by the spec a part of the signing string.
+        /// </summary>
+        /// <remarks>To fully conform with the spec, this setting should be set to 'false'.</remarks>
+        public bool AutomaticallyAddRecommendedHeaders { get; set; } = true;
         
         /// <summary>
         /// Gets or sets the <see cref="RequestSigningEvents"/> to notify when signing requests.
@@ -65,6 +71,7 @@ namespace Dalion.HttpMessageSigning {
             if (SignatureAlgorithm == null) throw new ValidationException($"The signing settings do not specify a valid {nameof(SignatureAlgorithm)}.");
             if (Expires <= TimeSpan.Zero) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
             if (string.IsNullOrEmpty(AuthorizationScheme)) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(AuthorizationScheme)}.");
+            if (Headers == null || !Headers.Any()) throw new ValidationException("At least one header should be part of the signing string.");
         }
 
         public void Dispose() {
@@ -81,6 +88,7 @@ namespace Dalion.HttpMessageSigning {
                 AuthorizationScheme = AuthorizationScheme,
                 EnableNonce = EnableNonce,
                 UseDeprecatedAlgorithmParameter = UseDeprecatedAlgorithmParameter,
+                AutomaticallyAddRecommendedHeaders = AutomaticallyAddRecommendedHeaders,
                 Events = new RequestSigningEvents {
                     OnRequestSigned = Events?.OnRequestSigned,
                     OnRequestSigning = Events?.OnRequestSigning,

@@ -9,6 +9,9 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
             if (request == null) throw new ArgumentNullException(nameof(request));
 
+            // When feature is disabled, don't take action
+            if (!signingSettings.AutomaticallyAddRecommendedHeaders) return;
+            
             // According to the spec, the header (request-target) should always be a part of the signature string.
             if (!signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.RequestTarget)) {
                 signingSettings.Headers = AppendHeaderName(signingSettings.Headers, HeaderName.PredefinedHeaderNames.RequestTarget);

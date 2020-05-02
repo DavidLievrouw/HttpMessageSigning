@@ -76,6 +76,15 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
+            public void WhenSanitizerMakesSettingsInvalid_ThrowsValidationException() {
+                A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(A<SigningSettings>._, _httpRequest))
+                    .Invokes(call => call.GetArgument<SigningSettings>(0).Headers = Array.Empty<HeaderName>());
+
+                Func<Task> act = () => _sut.Sign(_httpRequest);
+                act.Should().Throw<ValidationException>();
+            }
+            
+            [Fact]
             public async Task SanitizesHeaderNamesToInclude_BeforeCreatingSignature() {
                 Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == _signingSettings.Expires;
 
