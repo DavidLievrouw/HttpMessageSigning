@@ -12,11 +12,12 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         private readonly IBase64Converter _base64Converter;
         private readonly ILogger<MatchingSignatureStringVerificationTask> _logger;
         private readonly ISigningStringComposer _signingStringComposer;
+        private readonly ISystemClock _systemClock;
         private readonly MatchingSignatureStringVerificationTask _sut;
 
         public MatchingSignatureStringVerificationTaskTests() {
-            FakeFactory.Create(out _signingStringComposer, out _base64Converter, out _logger);
-            _sut = new MatchingSignatureStringVerificationTask(_signingStringComposer, _base64Converter, _logger);
+            FakeFactory.Create(out _signingStringComposer, out _base64Converter, out _systemClock, out _logger);
+            _sut = new MatchingSignatureStringVerificationTask(_signingStringComposer, _base64Converter, _systemClock, _logger);
         }
 
         public class Verify : MatchingSignatureStringVerificationTaskTests {
@@ -26,8 +27,12 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             private readonly HttpRequestForSigning _signedRequest;
             private readonly string _composedSignatureString;
             private readonly CustomSignatureAlgorithm _signatureAlgorithm;
+            private readonly DateTimeOffset _now;
 
             public Verify() {
+                _now = new DateTimeOffset(2020, 2, 24, 10, 20, 14, TimeSpan.FromHours(0));
+                A.CallTo(() => _systemClock.UtcNow).Returns(_now);
+                
                 _signature = (Signature) TestModels.Signature.Clone();
                 _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
                 _signatureAlgorithm = new CustomSignatureAlgorithm("TEST");
@@ -35,44 +40,56 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
 
                 _composedSignatureString = "abc123";
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan>._, A<string>._))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan?>._, A<string>._))
                     .Returns(_composedSignatureString);
                 _signature.String = _base64Converter.ToBase64(_client.SignatureAlgorithm.ComputeHash(_composedSignatureString));
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyACreationTime_ReturnsSignatureVerificationFailure() {
+            public async Task WhenSignatureDoesNotSpecifyACreationTime_UsesNowAsCreationTime() {
                 _signature.Created = null;
+                
+                DateTimeOffset? interceptedCreated = null;
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan?>._, A<string>._))
+                    .Invokes(call => {
+                        interceptedCreated = call.GetArgument<DateTimeOffset?>(2);
+                    })
+                    .Returns(_composedSignatureString);
+                
+                await _method(_signedRequest, _signature, _client);
 
-                var actual = await _method(_signedRequest, _signature, _client);
+                interceptedCreated.Should().Be(_now);
+            }
+            
+            [Fact]
+            public async Task WhenSignatureDoesNotSpecifyACreationTime_UsesNullExpiresValue() {
+                _signature.Created = null;
+                
+                TimeSpan? interceptedExpires = null;
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan?>._, A<string>._))
+                    .Invokes(call => {
+                        interceptedExpires = call.GetArgument<TimeSpan?>(3);
+                    })
+                    .Returns(_composedSignatureString);
+                
+                await _method(_signedRequest, _signature, _client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("INVALID_SIGNATURE");
+                interceptedExpires.Should().BeNull();
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyAExpirationTime_ReturnsSignatureVerificationFailure() {
-                _signature.Expires = null;
-
-                var actual = await _method(_signedRequest, _signature, _client);
-
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("INVALID_SIGNATURE");
-            }
-
-            [Fact]
-            public async Task CallsSigningStringComposerWithExpectedParameters() {
+            public async Task WhenEverythingIsSpecified_CallsSigningStringComposerWithExpectedParameters() {
                 HttpRequestForSigning interceptedRequest = null;
                 HeaderName[] interceptedHeaderNames = null;
                 DateTimeOffset? interceptedCreated = null;
                 TimeSpan? interceptedExpires = null;
 
-                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan>._, A<string>._))
+                A.CallTo(() => _signingStringComposer.Compose(A<HttpRequestForSigning>._, A<HeaderName[]>._, A<DateTimeOffset>._, A<TimeSpan?>._, A<string>._))
                     .Invokes(call => {
                         interceptedRequest = call.GetArgument<HttpRequestForSigning>(0);
                         interceptedHeaderNames = call.GetArgument<HeaderName[]>(1);
                         interceptedCreated = call.GetArgument<DateTimeOffset>(2);
-                        interceptedExpires = call.GetArgument<TimeSpan>(3);
+                        interceptedExpires = call.GetArgument<TimeSpan?>(3);
                     })
                     .Returns(_composedSignatureString);
 
