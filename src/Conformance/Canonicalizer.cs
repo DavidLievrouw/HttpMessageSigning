@@ -19,7 +19,7 @@ namespace Conformance {
 
         public async Task<int> Run(CanonicalizeOptions options, string httpMessage) {
             var signer = _requestSignerFactory.Create(
-                new KeyId(Guid.NewGuid().ToString()),
+                new KeyId("test"),
                 new SigningSettings {
                     SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("s3cr37"),
                     EnableNonce = false,

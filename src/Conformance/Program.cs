@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using CommandLine;
 using Serilog;
 using Serilog.Events;
@@ -11,7 +12,7 @@ namespace Conformance {
                 .WriteTo.Console(
                     outputTemplate: "{Message}",
                     restrictedToMinimumLevel: LogEventLevel.Information)
-                .WriteTo.File(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(typeof(Program).Assembly.Location), "Conformance.log"))
+                .WriteTo.File(Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), "Conformance.log"))
                 .CreateLogger();
 
             var input = "";
