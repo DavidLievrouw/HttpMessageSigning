@@ -48,7 +48,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public async Task CanRoundTripRSA() {
                 using (var rsa = new RSACryptoServiceProvider()) {
                     var publicKeyParams = rsa.ExportParameters(false);
-                    var rsaAlg = new RSASignatureAlgorithm(HashAlgorithmName.SHA384, publicKeyParams);
+                    var rsaAlg = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA384, publicKeyParams);
                     var client = new Client("c1", "app one", rsaAlg, TimeSpan.FromMinutes(1), new Claim("company", "Dalion"), new Claim("scope", "HttpMessageSigning"));
                     await _sut.Register(client);
 

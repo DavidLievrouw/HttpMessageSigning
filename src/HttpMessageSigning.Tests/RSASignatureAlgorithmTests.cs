@@ -4,7 +4,8 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning {
     public class RSASignatureAlgorithmTests {
-        private readonly RSASignatureAlgorithm _sut;
+        private readonly RSASignatureAlgorithm _signer;
+        private readonly RSASignatureAlgorithm _verifier;
         private readonly RSAParameters _privateKeyParams;
         private readonly RSAParameters _publicKeyParams;
         private readonly RSACryptoServiceProvider _rsa;
@@ -13,13 +14,15 @@ namespace Dalion.HttpMessageSigning {
             _rsa = new RSACryptoServiceProvider();
             _publicKeyParams = _rsa.ExportParameters(false);
             _privateKeyParams = _rsa.ExportParameters(true);
-            _sut = new RSASignatureAlgorithm(HashAlgorithmName.SHA1, _publicKeyParams, _privateKeyParams);
+            _signer = RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA1, _privateKeyParams);
+            _verifier = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA1, _publicKeyParams);
         }
 
         public class Name : RSASignatureAlgorithmTests {
             [Fact]
             public void ReturnsHMAC() {
-                _sut.Name.Should().Be("RSA");
+                _signer.Name.Should().Be("RSA");
+                _verifier.Name.Should().Be("RSA");
             }
         }
 
@@ -27,25 +30,25 @@ namespace Dalion.HttpMessageSigning {
             [Fact]
             public void CanVerifyValidSignature() {
                 var payload = "_abc_123_";
-                var signature = _sut.ComputeHash(payload);
-                var actual = _sut.VerifySignature(payload, signature);
+                var signature = _signer.ComputeHash(payload);
+                var actual = _verifier.VerifySignature(payload, signature);
                 actual.Should().BeTrue();
             }
 
             [Fact]
             public void VerificationFailsOnInvalidSignature() {
                 var payload = "_abc_123_";
-                var signature = _sut.ComputeHash(payload);
+                var signature = _signer.ComputeHash(payload);
                 signature[0]++; // Make it invalid
-                var actual = _sut.VerifySignature(payload, signature);
+                var actual = _verifier.VerifySignature(payload, signature);
                 actual.Should().BeFalse();
             }
 
             [Fact]
             public void CanVerifyWithAlgorithmThatOnlyKnowsAboutThePublicKey() {
                 var payload = "_abc_123_";
-                var signature = _sut.ComputeHash(payload);
-                var verifier = new RSASignatureAlgorithm(HashAlgorithmName.SHA1, _publicKeyParams);
+                var signature = _signer.ComputeHash(payload);
+                var verifier = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA1, _publicKeyParams);
                 var actual = verifier.VerifySignature(payload, signature);
                 actual.Should().BeTrue();
             }
@@ -53,7 +56,7 @@ namespace Dalion.HttpMessageSigning {
             [Fact]
             public void CanVerifyWithAlgorithmThatKnowsAboutThePrivateKey() {
                 var payload = "_abc_123_";
-                var signature = _sut.ComputeHash(payload);
+                var signature = _signer.ComputeHash(payload);
                 var verifier = new RSASignatureAlgorithm(HashAlgorithmName.SHA1, _rsa);
                 var actual = verifier.VerifySignature(payload, signature);
                 actual.Should().BeTrue();
@@ -63,7 +66,7 @@ namespace Dalion.HttpMessageSigning {
         public class GetPublicKey : RSASignatureAlgorithmTests {
             [Fact]
             public void ReturnsPublicKeyParameters() {
-                var actual = _sut.GetPublicKey();
+                var actual = _verifier.GetPublicKey();
                 actual.D.Should().BeEquivalentTo(_publicKeyParams.D);
                 actual.DP.Should().BeEquivalentTo(_publicKeyParams.DP);
                 actual.DQ.Should().BeEquivalentTo(_publicKeyParams.DQ);
@@ -75,7 +78,7 @@ namespace Dalion.HttpMessageSigning {
             }
             [Fact]
             public void DoesNotReturnPrivateKeyParameters() {
-                var actual = _sut.GetPublicKey();
+                var actual = _verifier.GetPublicKey();
                 actual.D.Should().BeNull();
                 actual.DP.Should().BeNull();
                 actual.DQ.Should().BeNull();

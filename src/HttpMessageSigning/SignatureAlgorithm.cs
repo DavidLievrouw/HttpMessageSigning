@@ -12,8 +12,8 @@ namespace Dalion.HttpMessageSigning {
             return CreateForSigning(rsa, HashAlgorithmName.SHA256);
         }
 
-        public static ISignatureAlgorithm CreateForSigning(RSAParameters publicParameters, RSAParameters privateParameters) {
-            return CreateForSigning(publicParameters, privateParameters, HashAlgorithmName.SHA256);
+        public static ISignatureAlgorithm CreateForSigning(RSAParameters privateParameters) {
+            return CreateForSigning(privateParameters, HashAlgorithmName.SHA256);
         }
 
         public static ISignatureAlgorithm CreateForSigning(X509Certificate2 certificate) {
@@ -30,18 +30,16 @@ namespace Dalion.HttpMessageSigning {
             return new RSASignatureAlgorithm(hashAlgorithm, rsa);
         }
 
-        public static ISignatureAlgorithm CreateForSigning(RSAParameters publicParameters, RSAParameters privateParameters, HashAlgorithmName hashAlgorithm) {
-            return new RSASignatureAlgorithm(hashAlgorithm, publicParameters, privateParameters);
+        public static ISignatureAlgorithm CreateForSigning(RSAParameters privateParameters, HashAlgorithmName hashAlgorithm) {
+            return RSASignatureAlgorithm.CreateForSigning(hashAlgorithm, privateParameters);
         }
 
         public static ISignatureAlgorithm CreateForSigning(X509Certificate2 certificate, HashAlgorithmName hashAlgorithm) {
             if (certificate == null) throw new ArgumentNullException(nameof(certificate));
-            var publicKey = certificate.GetRSAPublicKey();
-            var publicParameters = publicKey.ExportParameters(false);
             var privateKey = certificate.GetRSAPrivateKey();
             var privateParameters = privateKey.ExportParameters(true);
 
-            return CreateForSigning(publicParameters, privateParameters, hashAlgorithm);
+            return CreateForSigning(privateParameters, hashAlgorithm);
         }
 
         public static ISignatureAlgorithm CreateForSigning(string hmacSecret, HashAlgorithmName hashAlgorithm) {
@@ -74,7 +72,7 @@ namespace Dalion.HttpMessageSigning {
         }
 
         public static ISignatureAlgorithm CreateForVerification(RSAParameters publicParameters, HashAlgorithmName hashAlgorithm) {
-            return new RSASignatureAlgorithm(hashAlgorithm, publicParameters);
+            return RSASignatureAlgorithm.CreateForVerification(hashAlgorithm, publicParameters);
         }
 
         public static ISignatureAlgorithm CreateForVerification(X509Certificate2 certificate, HashAlgorithmName hashAlgorithm) {

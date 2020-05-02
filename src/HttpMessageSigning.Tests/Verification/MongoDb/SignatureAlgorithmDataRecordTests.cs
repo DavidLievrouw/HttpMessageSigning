@@ -85,7 +85,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     };
 
                     using (var actual = sut.ToSignatureAlgorithm()) {
-                        var expected = new RSASignatureAlgorithm(HashAlgorithmName.MD5, publicParameters);
+                        var expected = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.MD5, publicParameters);
                         actual.Should().BeAssignableTo<RSASignatureAlgorithm>();
                         actual.As<RSASignatureAlgorithm>().Should().BeEquivalentTo(expected);
                         actual.As<RSASignatureAlgorithm>().GetPublicKey().ToXml().Should().Be(publicParameters.ToXml());
