@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
@@ -34,16 +35,28 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [Fact]
             public async Task WhenSignatureDoesNotSpecifyAExpirationTime_ReturnsSignatureVerificationFailure() {
                 _signature.Expires = null;
+                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
                 actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
                     .Which.Code.Should().Be("HEADER_MISSING");
             }
+            
+            [Fact]
+            public async Task WhenSignatureDoesNotSpecifyACreationTime_AndItIsNotRequired_ReturnsNull() {
+                _signature.Expires = null;
+                _signature.Headers = _signature.Headers.Where(h => h != HeaderName.PredefinedHeaderNames.Expires).ToArray();
+                
+                var actual = await _method(_signedRequest, _signature, _client);
 
+                actual.Should().BeNull();
+            }
+            
             [Fact]
             public async Task WhenSignatureExpirationTimeIsInThePast_ReturnsSignatureVerificationFailure() {
                 _signature.Expires = _now.AddSeconds(-1);
+                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
@@ -54,6 +67,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [Fact]
             public async Task WhenSignatureExpirationTimeIsNow_ReturnsNull() {
                 _signature.Expires = _now;
+                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
@@ -63,6 +77,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [Fact]
             public async Task WhenSignatureExpirationTimeIsInTheFuture_ReturnsNull() {
                 _signature.Expires = _now.AddSeconds(1);
+                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
 
                 var actual = await _method(_signedRequest, _signature, _client);
 

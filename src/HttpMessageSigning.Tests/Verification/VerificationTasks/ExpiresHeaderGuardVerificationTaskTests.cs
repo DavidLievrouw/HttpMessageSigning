@@ -54,15 +54,14 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             [Fact]
-            public async Task WhenExpiresHeaderHasNoValue_ButItIsRequiredByTheClient_ReturnsSignatureVerificationFailure() {
+            public async Task WhenExpiresHeaderHasNoValue_ButItIsRequiredByTheClient_ReturnsNull_BecauseItIsOnlyARecommendation() {
                 var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("CUSTOM"), TimeSpan.FromMinutes(1));
                 _signature.Expires = null;
                 _signature.Algorithm = "hs2019";
                 
                 var actual = await _method(_signedRequest, _signature, client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("INVALID_EXPIRES_HEADER");
+                actual.Should().BeNull();
             }
             
             [Fact]

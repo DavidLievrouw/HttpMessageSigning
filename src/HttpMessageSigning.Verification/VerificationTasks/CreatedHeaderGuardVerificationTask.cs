@@ -12,11 +12,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 return SignatureVerificationFailure.InvalidCreatedHeader(
                     $"It is not allowed to take the {HeaderName.PredefinedHeaderNames.Created} into account, when the signature algorithm is {signature.Algorithm}.");
             }
-            
-            if (!AlgorithmNamesThatDoNotAllowCreatedValue.Contains(client.SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase) && !signature.Created.HasValue) {
-                return SignatureVerificationFailure.InvalidCreatedHeader($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.");
-            }
-            
+
             return null;
         }
     }

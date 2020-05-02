@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class ExpirationTimeVerificationTask : VerificationTask {
@@ -9,11 +10,11 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         }
 
         public override SignatureVerificationFailure VerifySync(HttpRequestForSigning signedRequest, Signature signature, Client client) {
-            if (!signature.Expires.HasValue) {
+            if (signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires) && !signature.Expires.HasValue) {
                 return SignatureVerificationFailure.HeaderMissing($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.");
             }
             
-            if (signature.Expires.Value < _systemClock.UtcNow) {
+            if (signature.Expires.HasValue && signature.Expires.Value < _systemClock.UtcNow) {
                 return SignatureVerificationFailure.SignatureExpired("The signature is expired.");
             }
             

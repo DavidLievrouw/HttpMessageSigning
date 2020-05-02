@@ -26,22 +26,21 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotContainRequestTarget_ReturnsVerificationException() {
+            public async Task WhenSignatureDoesNotContainRequestTarget_ReturnsNull_BecauseItsARecommendation() {
                 _signature.Headers = _signature.Headers
                     .Where(h => h != HeaderName.PredefinedHeaderNames.RequestTarget)
                     .ToArray();
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("HEADER_MISSING");
+                actual.Should().BeNull();
             }
 
             [Theory]
             [InlineData("RSA")]
             [InlineData("HMAC")]
             [InlineData("ECDSA")]
-            public async Task WhenSignatureShouldContainDateHeader_ButItDoesnt_ReturnsVerificationException(string algorithm) {
+            public async Task WhenSignatureShouldContainDateHeader_ButItDoesnt_ReturnsNull_BecauseItsARecommendation(string algorithm) {
                 var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = algorithm + "-sha256";
                 _signature.Headers = _signature.Headers
@@ -50,8 +49,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
                 var actual = await _method(_signedRequest, _signature, client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("HEADER_MISSING");
+                actual.Should().BeNull();
             }
 
             [Fact]
@@ -70,7 +68,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureShouldContainCreatedHeader_ButItDoesnt_ReturnsVerificationException() {
+            public async Task WhenSignatureShouldContainCreatedHeader_ButItDoesnt_ReturnsNull_BecauseItsARecommendation() {
                 var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
                 _signature.Headers = _signature.Headers
                     .Where(h => h != HeaderName.PredefinedHeaderNames.Created)
@@ -78,8 +76,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
                 var actual = await _method(_signedRequest, _signature, client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("HEADER_MISSING");
+                actual.Should().BeNull();
             }
 
             [Fact]
@@ -125,7 +122,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureShouldContainExpiresHeader_ButItDoesnt_ReturnsVerificationException() {
+            public async Task WhenSignatureShouldContainExpiresHeader_ButItDoesnt_ReturnsNull_BecauseItsARecommendation() {
                 var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = "hs2019";
                 _signature.Headers = _signature.Headers
@@ -135,8 +132,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
                 var actual = await _method(_signedRequest, _signature, client);
 
-                actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
-                    .Which.Code.Should().Be("HEADER_MISSING");
+                actual.Should().BeNull();
             }
 
             [Theory]
@@ -192,7 +188,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 actual.Should().NotBeNull().And.BeAssignableTo<SignatureVerificationFailure>()
                     .Which.Code.Should().Be("HEADER_MISSING");
             }
-
+            
             [Fact]
             public async Task WhenAllRequestedHeadersArePresent_ReturnsNull() {
                 var actual = await _method(_signedRequest, _signature, _client);
