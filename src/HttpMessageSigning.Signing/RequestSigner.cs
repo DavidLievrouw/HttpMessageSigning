@@ -49,7 +49,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 await _signatureHeaderEnsurer.EnsureHeader(request, clonedSettings, timeOfSigning);
                 
-                var signature = await _signatureCreator.CreateSignature(request, clonedSettings, timeOfSigning);
+                var signature = await _signatureCreator.CreateSignature(request, clonedSettings, timeOfSigning, expires);
                 var authParam = _authorizationHeaderParamCreator.CreateParam(signature);
 
                 _logger?.LogDebug("Setting Authorization scheme to '{0}' and param to '{1}'.", clonedSettings.AuthorizationScheme, authParam);

@@ -4,6 +4,6 @@ using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal interface ISignatureCreator {
-        Task<Signature> CreateSignature(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfSigning);
+        Task<Signature> CreateSignature(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfSigning, TimeSpan expires);
     }
 }

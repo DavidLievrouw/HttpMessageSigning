@@ -28,6 +28,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             private readonly SigningSettings _settings;
             private readonly DateTimeOffset _timeOfSigning;
             private readonly string _nonce;
+            private readonly TimeSpan _expires;
 
             public CreateSignature() {
                 _httpRequestMessage = new HttpRequestMessage {
@@ -50,6 +51,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                     DigestHashAlgorithm = HashAlgorithmName.SHA384
                 };
                 _timeOfSigning = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.Zero);
+                _expires = TimeSpan.FromMinutes(10);
                 A.CallTo(() => _settings.SignatureAlgorithm.Name).Returns("Custom");
                 _nonce = "abc123";
                 A.CallTo(() => _nonceGenerator.GenerateNonce()).Returns(_nonce);
@@ -57,13 +59,13 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public void GivenNullRequest_ThrowsArgumentNullException() {
-                Func<Task> act = () => _sut.CreateSignature(null, _settings, _timeOfSigning);
+                Func<Task> act = () => _sut.CreateSignature(null, _settings, _timeOfSigning, _expires);
                 act.Should().Throw<ArgumentNullException>();
             }
 
             [Fact]
             public void GivenNullSettings_ThrowsArgumentNullException() {
-                Func<Task> act = () => _sut.CreateSignature(_httpRequestMessage, null, _timeOfSigning);
+                Func<Task> act = () => _sut.CreateSignature(_httpRequestMessage, null, _timeOfSigning, _expires);
                 act.Should().Throw<ArgumentNullException>();
             }
 
@@ -82,7 +84,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                     .Invokes(call => interceptedNonce = call.GetArgument<string>(4))
                     .Returns(composedString);
 
-                await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
 
                 interceptedNonce.Should().BeNull();
             }
@@ -97,12 +99,12 @@ namespace Dalion.HttpMessageSigning.Signing {
                         A<HttpRequestForSigning>._, 
                         _settings.Headers, 
                         _timeOfSigning, 
-                        _settings.Expires, 
+                        _expires, 
                         _nonce))
                     .Invokes(call => interceptedNonce = call.GetArgument<string>(4))
                     .Returns(composedString);
 
-                await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
 
                 interceptedNonce.Should().Be(_nonce);
             }
@@ -115,12 +117,12 @@ namespace Dalion.HttpMessageSigning.Signing {
                         A<HttpRequestForSigning>._, 
                         _settings.Headers, 
                         _timeOfSigning, 
-                        _settings.Expires, 
+                        _expires, 
                         _nonce))
                     .Invokes(call => interceptedRequest = call.GetArgument<HttpRequestForSigning>(0))
                     .Returns(composedString);
 
-                await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
 
                 interceptedRequest.Should().BeEquivalentTo(new HttpRequestForSigning {
                     Method = HttpMethod.Post,
@@ -136,7 +138,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                         A<HttpRequestForSigning>._, 
                         _settings.Headers, 
                         _timeOfSigning, 
-                        _settings.Expires, 
+                        _expires, 
                         _nonce))
                     .Returns(composedString);
 
@@ -148,14 +150,14 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _base64Converter.ToBase64(signatureHash))
                     .Returns(signatureString);
 
-                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
 
                 actual.String.Should().Be(signatureString);
             }
 
             [Fact]
             public async Task ReturnsSignatureWithExpectedKeyId() {
-                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
                 actual.KeyId.Should().Be(_settings.KeyId);
             }
 
@@ -165,7 +167,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _settings.SignatureAlgorithm.Name).Returns("RSA");
                 A.CallTo(() => _settings.SignatureAlgorithm.HashAlgorithm).Returns(HashAlgorithmName.SHA512);
 
-                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
 
                 actual.Algorithm.Should().Be("hs2019");
             }
@@ -176,26 +178,26 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(() => _settings.SignatureAlgorithm.Name).Returns("RSA");
                 A.CallTo(() => _settings.SignatureAlgorithm.HashAlgorithm).Returns(HashAlgorithmName.SHA512);
 
-                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
 
                 actual.Algorithm.Should().Be("rsa-sha512");
             }
 
             [Fact]
             public async Task ReturnsSignatureWithExpectedCreatedValue() {
-                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
                 actual.Created.Should().Be(_timeOfSigning);
             }
 
             [Fact]
-            public async Task ReturnsSignatureWithExpectedExpiresValue() {
-                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
-                actual.Expires.Should().Be(_timeOfSigning.Add(_settings.Expires));
+            public async Task ReturnsSignatureWithExpectedExpiresValue_NotFromTheSettings() {
+                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
+                actual.Expires.Should().Be(_timeOfSigning.Add(_expires));
             }
 
             [Fact]
             public async Task ReturnsSignatureWithExpectedNonceValue() {
-                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
                 actual.Nonce.Should().Be(_nonce);
             }
             
@@ -212,11 +214,11 @@ namespace Dalion.HttpMessageSigning.Signing {
                         A<HttpRequestForSigning>._, 
                         _settings.Headers, 
                         _timeOfSigning, 
-                        _settings.Expires, 
+                        _expires, 
                         _nonce))
                     .Returns(composedString);
                 
-                await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
 
                 interceptedSigningString.Should().Be(composedString);
             }
@@ -225,14 +227,14 @@ namespace Dalion.HttpMessageSigning.Signing {
             public void GivenNullOnSigningStringComposedEvent_DoesNotThrow() {
                 _settings.Events.OnSigningStringComposed = null;
                 
-                Func<Task> act = () => _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                Func<Task> act = () => _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
                 
                 act.Should().NotThrow();
             }
             
             [Fact]
             public async Task ReturnsSignatureWithExpectedHeaders() {
-                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning);
+                var actual = await _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
                 actual.Headers.Should().BeEquivalentTo(
                     new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,

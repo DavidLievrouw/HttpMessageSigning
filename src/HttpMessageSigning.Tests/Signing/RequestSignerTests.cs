@@ -78,7 +78,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void WhenSanitizerMakesSettingsInvalid_ThrowsValidationException() {
                 A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(A<SigningSettings>._, _httpRequest))
-                    .Invokes(call => call.GetArgument<SigningSettings>(0).Headers = Array.Empty<HeaderName>());
+                    .Invokes(call => call.GetArgument<SigningSettings>(0).Headers = null);
 
                 Func<Task> act = () => _sut.Sign(_httpRequest);
                 act.Should().Throw<ValidationException>();
@@ -91,7 +91,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 await _sut.Sign(_httpRequest);
 
                 A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(A<SigningSettings>.That.Matches(modifiedSigningSettings), _httpRequest)).MustHaveHappened()
-                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning, _signingSettings.Expires))
                         .MustHaveHappened());
             }
             
@@ -105,7 +105,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == TimeSpan.FromHours(3);
                 
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning, _signingSettings.Expires))
                     .Returns(signature);
                 
                 var authParam = "signature=abc123=";
@@ -122,7 +122,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == _signingSettings.Expires;
                 
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning, _signingSettings.Expires))
                     .Returns(signature);
 
                 await _sut.Sign(_httpRequest);
@@ -136,7 +136,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == _signingSettings.Expires;
                 
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning, _signingSettings.Expires))
                     .Returns(signature);
 
                 var authParam = "signature=abc123=";
@@ -155,7 +155,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == _signingSettings.Expires;
                 
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning, _signingSettings.Expires))
                     .Returns(signature);
 
                 var authParam = "signature=abc123=";
@@ -175,7 +175,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 await _sut.Sign(_httpRequest);
 
                 A.CallTo(onRequestSigning).MustHaveHappened()
-                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(A<HttpRequestMessage>._, A<SigningSettings>._, A<DateTimeOffset>._)).MustHaveHappened());
+                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(A<HttpRequestMessage>._, A<SigningSettings>._, A<DateTimeOffset>._, A<TimeSpan>._)).MustHaveHappened());
             }
             
             [Fact]
@@ -185,7 +185,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 await _sut.Sign(_httpRequest);
 
-                A.CallTo(() => _signatureCreator.CreateSignature(A<HttpRequestMessage>._, A<SigningSettings>._, A<DateTimeOffset>._)).MustHaveHappened()
+                A.CallTo(() => _signatureCreator.CreateSignature(A<HttpRequestMessage>._, A<SigningSettings>._, A<DateTimeOffset>._, A<TimeSpan>._)).MustHaveHappened()
                     .Then(A.CallTo(onRequestSigned).MustHaveHappened());
             }
 
@@ -229,7 +229,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void WhenSanitizerMakesSettingsInvalid_ThrowsValidationException() {
                 A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(A<SigningSettings>._, _httpRequest))
-                    .Invokes(call => call.GetArgument<SigningSettings>(0).Headers = Array.Empty<HeaderName>());
+                    .Invokes(call => call.GetArgument<SigningSettings>(0).Headers = null);
 
                 Func<Task> act = () => _sut.Sign(_httpRequest, _timeOfSigning, _expires);
                 act.Should().Throw<ValidationException>();
@@ -242,7 +242,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 await _sut.Sign(_httpRequest, _timeOfSigning, _expires);
 
                 A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(A<SigningSettings>.That.Matches(modifiedSigningSettings), _httpRequest)).MustHaveHappened()
-                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning, _expires))
                         .MustHaveHappened());
             }
             
@@ -256,7 +256,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == TimeSpan.FromHours(3);
                 
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning, _expires))
                     .Returns(signature);
                 
                 var authParam = "signature=abc123=";
@@ -273,7 +273,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == _signingSettings.Expires;
                 
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning, _expires))
                     .Returns(signature);
 
                 await _sut.Sign(_httpRequest, _timeOfSigning, _expires);
@@ -287,7 +287,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == _signingSettings.Expires;
                 
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning, _expires))
                     .Returns(signature);
 
                 var authParam = "signature=abc123=";
@@ -306,7 +306,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 Expression<Func<SigningSettings, bool>> modifiedSigningSettings = s => s.KeyId == _signingSettings.KeyId && s.Expires == _signingSettings.Expires;
                 
                 var signature = new Signature {String = "abc123="};
-                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning))
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>.That.Matches(modifiedSigningSettings), _timeOfSigning, _expires))
                     .Returns(signature);
 
                 var authParam = "signature=abc123=";
@@ -326,7 +326,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 await _sut.Sign(_httpRequest, _timeOfSigning, _expires);
 
                 A.CallTo(onRequestSigning).MustHaveHappened()
-                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(A<HttpRequestMessage>._, A<SigningSettings>._, A<DateTimeOffset>._)).MustHaveHappened());
+                    .Then(A.CallTo(() => _signatureCreator.CreateSignature(A<HttpRequestMessage>._, A<SigningSettings>._, A<DateTimeOffset>._, A<TimeSpan>._)).MustHaveHappened());
             }
             
             [Fact]
@@ -336,7 +336,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 await _sut.Sign(_httpRequest, _timeOfSigning, _expires);
 
-                A.CallTo(() => _signatureCreator.CreateSignature(A<HttpRequestMessage>._, A<SigningSettings>._, A<DateTimeOffset>._)).MustHaveHappened()
+                A.CallTo(() => _signatureCreator.CreateSignature(A<HttpRequestMessage>._, A<SigningSettings>._, A<DateTimeOffset>._, A<TimeSpan>._)).MustHaveHappened()
                     .Then(A.CallTo(onRequestSigned).MustHaveHappened());
             }
 

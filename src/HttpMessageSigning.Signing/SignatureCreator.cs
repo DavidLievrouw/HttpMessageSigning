@@ -22,7 +22,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             _logger = logger;
         }
 
-        public async Task<Signature> CreateSignature(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfSigning) {
+        public async Task<Signature> CreateSignature(HttpRequestMessage request, SigningSettings settings, DateTimeOffset timeOfSigning, TimeSpan expires) {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             
@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 requestForSigning, 
                 settings.Headers, 
                 timeOfSigning, 
-                settings.Expires, 
+                expires, 
                 nonce);
 
             var eventTask = settings.Events?.OnSigningStringComposed?.Invoke(request, signingString);
@@ -51,7 +51,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                     ? $"{settings.SignatureAlgorithm.Name.ToLowerInvariant()}-{settings.SignatureAlgorithm.HashAlgorithm.ToString().ToLowerInvariant()}"
                     : Signature.DefaultSignatureAlgorithm,
                 Created = timeOfSigning,
-                Expires = timeOfSigning.Add(settings.Expires),
+                Expires = timeOfSigning.Add(expires),
                 Headers = settings.Headers,
                 Nonce = nonce,
                 String = signatureString
