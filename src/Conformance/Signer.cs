@@ -37,7 +37,7 @@ namespace Conformance {
                     DigestHashAlgorithm = default,
                     AutomaticallyAddRecommendedHeaders = false,
                     Headers = options.Headers
-                        .Split(new [] {' ', ','}, StringSplitOptions.RemoveEmptyEntries)
+                        ?.Split(new [] {' ', ','}, StringSplitOptions.RemoveEmptyEntries)
                         .Select(h => new HeaderName(h))
                         .ToArray()
                 });
