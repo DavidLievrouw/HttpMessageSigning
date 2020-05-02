@@ -49,7 +49,7 @@ namespace Conformance {
             
             Console.Out.Flush();
             
-            return 1;
+            return 0;
         }
     }
 }
