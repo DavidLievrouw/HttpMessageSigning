@@ -28,22 +28,41 @@ namespace Conformance {
                     privateKey = reader.ReadRsaKey();
                 }
             }
-            
+
+            if (options.Algorithm != "hs2019") {
+                throw new HttpMessageSigningException("Unsupported algorithm.");
+            }
+
+            var signingSettings = new SigningSettings {
+                SignatureAlgorithm = RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA256, privateKey),
+                EnableNonce = false,
+                DigestHashAlgorithm = default,
+                AutomaticallyAddRecommendedHeaders = false,
+                Headers = options.Headers
+                    ?.Split(new [] {' ', ','}, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(h => new HeaderName(h))
+                    .ToArray()
+            };
             var signer = _requestSignerFactory.Create(
                 new KeyId("test"),
-                new SigningSettings {
-                    SignatureAlgorithm = RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA256, privateKey),
-                    EnableNonce = false,
-                    DigestHashAlgorithm = default,
-                    AutomaticallyAddRecommendedHeaders = false,
-                    Headers = options.Headers
-                        ?.Split(new [] {' ', ','}, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(h => new HeaderName(h))
-                        .ToArray()
-                });
+                signingSettings);
             
             var request = HttpRequestMessageParser.Parse(httpMessage);
-            await signer.Sign(request);
+            
+            var created = DateTimeOffset.UtcNow;
+            if (!string.IsNullOrEmpty(options.Created)) {
+                var createdUnix = int.Parse(options.Created);
+                created = DateTimeOffset.FromUnixTimeSeconds(createdUnix);
+            }
+            
+            var expires = signingSettings.Expires;
+            if (!string.IsNullOrEmpty(options.Expires)) {
+                var expiresUnix = int.Parse(options.Expires);
+                var expiresAbsolute = DateTimeOffset.FromUnixTimeSeconds(expiresUnix);
+                expires = expiresAbsolute - created;
+            }
+            
+            await signer.Sign(request, created, expires);
             
             Log.Information(request.Headers.Authorization.Scheme + " " + request.Headers.Authorization.Parameter);
             
