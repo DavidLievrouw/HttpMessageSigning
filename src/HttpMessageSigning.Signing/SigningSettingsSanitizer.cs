@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Net.Http;
-using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
     internal class SigningSettingsSanitizer : ISigningSettingsSanitizer {
@@ -9,7 +8,12 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            // When feature is disabled, don't take action
+            // If the header parameter is not specified, implementations must operate as if the field were specified with a single value, '(created)', in the list of HTTP headers.
+            if (signingSettings.Headers == null || !signingSettings.Headers.Any()) {
+                signingSettings.Headers = new[] {HeaderName.PredefinedHeaderNames.Created};
+            }
+            
+            // When feature is disabled, don't take any further action
             if (!signingSettings.AutomaticallyAddRecommendedHeaders) return;
             
             // According to the spec, the header (request-target) should always be a part of the signature string.

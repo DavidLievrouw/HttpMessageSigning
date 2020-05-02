@@ -50,18 +50,38 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenFeatureIsDisabled_DoesNotTakeAction() {
+            public void WhenHeadersIsNull_SetsCreatedAsHeaderForSignature_EvenWhenFeatureIsDisabled() {
+                _settings.Headers = null;
                 _settings.AutomaticallyAddRecommendedHeaders = false;
-                
-                _settings.Headers = Array.Empty<HeaderName>();
 
                 _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
 
-                _settings.Headers.Should().BeEmpty();
+                _settings.Headers.Should().BeEquivalentTo(new[] {HeaderName.PredefinedHeaderNames.Created});
             }
-            
+
             [Fact]
-            public void WhenHeadersDoesNotContainRequestTarget_AddsRequestTargetToHeaders() {
+            public void WhenHeadersIsEmpty_SetsCreatedAsHeaderForSignature_EvenWhenFeatureIsDisabled() {
+                _settings.Headers = Array.Empty<HeaderName>();
+                _settings.AutomaticallyAddRecommendedHeaders = false;
+
+                _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
+
+                _settings.Headers.Should().BeEquivalentTo(new[] {HeaderName.PredefinedHeaderNames.Created});
+            }
+
+            [Fact]
+            public void WhenFeatureIsDisabled_DoesNotTakeAction() {
+                _settings.AutomaticallyAddRecommendedHeaders = false;
+
+                _settings.Headers = new[] {HeaderName.PredefinedHeaderNames.Date};
+
+                _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
+
+                _settings.Headers.Should().BeEquivalentTo(new[] {HeaderName.PredefinedHeaderNames.Date});
+            }
+
+            [Fact]
+            public void WhenFeatureIsEnabled_AndHeadersDoesNotContainRequestTarget_AddsRequestTargetToHeaders() {
                 _settings.Headers = Array.Empty<HeaderName>();
 
                 _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
@@ -70,7 +90,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainDate_AddsDateToHeaders() {
+            public void WhenFeatureIsEnabled_AndAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainDate_AddsDateToHeaders() {
                 _settings.Headers = Array.Empty<HeaderName>();
 
                 _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
@@ -79,7 +99,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainDate_DoesNotAddDateToHeaders() {
+            public void WhenFeatureIsEnabled_AndAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainDate_DoesNotAddDateToHeaders() {
                 _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("SomethingElse");
                 _settings.Headers = Array.Empty<HeaderName>();
 
@@ -89,7 +109,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_AddsCreatedToHeaders() {
+            public void WhenFeatureIsEnabled_AndAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_AddsCreatedToHeaders() {
                 _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("SomethingElse");
                 _settings.Headers = Array.Empty<HeaderName>();
 
@@ -102,9 +122,9 @@ namespace Dalion.HttpMessageSigning.Signing {
             [InlineData("RSA")]
             [InlineData("HMAC")]
             [InlineData("ECDSA")]
-            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_DoesNotAddCreatedToHeaders(string algorithmName) {
+            public void WhenFeatureIsEnabled_AndAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainCreated_DoesNotAddCreatedToHeaders(string algorithmName) {
                 _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
-                _settings.Headers = Array.Empty<HeaderName>();
+                _settings.Headers = new[] {HeaderName.PredefinedHeaderNames.Date};
 
                 _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
 
@@ -112,7 +132,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_AddsExpiresToHeaders() {
+            public void WhenFeatureIsEnabled_AndAlgorithmIsNotRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_AddsExpiresToHeaders() {
                 _settings.SignatureAlgorithm = new CustomSignatureAlgorithm("SomethingElse");
                 _settings.Headers = Array.Empty<HeaderName>();
 
@@ -125,9 +145,9 @@ namespace Dalion.HttpMessageSigning.Signing {
             [InlineData("RSA")]
             [InlineData("HMAC")]
             [InlineData("ECDSA")]
-            public void WhenAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_DoesNotAddExpiresToHeaders(string algorithmName) {
+            public void WhenFeatureIsEnabled_AndAlgorithmIsRSAOrHMACOrECDSA_AndHeadersDoesNotContainExpires_DoesNotAddExpiresToHeaders(string algorithmName) {
                 _settings.SignatureAlgorithm = new CustomSignatureAlgorithm(algorithmName);
-                _settings.Headers = Array.Empty<HeaderName>();
+                _settings.Headers = new[] {HeaderName.PredefinedHeaderNames.Date};
 
                 _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
 
@@ -135,7 +155,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenHeadersDoesNotContainDigest_AndDigestIsOff_DoesNotAddDigestHeader() {
+            public void WhenFeatureIsEnabled_AndHeadersDoesNotContainDigest_AndDigestIsOff_DoesNotAddDigestHeader() {
                 _settings.DigestHashAlgorithm = default;
                 _settings.Headers = Array.Empty<HeaderName>();
 
@@ -145,7 +165,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_AddsDigestHeader() {
+            public void WhenFeatureIsEnabled_AndHeadersDoesNotContainDigest_AndDigestIsOn_AddsDigestHeader() {
                 _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
                 _settings.Headers = Array.Empty<HeaderName>();
 
@@ -155,7 +175,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenHeadersContainsDigest_AndDigestIsOn_DoesNotAddDigestHeaderAgain() {
+            public void WhenFeatureIsEnabled_AndHeadersContainsDigest_AndDigestIsOn_DoesNotAddDigestHeaderAgain() {
                 _settings.Headers = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
                     HeaderName.PredefinedHeaderNames.Date,
@@ -176,7 +196,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             [InlineData("TRACE")]
             [InlineData("HEAD")]
             [InlineData("DELETE")]
-            public void WhenHeadersDoesNotContainDigest_AndDigestIsOn_ButMethodDoesNotHaveBody_DoesNotAddDigestHeader(string method) {
+            public void WhenFeatureIsEnabled_AndHeadersDoesNotContainDigest_AndDigestIsOn_ButMethodDoesNotHaveBody_DoesNotAddDigestHeader(string method) {
                 _settings.DigestHashAlgorithm = HashAlgorithmName.SHA384;
                 _httpRequest.Method = new HttpMethod(method);
 
