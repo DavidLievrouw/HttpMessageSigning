@@ -9,6 +9,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
     </ItemGroup>
 
     <ItemGroup>

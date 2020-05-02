@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
@@ -7,7 +8,7 @@ using Dalion.HttpMessageSigning.Signing;
 
 namespace Conformance {
     public static class HttpRequestMessageParser {
-        private static readonly string[] RestrictedHeaders = new[] {
+        private static readonly string[] RestrictedHeaders = {
             "Accept",
             "Connection",
             "Content-Length",
@@ -22,6 +23,15 @@ namespace Conformance {
             "Referer",
             "Transfer-Encoding",
             "User-Agent"
+        };        
+        
+        private static readonly string[] ContentHeaders = {
+            "Content-Length",
+            "Content-Type",
+            "Content-Language",
+            "Content-Encoding",
+            "Content-Location",
+            "Content-Disposition"
         };
 
         public static HttpRequestMessage Parse(string raw) {
@@ -30,6 +40,7 @@ namespace Conformance {
             var request = new HttpRequestMessage();
 
             var lines = raw.Split('\n').Select(l => l.Trim()).ToList();
+            var contentHeaders = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < lines.Count; i++) {
                 var line = lines[i];
                 var quit = false;
@@ -45,7 +56,12 @@ namespace Conformance {
                         var values = RestrictedHeaders.Contains(header[0], StringComparer.OrdinalIgnoreCase)
                             ? new[] {header[1]}
                             : header[1].Split(", ");
-                        request.Headers.Set(header[0], values.ToArray());
+                        if (ContentHeaders.Contains(header[0], StringComparer.OrdinalIgnoreCase)) {
+                            contentHeaders.Add(header[0], values);
+                        }
+                        else {
+                            request.Headers.Set(header[0], values.ToArray());
+                        }
                         break;
                     case LineType.BodySeparator:
                         var bodyString = string.Join('\n', lines.Skip(i + 1));
@@ -59,6 +75,12 @@ namespace Conformance {
                 if (quit) break;
             }
 
+            if (request.Content != null && contentHeaders.Any()) {
+                foreach (var contentHeader in contentHeaders) {
+                    request.Content.Headers.Set(contentHeader.Key, contentHeader.Value);
+                }
+            }
+            
             return request;
         }
 

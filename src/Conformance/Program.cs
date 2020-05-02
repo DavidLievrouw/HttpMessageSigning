@@ -1,18 +1,17 @@
 ﻿using System;
-using System.IO;
 using CommandLine;
 using Serilog;
 using Serilog.Events;
 
 namespace Conformance {
     public class Program {
-        private static void Main(string[] args) {
+        private static int Main(string[] args) {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.Console(
                     outputTemplate: "{Message}",
                     restrictedToMinimumLevel: LogEventLevel.Information)
-                .WriteTo.File(Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), "Conformance.log"))
+                .WriteTo.File(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(typeof(Program).Assembly.Location), "Conformance.log"))
                 .CreateLogger();
 
             var input = "";
@@ -22,8 +21,8 @@ namespace Conformance {
             catch (InvalidOperationException) {
                 input = Console.In.ReadToEnd();
             }
-
-            Parser.Default.ParseArguments<CanonicalizeOptions, SignOptions, VerifyOptions>(args)
+            
+            return Parser.Default.ParseArguments<CanonicalizeOptions, SignOptions, VerifyOptions>(args)
                 .MapResult(
                     (CanonicalizeOptions opts) => new Canonicalizer().Run(opts, input).GetAwaiter().GetResult(),
                     (SignOptions opts) => new Signer().Run(opts, input).GetAwaiter().GetResult(),
