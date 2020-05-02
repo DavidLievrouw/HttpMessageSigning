@@ -3,16 +3,17 @@ using System;
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class ExpiresHeaderAppender : IHeaderAppender {
         private readonly TimeSpan? _expires;
-        private readonly DateTimeOffset _timeOfComposing;
+        private readonly DateTimeOffset? _timeOfComposing;
 
-        public ExpiresHeaderAppender(DateTimeOffset timeOfComposing, TimeSpan? expires) {
+        public ExpiresHeaderAppender(DateTimeOffset? timeOfComposing, TimeSpan? expires) {
             _timeOfComposing = timeOfComposing;
             _expires = expires;
         }
 
         public string BuildStringToAppend(HeaderName header) {
             if (!_expires.HasValue) return string.Empty;
-            var expiresValue = _timeOfComposing.Add(_expires.Value).ToUnixTimeSeconds();
+            if (!_timeOfComposing.HasValue) return string.Empty;
+            var expiresValue = _timeOfComposing.Value.Add(_expires.Value).ToUnixTimeSeconds();
             return "\n" + new Header(HeaderName.PredefinedHeaderNames.Expires, expiresValue.ToString());
         }
     }

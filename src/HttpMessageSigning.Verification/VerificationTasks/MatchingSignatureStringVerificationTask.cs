@@ -6,17 +6,14 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class MatchingSignatureStringVerificationTask : VerificationTask {
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IBase64Converter _base64Converter;
-        private readonly ISystemClock _systemClock;
         private readonly ILogger<MatchingSignatureStringVerificationTask> _logger;
 
         public MatchingSignatureStringVerificationTask(
             ISigningStringComposer signingStringComposer, 
             IBase64Converter base64Converter,
-            ISystemClock systemClock,
             ILogger<MatchingSignatureStringVerificationTask> logger = null) {
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
-            _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
             _logger = logger;
         }
 
@@ -28,7 +25,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             var signingString = _signingStringComposer.Compose(
                 signedRequest, 
                 signature.Headers,
-                signature.Created ?? _systemClock.UtcNow, 
+                signature.Created, 
                 expires, 
                 signature.Nonce);
             

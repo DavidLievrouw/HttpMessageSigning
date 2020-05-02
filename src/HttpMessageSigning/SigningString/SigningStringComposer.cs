@@ -12,7 +12,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _nonceAppender = nonceAppender ?? throw new ArgumentNullException(nameof(nonceAppender));
         }
 
-        public string Compose(HttpRequestForSigning request, HeaderName[] headerNames, DateTimeOffset timeOfComposing, TimeSpan? expires, string nonce) {
+        public string Compose(HttpRequestForSigning request, HeaderName[] headerNames, DateTimeOffset? timeOfComposing, TimeSpan? expires, string nonce) {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (headerNames == null) throw new ArgumentNullException(nameof(headerNames));
             

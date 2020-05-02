@@ -2,7 +2,7 @@ using System;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class HeaderAppenderFactory : IHeaderAppenderFactory {
-        public IHeaderAppender Create(HttpRequestForSigning request, DateTimeOffset timeOfComposing, TimeSpan? expires) {
+        public IHeaderAppender Create(HttpRequestForSigning request, DateTimeOffset? timeOfComposing, TimeSpan? expires) {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             return new CompositeHeaderAppender(

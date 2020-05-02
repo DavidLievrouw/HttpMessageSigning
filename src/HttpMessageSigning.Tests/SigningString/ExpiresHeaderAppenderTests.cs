@@ -30,6 +30,15 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
                 actual.Should().Be(string.Empty);
             }
+            
+            [Fact]
+            public void WhenTimeOfComposingHasNoValue_ReturnsEmptyString() {
+                var sut = new ExpiresHeaderAppender(null, TimeSpan.FromMinutes(10));
+                
+                var actual = sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Expires);
+
+                actual.Should().Be(string.Empty);
+            }
         }
     }
 }

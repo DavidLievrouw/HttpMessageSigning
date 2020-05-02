@@ -20,6 +20,15 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 var expected = "\n(created): 1582539614";
                 actual.Should().Be(expected);
             }
+            
+            [Fact]
+            public void WhenTimeOfComposingHasNoValue_ReturnsEmptyString() {
+                var sut = new CreatedHeaderAppender(null);
+                
+                var actual = sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Created);
+
+                actual.Should().Be(string.Empty);
+            }
         }
     }
 }

@@ -12,12 +12,11 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         private readonly IBase64Converter _base64Converter;
         private readonly ILogger<MatchingSignatureStringVerificationTask> _logger;
         private readonly ISigningStringComposer _signingStringComposer;
-        private readonly ISystemClock _systemClock;
         private readonly MatchingSignatureStringVerificationTask _sut;
 
         public MatchingSignatureStringVerificationTaskTests() {
-            FakeFactory.Create(out _signingStringComposer, out _base64Converter, out _systemClock, out _logger);
-            _sut = new MatchingSignatureStringVerificationTask(_signingStringComposer, _base64Converter, _systemClock, _logger);
+            FakeFactory.Create(out _signingStringComposer, out _base64Converter, out _logger);
+            _sut = new MatchingSignatureStringVerificationTask(_signingStringComposer, _base64Converter, _logger);
         }
 
         public class Verify : MatchingSignatureStringVerificationTaskTests {
@@ -31,7 +30,6 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             public Verify() {
                 _now = new DateTimeOffset(2020, 2, 24, 10, 20, 14, TimeSpan.FromHours(0));
-                A.CallTo(() => _systemClock.UtcNow).Returns(_now);
                 
                 _signature = (Signature) TestModels.Signature.Clone();
                 _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
@@ -46,7 +44,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyACreationTime_UsesNowAsCreationTime() {
+            public async Task WhenSignatureDoesNotSpecifyACreationTime_UsesPassesNullCreationTime() {
                 _signature.Created = null;
                 
                 DateTimeOffset? interceptedCreated = null;
@@ -58,7 +56,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 
                 await _method(_signedRequest, _signature, _client);
 
-                interceptedCreated.Should().Be(_now);
+                interceptedCreated.Should().BeNull();
             }
             
             [Fact]
