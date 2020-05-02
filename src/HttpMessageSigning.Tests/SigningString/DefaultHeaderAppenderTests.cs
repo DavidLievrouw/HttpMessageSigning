@@ -24,12 +24,12 @@ namespace Dalion.HttpMessageSigning.SigningString {
             }
 
             [Fact]
-            public void WhenHeaderIsNotPresent_ReturnsEmptyString() {
+            public void WhenHeaderIsNotPresent_ThrowsSigningException() {
                 _httpRequest.Headers.Clear();
 
-                var actual = _sut.BuildStringToAppend(_headerName);
-
-                actual.Should().NotBeNull().And.BeEmpty();
+                Action act = () => _sut.BuildStringToAppend(_headerName);
+                
+                act.Should().Throw<HttpMessageSigningException>();
             }
 
             [Fact]

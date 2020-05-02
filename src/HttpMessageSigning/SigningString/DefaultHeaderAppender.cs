@@ -11,9 +11,10 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
         public string BuildStringToAppend(HeaderName header) {
             var isPresent = _request.Headers.TryGetValues(header, out var headerValues);
-            return isPresent
-                ? "\n" + new Header(header, headerValues.Select(SanitizeHeaderValue).ToArray())
-                : string.Empty;
+            
+            if (!isPresent) throw new HttpMessageSigningException($"Header '{header}' was required to create the signature, but does not exist on the request message to sign.");
+            
+            return "\n" + new Header(header, headerValues.Select(SanitizeHeaderValue).ToArray());
         }
 
         private static string SanitizeHeaderValue(string input) {
