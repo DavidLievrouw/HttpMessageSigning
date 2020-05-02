@@ -38,7 +38,7 @@ namespace Dalion.HttpMessageSigning {
         /// Gets or sets the ordered list of names of request headers to include when generating the signature for the message.
         /// </summary>
         /// <remarks>When empty, the default headers will be included, according to the spec.</remarks>
-        public HeaderName[] Headers { get; set; } = Array.Empty<HeaderName>();
+        public HeaderName[] Headers { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the authorization scheme for the authorization header.
@@ -71,7 +71,7 @@ namespace Dalion.HttpMessageSigning {
             if (SignatureAlgorithm == null) throw new ValidationException($"The signing settings do not specify a valid {nameof(SignatureAlgorithm)}.");
             if (Expires <= TimeSpan.Zero) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
             if (string.IsNullOrEmpty(AuthorizationScheme)) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(AuthorizationScheme)}.");
-            if (Headers == null || !Headers.Any()) throw new ValidationException("At least one header should be part of the signing string.");
+            if (Headers == null) throw new ValidationException($"{nameof(Headers)} cannot be unspecified (null).");
         }
 
         public void Dispose() {

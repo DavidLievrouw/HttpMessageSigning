@@ -60,13 +60,13 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenHeadersIsEmpty_SetsCreatedAsHeaderForSignature_EvenWhenFeatureIsDisabled() {
+            public void WhenHeadersIsEmpty_AndFeatureIsDisabled_KeepsEmptyHeaders() {
                 _settings.Headers = Array.Empty<HeaderName>();
                 _settings.AutomaticallyAddRecommendedHeaders = false;
 
                 _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
 
-                _settings.Headers.Should().BeEquivalentTo(new[] {HeaderName.PredefinedHeaderNames.Created});
+                _settings.Headers.Should().BeEmpty();
             }
 
             [Fact]

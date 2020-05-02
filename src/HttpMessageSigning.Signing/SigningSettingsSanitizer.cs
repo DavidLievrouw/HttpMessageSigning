@@ -9,7 +9,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             // If the header parameter is not specified, implementations must operate as if the field were specified with a single value, '(created)', in the list of HTTP headers.
-            if (signingSettings.Headers == null || !signingSettings.Headers.Any()) {
+            if (signingSettings.Headers == null) {
                 signingSettings.Headers = new[] {HeaderName.PredefinedHeaderNames.Created};
             }
             

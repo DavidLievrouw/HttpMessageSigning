@@ -61,10 +61,10 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void WhenHeadersIsEmpty_ThrowsValidationException() {
+            public void WhenHeadersIsEmpty_DoesNotThrow() {
                 _sut.Headers = Array.Empty<HeaderName>();
                 Action act = () => _sut.Validate();
-                act.Should().Throw<ValidationException>();
+                act.Should().NotThrow();
             }
 
             [Fact]
