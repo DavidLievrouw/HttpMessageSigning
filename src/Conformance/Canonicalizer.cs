@@ -24,6 +24,7 @@ namespace Conformance {
                     SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("s3cr37"),
                     EnableNonce = false,
                     DigestHashAlgorithm = default,
+                    AutomaticallyAddRecommendedHeaders = false,
                     Headers = options.Headers
                         .Split(new [] {','}, StringSplitOptions.RemoveEmptyEntries)
                         .Select(h => new HeaderName(h))
