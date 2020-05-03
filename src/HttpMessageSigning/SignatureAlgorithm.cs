@@ -11,11 +11,20 @@ namespace Dalion.HttpMessageSigning {
             if (rsa == null) throw new ArgumentNullException(nameof(rsa));
             return CreateForSigning(rsa, HashAlgorithmName.SHA256);
         }
-
+        
+        public static ISignatureAlgorithm CreateForSigning(ECDsa ecdsa) {
+            if (ecdsa == null) throw new ArgumentNullException(nameof(ecdsa));
+            return CreateForSigning(ecdsa, HashAlgorithmName.SHA256);
+        }
+        
         public static ISignatureAlgorithm CreateForSigning(RSAParameters privateParameters) {
             return CreateForSigning(privateParameters, HashAlgorithmName.SHA256);
         }
 
+        public static ISignatureAlgorithm CreateForSigning(ECParameters privateParameters) {
+            return CreateForSigning(privateParameters, HashAlgorithmName.SHA256);
+        }
+        
         public static ISignatureAlgorithm CreateForSigning(X509Certificate2 certificate) {
             return CreateForSigning(certificate, HashAlgorithmName.SHA256);
         }
@@ -29,11 +38,21 @@ namespace Dalion.HttpMessageSigning {
 
             return new RSASignatureAlgorithm(hashAlgorithm, rsa);
         }
+        
+        public static ISignatureAlgorithm CreateForSigning(ECDsa ecdsa, HashAlgorithmName hashAlgorithm) {
+            if (ecdsa == null) throw new ArgumentNullException(nameof(ecdsa));
+
+            return new ECDsaSignatureAlgorithm(hashAlgorithm, ecdsa);
+        }
 
         public static ISignatureAlgorithm CreateForSigning(RSAParameters privateParameters, HashAlgorithmName hashAlgorithm) {
             return RSASignatureAlgorithm.CreateForSigning(hashAlgorithm, privateParameters);
         }
 
+        public static ISignatureAlgorithm CreateForSigning(ECParameters privateParameters, HashAlgorithmName hashAlgorithm) {
+            return ECDsaSignatureAlgorithm.CreateForSigning(hashAlgorithm, privateParameters);
+        }
+        
         public static ISignatureAlgorithm CreateForSigning(X509Certificate2 certificate, HashAlgorithmName hashAlgorithm) {
             if (certificate == null) throw new ArgumentNullException(nameof(certificate));
             var privateKey = certificate.GetRSAPrivateKey();
@@ -53,7 +72,16 @@ namespace Dalion.HttpMessageSigning {
             return CreateForVerification(rsa, HashAlgorithmName.SHA256);
         }
 
+        public static ISignatureAlgorithm CreateForVerification(ECDsa ecdsa) {
+            if (ecdsa == null) throw new ArgumentNullException(nameof(ecdsa));
+            return CreateForVerification(ecdsa, HashAlgorithmName.SHA256);
+        }
+
         public static ISignatureAlgorithm CreateForVerification(RSAParameters publicParameters) {
+            return CreateForVerification(publicParameters, HashAlgorithmName.SHA256);
+        }
+        
+        public static ISignatureAlgorithm CreateForVerification(ECParameters publicParameters) {
             return CreateForVerification(publicParameters, HashAlgorithmName.SHA256);
         }
 
@@ -70,9 +98,19 @@ namespace Dalion.HttpMessageSigning {
 
             return new RSASignatureAlgorithm(hashAlgorithm, rsa);
         }
+        
+        public static ISignatureAlgorithm CreateForVerification(ECDsa ecdsa, HashAlgorithmName hashAlgorithm) {
+            if (ecdsa == null) throw new ArgumentNullException(nameof(ecdsa));
+
+            return new ECDsaSignatureAlgorithm(hashAlgorithm, ecdsa);
+        }
 
         public static ISignatureAlgorithm CreateForVerification(RSAParameters publicParameters, HashAlgorithmName hashAlgorithm) {
             return RSASignatureAlgorithm.CreateForVerification(hashAlgorithm, publicParameters);
+        }
+        
+        public static ISignatureAlgorithm CreateForVerification(ECParameters publicParameters, HashAlgorithmName hashAlgorithm) {
+            return ECDsaSignatureAlgorithm.CreateForVerification(hashAlgorithm, publicParameters);
         }
 
         public static ISignatureAlgorithm CreateForVerification(X509Certificate2 certificate, HashAlgorithmName hashAlgorithm) {

@@ -46,6 +46,21 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     }
                 }
             }
+            
+            [Fact]
+            public void GivenECDsaAlgorithm_ReturnsExpectedDataRecord() {
+                using (var ecdsa = ECDsa.Create()) {
+                    using (var ecdsaAlg = SignatureAlgorithm.CreateForVerification(ecdsa, HashAlgorithmName.SHA384)) {
+                        var actual = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(ecdsaAlg);
+                        var expected = new SignatureAlgorithmDataRecord {
+                            Type = "ECDsa",
+                            Parameter = ecdsa.ExportParameters(false).ToXml(),
+                            HashAlgorithm = HashAlgorithmName.SHA384.Name
+                        };
+                        actual.Should().BeEquivalentTo(expected);
+                    }
+                }
+            }
         }
 
 
@@ -89,6 +104,25 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                         actual.Should().BeAssignableTo<RSASignatureAlgorithm>();
                         actual.As<RSASignatureAlgorithm>().Should().BeEquivalentTo(expected);
                         actual.As<RSASignatureAlgorithm>().GetPublicKey().ToXml().Should().Be(publicParameters.ToXml());
+                    }
+                }
+            }
+            
+            [Fact]
+            public void GivenECDsaDataRecord_ReturnsECDsaAlgorithm() {
+                using (var ecdsa = ECDsa.Create()) {
+                    var publicParameters = ecdsa.ExportParameters(false);
+                    var sut = new SignatureAlgorithmDataRecord {
+                        Type = "ECDsa",
+                        Parameter = publicParameters.ToXml(),
+                        HashAlgorithm = HashAlgorithmName.MD5.Name
+                    };
+
+                    using (var actual = sut.ToSignatureAlgorithm()) {
+                        var expected = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.MD5, publicParameters);
+                        actual.Should().BeAssignableTo<ECDsaSignatureAlgorithm>();
+                        actual.As<ECDsaSignatureAlgorithm>().Should().BeEquivalentTo(expected);
+                        actual.As<ECDsaSignatureAlgorithm>().GetPublicKey().ToXml().Should().Be(publicParameters.ToXml());
                     }
                 }
             }

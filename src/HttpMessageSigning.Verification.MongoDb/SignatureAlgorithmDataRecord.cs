@@ -19,6 +19,12 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                         HashAlgorithm = rsa.HashAlgorithm.Name,
                         Parameter = rsa.GetPublicKey().ToXml()
                     };
+                case ECDsaSignatureAlgorithm ecdsa:
+                    return new SignatureAlgorithmDataRecord {
+                        Type = ecdsa.Name,
+                        HashAlgorithm = ecdsa.HashAlgorithm.Name,
+                        Parameter = ecdsa.GetPublicKey().ToXml()
+                    };
                 case HMACSignatureAlgorithm hmac:
                     return new SignatureAlgorithmDataRecord {
                         Type = hmac.Name,
@@ -36,6 +42,12 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     using (var rsaForVerification = new RSACryptoServiceProvider()) {
                         rsaForVerification.FromXml(Parameter);
                         var paramsForVerification = rsaForVerification.ExportParameters(false);
+                        return SignatureAlgorithm.CreateForVerification(paramsForVerification, new HashAlgorithmName(HashAlgorithm));
+                    }
+                case string str when str.Equals("ecdsa", StringComparison.OrdinalIgnoreCase):
+                    using (var ecdsaForVerification = ECDsa.Create()) {
+                        ecdsaForVerification.FromXml(Parameter);
+                        var paramsForVerification = ecdsaForVerification.ExportParameters(false);
                         return SignatureAlgorithm.CreateForVerification(paramsForVerification, new HashAlgorithmName(HashAlgorithm));
                     }
                 case string str when str.Equals("hmac", StringComparison.OrdinalIgnoreCase):
