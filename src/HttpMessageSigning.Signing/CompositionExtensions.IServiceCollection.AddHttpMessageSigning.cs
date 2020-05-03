@@ -1,10 +1,9 @@
 ﻿using System;
 using Dalion.HttpMessageSigning.SigningString;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {
-    public static partial class Extensions {
+    public static partial class CompositionExtensions {
         /// <summary>
         ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.

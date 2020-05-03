@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
-    public static partial class Extensions {
+namespace Dalion.HttpMessageSigning.Verification.Owin {
+    [ExcludeFromCodeCoverage]
+    public static partial class CompositionExtensions {
         /// <summary>
         ///     Adds http message signature verification registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -20,7 +22,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         /// <remarks>This overload assumes that you registered an <see cref="IClientStore" />.</remarks>
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            
+
             return services
                 .AddHttpMessageSignatureVerifier()
                 .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))

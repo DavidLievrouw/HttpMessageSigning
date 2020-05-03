@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Signing {
-    public static partial class Extensions {
+    [ExcludeFromCodeCoverage]
+    public static partial class CompositionExtensions {
         /// <summary>
         ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.

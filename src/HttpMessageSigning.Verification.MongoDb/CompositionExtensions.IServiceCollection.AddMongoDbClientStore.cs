@@ -3,7 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    public static partial class Extensions {
+    public static partial class CompositionExtensions {
         [Obsolete("Please use an overload that takes a " + nameof(MongoDbClientStoreSettings) + " parameter instead.")]
         public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services, MongoDbSettings clientStoreSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));

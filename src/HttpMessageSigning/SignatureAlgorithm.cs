@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
@@ -6,6 +7,7 @@ namespace Dalion.HttpMessageSigning {
     /// <summary>
     /// Contains static utility factory methods for <see cref="ISignatureAlgorithm"/> implementations.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class SignatureAlgorithm {
         public static ISignatureAlgorithm CreateForSigning(RSA rsa) {
             if (rsa == null) throw new ArgumentNullException(nameof(rsa));

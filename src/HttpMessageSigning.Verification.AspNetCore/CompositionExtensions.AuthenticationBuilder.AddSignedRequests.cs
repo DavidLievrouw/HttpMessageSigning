@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
-    public static partial class Extensions {
+    public static partial class CompositionExtensions {
         /// <summary>
         /// Adds http message signing scheme registrations to the <see cref="AuthenticationBuilder"/>.
         /// </summary>

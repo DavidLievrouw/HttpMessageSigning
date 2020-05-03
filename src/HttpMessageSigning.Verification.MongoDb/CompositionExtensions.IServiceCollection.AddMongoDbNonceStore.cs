@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    public static partial class Extensions {
+    [ExcludeFromCodeCoverage]
+    public static partial class CompositionExtensions {
         /// <summary>
         ///     Adds http message signature verification registrations for MongoDb to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.

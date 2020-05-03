@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Dalion.HttpMessageSigning.SigningString;
 using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification {
-    public static partial class Extensions {
+    [ExcludeFromCodeCoverage]
+    public static partial class CompositionExtensions {
         /// <summary>
         ///     Adds <see cref="ISignatureVerifier"/> registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
