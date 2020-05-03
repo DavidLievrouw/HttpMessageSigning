@@ -23,8 +23,8 @@ namespace Conformance {
             "Referer",
             "Transfer-Encoding",
             "User-Agent"
-        };        
-        
+        };
+
         private static readonly string[] ContentHeaders = {
             "Content-Length",
             "Content-Type",
@@ -55,13 +55,16 @@ namespace Conformance {
                         var header = line.Split(": ", 2);
                         var values = RestrictedHeaders.Contains(header[0], StringComparer.OrdinalIgnoreCase)
                             ? new[] {header.Length > 1 ? header[1] : string.Empty}
-                            : header.Length > 1 ? header[1].Split(", ") : Array.Empty<string>();
+                            : header.Length > 1
+                                ? header[1].Split(", ")
+                                : new[] {""};
                         if (ContentHeaders.Contains(header[0], StringComparer.OrdinalIgnoreCase)) {
-                            contentHeaders.Add(header[0], values);
+                            contentHeaders.Add(header[0].TrimEnd(':'), values);
                         }
                         else {
-                            request.Headers.Set(header[0], values.ToArray());
+                            request.Headers.Set(header[0].TrimEnd(':'), values.ToArray());
                         }
+
                         break;
                     case LineType.BodySeparator:
                         var bodyString = string.Join('\n', lines.Skip(i + 1));
@@ -80,7 +83,7 @@ namespace Conformance {
                     request.Content.Headers.Set(contentHeader.Key, contentHeader.Value);
                 }
             }
-            
+
             return request;
         }
 
