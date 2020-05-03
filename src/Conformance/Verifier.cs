@@ -60,14 +60,16 @@ namespace Conformance {
 
             var clientRequest = HttpRequestMessageParser.Parse(httpMessage);
             var requestToVerify = await clientRequest.ToServerSideHttpRequest();
-
-            var authHeader = requestToVerify.Headers["Authorization"].ToString();
-            if (!string.IsNullOrEmpty(options.Algorithm)) {
-                authHeader = authHeader.Replace("\",signature=\"", $"\",algorithm=\"{options.Algorithm}\",signature=\"");
-            }
-            requestToVerify.Headers["Authorization"] = authHeader;
             
-            var verificationResult = await verifier.VerifySignature(requestToVerify, new SignedRequestAuthenticationOptions());
+            var verificationResult = await verifier.VerifySignature(requestToVerify, new SignedRequestAuthenticationOptions {
+                OnSignatureParsed = (request, signature) => {
+                    if (!string.IsNullOrEmpty(options.Algorithm)) {
+                        signature.Algorithm = options.Algorithm;
+                    }
+
+                    return Task.CompletedTask;
+                }
+            });
             
             return verificationResult is RequestSignatureVerificationResultSuccess
                 ? 0
