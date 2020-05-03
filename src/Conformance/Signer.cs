@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -87,7 +88,10 @@ namespace Conformance {
 
             await signer.Sign(request, created, expires);
 
-            Log.Information(request.Headers.Authorization.Scheme + " " + request.Headers.Authorization.Parameter);
+            var httpMessageLines = new List<string>(httpMessage.Split('\n').Select(l => l.Trim()));
+            httpMessageLines.Insert(1, "Authorization: " + request.Headers.Authorization.Scheme + " " + request.Headers.Authorization.Parameter);
+            var fullMessage = string.Join('\n', httpMessageLines);
+            Log.Information(fullMessage);
 
             Console.Out.Flush();
 
