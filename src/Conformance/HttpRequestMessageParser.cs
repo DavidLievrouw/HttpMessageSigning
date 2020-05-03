@@ -52,7 +52,7 @@ namespace Conformance {
                         request.Version = new Version(definitionParts[2].Split('/', 2)[1]);
                         break;
                     case LineType.Header:
-                        var header = line.Split(":", 2);
+                        var header = line.Split(": ", 2);
                         var values = RestrictedHeaders.Contains(header[0], StringComparer.OrdinalIgnoreCase)
                             ? new[] {header.Length > 1 ? header[1] : string.Empty}
                             : header.Length > 1 ? header[1].Split(", ") : Array.Empty<string>();
