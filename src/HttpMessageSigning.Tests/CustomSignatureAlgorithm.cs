@@ -5,14 +5,18 @@ namespace Dalion.HttpMessageSigning {
     [ExcludeFromCodeCoverage]
     public class CustomSignatureAlgorithm : ISignatureAlgorithm {
         private bool _verificationResult;
-        
+        private bool _isDisposed;
+
         public CustomSignatureAlgorithm(string name) {
             if (string.IsNullOrEmpty(name)) name = "NOTSUPPORTED";
             Name = name;
             _verificationResult = true;
+            _isDisposed = false;
         }
 
-        public void Dispose() { }
+        public void Dispose() {
+            _isDisposed = true;
+        }
 
         public string Name { get; }
 
@@ -28,6 +32,10 @@ namespace Dalion.HttpMessageSigning {
 
         public bool VerifySignature(string contentToSign, byte[] signature) {
             return _verificationResult;
+        }
+
+        public bool IsDisposed() {
+            return _isDisposed;
         }
     }
 }

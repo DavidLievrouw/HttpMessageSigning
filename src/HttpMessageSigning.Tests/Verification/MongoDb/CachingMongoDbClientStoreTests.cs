@@ -10,13 +10,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         private readonly FakeMemoryCache _cache;
         private readonly IMongoDbClientStore _decorated;
         private readonly TimeSpan _expiration;
+        private readonly IBackgroundTaskStarter _backgroundTaskStarter;
         private readonly CachingMongoDbClientStore _sut;
 
         public CachingMongoDbClientStoreTests() {
-            FakeFactory.Create(out _decorated);
+            FakeFactory.Create(out _decorated, out _backgroundTaskStarter);
             _cache = new FakeMemoryCache();
             _expiration = TimeSpan.FromSeconds(30);
-            _sut = new CachingMongoDbClientStore(_decorated, _cache, _expiration);
+            _sut = new CachingMongoDbClientStore(_decorated, _cache, _expiration, _backgroundTaskStarter);
         }
 
         public void Dispose() {
@@ -66,6 +67,25 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 _cache.TryGetEntry(_cacheKey, out var actualEntry).Should().BeTrue();
                 actualEntry.Value.Should().Be(_newClient);
             }
+
+            [Fact]
+            public async Task WhenItemIsEvicted_DisposesClient() {
+                A.CallTo(() => _backgroundTaskStarter.Start(A<Func<Task>>._, A<TimeSpan>._))
+                    .Invokes(call => {
+                        var func = call.GetArgument<Func<Task>>(0);
+                        func.Invoke().GetAwaiter().GetResult();
+                    });
+                
+                await _sut.Register(_newClient);
+                
+                // Force call eviction callbacks
+                _cache.TryGetEntry(_cacheKey, out var cacheEntry);
+                foreach (var callback in cacheEntry.PostEvictionCallbacks) {
+                    callback.EvictionCallback.Invoke(_cacheKey, cacheEntry.Value, EvictionReason.Expired, null);
+                }
+
+                ((CustomSignatureAlgorithm) _newClient.SignatureAlgorithm).IsDisposed().Should().BeTrue();
+            }
         }
 
         public class Get : CachingMongoDbClientStoreTests {
@@ -88,7 +108,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(-1)]
             [InlineData(-99)]
             public async Task WhenExpirationIsZeroOrNegative_DoesNotUseCache_AndDelegatesToDecoratedInstance(int expirationSeconds) {
-                var sut = new CachingMongoDbClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds));
+                var sut = new CachingMongoDbClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds), _backgroundTaskStarter);
 
                 await sut.Get(_keyId);
 

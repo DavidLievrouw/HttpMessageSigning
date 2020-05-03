@@ -44,6 +44,7 @@ namespace Dalion.HttpMessageSigning {
         public class FakeCacheEntry : ICacheEntry {
             public FakeCacheEntry(object key) {
                 Key = key;
+                PostEvictionCallbacks = new List<PostEvictionCallbackRegistration>();
             }
 
             public void Dispose() { }

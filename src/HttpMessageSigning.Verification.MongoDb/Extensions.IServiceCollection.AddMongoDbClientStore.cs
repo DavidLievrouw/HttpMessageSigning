@@ -61,6 +61,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             return services
                 .AddMemoryCache()
+                .AddSingleton<IDelayer, Delayer>()
+                .AddSingleton<IBackgroundTaskStarter, BackgroundTaskStarter>()
                 .AddSingleton<IClientStore>(prov => {
                     var mongoSettings = clientStoreSettingsFactory(prov);
                     if (mongoSettings == null) throw new ValidationException($"Invalid {nameof(MongoDbClientStoreSettings)} were specified.");
@@ -70,7 +72,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                             new MongoDatabaseClientProvider(mongoSettings.ConnectionString),
                             mongoSettings.CollectionName),
                         prov.GetRequiredService<IMemoryCache>(),
-                        mongoSettings.ClientCacheEntryExpiration);
+                        mongoSettings.ClientCacheEntryExpiration,
+                        prov.GetRequiredService<IBackgroundTaskStarter>());
                 });
         }
     }
