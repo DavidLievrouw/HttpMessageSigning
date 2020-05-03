@@ -7,7 +7,7 @@ namespace Dalion.HttpMessageSigning {
     /// Represents settings to be used when signing a http request message.
     /// </summary>
     public class SigningSettings : IValidatable, IDisposable, ICloneable {
-        private static readonly string[] SupportedSignatureAlgorithmNames = {"rsa", "ecdsa", "hmac"};
+        private static readonly string[] SupportedSignatureAlgorithmNames = {"rsa", "ecdsa", "hmac", "hs2019"};
         
         /// <summary>
         /// The entity that the server can use to look up the component they need to verify the signature.
