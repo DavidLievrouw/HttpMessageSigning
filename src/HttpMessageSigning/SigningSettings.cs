@@ -7,6 +7,8 @@ namespace Dalion.HttpMessageSigning {
     /// Represents settings to be used when signing a http request message.
     /// </summary>
     public class SigningSettings : IValidatable, IDisposable, ICloneable {
+        private static readonly string[] SupportedSignatureAlgorithmNames = {"rsa", "ecdsa", "hmac"};
+        
         /// <summary>
         /// The entity that the server can use to look up the component they need to verify the signature.
         /// </summary>
@@ -72,6 +74,7 @@ namespace Dalion.HttpMessageSigning {
             if (Expires <= TimeSpan.Zero) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
             if (string.IsNullOrEmpty(AuthorizationScheme)) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(AuthorizationScheme)}.");
             if (Headers == null) throw new ValidationException($"{nameof(Headers)} cannot be unspecified (null).");
+            if (!SupportedSignatureAlgorithmNames.Contains(SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase)) throw new ValidationException($"The specified signature algorithm ({SignatureAlgorithm.Name}) is not supported.");
         }
 
         public void Dispose() {

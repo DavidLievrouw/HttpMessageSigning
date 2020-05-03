@@ -95,6 +95,17 @@ namespace Dalion.HttpMessageSigning {
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }
+
+            [Theory]
+            [InlineData("unknown")]
+            [InlineData("unknown-sha256")]
+            [InlineData("ec25519")]
+            [InlineData("ec25519-sha256")]
+            public void GivenUnsupportedSignatureAlgorithm_ThrowsValidationException(string unsupportedAlgorithm) {
+                _sut.SignatureAlgorithm = new CustomSignatureAlgorithm(unsupportedAlgorithm);
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
         }
 
         public class Dispose : SigningSettingsTests {
