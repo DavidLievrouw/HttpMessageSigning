@@ -31,7 +31,7 @@ namespace Conformance {
                     }
                 }
 
-                signatureAlgorithm = RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA256, rsaPrivateKey);
+                signatureAlgorithm = RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA512, rsaPrivateKey);
             }
             else if (options.KeyType.Equals("P256", StringComparison.OrdinalIgnoreCase) || options.KeyType.Equals("ECDSA", StringComparison.OrdinalIgnoreCase)) {
                 ECParameters ecPrivateKey;
@@ -48,10 +48,10 @@ namespace Conformance {
                     }
                 }
 
-                signatureAlgorithm = ECDsaSignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA256, ecPrivateKey);
+                signatureAlgorithm = ECDsaSignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA512, ecPrivateKey);
             }
             else if (options.KeyType.Equals("HMAC", StringComparison.OrdinalIgnoreCase)) {
-                signatureAlgorithm = SignatureAlgorithm.CreateForSigning(options.PrivateKey, HashAlgorithmName.SHA256);
+                signatureAlgorithm = SignatureAlgorithm.CreateForSigning(options.PrivateKey, HashAlgorithmName.SHA512);
             }
             else {
                 throw new NotSupportedException("The specified key type is not supported.");
@@ -67,7 +67,7 @@ namespace Conformance {
             var signingSettings = new SigningSettings {
                 SignatureAlgorithm = signatureAlgorithm,
                 EnableNonce = false,
-                DigestHashAlgorithm = default,
+                DigestHashAlgorithm = HashAlgorithmName.SHA256,
                 AutomaticallyAddRecommendedHeaders = false,
                 Headers = options.Headers
                     ?.Split(new[] {' ', ','}, StringSplitOptions.RemoveEmptyEntries)

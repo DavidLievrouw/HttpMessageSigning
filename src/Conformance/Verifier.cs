@@ -20,7 +20,7 @@ namespace Conformance {
                         rsaPublicKey = reader.ReadRsaKey();
                     }
                 }
-                signatureAlgorithmForVerification = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA256, rsaPublicKey);
+                signatureAlgorithmForVerification = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA512, rsaPublicKey);
             }
             else if (options.KeyType.Equals("P256", StringComparison.OrdinalIgnoreCase) || options.KeyType.Equals("ECDSA", StringComparison.OrdinalIgnoreCase)) {
                 ECParameters ecPublicKey;
@@ -36,9 +36,9 @@ namespace Conformance {
                         ecPublicKey = ecdsa.ExportParameters(false);
                     }
                 }
-                signatureAlgorithmForVerification = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA256, ecPublicKey);
+                signatureAlgorithmForVerification = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA512, ecPublicKey);
             } else if (options.KeyType.Equals("HMAC", StringComparison.OrdinalIgnoreCase)) {
-                signatureAlgorithmForVerification = SignatureAlgorithm.CreateForVerification(options.PublicKey, HashAlgorithmName.SHA256);
+                signatureAlgorithmForVerification = SignatureAlgorithm.CreateForVerification(options.PublicKey, HashAlgorithmName.SHA512);
             }
             else {
                 throw new NotSupportedException("The specified key type is not supported.");
