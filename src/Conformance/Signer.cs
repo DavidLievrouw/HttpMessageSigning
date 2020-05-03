@@ -51,7 +51,7 @@ namespace Conformance {
                 }
                 signatureAlgorithm = ECDsaSignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA256, ecPrivateKey);
             } else if (options.KeyType.Equals("HMAC", StringComparison.OrdinalIgnoreCase)) {
-                signatureAlgorithm = new HMACSignatureAlgorithm(options.PrivateKey, HashAlgorithmName.SHA256);
+                signatureAlgorithm =  SignatureAlgorithm.CreateForSigning(options.PrivateKey, HashAlgorithmName.SHA256);
             }
             else {
                 throw new NotSupportedException("The specified key type is not supported.");
