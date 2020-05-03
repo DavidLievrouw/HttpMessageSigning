@@ -13,6 +13,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
         public Func<IOwinRequest, RequestSignatureVerificationResultSuccess, Task> OnIdentityVerified { get; set; }
         public Func<IOwinRequest, RequestSignatureVerificationResultFailure, Task> OnIdentityVerificationFailed { get; set; }
+        public Func<IOwinRequest, Signature, Task> OnSignatureParsed { get; set; }
 
         internal void Validate() {
             if (string.IsNullOrEmpty(Scheme)) throw new ValidationException($"The {nameof(SignedHttpRequestAuthenticationOptions)} do not specify a valid {nameof(Scheme)}.");

@@ -47,6 +47,31 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             }
 
             [Fact]
+            public async Task WhenSignatureIsParsed_InvokesEventCallback() {
+                var signature = new Signature {KeyId = new KeyId("app001")};
+                A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
+                    .Returns(signature);
+
+                Signature interceptedSignature = null;
+                _options.OnSignatureParsed = (request, sig) => {
+                    interceptedSignature = sig;
+                    return Task.CompletedTask;
+                };
+
+                await _sut.VerifySignature(_httpRequest, _options);
+
+                interceptedSignature.Should().Be(signature);
+            }
+            
+            [Fact]
+            public void WhenSignatureIsParsed_AndEventCallbackIsNull_DoesNotThrow() {
+                _options.OnSignatureParsed = null;
+                
+                Func<Task> act = () => _sut.VerifySignature(_httpRequest, _options);
+                act.Should().NotThrow();
+            }
+            
+            [Fact]
             public async Task VerifiesSignatureOfClient_ThatMatchesTheKeyIdFromTheRequest() {
                 var signature = new Signature {KeyId = new KeyId("app001")};
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))

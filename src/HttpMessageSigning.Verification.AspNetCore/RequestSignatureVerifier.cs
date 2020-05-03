@@ -33,6 +33,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
             try {
                 signature = _signatureParser.Parse(request, options);
+
+                var eventTask = options.OnSignatureParsed;
+                if (eventTask != null) await eventTask.Invoke(request, signature);
+                
                 client = await _clientStore.Get(signature.KeyId);
 
                 var requestForSigning = await request.ToRequestForSigning(signature);
