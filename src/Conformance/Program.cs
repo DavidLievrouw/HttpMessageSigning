@@ -30,52 +30,54 @@ namespace Conformance {
                 args = args.Concat(new[] {""}).ToArray();
             }
 
-            /*var msg = @"POST /foo?param=value&pet=dog HTTP/1.1
+            /*var msgCanonicalize = @"GET /basic/request HTTP/1.1
 Host: example.com
-Zero:   
 Content-Type: application/json
 Digest: SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=
 Content-Length: 18
+Authorization: Signature keyId=""test"",headers=""host digest"",signature=""G/q271XxN9vXgC4/PZj++CIA1tPRIejyrEv+Xji1JunhlVYgNVnMn13TFa47ierVyHZO+5XQV43J9m/n4gbuEwSj87x2fnp0kV82k1VaXmhpiBHaQ123jK9xToynmcIynrkj2MGCCfTotLf1Z4lCP3Eb2G3K76C+npgWNC0I44g=""
 Date: Sun, 03 May 2020 09:34:35 GMT
 
 {""hello"": ""world""}";
 
             new Canonicalizer().Run(new CanonicalizeOptions {
-                Headers = "zero"
-            }, msg).GetAwaiter().GetResult();*/
+                Headers = "host,digest"
+            }, msgCanonicalize).GetAwaiter().GetResult();*/
             
-            /*var msg = @"GET /basic/request HTTP/1.1
-Connection: keep-alive
-User-Agent: Mozilla/5.0 (Macintosh)
+            /*var msgSign = @"GET /basic/request HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Digest: SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=
+Content-Length: 18
 Date: Sun, 03 May 2020 09:34:35 GMT
 
 {""hello"": ""world""}";
 
             new Signer().Run(new SignOptions {
                 KeyId = "test",
-                Headers = "date",
+                Headers = "host,digest",
                 KeyType = "rsa",
                 PrivateKey = "C:\\git\\http-signatures-test-suite\\test\\keys\\rsa.private",
-                Algorithm = "unknown"
-            }, msg).GetAwaiter().GetResult();*/
+                //Algorithm = "unknown"
+            }, msgSign).GetAwaiter().GetResult();*/
             
-            /*var msg = @"GET /basic/request HTTP/1.1
+            /*var msgVerify = @"GET /basic/request HTTP/1.1
 Host: example.com
 Content-Type: application/json
 Digest: SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=
 Content-Length: 18
-Authorization: Signature keyId=""test"",headers=""host digest"",signature=""QBWMdoeHrbefTrFPyOxjGOp0Q7Mq/w/NRVaMvzcyS+3QuhTlc4zUL8g4q8Woc5b0ynoFeDpmxMoqzgLFiPGjJRKPnVxTAEL2HKAG9JdZQdflZSBIFqoszrrvYlGOZ84JMUGQpIF0OAuKZBR1YhAvFTOcW3Et7wfbqAna6KOxi3k=""
+Authorization: Signature keyId=""test"",headers=""host digest"",signature=""G/q271XxN9vXgC4/PZj++CIA1tPRIejyrEv+Xji1JunhlVYgNVnMn13TFa47ierVyHZO+5XQV43J9m/n4gbuEwSj87x2fnp0kV82k1VaXmhpiBHaQ123jK9xToynmcIynrkj2MGCCfTotLf1Z4lCP3Eb2G3K76C+npgWNC0I44g=""
 Date: Sun, 03 May 2020 09:34:35 GMT
 
 {""hello"": ""world""}";
 
             new Verifier().Run(new VerifyOptions {
                 KeyId = "test",
-                Headers = "not-in-request",
+                Headers = "host,digest",
                 KeyType = "rsa",
                 PublicKey = "C:\\git\\http-signatures-test-suite\\test\\keys\\rsa.pub",
-                Algorithm = "unknown"
-            }, msg).GetAwaiter().GetResult();*/
+                Algorithm = "hs2019"
+            }, msgVerify).GetAwaiter().GetResult();*/
             
             // Run it
             return Parser.Default.ParseArguments<CanonicalizeOptions, SignOptions, VerifyOptions>(args)
