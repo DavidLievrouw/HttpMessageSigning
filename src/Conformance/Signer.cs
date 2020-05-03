@@ -22,10 +22,6 @@ namespace Conformance {
         }
 
         public async Task<int> Run(SignOptions options, string httpMessage) {
-            if (options.Algorithm != "hs2019") {
-                throw new HttpMessageSigningException("Unsupported algorithm.");
-            }
-            
             ISignatureAlgorithm signatureAlgorithm;
             if (string.IsNullOrEmpty(options.KeyType) || options.KeyType.Equals("RSA", StringComparison.OrdinalIgnoreCase)) {
                 RSAParameters rsaPrivateKey;
@@ -34,8 +30,10 @@ namespace Conformance {
                         rsaPrivateKey = reader.ReadRsaKey();
                     }
                 }
+
                 signatureAlgorithm = RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA256, rsaPrivateKey);
-            } else if (options.KeyType.Equals("P256", StringComparison.OrdinalIgnoreCase) || options.KeyType.Equals("ECDSA", StringComparison.OrdinalIgnoreCase)) {
+            }
+            else if (options.KeyType.Equals("P256", StringComparison.OrdinalIgnoreCase) || options.KeyType.Equals("ECDSA", StringComparison.OrdinalIgnoreCase)) {
                 ECParameters ecPrivateKey;
                 using (var stream = File.OpenRead(options.PrivateKey)) {
                     using (var reader = new StreamReader(stream)) {
@@ -49,12 +47,21 @@ namespace Conformance {
                         ecPrivateKey = ecdsa.ExportParameters(true);
                     }
                 }
+
                 signatureAlgorithm = ECDsaSignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA256, ecPrivateKey);
-            } else if (options.KeyType.Equals("HMAC", StringComparison.OrdinalIgnoreCase)) {
-                signatureAlgorithm =  SignatureAlgorithm.CreateForSigning(options.PrivateKey, HashAlgorithmName.SHA256);
+            }
+            else if (options.KeyType.Equals("HMAC", StringComparison.OrdinalIgnoreCase)) {
+                signatureAlgorithm = SignatureAlgorithm.CreateForSigning(options.PrivateKey, HashAlgorithmName.SHA256);
             }
             else {
                 throw new NotSupportedException("The specified key type is not supported.");
+            }
+
+            if (!string.IsNullOrEmpty(options.Algorithm) &&
+                !options.Algorithm.StartsWith("rsa", StringComparison.OrdinalIgnoreCase) &&
+                !options.Algorithm.StartsWith("hmac", StringComparison.OrdinalIgnoreCase) &&
+                !options.Algorithm.StartsWith("ecdsa", StringComparison.OrdinalIgnoreCase)) {
+                signatureAlgorithm = new CustomSignatureAlgorithm(options.Algorithm);
             }
 
             var signingSettings = new SigningSettings {
