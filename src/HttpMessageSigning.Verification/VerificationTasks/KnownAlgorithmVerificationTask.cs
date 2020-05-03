@@ -7,7 +7,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class KnownAlgorithmVerificationTask : VerificationTask {
         private readonly ILogger<KnownAlgorithmVerificationTask> _logger;
         
-        private static readonly string[] SupportedSignatureAlgorithmNames = {"rsa", "hmac"};
+        private static readonly string[] SupportedSignatureAlgorithmNames = {"rsa", "ecdsa", "hmac"};
         private static readonly string[] SupportedHashAlgorithmNames = {
             HashAlgorithmName.MD5.Name,
             HashAlgorithmName.SHA1.Name,
