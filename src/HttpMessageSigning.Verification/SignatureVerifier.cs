@@ -46,18 +46,18 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
             if (client == null) throw new ArgumentNullException(nameof(client));
 
-            var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client);
+            var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client).ConfigureAwait(false);
             
-            var failure = await _knownAlgorithmVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
-                          await _matchingAlgorithmVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
-                          await _createdHeaderGuardVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
-                          await _expiresHeaderGuardVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
-                          await _allHeadersPresentVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
-                          await _creationTimeVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
-                          await _expirationTimeVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
-                          await _nonceVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
-                          await _digestVerificationTask.Verify(signedRequest, sanitizedSignature, client) ??
-                          await _matchingSignatureStringVerificationTask.Verify(signedRequest, sanitizedSignature, client);
+            var failure = await _knownAlgorithmVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false) ??
+                          await _matchingAlgorithmVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false)??
+                          await _createdHeaderGuardVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false) ??
+                          await _expiresHeaderGuardVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false) ??
+                          await _allHeadersPresentVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false) ??
+                          await _creationTimeVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false) ??
+                          await _expirationTimeVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false) ??
+                          await _nonceVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false) ??
+                          await _digestVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false) ??
+                          await _matchingSignatureStringVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false);
 
             return failure;
         }

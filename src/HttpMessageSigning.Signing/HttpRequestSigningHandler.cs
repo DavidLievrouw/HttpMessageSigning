@@ -12,8 +12,8 @@ namespace Dalion.HttpMessageSigning.Signing {
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken) {
-            await _requestSigner.Sign(request);
-            return await base.SendAsync(request, cancellationToken);
+            await _requestSigner.Sign(request).ConfigureAwait(false);
+            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
     }
 }

@@ -35,12 +35,12 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 signature = _signatureParser.Parse(request, options);
 
                 var eventTask = options.OnSignatureParsed;
-                if (eventTask != null) await eventTask.Invoke(request, signature);
+                if (eventTask != null) await eventTask.Invoke(request, signature).ConfigureAwait(false);
                 
-                client = await _clientStore.Get(signature.KeyId);
+                client = await _clientStore.Get(signature.KeyId).ConfigureAwait(false);
 
-                var requestForSigning = await request.ToRequestForSigning(signature);
-                var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, signature, client);
+                var requestForSigning = await request.ToRequestForSigning(signature).ConfigureAwait(false);
+                var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, signature, client).ConfigureAwait(false);
 
                 var verificationResultCreator = _verificationResultCreatorFactory.Create(client, signature);
                 var result = verificationFailure == null

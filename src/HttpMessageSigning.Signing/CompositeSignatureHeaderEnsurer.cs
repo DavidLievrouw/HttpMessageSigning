@@ -15,8 +15,8 @@ namespace Dalion.HttpMessageSigning.Signing {
         }
 
         public async Task EnsureHeader(HttpRequestMessage request, SigningSettings signingSettings, DateTimeOffset timeOfSigning) {
-            await _dateHeaderEnsurer.EnsureHeader(request, signingSettings, timeOfSigning);
-            await _digestHeaderEnsurer.EnsureHeader(request, signingSettings, timeOfSigning);
+            await _dateHeaderEnsurer.EnsureHeader(request, signingSettings, timeOfSigning).ConfigureAwait(false);
+            await _digestHeaderEnsurer.EnsureHeader(request, signingSettings, timeOfSigning).ConfigureAwait(false);
         }
     }
 }

@@ -12,11 +12,11 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             if (!AuthenticationHeaderValue.TryParse(Request.Headers["Authorization"], out var headerValue)) return null;
             if (!Options.Scheme.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase)) return null;
 
-            var verificationResult = await Options.RequestSignatureVerifier.VerifySignature(Request, Options);
+            var verificationResult = await Options.RequestSignatureVerifier.VerifySignature(Request, Options).ConfigureAwait(false);
 
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var onIdentityVerifiedTask = Options.OnIdentityVerified?.Invoke(Request, successResult);
-                if (onIdentityVerifiedTask != null) await onIdentityVerifiedTask;
+                if (onIdentityVerifiedTask != null) await onIdentityVerifiedTask.ConfigureAwait(false);
 
                 var ticket = new AuthenticationTicket(
                     (ClaimsIdentity) successResult.Principal.Identity,
@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
             if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
                 var onIdentityVerificationFailedTask = Options.OnIdentityVerificationFailed?.Invoke(Request, failureResult);
-                if (onIdentityVerificationFailedTask != null) await onIdentityVerificationFailedTask;
+                if (onIdentityVerificationFailedTask != null) await onIdentityVerificationFailedTask.ConfigureAwait(false);
 
                 return null;
             }

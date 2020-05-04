@@ -21,7 +21,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
 
         public async Task Register(Client client) {
-            await _decorated.Register(client);
+            await _decorated.Register(client).ConfigureAwait(false);
 
             var cacheKey = $"CacheEntry_Client_{client.Id}";
             var options = BuildEntryOptions();
@@ -29,14 +29,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
 
         public async Task<Client> Get(KeyId clientId) {
-            if (_expiration <= TimeSpan.Zero) return await _decorated.Get(clientId);
+            if (_expiration <= TimeSpan.Zero) return await _decorated.Get(clientId).ConfigureAwait(false);
 
-            await Semaphore.WaitAsync(MaxLockWaitTime);
+            await Semaphore.WaitAsync(MaxLockWaitTime).ConfigureAwait(false);
 
             var cacheKey = $"CacheEntry_Client_{clientId}";
             try {
                 if (!_cache.TryGetValue<Client>(cacheKey, out var cachedClient)) {
-                    var retrievedClient = await _decorated.Get(clientId);
+                    var retrievedClient = await _decorated.Get(clientId).ConfigureAwait(false);
                     var options = BuildEntryOptions();
                     _cache.Set(cacheKey, retrievedClient, options);
                     return retrievedClient;

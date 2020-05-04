@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 return cachedNonce;
             }
 
-            var nonce = await _decorated.Get(clientId, nonceValue);
+            var nonce = await _decorated.Get(clientId, nonceValue).ConfigureAwait(false);
             
             if (nonce != null) {
                 _cache.Set(cacheKey, nonce, nonce.Expiration);

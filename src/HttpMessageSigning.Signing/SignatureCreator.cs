@@ -36,7 +36,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 nonce);
 
             var eventTask = settings.Events?.OnSigningStringComposed?.Invoke(request, signingString);
-            if (eventTask != null) await eventTask;
+            if (eventTask != null) await eventTask.ConfigureAwait(false);
 
             _logger?.LogDebug("Composed the following signing string for request signing: {0}", signingString);
 

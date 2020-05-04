@@ -21,8 +21,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 #pragma warning disable 4014
             // Fire-and-forget
             Task.Factory.StartNew(async () => {
-                await _delayer.Delay(delay);
-                await task();
+                await _delayer.Delay(delay).ConfigureAwait(false);
+                await task().ConfigureAwait(false);
             });
 #pragma warning restore 4014
         }

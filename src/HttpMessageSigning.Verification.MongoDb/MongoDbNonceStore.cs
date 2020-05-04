@@ -57,7 +57,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             var collection = _lazyCollection.Value;
             
-            await collection.ReplaceOneAsync(r => r.Id == record.Id, record, new ReplaceOptions {IsUpsert = true});
+            await collection.ReplaceOneAsync(r => r.Id == record.Id, record, new ReplaceOptions {IsUpsert = true}).ConfigureAwait(false);
         }
 
         public async Task<Nonce> Get(KeyId clientId, string nonceValue) {
@@ -67,8 +67,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             var collection = _lazyCollection.Value;
             
             var nonceId = CreateId(clientId, nonceValue);
-            var findResult = await collection.FindAsync(r => r.Id == nonceId);
-            var matches = await findResult.ToListAsync();
+            var findResult = await collection.FindAsync(r => r.Id == nonceId).ConfigureAwait(false);
+            var matches = await findResult.ToListAsync().ConfigureAwait(false);
             if (!matches.Any()) return null;
 
             var match = matches.OrderByDescending(_ => _.Expiration).First();

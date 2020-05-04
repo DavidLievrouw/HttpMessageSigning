@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 return;
             }
 
-            var bodyBytes = await request.Content.ReadAsByteArrayAsync();
+            var bodyBytes = await request.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
             using (var hashAlgorithm = System.Security.Cryptography.HashAlgorithm.Create(signingSettings.DigestHashAlgorithm.Name)) {
                 if (hashAlgorithm == null) throw new NotSupportedException($"The specified hash algorithm ({signingSettings.DigestHashAlgorithm.Name}) for digest is currently not supported.");
                 var payloadBytes = hashAlgorithm.ComputeHash(bodyBytes);

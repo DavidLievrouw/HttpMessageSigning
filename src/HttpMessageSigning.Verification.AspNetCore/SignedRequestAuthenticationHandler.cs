@@ -24,11 +24,11 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (!AuthenticationHeaderValue.TryParse(Request.Headers["Authorization"], out var headerValue)) return AuthenticateResult.NoResult();
             if (!Scheme.Name.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase)) return AuthenticateResult.NoResult();
 
-            var verificationResult = await _requestSignatureVerifier.VerifySignature(Request, Options);
+            var verificationResult = await _requestSignatureVerifier.VerifySignature(Request, Options).ConfigureAwait(false);
 
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var onIdentityVerifiedTask = Options.OnIdentityVerified?.Invoke(Request, successResult);
-                if (onIdentityVerifiedTask != null) await onIdentityVerifiedTask;
+                if (onIdentityVerifiedTask != null) await onIdentityVerifiedTask.ConfigureAwait(false);
                 
                 var ticket = new AuthenticationTicket(successResult.Principal, Scheme.Name);
                 return AuthenticateResult.Success(ticket);
@@ -36,7 +36,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
             if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
                 var onIdentityVerificationFailedTask = Options.OnIdentityVerificationFailed?.Invoke(Request, failureResult);
-                if (onIdentityVerificationFailedTask != null) await onIdentityVerificationFailedTask;
+                if (onIdentityVerificationFailedTask != null) await onIdentityVerificationFailedTask.ConfigureAwait(false);
                 
                 return AuthenticateResult.Fail(new SignatureVerificationException(failureResult.Failure.ToString()));
             }

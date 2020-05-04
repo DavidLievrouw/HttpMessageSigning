@@ -30,7 +30,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 // ReSharper disable once UseAwaitUsing
                 // ReSharper disable once ConvertToUsingDeclaration
                 using (var memoryStream = new MemoryStream()) {
-                    await request.Body.CopyToAsync(memoryStream);
+                    await request.Body.CopyToAsync(memoryStream).ConfigureAwait(false);
                     requestMessage.Body = memoryStream.ToArray();
                     request.Body.Seek(0, SeekOrigin.Begin);
                 }

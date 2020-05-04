@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         public override async Task<SignatureVerificationFailure> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
             if (string.IsNullOrEmpty(signature.Nonce)) return null;
 
-            var previousNonce = await _nonceStore.Get(client.Id, signature.Nonce);
+            var previousNonce = await _nonceStore.Get(client.Id, signature.Nonce).ConfigureAwait(false);
             if (previousNonce != null && previousNonce.Expiration >= _systemClock.UtcNow) {
                 return SignatureVerificationFailure.ReplayedRequest($"The nonce '{previousNonce.Value}' for client {client.Id} ({client.Name}) is not unique and has been used before. It expires at {previousNonce.Expiration:R}.");
             }
@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 clientId: client.Id,
                 value: signature.Nonce,
                 expiration: _systemClock.UtcNow.Add(client.NonceLifetime));
-            await _nonceStore.Register(nonce);
+            await _nonceStore.Register(nonce).ConfigureAwait(false);
 
             return null;
         }

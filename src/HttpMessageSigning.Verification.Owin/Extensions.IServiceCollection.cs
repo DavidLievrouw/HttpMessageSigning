@@ -72,7 +72,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 var store = new InMemoryClientStore();
                 var allowedClients = allowedClientsFactory(prov);
                 foreach (var client in allowedClients) {
-                    store.Register(client).GetAwaiter().GetResult();
+                    store.Register(client).ConfigureAwait(false).GetAwaiter().GetResult();
                 }
 
                 return store;
