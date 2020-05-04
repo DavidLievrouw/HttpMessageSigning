@@ -7,14 +7,11 @@ namespace Dalion.HttpMessageSigning.Signing {
         public void SanitizeHeaderNamesToInclude(SigningSettings signingSettings, HttpRequestMessage request) {
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
             if (request == null) throw new ArgumentNullException(nameof(request));
-
-            // If the header parameter is not specified, implementations must operate as if the field were specified with a single value, '(created)', in the list of HTTP headers.
-            if (signingSettings.Headers == null) {
-                signingSettings.Headers = new[] {HeaderName.PredefinedHeaderNames.Created};
-            }
             
             // When feature is disabled, don't take any further action
             if (!signingSettings.AutomaticallyAddRecommendedHeaders) return;
+
+            if (signingSettings.Headers == null) signingSettings.Headers = Array.Empty<HeaderName>();
             
             // According to the spec, the header (request-target) should always be a part of the signature string.
             if (!signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.RequestTarget)) {

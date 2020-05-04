@@ -173,16 +173,16 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             }
 
             [Fact]
-            public void WhenHeadersIsNotSpecified_SetsHeadersToNull() {
+            public void WhenHeadersIsNotSpecified_ThrowsInvalidSignatureException() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), null, "xyz123==", "abc123", _options.Scheme);
 
-                var actual = _sut.Parse(_request, _options);
+                Action act = () => _sut.Parse(_request, _options);
 
-                actual.Headers.Should().BeNull();
+                act.Should().Throw<InvalidSignatureException>();
             }
 
             [Fact]
-            public void WhenKeIdIsNotSpecified_ThrowsInvalidSignatureException() {
+            public void WhenKeyIdIsNotSpecified_ThrowsInvalidSignatureException() {
                 SetHeader(_request, null, "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
                 Action act = () => _sut.Parse(_request, _options);

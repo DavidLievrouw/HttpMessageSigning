@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Dalion.HttpMessageSigning {
     /// <summary>
@@ -53,6 +54,8 @@ namespace Dalion.HttpMessageSigning {
         public void Validate() {
             if (KeyId == KeyId.Empty) throw new ValidationException($"The {nameof(Signature)} do not specify a valid {nameof(KeyId)}.");
             if (string.IsNullOrEmpty(String)) throw new ValidationException($"The {nameof(Signature)} do not specify a valid signature {nameof(String)}.");
+            if (Headers == null) throw new ValidationException($"{nameof(Headers)} cannot be unspecified (null).");
+            if (!Headers.Any()) throw new ValidationException($"{nameof(Headers)} cannot be unspecified empty.");
         }
 
         public object Clone() {

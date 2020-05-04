@@ -45,6 +45,20 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
+            public void WhenHeadersIsNull_ThrowsValidationException() {
+                _sut.Headers = null;
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
+
+            [Fact]
+            public void WhenHeadersIsEmpty_ThrowsValidationException() {
+                _sut.Headers = Array.Empty<HeaderName>();
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
+            
+            [Fact]
             public void WhenEverythingIsValid_DoesNotThrow() {
                 Action act = () => _sut.Validate();
                 act.Should().NotThrow();

@@ -50,15 +50,15 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenHeadersIsNull_SetsCreatedAsHeaderForSignature_EvenWhenFeatureIsDisabled() {
+            public void WhenHeadersIsNull_AndFeatureIsDisabled_KeepsNullHeaders() {
                 _settings.Headers = null;
                 _settings.AutomaticallyAddRecommendedHeaders = false;
 
                 _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
 
-                _settings.Headers.Should().BeEquivalentTo(new[] {HeaderName.PredefinedHeaderNames.Created});
+                _settings.Headers.Should().BeNull();
             }
-
+            
             [Fact]
             public void WhenHeadersIsEmpty_AndFeatureIsDisabled_KeepsEmptyHeaders() {
                 _settings.Headers = Array.Empty<HeaderName>();
@@ -69,6 +69,17 @@ namespace Dalion.HttpMessageSigning.Signing {
                 _settings.Headers.Should().BeEmpty();
             }
 
+            [Fact]
+            public void WhenHeadersIsNull_AndFeatureIsEnabled_DoesNotThrow() {
+                _settings.Headers = null;
+                _settings.AutomaticallyAddRecommendedHeaders = true;
+
+                _sut.SanitizeHeaderNamesToInclude(_settings, _httpRequest);
+
+                _settings.Headers.Should().NotBeNull();
+                _settings.Headers.Should().NotBeEmpty();
+            }
+            
             [Fact]
             public void WhenFeatureIsDisabled_DoesNotTakeAction() {
                 _settings.AutomaticallyAddRecommendedHeaders = false;

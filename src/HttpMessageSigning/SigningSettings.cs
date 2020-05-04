@@ -74,6 +74,7 @@ namespace Dalion.HttpMessageSigning {
             if (Expires <= TimeSpan.Zero) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
             if (string.IsNullOrEmpty(AuthorizationScheme)) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(AuthorizationScheme)}.");
             if (Headers == null) throw new ValidationException($"{nameof(Headers)} cannot be unspecified (null).");
+            if (!Headers.Any()) throw new ValidationException($"{nameof(Headers)} cannot be unspecified empty.");
             if (!SupportedSignatureAlgorithmNames.Contains(SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase)) throw new ValidationException($"The specified signature algorithm ({SignatureAlgorithm.Name}) is not supported.");
         }
 
