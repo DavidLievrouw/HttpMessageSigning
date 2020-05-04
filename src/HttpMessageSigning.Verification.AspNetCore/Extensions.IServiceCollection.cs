@@ -4,9 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Dalion.HttpMessageSigning.Verification.Owin {
-    [ExcludeFromCodeCoverage]
-    public static partial class CompositionExtensions {
+namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
+    public static partial class Extensions {
         /// <summary>
         ///     Adds http message signature verification registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -20,9 +19,10 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         ///     were added.
         /// </returns>
         /// <remarks>This overload assumes that you registered an <see cref="IClientStore" />.</remarks>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
-
+            
             return services
                 .AddHttpMessageSignatureVerifier()
                 .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))
@@ -42,6 +42,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, params Client[] allowedClients) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (allowedClients == null) allowedClients = Array.Empty<Client>();
@@ -62,6 +63,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, Func<IServiceProvider, IEnumerable<Client>> allowedClientsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (allowedClientsFactory == null) throw new ArgumentNullException(nameof(allowedClientsFactory));
@@ -90,6 +92,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, IClientStore clientStore) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (clientStore == null) throw new ArgumentNullException(nameof(clientStore));

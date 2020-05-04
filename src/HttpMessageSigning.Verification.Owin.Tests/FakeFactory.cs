@@ -1,8 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using FakeItEasy;
+﻿using FakeItEasy;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
-    [ExcludeFromCodeCoverage]
     public static class FakeFactory {
         public static void Create<T1>(out T1 fake1)
             where T1 : class {

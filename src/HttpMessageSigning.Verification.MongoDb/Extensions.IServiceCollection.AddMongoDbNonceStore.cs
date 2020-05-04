@@ -4,8 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    [ExcludeFromCodeCoverage]
-    public static partial class CompositionExtensions {
+    public static partial class Extensions {
         /// <summary>
         ///     Adds http message signature verification registrations for MongoDb to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -19,6 +18,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddMongoDbNonceStore(this IServiceCollection services, MongoDbNonceStoreSettings nonceStoreSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (nonceStoreSettings == null) throw new ArgumentNullException(nameof(nonceStoreSettings));

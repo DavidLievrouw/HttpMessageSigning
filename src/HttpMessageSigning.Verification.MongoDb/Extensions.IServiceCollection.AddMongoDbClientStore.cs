@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    public static partial class CompositionExtensions {
+    public static partial class Extensions {
         [Obsolete("Please use an overload that takes a " + nameof(MongoDbClientStoreSettings) + " parameter instead.")]
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services, MongoDbSettings clientStoreSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (clientStoreSettings == null) throw new ArgumentNullException(nameof(clientStoreSettings));
@@ -13,6 +15,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
         
         [Obsolete("Please use an overload that takes a " + nameof(MongoDbClientStoreSettings) + " parameter instead.")]
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services,
             Func<IServiceProvider, MongoDbSettings> clientStoreSettingsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -34,6 +37,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services, MongoDbClientStoreSettings clientStoreSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (clientStoreSettings == null) throw new ArgumentNullException(nameof(clientStoreSettings));

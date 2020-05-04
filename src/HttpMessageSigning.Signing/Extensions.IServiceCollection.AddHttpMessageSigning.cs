@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Dalion.HttpMessageSigning.SigningString;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Signing {
-    public static partial class CompositionExtensions {
+    public static partial class Extensions {
         /// <summary>
         ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -16,6 +17,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
@@ -39,6 +41,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, KeyId keyId, SigningSettings signingSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
@@ -63,6 +66,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, KeyId keyId, Action<SigningSettings> signingSettingsConfig) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
@@ -90,6 +94,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, KeyId keyId, Func<IServiceProvider, SigningSettings> signingSettingsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (signingSettingsFactory == null) throw new ArgumentNullException(nameof(signingSettingsFactory));
@@ -115,6 +120,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSigning(
             this IServiceCollection services, 
             Func<IServiceProvider, KeyId> keyIdFactory, 

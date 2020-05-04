@@ -1,8 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 
 namespace Dalion.HttpMessageSigning {
-    [ExcludeFromCodeCoverage]
     public class CustomSignatureAlgorithm : ISignatureAlgorithm {
         private bool _verificationResult;
         private bool _isDisposed;

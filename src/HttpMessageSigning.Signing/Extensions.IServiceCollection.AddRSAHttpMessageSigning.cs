@@ -4,8 +4,7 @@ using System.Security.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Signing {
-    [ExcludeFromCodeCoverage]
-    public static partial class CompositionExtensions {
+    public static partial class Extensions {
         /// <summary>
         ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -23,6 +22,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddRSAHttpMessageSigning(this IServiceCollection services, KeyId keyId, RSA rsa) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (rsa == null) throw new ArgumentNullException(nameof(rsa));
@@ -48,6 +48,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddRSAHttpMessageSigning(this IServiceCollection services, KeyId keyId, RSA rsa, Action<SigningSettings> signingSettingsConfig) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (rsa == null) throw new ArgumentNullException(nameof(rsa));
@@ -77,6 +78,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddRSAHttpMessageSigning(this IServiceCollection services, Func<IServiceProvider, KeyId> keyIdFactory, Func<IServiceProvider, RSA> rsaFactory, Action<SigningSettings> signingSettingsConfig) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (keyIdFactory == null) throw new ArgumentNullException(nameof(keyIdFactory));
@@ -107,6 +109,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
+        [ExcludeFromCodeCoverage]
         public static IServiceCollection AddRSAHttpMessageSigning(this IServiceCollection services, Func<IServiceProvider, KeyId> keyIdFactory, Func<IServiceProvider, RSA> rsaFactory, Action<IServiceProvider, SigningSettings> signingSettingsConfig) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (keyIdFactory == null) throw new ArgumentNullException(nameof(keyIdFactory));

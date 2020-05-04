@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Signing {
-    public static partial class CompositionExtensions {
+    public static partial class Extensions {
         /// <summary>
         ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -16,18 +17,19 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
         ///     registrations to.
         /// </param>
-        /// <param name="hmacSecret">The HMAC symmetric key.</param>
+        /// <param name="ecdsa">The ECDsa key pair.</param>
         /// <returns>
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
-        public static IServiceCollection AddHMACHttpMessageSigning(this IServiceCollection services, KeyId keyId, string hmacSecret) {
+        [ExcludeFromCodeCoverage]
+        public static IServiceCollection AddECDsaHttpMessageSigning(this IServiceCollection services, KeyId keyId, ECDsa ecdsa) {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            if (hmacSecret == null) throw new ArgumentNullException(nameof(hmacSecret));
+            if (ecdsa == null) throw new ArgumentNullException(nameof(ecdsa));
 
-            return services.AddHMACHttpMessageSigning(keyId, hmacSecret, settings => {});
+            return services.AddECDsaHttpMessageSigning(keyId, ecdsa, settings => {});
         }
-        
+
         /// <summary>
         ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -40,22 +42,24 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
         ///     registrations to.
         /// </param>
-        /// <param name="hmacSecret">The HMAC symmetric key.</param>
+        /// <param name="ecdsa">The ECDsa key pair.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
         /// <returns>
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
-        public static IServiceCollection AddHMACHttpMessageSigning(this IServiceCollection services, KeyId keyId, string hmacSecret, Action<SigningSettings> signingSettingsConfig) {
+        [ExcludeFromCodeCoverage]
+        public static IServiceCollection AddECDsaHttpMessageSigning(this IServiceCollection services, KeyId keyId, ECDsa ecdsa, Action<SigningSettings> signingSettingsConfig) {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            if (hmacSecret == null) throw new ArgumentNullException(nameof(hmacSecret));
+            if (ecdsa == null) throw new ArgumentNullException(nameof(ecdsa));
 
-            return services.AddHMACHttpMessageSigning(
+            return services.AddECDsaHttpMessageSigning(
                 prov => keyId,
-                prov => hmacSecret,
-                (prov, settings) => signingSettingsConfig(settings));
+                prov => ecdsa,
+                (prov, settings) => signingSettingsConfig(settings)
+            );
         }
-        
+                
         /// <summary>
         ///     Adds http message signing registrations to the specified
         ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
@@ -68,25 +72,23 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
         ///     registrations to.
         /// </param>
-        /// <param name="hmacSecretFactory">The factory that creates the HMAC symmetric key.</param>
+        /// <param name="ecdsaFactory">The factory that creates the ECDsa key pair.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
         /// <returns>
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
-        public static IServiceCollection AddHMACHttpMessageSigning(
-            this IServiceCollection services, 
-            Func<IServiceProvider, KeyId> keyIdFactory,
-            Func<IServiceProvider, string> hmacSecretFactory, 
-            Action<SigningSettings> signingSettingsConfig) {
+        [ExcludeFromCodeCoverage]
+        public static IServiceCollection AddECDsaHttpMessageSigning(this IServiceCollection services, Func<IServiceProvider, KeyId> keyIdFactory, Func<IServiceProvider, ECDsa> ecdsaFactory, Action<SigningSettings> signingSettingsConfig) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (keyIdFactory == null) throw new ArgumentNullException(nameof(keyIdFactory));
-            if (hmacSecretFactory == null) throw new ArgumentNullException(nameof(hmacSecretFactory));
+            if (ecdsaFactory == null) throw new ArgumentNullException(nameof(ecdsaFactory));
 
-            return services.AddHMACHttpMessageSigning(
+            return services.AddECDsaHttpMessageSigning(
                 keyIdFactory,
-                hmacSecretFactory,
-                (prov, settings) => signingSettingsConfig(settings));
+                ecdsaFactory,
+                (prov, settings) => signingSettingsConfig(settings)
+            );
         }
         
         /// <summary>
@@ -101,26 +103,23 @@ namespace Dalion.HttpMessageSigning.Signing {
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
         ///     registrations to.
         /// </param>
-        /// <param name="hmacSecretFactory">The factory that creates the HMAC symmetric key.</param>
+        /// <param name="ecdsaFactory">The factory that creates the ECDsa key pair.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
         /// <returns>
         ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
         ///     were added.
         /// </returns>
-        public static IServiceCollection AddHMACHttpMessageSigning(
-            this IServiceCollection services, 
-            Func<IServiceProvider, KeyId> keyIdFactory,
-            Func<IServiceProvider, string> hmacSecretFactory, 
-            Action<IServiceProvider, SigningSettings> signingSettingsConfig) {
+        [ExcludeFromCodeCoverage]
+        public static IServiceCollection AddECDsaHttpMessageSigning(this IServiceCollection services, Func<IServiceProvider, KeyId> keyIdFactory, Func<IServiceProvider, ECDsa> ecdsaFactory, Action<IServiceProvider, SigningSettings> signingSettingsConfig) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (keyIdFactory == null) throw new ArgumentNullException(nameof(keyIdFactory));
-            if (hmacSecretFactory == null) throw new ArgumentNullException(nameof(hmacSecretFactory));
+            if (ecdsaFactory == null) throw new ArgumentNullException(nameof(ecdsaFactory));
 
             return services.AddHttpMessageSigning(
                 keyIdFactory,
                 prov => {
                     var signingSettings = new SigningSettings {
-                        SignatureAlgorithm = new HMACSignatureAlgorithm(hmacSecretFactory(prov), HashAlgorithmName.SHA256)
+                        SignatureAlgorithm = new ECDsaSignatureAlgorithm(HashAlgorithmName.SHA256, ecdsaFactory(prov))
                     };
                     signingSettingsConfig?.Invoke(prov, signingSettings);
                     return signingSettings;
