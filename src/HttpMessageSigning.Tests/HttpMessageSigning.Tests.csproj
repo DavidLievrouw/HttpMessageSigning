@@ -20,7 +20,7 @@
             <InformationalVersion>$(ProductVersion)</InformationalVersion>
         </PropertyGroup>
     </Target>
-    
+
     <ItemGroup>
         <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
         <PackageReference Include="CompareNETObjects" Version="4.65.0" />
@@ -42,17 +42,52 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
-      <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
-      <ProjectReference Include="..\HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj" />
-      <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
-      <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
     </ItemGroup>
-    
+
     <ItemGroup>
-      <None Update="dalion.local.pfx">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="dalion.local.pfx">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="SystemTests\Conformance\Keys\koblitzCurve.private" />
+        <EmbeddedResource Include="SystemTests\Conformance\Keys\koblitzCurve.private">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <None Remove="SystemTests\Conformance\Keys\koblitzCurve.pub" />
+        <EmbeddedResource Include="SystemTests\Conformance\Keys\koblitzCurve.pub">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <None Remove="SystemTests\Conformance\Keys\P256.private" />
+        <EmbeddedResource Include="SystemTests\Conformance\Keys\P256.private">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <None Remove="SystemTests\Conformance\Keys\P256.pub" />
+        <EmbeddedResource Include="SystemTests\Conformance\Keys\P256.pub">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <None Remove="SystemTests\Conformance\Keys\rsa.private" />
+        <EmbeddedResource Include="SystemTests\Conformance\Keys\rsa.private">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <None Remove="SystemTests\Conformance\Keys\rsa.pub" />
+        <EmbeddedResource Include="SystemTests\Conformance\Keys\rsa.pub">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <None Remove="SystemTests\Conformance\HttpMessages\default-test.httpMessage" />
+        <EmbeddedResource Include="SystemTests\Conformance\HttpMessages\default-test.httpMessage">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <None Remove="SystemTests\Conformance\HttpMessages\basic-request.httpMessage" />
+        <EmbeddedResource Include="SystemTests\Conformance\HttpMessages\basic-request.httpMessage">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
     </ItemGroup>
 
 </Project>
