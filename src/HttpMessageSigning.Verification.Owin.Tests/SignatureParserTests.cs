@@ -208,6 +208,69 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 actual.Nonce.Should().BeNull();
             }
             
+            [Fact]
+            public void GivenDuplicateKeyId_ThrowsInvalidSignatureException() {
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "keyId=\"app2\"");
+
+                Action act = () => _sut.Parse(_request, _options);
+
+                act.Should().Throw<InvalidSignatureException>();
+            }
+            
+            [Fact]
+            public void GivenDuplicateAlgorithm_ThrowsInvalidSignatureException() {
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "algorithm=\"hs2019\"");
+
+                Action act = () => _sut.Parse(_request, _options);
+
+                act.Should().Throw<InvalidSignatureException>();
+            }
+            
+            [Fact]
+            public void GivenDuplicateCreated_ThrowsInvalidSignatureException() {
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "created=" + _nowEpoch);
+
+                Action act = () => _sut.Parse(_request, _options);
+
+                act.Should().Throw<InvalidSignatureException>();
+            }
+            
+            [Fact]
+            public void GivenDuplicateExpires_ThrowsInvalidSignatureException() {
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "expires=" + _expiresEpoch);
+
+                Action act = () => _sut.Parse(_request, _options);
+
+                act.Should().Throw<InvalidSignatureException>();
+            }
+            
+            [Fact]
+            public void GivenDuplicateHeaders_ThrowsInvalidSignatureException() {
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "headers=\"(request-target) date\"");
+
+                Action act = () => _sut.Parse(_request, _options);
+
+                act.Should().Throw<InvalidSignatureException>();
+            }
+            
+            [Fact]
+            public void GivenDuplicateNonce_ThrowsInvalidSignatureException() {
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "nonce=\"xyz987\"");
+
+                Action act = () => _sut.Parse(_request, _options);
+
+                act.Should().Throw<InvalidSignatureException>();
+            }
+            
+            [Fact]
+            public void GivenDuplicateSignature_ThrowsInvalidSignatureException() {
+                SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "signature=\"xyz987==\"");
+
+                Action act = () => _sut.Parse(_request, _options);
+
+                act.Should().Throw<InvalidSignatureException>();
+            }
+            
             private static string Compose(
                 string keyId = null,
                 string algorithm = null,
@@ -215,29 +278,32 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 string expires = null,
                 string headers = null,
                 string sig = null,
-                string nonce = null) {
+                string nonce = null,
+                string additional = null) {
                 var parts = new List<string>();
                 if (!string.IsNullOrEmpty(keyId)) parts.Add("keyId=\"" + keyId + "\"");
                 if (!string.IsNullOrEmpty(algorithm)) parts.Add("algorithm=\"" + algorithm + "\"");
                 if (!string.IsNullOrEmpty(created)) parts.Add("created=" + created);
                 if (!string.IsNullOrEmpty(expires)) parts.Add("expires=" + expires);
                 if (!string.IsNullOrEmpty(headers)) parts.Add("headers=\"" + headers + "\"");
-                if (!string.IsNullOrEmpty(nonce)) parts.Add("nonce=\"" + nonce + "\"");
                 if (!string.IsNullOrEmpty(sig)) parts.Add("signature=\"" + sig + "\"");
+                if (!string.IsNullOrEmpty(nonce)) parts.Add("nonce=\"" + nonce + "\"");
+                if (!string.IsNullOrEmpty(additional)) parts.Add(additional);
                 return string.Join(",", parts);
             }
 
             private static void SetHeader(
                 IOwinRequest request,
-                string keyId = null,
-                string algorithm = null,
-                string created = null,
-                string expires = null,
-                string headers = null,
-                string sig = null,
-                string nonce = null,
-                string scheme = "Signature") {
-                var param = Compose(keyId, algorithm, created, expires, headers, sig, nonce);
+                string keyId,
+                string algorithm,
+                string created,
+                string expires,
+                string headers,
+                string sig,
+                string nonce,
+                string scheme,
+                string additional = null) {
+                var param = Compose(keyId, algorithm, created, expires, headers, sig, nonce, additional);
                 request.Headers["Authorization"] = scheme + " " + param;
             }
         }

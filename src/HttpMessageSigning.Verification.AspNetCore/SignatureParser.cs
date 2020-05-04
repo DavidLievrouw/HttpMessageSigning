@@ -54,42 +54,49 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 
                 var keyIdSelector = "keyId=";
                 if (authParamPart.StartsWith(keyIdSelector, StringComparison.Ordinal)) {
+                    if (keyId != KeyId.Empty) throw new InvalidSignatureException($"Duplicate '{keyIdSelector}' found in signature.");
                     var value = authParamPart.Substring(keyIdSelector.Length).Trim('"');
                     keyId = new KeyId(value);
                 }
                 
                 var algorithmSelector = "algorithm=";
                 if (authParamPart.StartsWith(algorithmSelector, StringComparison.Ordinal)) {
+                    if (algorithm != string.Empty) throw new InvalidSignatureException($"Duplicate '{algorithmSelector}' found in signature.");
                     var value = authParamPart.Substring(algorithmSelector.Length).Trim('"');
                     algorithm = value;
                 }
                 
                 var createdSelector = "created=";
                 if (authParamPart.StartsWith(createdSelector, StringComparison.Ordinal)) {
+                    if (createdString != string.Empty) throw new InvalidSignatureException($"Duplicate '{createdSelector}' found in signature.");
                     var value = authParamPart.Substring(createdSelector.Length).Trim('"');
                     createdString = value;
                 }
                 
                 var expiresSelector = "expires=";
                 if (authParamPart.StartsWith(expiresSelector, StringComparison.Ordinal)) {
+                    if (expiresString != string.Empty) throw new InvalidSignatureException($"Duplicate '{expiresSelector}' found in signature.");
                     var value = authParamPart.Substring(expiresSelector.Length).Trim('"');
                     expiresString = value;
                 }
                 
                 var headersSelector = "headers=";
                 if (authParamPart.StartsWith(headersSelector, StringComparison.Ordinal)) {
+                    if (headersString != string.Empty) throw new InvalidSignatureException($"Duplicate '{headersSelector}' found in signature.");
                     var value = authParamPart.Substring(headersSelector.Length).Trim('"');
                     headersString = value;
                 }
                 
                 var nonceSelector = "nonce=";
                 if (authParamPart.StartsWith(nonceSelector, StringComparison.Ordinal)) {
+                    if (!string.IsNullOrEmpty(nonce)) throw new InvalidSignatureException($"Duplicate '{nonceSelector}' found in signature.");
                     var value = authParamPart.Substring(nonceSelector.Length).Trim('"');
                     nonce = value;
                 }
                 
                 var signatureSelector = "signature=";
                 if (authParamPart.StartsWith(signatureSelector, StringComparison.Ordinal)) {
+                    if (signature != string.Empty) throw new InvalidSignatureException($"Duplicate '{signatureSelector}' found in signature.");
                     var value = authParamPart.Substring(signatureSelector.Length).Trim('"');
                     signature = value;
                 }
