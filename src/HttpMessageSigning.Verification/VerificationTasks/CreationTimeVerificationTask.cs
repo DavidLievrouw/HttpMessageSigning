@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 return SignatureVerificationFailure.InvalidCreatedHeader($"The signature does not contain a value for the {nameof(signature.Created)} property, but it is required.");
             }
             
-            if (signature.Created.HasValue && signature.Created.Value > _systemClock.UtcNow) {
+            if (signature.Created.HasValue && signature.Created.Value > _systemClock.UtcNow.Add(client.ClockSkew)) {
                 return SignatureVerificationFailure.InvalidCreatedHeader("The signature is not valid yet. Its creation time is in the future.");
             }
             

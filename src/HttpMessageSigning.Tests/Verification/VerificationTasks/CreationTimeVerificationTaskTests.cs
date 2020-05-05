@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [Fact]
             public async Task WhenSignatureDoesNotSpecifyACreationTime_AndItIsRequired_ReturnsSignatureVerificationFailure() {
                 _signature.Created = null;
-                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Created}).ToArray();
+                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Created}).ToArray(); // It's required when it is part of the signature
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
@@ -54,8 +54,28 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureCreationTimeIsInTheFuture_ReturnsSignatureVerificationFailure() {
-                _signature.Created = _now.AddSeconds(1);
+            public async Task WhenSignatureCreationTimeIsInTheFuture_AndInsideClockSkew_ReturnsNull() {
+                _signature.Created = _now.Add(_client.ClockSkew).AddSeconds(-1);
+                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Created}).ToArray();
+
+                var actual = await _method(_signedRequest, _signature, _client);
+
+                actual.Should().BeNull();
+            }
+            
+            [Fact]
+            public async Task WhenSignatureCreationTimeIsInTheFuture_AndEqualToClockSkew_ReturnsNull() {
+                _signature.Created = _now.Add(_client.ClockSkew);
+                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Created}).ToArray();
+
+                var actual = await _method(_signedRequest, _signature, _client);
+
+                actual.Should().BeNull();
+            }
+            
+            [Fact]
+            public async Task WhenSignatureCreationTimeIsInTheFuture_AndOutsideClockSkew_ReturnsSignatureVerificationFailure() {
+                _signature.Created = _now.Add(_client.ClockSkew).AddSeconds(1);
                 _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Created}).ToArray();
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -76,7 +96,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenSignatureCreationTimeIsInThePast_ReturnsNull() {
-                _signature.Created = _now.AddSeconds(-1);
+                _signature.Created = _now.AddHours(-1);
                 _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Created}).ToArray();
 
                 var actual = await _method(_signedRequest, _signature, _client);

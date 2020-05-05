@@ -33,9 +33,9 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyAExpirationTime_ReturnsSignatureVerificationFailure() {
+            public async Task WhenSignatureDoesNotSpecifyAExpirationTime_AndItRequired_ReturnsSignatureVerificationFailure() {
                 _signature.Expires = null;
-                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
+                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray(); // It's required when it is part of the signature
 
                 var actual = await _method(_signedRequest, _signature, _client);
 
@@ -54,8 +54,28 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             }
             
             [Fact]
-            public async Task WhenSignatureExpirationTimeIsInThePast_ReturnsSignatureVerificationFailure() {
-                _signature.Expires = _now.AddSeconds(-1);
+            public async Task WhenSignatureExpirationTimeIsInThePast_AndInsideClockSkew_ReturnsNull() {
+                _signature.Expires = _now.Add(-_client.ClockSkew).AddSeconds(1);
+                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
+
+                var actual = await _method(_signedRequest, _signature, _client);
+
+                actual.Should().BeNull();
+            }
+            
+            [Fact]
+            public async Task WhenSignatureExpirationTimeIsInThePast_AndEqualToClockSkew_ReturnsNull() {
+                _signature.Expires = _now.Add(-_client.ClockSkew);
+                _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
+
+                var actual = await _method(_signedRequest, _signature, _client);
+
+                actual.Should().BeNull();
+            }
+            
+            [Fact]
+            public async Task WhenSignatureExpirationTimeIsInThePast_AndOutsideClockSkew_ReturnsSignatureVerificationFailure() {
+                _signature.Expires = _now.Add(-_client.ClockSkew).AddSeconds(-1);
                 _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
 
                 var actual = await _method(_signedRequest, _signature, _client);
@@ -76,7 +96,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenSignatureExpirationTimeIsInTheFuture_ReturnsNull() {
-                _signature.Expires = _now.AddSeconds(1);
+                _signature.Expires = _now.AddHours(1);
                 _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
 
                 var actual = await _method(_signedRequest, _signature, _client);

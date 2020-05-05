@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 return SignatureVerificationFailure.HeaderMissing($"The signature does not contain a value for the {nameof(signature.Expires)} property, but it is required.");
             }
             
-            if (signature.Expires.HasValue && signature.Expires.Value < _systemClock.UtcNow) {
+            if (signature.Expires.HasValue && signature.Expires.Value < _systemClock.UtcNow.Add(-client.ClockSkew)) {
                 return SignatureVerificationFailure.SignatureExpired("The signature is expired.");
             }
             
