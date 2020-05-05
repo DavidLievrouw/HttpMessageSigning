@@ -166,6 +166,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.BasicRSA {
                         "HttpMessageSigningSampleRSA",
                         SignatureAlgorithm.CreateForVerification(cert),
                         TimeSpan.FromMinutes(5),
+                        TimeSpan.FromMinutes(1),
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 });

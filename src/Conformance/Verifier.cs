@@ -51,7 +51,8 @@ namespace Conformance {
                         new KeyId("test"),
                         "ConformanceClient",
                         signatureAlgorithmForVerification,
-                        TimeSpan.FromSeconds(30)));
+                        TimeSpan.FromSeconds(30),
+                        TimeSpan.FromMinutes(1)));
                     return clientStore;
                 })
                 .BuildServiceProvider();

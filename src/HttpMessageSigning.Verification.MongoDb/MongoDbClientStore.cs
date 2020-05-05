@@ -23,12 +23,13 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
         public Task Register(Client client) {
             if (client == null) throw new ArgumentNullException(nameof(client));
-
+            
             var record = new ClientDataRecord {
                 Id = client.Id,
                 Name = client.Name,
                 NonceExpiration = client.NonceLifetime.TotalSeconds,
-                Claims = client.Claims?.Select(c => ClaimDataRecord.FromClaim(c))?.ToArray(),
+                ClockSkew = client.ClockSkew.TotalSeconds,
+                Claims = client.Claims?.Select(ClaimDataRecord.FromClaim)?.ToArray(),
                 SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm)
             };
 
@@ -52,11 +53,16 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 ? Client.DefaultNonceLifetime
                 : TimeSpan.FromSeconds(match.NonceExpiration.Value);
             
+            var clockSkew = !match.ClockSkew.HasValue || match.ClockSkew.Value <= 0.0
+                ? Client.DefaultClockSkew
+                : TimeSpan.FromSeconds(match.ClockSkew.Value);
+            
             return new Client(
                 match.Id,
                 match.Name,
                 match.SignatureAlgorithm.ToSignatureAlgorithm(),
                 nonceExpiration,
+                clockSkew,
                 match.Claims?.Select(c => c.ToClaim())?.ToArray());
         }
     }

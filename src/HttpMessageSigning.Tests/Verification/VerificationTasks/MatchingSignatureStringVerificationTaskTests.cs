@@ -34,7 +34,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _signature = (Signature) TestModels.Signature.Clone();
                 _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
                 _signatureAlgorithm = new CustomSignatureAlgorithm("TEST");
-                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, _signatureAlgorithm, TimeSpan.FromMinutes(1));
+                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, _signatureAlgorithm, TestModels.Client.NonceLifetime, TestModels.Client.ClockSkew, TestModels.Client.Claims);
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
 
                 _composedSignatureString = "abc123";

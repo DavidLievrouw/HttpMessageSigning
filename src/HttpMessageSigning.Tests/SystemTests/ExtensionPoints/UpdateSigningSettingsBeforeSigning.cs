@@ -72,6 +72,7 @@ namespace Dalion.HttpMessageSigning.SystemTests.ExtensionPoints {
                         "HttpMessageSigningSampleHMAC",
                         SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                         TimeSpan.FromMinutes(5),
+                        TimeSpan.FromMinutes(1),
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 });

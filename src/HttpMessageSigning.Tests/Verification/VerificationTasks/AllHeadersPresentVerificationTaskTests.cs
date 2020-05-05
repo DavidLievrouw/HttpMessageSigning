@@ -41,7 +41,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [InlineData("HMAC")]
             [InlineData("ECDSA")]
             public async Task WhenSignatureShouldContainDateHeader_ButItDoesnt_ReturnsNull_BecauseItsARecommendation(string algorithm) {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = algorithm + "-sha256";
                 _signature.Headers = _signature.Headers
                     .Where(h => h != HeaderName.PredefinedHeaderNames.Date)
@@ -54,7 +54,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenSignatureShouldNotContainDateHeader_AndItDoesnt_ReturnsNull() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = "hs2019";
                 _signature.Headers = _signature.Headers
                     .Where(h => h != HeaderName.PredefinedHeaderNames.Date)
@@ -69,7 +69,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenSignatureShouldContainCreatedHeader_ButItDoesnt_ReturnsNull_BecauseItsARecommendation() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Headers = _signature.Headers
                     .Where(h => h != HeaderName.PredefinedHeaderNames.Created)
                     .ToArray();
@@ -81,7 +81,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenSignatureShouldContainCreatedHeader_AndItDoes_ReturnsNull() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Headers = _signature.Headers
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Created})
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Expires})
@@ -94,7 +94,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             
             [Fact]
             public async Task WhenSignatureShouldContainCreatedHeader_FromSpec_AndItDoes_ReturnsNull() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Headers = _signature.Headers
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Created})
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Expires})
@@ -110,7 +110,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [InlineData("HMAC")]
             [InlineData("ECDSA")]
             public async Task WhenSignatureShouldNotContainCreatedHeader_AndItDoesnt_ReturnsNull(string algorithm) {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = algorithm + "-sha256";
                 _signature.Headers = _signature.Headers
                     .Where(h => h != HeaderName.PredefinedHeaderNames.Created)
@@ -123,7 +123,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenSignatureShouldContainExpiresHeader_ButItDoesnt_ReturnsNull_BecauseItsARecommendation() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = "hs2019";
                 _signature.Headers = _signature.Headers
                     .Where(h => h != HeaderName.PredefinedHeaderNames.Expires)
@@ -140,7 +140,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [InlineData("HMAC")]
             [InlineData("ECDSA")]
             public async Task WhenSignatureShouldNotContainExpiresHeader_AndItDoesnt_ReturnsNull(string algorithm) {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = algorithm + "-sha256";
                 _signature.Headers = _signature.Headers
                     .Where(h => h != HeaderName.PredefinedHeaderNames.Expires)
@@ -153,7 +153,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenSignatureShouldContainExpiresHeader_AndItDoes_ReturnsNull() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Headers = _signature.Headers
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Created})
                     .Concat(new[] {HeaderName.PredefinedHeaderNames.Expires})
@@ -166,7 +166,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             
             [Fact]
             public async Task WhenSignatureShouldContainExpiresHeader_FromSpec_AndItDoes_ReturnsNull() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("hs2019"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Created, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString());
                 _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Expires, DateTimeOffset.UtcNow.AddMinutes(1).ToUnixTimeSeconds().ToString());
                 _signature.Headers = _signature.Headers

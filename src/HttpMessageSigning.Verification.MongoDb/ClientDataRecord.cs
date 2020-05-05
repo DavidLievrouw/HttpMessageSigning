@@ -10,5 +10,6 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         public SignatureAlgorithmDataRecord SignatureAlgorithm { get; set; }
         public ClaimDataRecord[] Claims { get; set; }
         public double? NonceExpiration { get; set; }
+        public double? ClockSkew { get; set; }
     }
 }

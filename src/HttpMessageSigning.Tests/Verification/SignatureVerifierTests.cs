@@ -63,7 +63,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     RequestUri = "https://unittest.com:9001"
                 };
                 
-                _client = new Client("client1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
+                _client = new Client("client1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 
                 A.CallTo(() => _knownAlgorithmVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
                 A.CallTo(() => _matchingAlgorithmVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);

@@ -39,6 +39,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
+                    TimeSpan.FromMinutes(1),
                     null);
                 
                 var actual = _sut.CreateForClient(client);
@@ -57,6 +58,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     (KeyId)"id1", 
                     "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1));
                 
                 var actual = _sut.CreateForClient(client);
@@ -75,6 +77,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     (KeyId)"id1", 
                     "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
@@ -100,6 +103,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
+                    TimeSpan.FromMinutes(1),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
                     new Claim("c2", "v2"));
@@ -117,6 +121,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     (KeyId)"id1", 
                     "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1),
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),

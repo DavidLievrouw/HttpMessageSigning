@@ -77,7 +77,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 var cause = SignatureVerificationFailure.InvalidSignatureString("Invalid signature");
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest, _options))
                     .Returns(new RequestSignatureVerificationResultFailure(
-                        new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1)),
+                        new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
                         new Signature(), 
                         cause));
 
@@ -94,7 +94,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 var cause = SignatureVerificationFailure.InvalidSignatureString("Invalid signature");
                 var failureResult = new RequestSignatureVerificationResultFailure(
-                    new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1)),
+                    new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
                     new Signature(), 
                     cause);
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest, _options))
@@ -116,7 +116,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 _httpRequest.Headers["Authorization"] = "tests-scheme abc123";
 
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest, _options))
-                    .Returns(new UnknownResult(new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1)), new Signature()));
+                    .Returns(new UnknownResult(new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)), new Signature()));
 
                 var actual = await _sut.DoAuthenticate();
 
@@ -130,7 +130,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest, _options))
                     .Returns(new RequestSignatureVerificationResultSuccess(
-                        new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1)),
+                        new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
                         new Signature(), 
                         principal));
 
@@ -147,7 +147,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
                 var successResult = new RequestSignatureVerificationResultSuccess(
-                    new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1)),
+                    new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
                     new Signature(), 
                     principal);
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest, _options))

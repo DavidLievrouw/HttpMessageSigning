@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             public Verify() {
                 _signature = (Signature) TestModels.Signature.Clone();
                 _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
-                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.MD5), TimeSpan.FromMinutes(1));
+                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.MD5), TestModels.Client.NonceLifetime, TestModels.Client.ClockSkew, TestModels.Client.Claims);
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
             }
 

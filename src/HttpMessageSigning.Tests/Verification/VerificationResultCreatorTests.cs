@@ -15,7 +15,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         public VerificationResultCreatorTests() {
             FakeFactory.Create(out _claimsPrincipalFactory);
             _signature = new Signature {KeyId = "client1"};
-            _client = new Client("client1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1));
+            _client = new Client("client1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             _sut = new VerificationResultCreator(_client, _signature, _claimsPrincipalFactory);
         }
 

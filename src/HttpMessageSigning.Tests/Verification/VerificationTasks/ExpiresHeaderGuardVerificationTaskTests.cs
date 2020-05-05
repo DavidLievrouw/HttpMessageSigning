@@ -22,7 +22,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _signature = (Signature)TestModels.Signature.Clone();
                 _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
                 _signedRequest = (HttpRequestForSigning)TestModels.Request.Clone();
-                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1));
+                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
             }
             
@@ -31,7 +31,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [InlineData("HMAC")]
             [InlineData("ECDSA")]
             public async Task WhenExpiresHeaderIsTakenIntoAccount_ButItShouldNot_ReturnsSignatureVerificationException(string algorithm) {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm(algorithm), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = algorithm + "-sha256";
                 _signature.Expires = DateTimeOffset.UtcNow;
 
@@ -43,7 +43,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             
             [Fact]
             public async Task WhenExpiresHeaderIsNotTakenIntoAccount_ButItShould_ReturnsNull_BecauseItIsOnlyARecommendation() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Algorithm = "hs2019";
                 _signature.Expires = DateTimeOffset.UtcNow;
                 _signature.Headers = _signature.Headers.Where(h => h != HeaderName.PredefinedHeaderNames.Expires).ToArray();
@@ -55,7 +55,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             
             [Fact]
             public async Task WhenExpiresHeaderHasNoValue_ButItIsRequiredByTheClient_ReturnsNull_BecauseItIsOnlyARecommendation() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("CUSTOM"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("CUSTOM"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Expires = null;
                 _signature.Algorithm = "hs2019";
                 
@@ -66,7 +66,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             
             [Fact]
             public async Task WhenExpiresHeaderHasNoValue_AndItIsNotRequiredByTheClient_ReturnsNull() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Expires = null;
                 _signature.Algorithm = "hs2019";
 
@@ -77,7 +77,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             
             [Fact]
             public async Task WhenExpiresHeaderHasAValue_AndItIsNotRequiredByTheClient_ReturnsNull() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Expires = DateTimeOffset.UtcNow;
                 _signature.Algorithm = "hs2019";
 
@@ -88,7 +88,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             
             [Fact]
             public async Task WhenExpiresHeaderHasAValue_AndItIsRequiredByTheClient_ReturnsNull() {
-                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("CUSTOM"), TimeSpan.FromMinutes(1));
+                var client = new Client(_client.Id, _client.Name, new CustomSignatureAlgorithm("CUSTOM"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _signature.Expires = DateTimeOffset.UtcNow;
                 _signature.Algorithm = "hs2019";
 

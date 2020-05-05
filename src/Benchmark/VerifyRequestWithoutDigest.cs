@@ -42,6 +42,7 @@ namespace Benchmark {
                         "HttpMessageSigningSampleHMAC",
                         SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                         TimeSpan.FromMilliseconds(1),
+                        TimeSpan.FromMinutes(1),
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 })
