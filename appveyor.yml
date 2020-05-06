@@ -42,6 +42,8 @@ test_script:
     
     dotnet test src\HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj --framework netcoreapp3.1 /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude="[*.Tests]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage.xml" /p:MergeWith="../coverage-owin.net472.json" /maxcpucount:1
     
+    dotnet test src\Conformance.Tests\Conformance.Tests.csproj --framework netcoreapp3.1 /p:CollectCoverage=false
+    
     dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
     
     $coveralls = ".\tools\csmacnz.coveralls.exe"

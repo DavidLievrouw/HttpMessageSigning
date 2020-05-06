@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.SystemTests.Conformance.Canonicalize {
+namespace Dalion.HttpMessageSigning.Canonicalize {
     public class Tests {
         [Fact]
         public async Task CreatesSignatureString() {

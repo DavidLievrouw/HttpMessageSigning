@@ -46,6 +46,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Conformance", "Conformance"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conformance", "Conformance\Conformance.csproj", "{EBC8247A-7AF2-41CB-8A01-4E8760F50D04}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conformance.Tests", "Conformance.Tests\Conformance.Tests.csproj", "{50D08BE7-73C3-4551-AB2F-EE231A3F2F92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,10 @@ Global
 		{EBC8247A-7AF2-41CB-8A01-4E8760F50D04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBC8247A-7AF2-41CB-8A01-4E8760F50D04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBC8247A-7AF2-41CB-8A01-4E8760F50D04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50D08BE7-73C3-4551-AB2F-EE231A3F2F92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50D08BE7-73C3-4551-AB2F-EE231A3F2F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50D08BE7-73C3-4551-AB2F-EE231A3F2F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50D08BE7-73C3-4551-AB2F-EE231A3F2F92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,6 +120,7 @@ Global
 		{55764E6E-553A-4DDD-B00E-33E860810D6D} = {7F243637-0E5C-451F-9547-D0B75A47204F}
 		{2D1FAE7C-EBB4-41F8-A02E-A1A8F41307AD} = {E3CD7948-4D80-44B5-9304-112C2430C07A}
 		{EBC8247A-7AF2-41CB-8A01-4E8760F50D04} = {DC276B80-28F0-4F88-895C-53AA2E601364}
+		{50D08BE7-73C3-4551-AB2F-EE231A3F2F92} = {DC276B80-28F0-4F88-895C-53AA2E601364}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63BB98B6-3033-441E-9DF6-007C8C6FE0C4}

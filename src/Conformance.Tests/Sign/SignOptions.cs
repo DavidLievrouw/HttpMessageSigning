@@ -1,4 +1,4 @@
-﻿namespace Dalion.HttpMessageSigning.SystemTests.Conformance.Sign {
+﻿namespace Dalion.HttpMessageSigning.Sign {
     public class SignOptions {
         public string Headers { get; set; }
         public string Created { get; set; }

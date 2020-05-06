@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
-        <AssemblyName>Dalion.HttpMessageSigning.Tests</AssemblyName>
+        <AssemblyName>Dalion.HttpMessageSigning.Conformance.Tests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
@@ -50,9 +50,22 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="dalion.local.pfx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+        <None Remove="Keys\koblitzCurve.private" />
+        <EmbeddedResource Include="Keys\koblitzCurve.private" />
+        <None Remove="Keys\koblitzCurve.pub" />
+        <EmbeddedResource Include="Keys\koblitzCurve.pub" />
+        <None Remove="Keys\P256.private" />
+        <EmbeddedResource Include="Keys\P256.private" />
+        <None Remove="Keys\P256.pub" />
+        <EmbeddedResource Include="Keys\P256.pub" />
+        <None Remove="Keys\rsa.private" />
+        <EmbeddedResource Include="Keys\rsa.private" />
+        <None Remove="Keys\rsa.pub" />
+        <EmbeddedResource Include="Keys\rsa.pub" />
+        <None Remove="HttpMessages\default-test.httpMessage" />
+        <EmbeddedResource Include="HttpMessages\default-test.httpMessage" />
+        <None Remove="HttpMessages\basic-request.httpMessage" />
+        <EmbeddedResource Include="HttpMessages\basic-request.httpMessage" />
     </ItemGroup>
 
 </Project>

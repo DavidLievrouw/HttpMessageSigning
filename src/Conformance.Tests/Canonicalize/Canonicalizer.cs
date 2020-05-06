@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.Signing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Dalion.HttpMessageSigning.SystemTests.Conformance.Canonicalize {
+namespace Dalion.HttpMessageSigning.Canonicalize {
     public static class Canonicalizer {
         public static async Task<string> Run(CanonicalizeOptions options) {
             var serviceProvider = new ServiceCollection()

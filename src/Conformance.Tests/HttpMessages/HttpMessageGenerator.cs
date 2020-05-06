@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Text;
 
-namespace Dalion.HttpMessageSigning.SystemTests.Conformance.HttpMessages {
+namespace Dalion.HttpMessageSigning.HttpMessages {
     public static class HttpMessageGenerator {
         public static HttpRequestMessage GenerateMessage(string messageName, DateTimeOffset date) {
             var sb = new StringBuilder();

@@ -6,7 +6,7 @@ using System.Net.Mime;
 using System.Text;
 using Dalion.HttpMessageSigning.Signing;
 
-namespace Dalion.HttpMessageSigning.SystemTests.Conformance.HttpMessages {
+namespace Dalion.HttpMessageSigning.HttpMessages {
     public static class HttpRequestMessageParser {
         private static readonly string[] RestrictedHeaders = {
             "Accept",
