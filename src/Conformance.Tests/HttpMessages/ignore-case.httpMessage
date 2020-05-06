@@ -1,0 +1,5 @@
+POST /foo?param=value&pet=dog HTTP/1.1
+hoSt: example.com
+content-Type: application/json
+DIgest: SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=
+Content-LenGth: 18

@@ -6,5 +6,6 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
         public string Headers { get; set; }
         public string Created { get; set; }
         public string Expires { get; set; }
+        public string Algorithm { get; set; }
     }
 }

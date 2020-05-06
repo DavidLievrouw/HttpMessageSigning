@@ -1,0 +1,4 @@
+GET /basic/request HTTP/1.1
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Macintosh)
+Authorization: Signature keyId="foo",algorithm="rsa",created=1,headers="(created)",signature="test"

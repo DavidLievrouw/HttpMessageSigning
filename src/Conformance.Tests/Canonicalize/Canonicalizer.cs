@@ -15,7 +15,7 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
             string signingString = null;
 
             var signingSettings = new SigningSettings {
-                SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("s3cr37"),
+                SignatureAlgorithm = new CustomSignatureAlgorithm(options.Algorithm ?? "hs2019"),
                 EnableNonce = false,
                 DigestHashAlgorithm = default,
                 AutomaticallyAddRecommendedHeaders = false,
