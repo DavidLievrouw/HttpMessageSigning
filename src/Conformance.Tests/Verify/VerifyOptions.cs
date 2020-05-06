@@ -1,8 +1,8 @@
-﻿using System.Net.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Dalion.HttpMessageSigning.Verify {
     public class VerifyOptions {
-        public HttpRequestMessage Message { get; set; }
+        public HttpRequest Message { get; set; }
         public string Headers { get; set; }
         public string Created { get; set; }
         public string Expires { get; set; }

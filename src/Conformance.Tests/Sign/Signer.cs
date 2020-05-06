@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -7,7 +6,6 @@ using Dalion.HttpMessageSigning.HttpMessages;
 using Dalion.HttpMessageSigning.Keys;
 using Dalion.HttpMessageSigning.Signing;
 using Microsoft.Extensions.DependencyInjection;
-using PemUtils;
 
 namespace Dalion.HttpMessageSigning.Sign {
     public static class Signer {
@@ -19,32 +17,10 @@ namespace Dalion.HttpMessageSigning.Sign {
             
             ISignatureAlgorithm signatureAlgorithm;
             if (string.IsNullOrEmpty(options.KeyType) || options.KeyType.Equals("RSA", StringComparison.OrdinalIgnoreCase)) {
-                RSAParameters rsaPrivateKey;
-                
-                using (var stream = KeyReader.Read(options.PrivateKey)) {
-                    using (var reader = new PemReader(stream)) {
-                        rsaPrivateKey = reader.ReadRsaKey();
-                    }
-                }
-
-                signatureAlgorithm = RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA512, rsaPrivateKey);
+                signatureAlgorithm = RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA512, KeyReader.ReadRSA(options.PrivateKey));
             }
             else if (options.KeyType.Equals("P256", StringComparison.OrdinalIgnoreCase) || options.KeyType.Equals("ECDSA", StringComparison.OrdinalIgnoreCase)) {
-                ECParameters ecPrivateKey;
-                using (var stream = KeyReader.Read(options.PrivateKey)) {
-                    using (var reader = new StreamReader(stream)) {
-                        var fileContents = reader.ReadToEnd();
-                        var lines = fileContents.Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
-                        lines = lines.Skip(1).Take(lines.Length - 2).ToArray();
-                        var pem = string.Join("", lines);
-                        var ecdsa = ECDsa.Create();
-                        var derArray = Convert.FromBase64String(pem);
-                        ecdsa.ImportPkcs8PrivateKey(derArray, out _);
-                        ecPrivateKey = ecdsa.ExportParameters(true);
-                    }
-                }
-
-                signatureAlgorithm = ECDsaSignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA512, ecPrivateKey);
+                signatureAlgorithm = ECDsaSignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA512, KeyReader.ReadECDsa(options.PrivateKey));
             }
             else if (options.KeyType.Equals("HMAC", StringComparison.OrdinalIgnoreCase)) {
                 signatureAlgorithm = SignatureAlgorithm.CreateForSigning(options.PrivateKey, HashAlgorithmName.SHA512);

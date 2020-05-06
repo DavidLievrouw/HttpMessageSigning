@@ -64,6 +64,7 @@
         <EmbeddedResource Include="HttpMessages\default-request.httpMessage" />
         <EmbeddedResource Include="HttpMessages\ignore-case.httpMessage" />
         <EmbeddedResource Include="HttpMessages\multi-value-header-request.httpMessage" />
+        <EmbeddedResource Include="HttpMessages\rsa-signed-request.httpMessage" />
         <EmbeddedResource Include="HttpMessages\zero-length-header-request.httpMessage" />
     </ItemGroup>
 

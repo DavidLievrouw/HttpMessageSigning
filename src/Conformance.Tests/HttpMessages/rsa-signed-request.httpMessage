@@ -1,0 +1,6 @@
+GET /basic/request HTTP/1.1
+Host: example.com
+Content-Type: application/json
+Digest: SHA-256=X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=
+Content-Length: 18
+Authorization: Signature keyId="test",headers="host digest",signature="G/q271XxN9vXgC4/PZj++CIA1tPRIejyrEv+Xji1JunhlVYgNVnMn13TFa47ierVyHZO+5XQV43J9m/n4gbuEwSj87x2fnp0kV82k1VaXmhpiBHaQ123jK9xToynmcIynrkj2MGCCfTotLf1Z4lCP3Eb2G3K76C+npgWNC0I44g="

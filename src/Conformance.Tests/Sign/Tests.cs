@@ -14,6 +14,7 @@ namespace Dalion.HttpMessageSigning.Sign {
         public Tests() {
             _now = DateTimeOffset.Now;
             _options = new SignOptions {
+                Message = HttpMessageGenerator.GenerateMessage("default-request", _now),
                 PrivateKey = "rsa.private",
                 Headers = "digest",
                 KeyType = "rsa",
@@ -23,8 +24,6 @@ namespace Dalion.HttpMessageSigning.Sign {
 
         [Fact]
         public async Task ShouldGenerateABase64EncodedSignatureString() {
-            _options.Message = HttpMessageGenerator.GenerateMessage("default-request", _now);
-
             var signedMessageString = await Signer.Run(_options);
             var signedMessage = HttpRequestMessageParser.Parse(signedMessageString);
             
