@@ -1,5 +1,8 @@
-﻿namespace Dalion.HttpMessageSigning.Sign {
+﻿using System.Net.Http;
+
+namespace Dalion.HttpMessageSigning.Sign {
     public class SignOptions {
+        public HttpRequestMessage Message { get; set; }
         public string Headers { get; set; }
         public string Created { get; set; }
         public string Expires { get; set; }

@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Canonicalize {
     public class Tests {
-        private DateTimeOffset _now;
+        private readonly DateTimeOffset _now;
 
         public Tests() {
             _now = DateTimeOffset.Now;
