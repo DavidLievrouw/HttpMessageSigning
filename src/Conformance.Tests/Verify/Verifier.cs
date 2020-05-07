@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Verify {
                 signatureAlgorithm = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA512, KeyReader.ReadRSA(options.PublicKey));
             }
             else if (options.KeyType.Equals("P256", StringComparison.OrdinalIgnoreCase) || options.KeyType.Equals("ECDSA", StringComparison.OrdinalIgnoreCase)) {
-                signatureAlgorithm = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA512, KeyReader.ReadECDsa(options.PublicKey));
+                signatureAlgorithm = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA512, KeyReader.ReadECDsaPublic(options.PublicKey));
             }
             else if (options.KeyType.Equals("HMAC", StringComparison.OrdinalIgnoreCase)) {
                 signatureAlgorithm = SignatureAlgorithm.CreateForVerification(options.PublicKey, HashAlgorithmName.SHA512);

@@ -21,7 +21,7 @@ namespace Dalion.HttpMessageSigning.Keys {
             }
         }
 
-        public static ECParameters ReadECDsa(string name) {
+        public static ECParameters ReadECDsaPrivate(string name) {
             using (var stream = ReadStream(name)) {
                 using (var reader = new StreamReader(stream)) {
                     var fileContents = reader.ReadToEnd();
@@ -32,6 +32,21 @@ namespace Dalion.HttpMessageSigning.Keys {
                     var derArray = Convert.FromBase64String(pem);
                     ecdsa.ImportPkcs8PrivateKey(derArray, out _);
                     return ecdsa.ExportParameters(true);
+                }
+            }
+        }
+        
+        public static ECParameters ReadECDsaPublic(string name) {
+            using (var stream = ReadStream(name)) {
+                using (var reader = new StreamReader(stream)) {
+                    var fileContents = reader.ReadToEnd();
+                    var lines = fileContents.Split(new[] {'\n', '\r'}, StringSplitOptions.RemoveEmptyEntries);
+                    lines = lines.Skip(1).Take(lines.Length - 2).ToArray();
+                    var pem = string.Join("", lines);
+                    var ecdsa = ECDsa.Create();
+                    var derArray = Convert.FromBase64String(pem);
+                    ecdsa.ImportSubjectPublicKeyInfo(derArray, out _);
+                    return ecdsa.ExportParameters(false);
                 }
             }
         }

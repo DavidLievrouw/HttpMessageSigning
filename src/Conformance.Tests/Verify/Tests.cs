@@ -34,6 +34,7 @@ namespace Dalion.HttpMessageSigning.Verify {
             _options.Message = await HttpMessageGenerator
                 .GenerateMessage("rsa-signed-request", _now)
                 .ToServerSideHttpRequest();
+            _options.KeyType = "rsa";
             _options.PublicKey = "rsa.pub";
 
             var isSuccess = await Verifier.Run(_options);
@@ -46,6 +47,7 @@ namespace Dalion.HttpMessageSigning.Verify {
             _options.Message = await HttpMessageGenerator
                 .GenerateMessage("ecdsa-signed-request", _now)
                 .ToServerSideHttpRequest();
+            _options.KeyType = "ecdsa";
             _options.PublicKey = "koblitzCurve.pub";
 
             var isSuccess = await Verifier.Run(_options);
@@ -58,8 +60,9 @@ namespace Dalion.HttpMessageSigning.Verify {
             _options.Message = await HttpMessageGenerator
                 .GenerateMessage("p256-signed-request", _now)
                 .ToServerSideHttpRequest();
+            _options.KeyType = "ecdsa";
             _options.PublicKey = "p256.pub";
-
+            
             var isSuccess = await Verifier.Run(_options);
 
             isSuccess.Should().BeTrue();
@@ -70,8 +73,9 @@ namespace Dalion.HttpMessageSigning.Verify {
             _options.Message = await HttpMessageGenerator
                 .GenerateMessage("hmac-signed-request", _now)
                 .ToServerSideHttpRequest();
+            _options.KeyType = "hmac";
             _options.PublicKey = "s3cr37";
-
+            
             var isSuccess = await Verifier.Run(_options);
 
             isSuccess.Should().BeTrue();

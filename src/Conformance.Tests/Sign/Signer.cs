@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Sign {
                 signatureAlgorithm = RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA512, KeyReader.ReadRSA(options.PrivateKey));
             }
             else if (options.KeyType.Equals("P256", StringComparison.OrdinalIgnoreCase) || options.KeyType.Equals("ECDSA", StringComparison.OrdinalIgnoreCase)) {
-                signatureAlgorithm = ECDsaSignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA512, KeyReader.ReadECDsa(options.PrivateKey));
+                signatureAlgorithm = ECDsaSignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA512, KeyReader.ReadECDsaPrivate(options.PrivateKey));
             }
             else if (options.KeyType.Equals("HMAC", StringComparison.OrdinalIgnoreCase)) {
                 signatureAlgorithm = SignatureAlgorithm.CreateForSigning(options.PrivateKey, HashAlgorithmName.SHA512);
