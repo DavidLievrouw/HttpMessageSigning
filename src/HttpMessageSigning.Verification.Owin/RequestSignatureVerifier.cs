@@ -37,6 +37,15 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 var eventTask = options.OnSignatureParsed;
                 if (eventTask != null) await eventTask.Invoke(request, signature).ConfigureAwait(false);
                 
+                try {
+                    signature.Validate();
+                }
+                catch (ValidationException ex) {
+                    throw new InvalidSignatureException(
+                        "The signature is invalid. See inner exception.",
+                        ex);
+                }
+                
                 client = await _clientStore.Get(signature.KeyId).ConfigureAwait(false);
 
                 var requestForSigning = request.ToHttpRequestForSigning();
