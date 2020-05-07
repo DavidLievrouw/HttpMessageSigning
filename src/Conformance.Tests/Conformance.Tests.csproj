@@ -53,8 +53,8 @@
     <ItemGroup>
         <EmbeddedResource Include="Keys\koblitzCurve.private" />
         <EmbeddedResource Include="Keys\koblitzCurve.pub" />
-        <EmbeddedResource Include="Keys\P256.private" />
-        <EmbeddedResource Include="Keys\P256.pub" />
+        <EmbeddedResource Include="Keys\p256.private" />
+        <EmbeddedResource Include="Keys\p256.pub" />
         <EmbeddedResource Include="Keys\rsa.private" />
         <EmbeddedResource Include="Keys\rsa.pub" />
         <EmbeddedResource Include="HttpMessages\basic-request.httpMessage" />
@@ -62,8 +62,11 @@
         <EmbeddedResource Include="HttpMessages\created-hmac.httpMessage" />
         <EmbeddedResource Include="HttpMessages\created-rsa.httpMessage" />
         <EmbeddedResource Include="HttpMessages\default-request.httpMessage" />
+        <EmbeddedResource Include="HttpMessages\ecdsa-signed-request.httpMessage" />
+        <EmbeddedResource Include="HttpMessages\hmac-signed-request.httpMessage" />
         <EmbeddedResource Include="HttpMessages\ignore-case.httpMessage" />
         <EmbeddedResource Include="HttpMessages\multi-value-header-request.httpMessage" />
+        <EmbeddedResource Include="HttpMessages\p256-signed-request.httpMessage" />
         <EmbeddedResource Include="HttpMessages\rsa-signed-request.httpMessage" />
         <EmbeddedResource Include="HttpMessages\zero-length-header-request.httpMessage" />
     </ItemGroup>
