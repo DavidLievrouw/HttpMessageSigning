@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Dalion.HttpMessageSigning.Verify {
     public class VerifyOptions {
@@ -7,8 +9,7 @@ namespace Dalion.HttpMessageSigning.Verify {
         public string Created { get; set; }
         public string Expires { get; set; }
         public string PublicKey { get; set; }
-        public string KeyId { get; set; }
         public string KeyType { get; set; }
-        public string Algorithm { get; set; }
+        public Func<HttpRequest, Signature, Task> ModifyParsedSignature { get; set; }
     }
 }

@@ -116,7 +116,7 @@ namespace Dalion.HttpMessageSigning.Sign {
         [Fact]
         public async Task CanSignWithAnP256Key() {
             _options.KeyType = "ecdsa";
-            _options.PrivateKey = "P256.private";
+            _options.PrivateKey = "p256.private";
 
             var signedMessage = await Signer.Run(_options).ToHttpRequestMessage();
 

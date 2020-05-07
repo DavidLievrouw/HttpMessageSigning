@@ -1,14 +1,10 @@
 using System;
-using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.HttpMessages;
 using Dalion.HttpMessageSigning.Keys;
 using Dalion.HttpMessageSigning.Verification;
 using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
-using PemUtils;
 
 namespace Dalion.HttpMessageSigning.Verify {
     public static class Verifier {
@@ -43,13 +39,7 @@ namespace Dalion.HttpMessageSigning.Verify {
             var verifier = serviceProvider.GetRequiredService<IRequestSignatureVerifier>();
 
             var verificationResult = await verifier.VerifySignature(options.Message, new SignedRequestAuthenticationOptions {
-                OnSignatureParsed = (request, signature) => {
-                    if (!string.IsNullOrEmpty(options.Algorithm)) {
-                        signature.Algorithm = options.Algorithm;
-                    }
-
-                    return Task.CompletedTask;
-                }
+                OnSignatureParsed = options.ModifyParsedSignature
             });
 
             return verificationResult is RequestSignatureVerificationResultSuccess;
