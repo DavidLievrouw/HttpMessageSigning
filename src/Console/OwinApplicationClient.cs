@@ -13,7 +13,7 @@ namespace Console {
     public class OwinApplicationClient {
         private const string KeyId = "e0e8dcd638334c409e1b88daf821d135";
         private const string Secret = "G#6l$!D16E2UPoYKu&oL@AjAOj9vipKJTSII%*8iY*q6*MOis2R";
-        private const int Port = 5001;
+        private const int Port = 5000;
         
         public static async Task Run(string[] args) {
             using (var serviceProvider = new ServiceCollection().Configure(ConfigureServices).BuildServiceProvider()) {
