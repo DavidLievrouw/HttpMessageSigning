@@ -5,8 +5,7 @@ namespace Console {
         private static async Task Main(string[] args) {
             //await SampleHMAC.Run(args);
             //await SampleRSA.Run(args);
-            await AspNetCoreWebApplicationClient.Run(args);
-            //await OwinApplicationClient.Run(args);
+            await WebApplicationClient.Run(args);
         }
     }
 }
