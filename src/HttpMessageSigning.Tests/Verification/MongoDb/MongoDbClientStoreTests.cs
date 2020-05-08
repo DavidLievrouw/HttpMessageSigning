@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MongoDB.Bson;
@@ -40,7 +41,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
                 actual.Should().BeEquivalentTo(client, options => options.ComparingByMembers<Client>());
                 actual.SignatureAlgorithm.Should().BeAssignableTo<HMACSignatureAlgorithm>();
-                actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().Secret.Should().Be("s3cr3t");
+                actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().Key.Should().Equal(Encoding.UTF8.GetBytes("s3cr3t"));
                 actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().HashAlgorithm.Should().Be(HashAlgorithmName.SHA384);
             }
 
@@ -102,7 +103,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
                 actual.Should().BeEquivalentTo(client, options => options.ComparingByMembers<Client>());
                 actual.SignatureAlgorithm.Should().BeAssignableTo<HMACSignatureAlgorithm>();
-                actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().Secret.Should().Be("s3cr3t");
+                actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().Key.Should().Equal(Encoding.UTF8.GetBytes("s3cr3t"));
                 actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().HashAlgorithm.Should().Be(HashAlgorithmName.SHA384);
             }
             
@@ -143,7 +144,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 var expected = new Client("c2", "app one", hmac, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(1), new Claim("company", "Dalion"), new Claim("scope", "HttpMessageSigning"));
                 actual.Should().BeEquivalentTo(expected, options => options.ComparingByMembers<Client>());
                 actual.SignatureAlgorithm.Should().BeAssignableTo<HMACSignatureAlgorithm>();
-                actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().Secret.Should().Be("s3cr3t");
+                actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().Key.Should().Equal(Encoding.UTF8.GetBytes("s3cr3t"));
                 actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().HashAlgorithm.Should().Be(HashAlgorithmName.SHA384);
             }
             
@@ -185,7 +186,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 var expected = new Client("c3", "app one", hmac, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(1), new Claim("company", "Dalion"), new Claim("scope", "HttpMessageSigning"));
                 actual.Should().BeEquivalentTo(expected, options => options.ComparingByMembers<Client>());
                 actual.SignatureAlgorithm.Should().BeAssignableTo<HMACSignatureAlgorithm>();
-                actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().Secret.Should().Be("s3cr3t");
+                actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().Key.Should().Equal(Encoding.UTF8.GetBytes("s3cr3t"));
                 actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().HashAlgorithm.Should().Be(HashAlgorithmName.SHA384);
             }
         }

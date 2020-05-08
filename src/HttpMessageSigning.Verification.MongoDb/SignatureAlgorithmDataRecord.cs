@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
+using System.Text;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
@@ -29,7 +30,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     return new SignatureAlgorithmDataRecord {
                         Type = hmac.Name,
                         HashAlgorithm = hmac.HashAlgorithm.Name,
-                        Parameter = hmac.Secret
+                        Parameter = Encoding.UTF8.GetString(hmac.Key)
                     };
                 default:
                     throw new NotSupportedException($"The specified signature algorithm of type {signatureAlgorithm.GetType().Name} cannot be serialized.");

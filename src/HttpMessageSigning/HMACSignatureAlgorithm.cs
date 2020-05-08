@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,15 +9,13 @@ namespace Dalion.HttpMessageSigning {
     /// Represents an HMAC algorithm that is used to sign a request, or to verify a signature.
     /// </summary>
     public class HMACSignatureAlgorithm : ISignatureAlgorithm {
-        private readonly string _algorithmName;
-
         public HMACSignatureAlgorithm(string secret, HashAlgorithmName hashAlgorithm) {
-            Secret = secret ?? throw new ArgumentNullException(nameof(secret));
-            _algorithmName = $"HMAC{hashAlgorithm}";
+            if (secret == null) throw new ArgumentNullException(nameof(secret));
             HashAlgorithm = hashAlgorithm;
+            Key = Encoding.UTF8.GetBytes(secret);
         }
 
-        public string Secret { get; }
+        public byte[] Key { get; }
 
         public string Name => "HMAC";
 
@@ -24,8 +23,7 @@ namespace Dalion.HttpMessageSigning {
 
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
-            using (var hasher = HMAC.Create(_algorithmName)) {
-                hasher.Key = Encoding.UTF8.GetBytes(Secret);
+            using (var hasher = CreateHMAC(HashAlgorithm, Key)) {
                 return hasher.ComputeHash(inputBytes);
             }
         }
@@ -40,6 +38,24 @@ namespace Dalion.HttpMessageSigning {
 
         public void Dispose() {
             // Noop
+        }
+
+        private static readonly IDictionary<HashAlgorithmName, Func<byte[], HMAC>> HMACCreators = new Dictionary<HashAlgorithmName, Func<byte[], HMAC>> {
+            { HashAlgorithmName.MD5, key => new HMACMD5(key)},
+            { HashAlgorithmName.SHA1, key => new HMACSHA1(key)},
+            { HashAlgorithmName.SHA256, key => new HMACSHA256(key)},
+            { HashAlgorithmName.SHA384, key => new HMACSHA384(key)},
+            { HashAlgorithmName.SHA512, key => new HMACSHA512(key)},
+        };
+        
+        private static HMAC CreateHMAC(HashAlgorithmName hashAlgorithmName, byte[] key) {
+            if (!HMACCreators.TryGetValue(hashAlgorithmName, out var creatorFunc)) {
+                var fallback = HMAC.Create($"HMAC{hashAlgorithmName.Name}");
+                fallback.Key = key;
+                return fallback;
+            }
+
+            return creatorFunc(key);
         }
     }
 }
