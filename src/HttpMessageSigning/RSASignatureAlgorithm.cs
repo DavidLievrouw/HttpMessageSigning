@@ -4,12 +4,10 @@ using System.Text;
 
 namespace Dalion.HttpMessageSigning {
     public class RSASignatureAlgorithm : ISignatureAlgorithm {
-        private readonly HashAlgorithm _hasher;
         private readonly RSA _rsa;
 
         public RSASignatureAlgorithm(HashAlgorithmName hashAlgorithm, RSA rsa) {
             HashAlgorithm = hashAlgorithm;
-            _hasher = System.Security.Cryptography.HashAlgorithm.Create(hashAlgorithm.Name);
             _rsa = rsa ?? throw new ArgumentNullException(nameof(rsa));
         }
 
@@ -17,15 +15,16 @@ namespace Dalion.HttpMessageSigning {
 
         public void Dispose() {
             _rsa?.Dispose();
-            _hasher?.Dispose();
         }
 
         public string Name => "RSA";
 
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
-            var hashedData = _hasher.ComputeHash(inputBytes);
-            return _rsa.SignHash(hashedData, HashAlgorithm, RSASignaturePadding.Pkcs1);
+            using (var hasher = System.Security.Cryptography.HashAlgorithm.Create(HashAlgorithm.Name)) {
+                var hashedData = hasher.ComputeHash(inputBytes);
+                return _rsa.SignHash(hashedData, HashAlgorithm, RSASignaturePadding.Pkcs1);
+            }
         }
 
         public bool VerifySignature(string contentToSign, byte[] signature) {
@@ -33,9 +32,10 @@ namespace Dalion.HttpMessageSigning {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
 
             var signedBytes = Encoding.UTF8.GetBytes(contentToSign);
-            var hashedData = _hasher.ComputeHash(signedBytes);
-
-            return _rsa.VerifyHash(hashedData, signature, HashAlgorithm, RSASignaturePadding.Pkcs1);
+            using (var hasher = System.Security.Cryptography.HashAlgorithm.Create(HashAlgorithm.Name)) {
+                var hashedData = hasher.ComputeHash(signedBytes);
+                return _rsa.VerifyHash(hashedData, signature, HashAlgorithm, RSASignaturePadding.Pkcs1);
+            }
         }
 
         public static RSASignatureAlgorithm CreateForSigning(HashAlgorithmName hashAlgorithmName, RSAParameters privateParameters) {

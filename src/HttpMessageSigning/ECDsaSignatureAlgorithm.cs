@@ -4,12 +4,10 @@ using System.Text;
 
 namespace Dalion.HttpMessageSigning {
     public class ECDsaSignatureAlgorithm : ISignatureAlgorithm {
-        private readonly HashAlgorithm _hasher;
         private readonly ECDsa _ecdsa;
 
         public ECDsaSignatureAlgorithm(HashAlgorithmName hashAlgorithm, ECDsa ecdsa) {
             HashAlgorithm = hashAlgorithm;
-            _hasher = System.Security.Cryptography.HashAlgorithm.Create(hashAlgorithm.Name);
             _ecdsa = ecdsa ?? throw new ArgumentNullException(nameof(ecdsa));
         }
 
@@ -17,15 +15,17 @@ namespace Dalion.HttpMessageSigning {
 
         public void Dispose() {
             _ecdsa?.Dispose();
-            _hasher?.Dispose();
         }
 
         public string Name => "ECDsa";
 
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
-            var hashedData = _hasher.ComputeHash(inputBytes);
-            return _ecdsa.SignHash(hashedData);
+
+            using (var hasher = System.Security.Cryptography.HashAlgorithm.Create(HashAlgorithm.Name)) {
+                var hashedData = hasher.ComputeHash(inputBytes);
+                return _ecdsa.SignHash(hashedData);
+            }
         }
 
         public bool VerifySignature(string contentToSign, byte[] signature) {
@@ -33,9 +33,11 @@ namespace Dalion.HttpMessageSigning {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
 
             var signedBytes = Encoding.UTF8.GetBytes(contentToSign);
-            var hashedData = _hasher.ComputeHash(signedBytes);
 
-            return _ecdsa.VerifyHash(hashedData, signature);
+            using (var hasher = System.Security.Cryptography.HashAlgorithm.Create(HashAlgorithm.Name)) {
+                var hashedData = hasher.ComputeHash(signedBytes);
+                return _ecdsa.VerifyHash(hashedData, signature);
+            }
         }
         
         public static ECDsaSignatureAlgorithm CreateForSigning(HashAlgorithmName hashAlgorithmName, ECParameters privateParameters) {
