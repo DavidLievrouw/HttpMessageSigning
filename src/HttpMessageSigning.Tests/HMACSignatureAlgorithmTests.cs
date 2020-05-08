@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using FluentAssertions;
 using Xunit;
 
@@ -31,6 +32,23 @@ namespace Dalion.HttpMessageSigning {
             [Fact]
             public void ReturnsHMAC() {
                 _sut.Name.Should().Be("HMAC");
+            }
+        }
+
+        public class ComputeHash : HMACSignatureAlgorithmTests {
+            [Fact]
+            public void CreatesHash() {
+                var sut = new HMACSignatureAlgorithm("", HashAlgorithmName.SHA384);
+                var payload = "_abc_123_";
+                var actual = sut.ComputeHash(payload);
+                actual.Should().NotBeNull().And.NotBeEmpty();
+            }
+
+            [Fact]
+            public void WhenHashAlgorithmIsNotSupported_ThrowsNotSupportedException() {
+                var sut = new HMACSignatureAlgorithm("s3cr3t", new HashAlgorithmName("unsupporteed"));
+                Action act = () => sut.ComputeHash("payload");
+                act.Should().Throw<NotSupportedException>();
             }
         }
         

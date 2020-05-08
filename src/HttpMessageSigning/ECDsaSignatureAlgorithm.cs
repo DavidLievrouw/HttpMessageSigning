@@ -22,7 +22,7 @@ namespace Dalion.HttpMessageSigning {
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
 
-            using (var hasher = System.Security.Cryptography.HashAlgorithm.Create(HashAlgorithm.Name)) {
+            using (var hasher = HashAlgorithmFactory.Create(HashAlgorithm)) {
                 var hashedData = hasher.ComputeHash(inputBytes);
                 return _ecdsa.SignHash(hashedData);
             }
@@ -34,7 +34,7 @@ namespace Dalion.HttpMessageSigning {
 
             var signedBytes = Encoding.UTF8.GetBytes(contentToSign);
 
-            using (var hasher = System.Security.Cryptography.HashAlgorithm.Create(HashAlgorithm.Name)) {
+            using (var hasher = HashAlgorithmFactory.Create(HashAlgorithm)) {
                 var hashedData = hasher.ComputeHash(signedBytes);
                 return _ecdsa.VerifyHash(hashedData, signature);
             }

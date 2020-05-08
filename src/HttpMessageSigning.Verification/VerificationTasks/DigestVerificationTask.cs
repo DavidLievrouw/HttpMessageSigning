@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
@@ -51,7 +52,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is invalid.");
             }
             
-            using (var hashAlgorithm = System.Security.Cryptography.HashAlgorithm.Create(digestAlgorithmName)) {
+            using (var hashAlgorithm = HashAlgorithmFactory.Create(new HashAlgorithmName(digestAlgorithmName))) {
                 if (hashAlgorithm == null) {
                     return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is currently not supported.");
                 }

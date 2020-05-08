@@ -21,7 +21,7 @@ namespace Dalion.HttpMessageSigning {
 
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
-            using (var hasher = System.Security.Cryptography.HashAlgorithm.Create(HashAlgorithm.Name)) {
+            using (var hasher = HashAlgorithmFactory.Create(HashAlgorithm)) {
                 var hashedData = hasher.ComputeHash(inputBytes);
                 return _rsa.SignHash(hashedData, HashAlgorithm, RSASignaturePadding.Pkcs1);
             }
@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
 
             var signedBytes = Encoding.UTF8.GetBytes(contentToSign);
-            using (var hasher = System.Security.Cryptography.HashAlgorithm.Create(HashAlgorithm.Name)) {
+            using (var hasher = HashAlgorithmFactory.Create(HashAlgorithm)) {
                 var hashedData = hasher.ComputeHash(signedBytes);
                 return _rsa.VerifyHash(hashedData, signature, HashAlgorithm, RSASignaturePadding.Pkcs1);
             }

@@ -1,3 +1,4 @@
+using System;
 using System.Security.Cryptography;
 using FluentAssertions;
 using Xunit;
@@ -26,6 +27,23 @@ namespace Dalion.HttpMessageSigning {
             }
         }
 
+        public class ComputeHash : ECDsaSignatureAlgorithmTests {
+            [Fact]
+            public void CreatesHash() {
+                var sut = new ECDsaSignatureAlgorithm(HashAlgorithmName.SHA384, _ecdsa);
+                var payload = "_abc_123_";
+                var actual = sut.ComputeHash(payload);
+                actual.Should().NotBeNull().And.NotBeEmpty();
+            }
+
+            [Fact]
+            public void WhenHashAlgorithmIsNotSupported_ThrowsNotSupportedException() {
+                var sut = new ECDsaSignatureAlgorithm(new HashAlgorithmName("unsupporteed"), _ecdsa);
+                Action act = () => sut.ComputeHash("payload");
+                act.Should().Throw<NotSupportedException>();
+            }
+        }
+        
         public class VerifySignature : ECDsaSignatureAlgorithmTests {
             [Fact]
             public void CanVerifyValidSignature() {

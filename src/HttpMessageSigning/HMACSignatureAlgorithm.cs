@@ -51,6 +51,7 @@ namespace Dalion.HttpMessageSigning {
         private static HMAC CreateHMAC(HashAlgorithmName hashAlgorithmName, byte[] key) {
             if (!HMACCreators.TryGetValue(hashAlgorithmName, out var creatorFunc)) {
                 var fallback = HMAC.Create($"HMAC{hashAlgorithmName.Name}");
+                if (fallback == null) throw new NotSupportedException($"The specified hash algorithm '{hashAlgorithmName.Name}' is not supported.");
                 fallback.Key = key;
                 return fallback;
             }
