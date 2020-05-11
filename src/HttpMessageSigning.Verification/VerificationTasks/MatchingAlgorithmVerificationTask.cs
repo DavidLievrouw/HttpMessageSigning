@@ -36,11 +36,11 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified signature algorithm ({signature.Algorithm}) is not supported.");
             }
 
-            if (!client.SignatureAlgorithm.Name.Equals(algorithmParts[0], StringComparison.InvariantCultureIgnoreCase)) {
+            if (!client.SignatureAlgorithm.Name.Equals(algorithmParts[0], StringComparison.OrdinalIgnoreCase)) {
                 return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified signature algorithm ({algorithmParts[0]}) does not match the registered signature algorithm for the client with id {client.Id}.");
             }
 
-            if (!client.SignatureAlgorithm.HashAlgorithm.Name.Equals(algorithmParts[1], StringComparison.InvariantCultureIgnoreCase)) {
+            if (!client.SignatureAlgorithm.HashAlgorithm.Name.Equals(algorithmParts[1], StringComparison.OrdinalIgnoreCase)) {
                 return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified hash algorithm ({algorithmParts[1]}) does not match the registered hash algorithm for the client with id {client.Id}.");
             }
 

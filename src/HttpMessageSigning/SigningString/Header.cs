@@ -60,7 +60,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             var nameAndValues = new List<string>();
             if (!string.IsNullOrEmpty(value)) {
-                var separatorIndex = value.IndexOf(": ", StringComparison.InvariantCulture);
+                var separatorIndex = value.IndexOf(": ", StringComparison.Ordinal);
                 if (separatorIndex < 0 || separatorIndex >= value.Length - 1) {
                     nameAndValues.Add(value);
                 }
