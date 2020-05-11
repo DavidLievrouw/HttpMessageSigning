@@ -23,7 +23,9 @@ This repository is a C# implementation of that specification.
 
 | Package | NuGet status |
 | --- | --- |
+| `Dalion.HttpMessageSigning` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/) |
 | `Dalion.HttpMessageSigning.Signing` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) |
+| `Dalion.HttpMessageSigning.Verification` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) |
 | `Dalion.HttpMessageSigning.Verification.AspNetCore` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) |
 | `Dalion.HttpMessageSigning.Verification.Owin` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) |
 | `Dalion.HttpMessageSigning.Verification.MongoDb` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) |
