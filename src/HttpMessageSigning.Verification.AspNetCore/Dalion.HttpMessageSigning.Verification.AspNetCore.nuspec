@@ -27,8 +27,8 @@
     </dependencies>
   </metadata>
   <files>
+    <file src="bin\$configuration$\netcoreapp2.1\Dalion.HttpMessageSigning.Verification.AspNetCore*.*" target="lib\netcoreapp2.1" />
     <file src="bin\$configuration$\netcoreapp3.1\Dalion.HttpMessageSigning.Verification.AspNetCore*.*" target="lib\netcoreapp3.1" />
-    <file src="bin\$configuration$\netcoreapp2.2\Dalion.HttpMessageSigning.Verification.AspNetCore*.*" target="lib\netcoreapp2.2" />
     <file src="..\..\dalion128.png" target="images" />
   </files>
 </package>

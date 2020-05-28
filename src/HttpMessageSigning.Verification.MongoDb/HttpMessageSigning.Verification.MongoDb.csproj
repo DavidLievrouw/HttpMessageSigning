@@ -56,7 +56,7 @@
         <Message Text="The $(Product) product version for $(TargetFramework) is '$(ProductVersion)'." Importance="High" />
     </Target>
 
-    <Target Name="PackNuGetPackages" AfterTargets="AfterBuild" Condition="'$(IsPublishing)' == 'true'">
+    <Target Name="PackNuGetPackages" AfterTargets="AfterBuild" Condition="'$(IsPublishing)' == 'true' And '$(SkipNuGetPack)' != 'true'">
         <PropertyGroup>
             <PackagePublishDir Condition="'$(PackagePublishDir)'==''">$(MSBuildThisFileDirectory)bin\Packages\</PackagePublishDir>
         </PropertyGroup>
