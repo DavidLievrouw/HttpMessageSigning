@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     [Collection("MongoDbCollection")]
     public class MongoIntegrationTest {
         protected readonly IMongoDatabase Database;

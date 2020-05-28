@@ -1,7 +1,7 @@
 ﻿using System;
 using Mongo2Go;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class MongoDbBuilder : IDisposable {
         private string _databaseName;
 

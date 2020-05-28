@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class MongoSetup : IDisposable {
         private readonly MongoDbBuilder _mongoDbBuilder;
 

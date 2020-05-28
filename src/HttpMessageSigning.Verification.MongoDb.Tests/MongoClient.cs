@@ -1,6 +1,6 @@
 ﻿﻿using MongoDB.Driver;
 
- namespace Dalion.HttpMessageSigning {
+ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class MongoClient {
         public static IMongoClient Create(string connectionString) {
             var mongoUrl = new MongoUrl(connectionString);
