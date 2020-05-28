@@ -21,7 +21,7 @@
         <dependency id="Microsoft.Extensions.Primitives" version="[3.1.2,)" />
       </group>
       <group targetFramework="netcoreapp2.1">
-        <dependency id="Microsoft.Extensions.Primitives" version="[2.1.6,)" />
+        <dependency id="Microsoft.Extensions.Primitives" version="[2.1.6,2.2.0)" />
       </group>
       <group targetFramework="netcoreapp3.1">
         <dependency id="Microsoft.Extensions.Primitives" version="[3.1.2,)" />
