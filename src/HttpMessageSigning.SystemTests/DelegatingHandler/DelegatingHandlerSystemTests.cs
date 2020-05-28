@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Dalion.HttpMessageSigning.SystemTests.DelegatingHandler {
+namespace Dalion.HttpMessageSigning.DelegatingHandler {
     public class DelegatingHandlerSystemTests : IDisposable {
         private readonly ITestOutputHelper _output;
         private readonly ServiceProvider _serviceProvider;

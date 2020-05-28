@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conformance", "Conformance\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conformance.Tests", "Conformance.Tests\Conformance.Tests.csproj", "{50D08BE7-73C3-4551-AB2F-EE231A3F2F92}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.SystemTests", "HttpMessageSigning.SystemTests\HttpMessageSigning.SystemTests.csproj", "{148306C9-6A80-41CF-A4F4-888316CAA24D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,6 +112,10 @@ Global
 		{50D08BE7-73C3-4551-AB2F-EE231A3F2F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50D08BE7-73C3-4551-AB2F-EE231A3F2F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50D08BE7-73C3-4551-AB2F-EE231A3F2F92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{148306C9-6A80-41CF-A4F4-888316CAA24D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{148306C9-6A80-41CF-A4F4-888316CAA24D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{148306C9-6A80-41CF-A4F4-888316CAA24D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{148306C9-6A80-41CF-A4F4-888316CAA24D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

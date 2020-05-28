@@ -15,7 +15,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.SystemTests.Nonce {
+namespace Dalion.HttpMessageSigning.Nonce {
     public class NonceSystemTests : IDisposable {
         private readonly ServiceProvider _serviceProvider;
         private readonly IRequestSignerFactory _requestSignerFactory;

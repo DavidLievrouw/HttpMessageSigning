@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Dalion.HttpMessageSigning.SystemTests {
+namespace Dalion.HttpMessageSigning {
     public static partial class Extensions {
         public static async Task<HttpRequest> ToServerSideHttpRequest(this HttpRequestMessage clientRequest) {
             if (clientRequest == null) return null;

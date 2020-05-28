@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning {
-    public class FakeDelegatingHandler : DelegatingHandler {
+    public class FakeDelegatingHandler : System.Net.Http.DelegatingHandler {
         public FakeDelegatingHandler(HttpResponseMessage responseToReturn) {
             ResponseToReturn = responseToReturn;
         }

@@ -5,7 +5,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dalion.HttpMessageSigning.SystemTests.DelegatingHandler {
+namespace Dalion.HttpMessageSigning.DelegatingHandler {
     internal class SenderService {
         private readonly HttpClient _httpClient;
         

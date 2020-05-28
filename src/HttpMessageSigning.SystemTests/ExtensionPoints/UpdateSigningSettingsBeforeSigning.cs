@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Dalion.HttpMessageSigning.SystemTests.ExtensionPoints {
+namespace Dalion.HttpMessageSigning.ExtensionPoints {
     public class UpdateSigningSettingsBeforeSigning : IDisposable {
         private readonly ITestOutputHelper _output;
         private readonly ServiceProvider _serviceProvider;
