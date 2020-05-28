@@ -12,7 +12,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         private readonly MongoDatabaseClientProvider _mongoDatabaseClientProvider;
 
         public MongoDbNonceStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
-            _collectionName = "nonces";
+            _collectionName = "nonces_" + Guid.NewGuid();
             _mongoDatabaseClientProvider = new MongoDatabaseClientProvider(Database);
             _sut = new MongoDbNonceStore(_mongoDatabaseClientProvider, _collectionName);
             

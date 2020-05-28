@@ -1,8 +1,4 @@
-#if NETCORE
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     internal static class TestModels {
@@ -21,4 +17,3 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         };
     }
 }
-#endif

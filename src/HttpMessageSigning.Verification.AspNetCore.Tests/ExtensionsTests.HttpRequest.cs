@@ -1,4 +1,3 @@
-#if NETCORE
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +11,7 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public partial class ExtensionsTests {
-        public class HttpRequest : ExtensionTests {
+        public class HttpRequest : ExtensionsTests {
             public class ToRequestForSigning : HttpRequest {
                 private readonly Microsoft.AspNetCore.Http.HttpRequest _httpRequest;
                 private readonly Signature _signature;
@@ -220,4 +219,3 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         }
     }
 }
-#endif

@@ -1,4 +1,3 @@
-#if NETCORE
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
@@ -310,4 +309,3 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         }
     }
 }
-#endif

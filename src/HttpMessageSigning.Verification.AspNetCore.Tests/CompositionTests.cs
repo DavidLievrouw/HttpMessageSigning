@@ -1,4 +1,4 @@
-﻿#if NETCORE
+﻿
 using System;
 using System.Security.Cryptography;
 using FluentAssertions;
@@ -35,4 +35,3 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         }
     }
 }
-#endif

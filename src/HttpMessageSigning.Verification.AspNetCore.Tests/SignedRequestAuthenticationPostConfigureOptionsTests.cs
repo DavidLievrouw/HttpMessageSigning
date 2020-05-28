@@ -1,4 +1,3 @@
-#if NETCORE
 using System;
 using FluentAssertions;
 using Xunit;
@@ -54,4 +53,3 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         }
     }
 }
-#endif
