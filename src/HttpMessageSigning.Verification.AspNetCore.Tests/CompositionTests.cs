@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Security.Cryptography;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;

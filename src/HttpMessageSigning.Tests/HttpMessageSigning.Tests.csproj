@@ -49,14 +49,12 @@
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
-        <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
-        <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='net472'">
@@ -68,8 +66,6 @@
     <ItemGroup>
         <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
         <ProjectReference Include="..\HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj" />
-        <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
-        <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
     </ItemGroup>
 
 </Project>
