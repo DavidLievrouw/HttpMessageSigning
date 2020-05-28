@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFrameworks>netstandard2.0;net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Signing</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Signing</RootNamespace>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -17,11 +17,29 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     </ItemGroup>
+    
+    <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
+    </ItemGroup>
 
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
+    </ItemGroup>
+    
     <ItemGroup>
         <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
     </ItemGroup>
