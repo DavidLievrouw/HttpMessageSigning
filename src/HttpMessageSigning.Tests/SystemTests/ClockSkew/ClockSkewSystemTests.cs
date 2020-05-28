@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETCORE
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
@@ -211,3 +212,4 @@ namespace Dalion.HttpMessageSigning.SystemTests.ClockSkew {
         }
     }
 }
+#endif

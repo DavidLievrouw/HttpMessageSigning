@@ -1,3 +1,4 @@
+#if NETCORE
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -20,3 +21,4 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         };
     }
 }
+#endif

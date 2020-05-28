@@ -81,7 +81,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public void WhenHashAlgorithmIsNotSupported_ThrowsNotSupportedException() {
-                _httpRequest.Content = new StringContent("abc123", Encoding.UTF8, MediaTypeNames.Application.Json);
+                _httpRequest.Content = new StringContent("abc123", Encoding.UTF8, "application/json");
 
                 _settings.DigestHashAlgorithm = new HashAlgorithmName("Unsupported");
 

@@ -1,3 +1,4 @@
+#if NETCORE
 using System;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -238,3 +239,4 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         }
     }
 }
+#endif

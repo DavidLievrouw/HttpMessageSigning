@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification {
     public partial class ExtensionsTests {
-        public class ToTask : AspNetCore.ExtensionsTests {
+        public class ToTask : ExtensionsTests {
             [Fact]
             public async Task ReturnsSpecifiedValueWrappedInTask() {
                 var value = "TheValue";

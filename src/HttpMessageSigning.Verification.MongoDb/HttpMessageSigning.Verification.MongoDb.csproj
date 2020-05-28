@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFrameworks>netstandard2.0;net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.MongoDb</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification.MongoDb</RootNamespace>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -21,11 +21,26 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
     </ItemGroup>
 
+    <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+    </ItemGroup>
+    
     <Target Name="InitVersion" BeforeTargets="BeforeBuild">
         <ReadLinesFromFile File="..\..\version.txt">
             <Output TaskParameter="Lines" PropertyName="PackageVersion" />

@@ -1,3 +1,4 @@
+#if NETCORE
 using System;
 using System.Net.Http;
 using System.Security.Claims;
@@ -84,3 +85,4 @@ namespace Dalion.HttpMessageSigning.SystemTests.ExtensionPoints {
         }
     }
 }
+#endif

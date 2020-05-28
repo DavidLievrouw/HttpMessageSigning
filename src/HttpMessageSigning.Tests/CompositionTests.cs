@@ -1,3 +1,4 @@
+#if NETCORE
 using System;
 using System.Security.Cryptography;
 using Dalion.HttpMessageSigning.Signing;
@@ -36,3 +37,4 @@ namespace Dalion.HttpMessageSigning {
         }
     }
 }
+#endif
