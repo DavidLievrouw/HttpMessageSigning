@@ -1,5 +1,4 @@
-﻿#if NETCORE
-using System;
+﻿using System;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -176,4 +175,3 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
         }
     }
 }
-#endif

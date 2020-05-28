@@ -1,4 +1,3 @@
-#if NETCORE
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -32,4 +31,3 @@ namespace Dalion.HttpMessageSigning {
         }
     }
 }
-#endif

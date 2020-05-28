@@ -1,5 +1,4 @@
-﻿#if NETCORE
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -174,4 +173,3 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
         }
     }
 }
-#endif

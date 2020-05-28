@@ -1,5 +1,4 @@
-﻿#if NETCORE
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
@@ -182,4 +181,3 @@ namespace Dalion.HttpMessageSigning.Nonce {
         }
     }
 }
-#endif

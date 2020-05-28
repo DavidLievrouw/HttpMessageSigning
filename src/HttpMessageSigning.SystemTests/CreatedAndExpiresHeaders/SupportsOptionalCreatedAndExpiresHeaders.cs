@@ -1,4 +1,3 @@
-#if NETCORE
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -123,4 +122,3 @@ namespace Dalion.HttpMessageSigning.CreatedAndExpiresHeaders {
         }
     }
 }
-#endif
