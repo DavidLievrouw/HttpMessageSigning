@@ -72,9 +72,11 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public void WhenItemIsNotFound_ThrowsInvalidClientException() {
-                Func<Task> act = () => _sut.Get("IDontExist");
-                act.Should().Throw<InvalidClientException>();
+            public void WhenItemIsNotFound_ReturnsNull() {
+                Client actual = null;
+                Func<Task> act = async () => actual = await _sut.Get("IDontExist");
+                act.Should().NotThrow();
+                actual.Should().BeNull();
             }
 
             [Fact]
@@ -110,7 +112,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public void ClearsEntries() {
+            public async Task ClearsEntries() {
                 var entries = new[] {
                     new Client((KeyId) "entry1", "Unit test app 1", A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new Claim("c1", "v1")),
                     new Client((KeyId) "entry2", "Unit test app 2", A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new Claim("c1", "v1"))
@@ -119,8 +121,8 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var sut = new InMemoryClientStore(entries);
                 sut.Dispose();
 
-                Func<Task> act = () => sut.Get("entry1");
-                act.Should().Throw<InvalidClientException>();
+                var actual = await sut.Get("entry1");
+                actual.Should().BeNull();
             }
         }
     }

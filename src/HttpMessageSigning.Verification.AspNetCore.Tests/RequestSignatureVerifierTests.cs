@@ -190,9 +190,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
                     .Returns(_signature);
 
-                var failure = new InvalidClientException("Don't know that client.");
                 A.CallTo(() => _clientStore.Get(_signature.KeyId))
-                    .Throws(failure);
+                    .Returns((Client) null);
 
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
@@ -202,7 +201,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
                 actual.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("INVALID_CLIENT");
-                actual.As<RequestSignatureVerificationResultFailure>().Failure.Exception.Should().Be(failure);
+                actual.As<RequestSignatureVerificationResultFailure>().Failure.Exception.Should().BeNull();
             }
             
             [Fact]

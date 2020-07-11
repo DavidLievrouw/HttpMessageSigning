@@ -54,8 +54,6 @@ namespace Dalion.HttpMessageSigning.Verification {
             
             var match = _entries.FirstOrDefault(_ => _.Id == clientId);
 
-            if (match == null) throw new InvalidClientException($"No {nameof(Client)}s with id '{clientId}' are registered in the server store.");
-
             return Task.FromResult(match);
         }
 

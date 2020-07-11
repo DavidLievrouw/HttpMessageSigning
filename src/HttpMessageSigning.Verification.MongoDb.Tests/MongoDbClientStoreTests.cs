@@ -88,9 +88,11 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             }
 
             [Fact]
-            public void WhenClientIsNotFound_ThrowsInvalidClientException() {
-                Func<Task> act = () => _sut.Get("IDontExist");
-                act.Should().Throw<InvalidClientException>();
+            public void WhenClientIsNotFound_ReturnsNull() {
+                Client actual = null;
+                Func<Task> act = async () => actual = await _sut.Get("IDontExist");
+                act.Should().NotThrow();
+                actual.Should().BeNull();
             }
 
             [Fact]

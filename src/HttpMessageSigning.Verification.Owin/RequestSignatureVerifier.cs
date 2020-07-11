@@ -47,7 +47,12 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 }
                 
                 client = await _clientStore.Get(signature.KeyId).ConfigureAwait(false);
-
+                if (client == null) {
+                    var failure = SignatureVerificationFailure.InvalidClient($"No {nameof(Client)}s with id '{signature.KeyId}' are registered in the server store.");
+                    _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
+                    return new RequestSignatureVerificationResultFailure(client, signature, failure);
+                }
+                
                 var requestForSigning = request.ToHttpRequestForSigning();
                 var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, signature, client).ConfigureAwait(false);
 
@@ -64,11 +69,6 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 }
 
                 return result;
-            }
-            catch (InvalidClientException ex) {
-                var failure = SignatureVerificationFailure.InvalidClient(ex.Message, ex);
-                _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
-                return new RequestSignatureVerificationResultFailure(client, signature, failure);
             }
             catch (InvalidSignatureException ex) {
                 var failure = SignatureVerificationFailure.InvalidSignature(ex.Message, ex);
