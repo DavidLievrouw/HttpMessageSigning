@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 
@@ -64,18 +65,28 @@ namespace Dalion.HttpMessageSigning {
         /// </summary>
         public RequestSigningEvents Events { get; set; } = new RequestSigningEvents();
         
-        void IValidatable.Validate() {
-            Validate();
+        /// <summary>
+        ///     Validates the properties of this instance, and throws an <see cref="ValidationException" /> when any of them have invalid values.
+        /// </summary>
+        public void Validate() {        
+            var error = GetValidationErrors().FirstOrDefault();
+            if (error != null) throw new ValidationException(error.Message);
         }
-
-        internal void Validate() {
-            if (KeyId == KeyId.Empty) throw new ValidationException($"The signing settings do not specify a valid {nameof(KeyId)}.");
-            if (SignatureAlgorithm == null) throw new ValidationException($"The signing settings do not specify a valid {nameof(SignatureAlgorithm)}.");
-            if (Expires <= TimeSpan.Zero) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(Expires)}.");
-            if (string.IsNullOrEmpty(AuthorizationScheme)) throw new ValidationException($"The signing settings do not specify a valid value for {nameof(AuthorizationScheme)}.");
-            if (Headers == null) throw new ValidationException($"{nameof(Headers)} cannot be unspecified (null).");
-            if (!Headers.Any()) throw new ValidationException($"{nameof(Headers)} cannot be unspecified empty.");
-            if (!SupportedSignatureAlgorithmNames.Contains(SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase)) throw new ValidationException($"The specified signature algorithm ({SignatureAlgorithm.Name}) is not supported.");
+        
+        /// <summary>
+        ///     Validates the properties of this instance, and returns a list of validation errors.
+        /// </summary>
+        /// <returns>The list with validation errors, or an empty list, when this instance is valid.</returns>
+        public IEnumerable<ValidationError> GetValidationErrors() {
+            var errors = new List<ValidationError>();
+            if (KeyId == KeyId.Empty) errors.Add(new ValidationError(nameof(KeyId), $"The signing settings do not specify a valid {nameof(KeyId)}."));
+            if (SignatureAlgorithm == null) errors.Add(new ValidationError(nameof(SignatureAlgorithm), $"The signing settings do not specify a valid {nameof(SignatureAlgorithm)}."));
+            if (SignatureAlgorithm != null && !SupportedSignatureAlgorithmNames.Contains(SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase)) errors.Add(new ValidationError(nameof(SignatureAlgorithm), $"The specified signature algorithm ({SignatureAlgorithm.Name}) is not supported."));
+            if (Expires <= TimeSpan.Zero) errors.Add(new ValidationError(nameof(Expires), $"The signing settings do not specify a valid value for {nameof(Expires)}."));
+            if (string.IsNullOrEmpty(AuthorizationScheme)) errors.Add(new ValidationError(nameof(AuthorizationScheme), $"The signing settings do not specify a valid value for {nameof(AuthorizationScheme)}."));
+            if (Headers == null) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified (null)."));
+            if (Headers != null && !Headers.Any()) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified empty."));
+            return errors;
         }
 
         public void Dispose() {

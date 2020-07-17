@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -108,6 +109,90 @@ namespace Dalion.HttpMessageSigning {
             }
         }
 
+        public class GetValidationErrors : SigningSettingsTests {
+            [Fact]
+            public void IsIValidatable() {
+                Action act = () => ((IValidatable)_sut).GetValidationErrors();
+                act.Should().NotThrow();
+            }
+            
+            [Fact]
+            public void WhenKeyIdIsEmpty_IsInvalid() {
+                _sut.KeyId = KeyId.Empty;
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.KeyId));
+            }
+
+            [Fact]
+            public void WhenNoSignatureAlgorithmIsSpecified_IsInvalid() {
+                _sut.SignatureAlgorithm = null;
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.SignatureAlgorithm));
+            }
+
+            [Fact]
+            public void WhenHeadersIsNull_IsInvalid() {
+                _sut.Headers = null;
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.Headers));
+            }
+
+            [Fact]
+            public void WhenHeadersIsEmpty_IsInvalid() {
+                _sut.Headers = Array.Empty<HeaderName>();
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.Headers));
+            }
+
+            [Fact]
+            public void WhenExpiresIsNegative_IsInvalid() {
+                _sut.Expires = TimeSpan.FromSeconds(-1);
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.Expires));
+            }
+
+            [Fact]
+            public void WhenExpiresIsZero_IsInvalid() {
+                _sut.Expires = TimeSpan.Zero;
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.Expires));
+            }
+
+            [Fact]
+            public void WhenEverythingIsValid_IsValid() {
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNull().And.BeEmpty();
+            }
+            
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void GivenNullOrEmptyAuthorizationScheme_IsInvalid(string nullOrEmpty) {
+                _sut.AuthorizationScheme = nullOrEmpty;
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.AuthorizationScheme));
+            }
+
+            [Theory]
+            [InlineData("unknown")]
+            [InlineData("unknown-sha256")]
+            [InlineData("ec25519")]
+            [InlineData("ec25519-sha256")]
+            public void GivenUnsupportedSignatureAlgorithm_IsInvalid(string unsupportedAlgorithm) {
+                _sut.SignatureAlgorithm = new CustomSignatureAlgorithm(unsupportedAlgorithm);
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.SignatureAlgorithm));
+            }
+        }
+        
         public class Dispose : SigningSettingsTests {
             public Dispose() {
                 _sut.SignatureAlgorithm = A.Fake<ISignatureAlgorithm>();

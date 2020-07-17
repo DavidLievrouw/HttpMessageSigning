@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using FluentAssertions;
 using Xunit;
 
@@ -62,6 +63,65 @@ namespace Dalion.HttpMessageSigning {
             public void WhenEverythingIsValid_DoesNotThrow() {
                 Action act = () => _sut.Validate();
                 act.Should().NotThrow();
+            }
+        }
+        
+        public class GetValidationErrors : SignatureTests {
+            [Fact]
+            public void IsIValidatable() {
+                Action act = () => ((IValidatable)_sut).GetValidationErrors();
+                act.Should().NotThrow();
+            }
+            
+            [Fact]
+            public void GivenEmptyKeyId_IsInvalid() {
+                _sut.KeyId = KeyId.Empty;
+
+                var actual = _sut.GetValidationErrors().ToList();
+                
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.KeyId));
+            }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void GivenNullOrEmptySignatureString_IsInvalid(string nullOrEmpty) {
+                _sut.String = nullOrEmpty;
+
+                var actual = _sut.GetValidationErrors().ToList();
+                
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.String));
+            }
+
+            [Fact]
+            public void WhenHeadersIsNull_IsInvalid() {
+                _sut.Headers = null;
+
+                var actual = _sut.GetValidationErrors().ToList();
+                
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.Headers));
+            }
+
+            [Fact]
+            public void WhenHeadersIsEmpty_IsInvalid() {
+                _sut.Headers = Array.Empty<HeaderName>();
+
+                var actual = _sut.GetValidationErrors().ToList();
+                
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.Headers));
+            }
+            
+            [Fact]
+            public void WhenEverythingIsValid_IsValid() {
+                Action act = () => _sut.Validate();
+
+                var actual = _sut.GetValidationErrors().ToList();
+                
+                actual.Should().NotBeNull().And.BeEmpty();
             }
         }
 
