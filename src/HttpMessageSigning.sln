@@ -36,11 +36,11 @@ ProjectSection(SolutionItems) = preProject
 	..\.gitignore = ..\.gitignore
 	..\appveyor.yml = ..\appveyor.yml
 	..\coverage.cmd = ..\coverage.cmd
-	..\publish.cmd = ..\publish.cmd
 	..\README.md = ..\README.md
 	..\test.cmd = ..\test.cmd
 	..\version.txt = ..\version.txt
 	..\push.cmd = ..\push.cmd
+	..\build.cmd = ..\build.cmd
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Conformance", "Conformance", "{DC276B80-28F0-4F88-895C-53AA2E601364}"

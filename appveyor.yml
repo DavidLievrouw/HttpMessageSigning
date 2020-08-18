@@ -22,43 +22,17 @@ build_script:
     
     dotnet restore ./src/$env:PRODUCT.sln
     
-    dotnet publish ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT/net472" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
+    dotnet build ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
     
-    dotnet publish ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration Release --framework netcoreapp2.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT/netcoreapp2.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
+    dotnet build ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
     
-    dotnet publish ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration Release --framework netcoreapp3.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT/netcoreapp3.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
+    dotnet build ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
     
-    dotnet publish ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="false" /p:ProductVersion="$ProductVersion"
-  
-    dotnet publish ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Signing/net472" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
+    dotnet build ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
     
-    dotnet publish ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration Release --framework netcoreapp2.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Signing/netcoreapp2.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
+    dotnet build ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
     
-    dotnet publish ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration Release --framework netcoreapp3.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Signing/netcoreapp3.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
-    
-    dotnet publish ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Signing/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="false" /p:ProductVersion="$ProductVersion"
-  
-    dotnet publish ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification/net472" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
-    
-    dotnet publish ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration Release --framework netcoreapp2.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification/netcoreapp2.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
-    
-    dotnet publish ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration Release --framework netcoreapp3.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification/netcoreapp3.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
-    
-    dotnet publish ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="false" /p:ProductVersion="$ProductVersion"
-  
-    dotnet publish ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration Release --framework netcoreapp2.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.AspNetCore/netcoreapp2.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
-    
-    dotnet publish ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration Release --framework netcoreapp3.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.AspNetCore/netcoreapp3.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="false" /p:ProductVersion="$ProductVersion"
-  
-    dotnet publish ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.MongoDb/net472" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
-    
-    dotnet publish ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration Release --framework netcoreapp2.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.MongoDb/netcoreapp2.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
-    
-    dotnet publish ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration Release --framework netcoreapp3.1 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.MongoDb/netcoreapp3.1" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="true" /p:ProductVersion="$ProductVersion"
-    
-    dotnet publish ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration Release --framework netstandard2.0 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.MongoDb/netstandard2.0" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="false" /p:ProductVersion="$ProductVersion"
-  
-    dotnet publish ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration Release --framework net472 /p:IsPublishing="true" /p:PublishDir="$env:DISTPATH/$env:PRODUCT.Verification.Owin/net472" /p:PackagePublishDir="$env:DISTPATH/NuGetPackages" /p:SkipNuGetPack="false" /p:ProductVersion="$ProductVersion"
+    dotnet build ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
 
 test_script:
 - ps: >-
