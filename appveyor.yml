@@ -22,17 +22,17 @@ build_script:
     
     dotnet restore ./src/$env:PRODUCT.sln
     
-    dotnet build ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
+    dotnet build ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
     
-    dotnet build ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
+    dotnet build ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
     
-    dotnet build ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
+    dotnet build ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
     
-    dotnet build ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
+    dotnet build ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
     
-    dotnet build ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
+    dotnet build ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
     
-    dotnet build ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
+    dotnet build ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
 
 test_script:
 - ps: >-
@@ -83,6 +83,6 @@ test_script:
     & $coveralls --opencover -i src\coverage.xml --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_JOB_ID
     
 artifacts:
-- path: ./dist
+- path: ./dist/{configuration}
   name: dist
 deploy: off
