@@ -12,6 +12,8 @@
     
     <PropertyGroup>
         <PackageId>Dalion.HttpMessageSigning</PackageId>
+        <PackageIconUrl>https://dalion.eu/dalion128.png</PackageIconUrl>
+        <PackageIcon>dalion128.png</PackageIcon>
         <Company>Dalion</Company>
         <Description>Core library of the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
         <Product>Dalion.HttpMessageSigning</Product>
@@ -31,6 +33,13 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GenerateNuspecDependsOn>InitVersion</GenerateNuspecDependsOn>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\dalion128.png">
+            <PackagePath>\</PackagePath>
+            <Pack>true</Pack>
+        </None>
+    </ItemGroup>
     
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />

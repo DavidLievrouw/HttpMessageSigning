@@ -4,37 +4,62 @@
         <TargetFrameworks>netstandard2.0;net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification</RootNamespace>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <Company>Dalion</Company>
-        <Description>Signature verification extensions for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
-        <Product>Dalion.HttpMessageSigning.Verification</Product>
-        <Title>Dalion.HttpMessageSigning.Verification</Title>
         <DebugType>portable</DebugType>
         <DebugSymbols>true</DebugSymbols>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     </PropertyGroup>
+    
+    <PropertyGroup>
+        <PackageId>Dalion.HttpMessageSigning.Verification</PackageId>
+        <PackageIconUrl>https://dalion.eu/dalion128.png</PackageIconUrl>
+        <PackageIcon>dalion128.png</PackageIcon>
+        <Company>Dalion</Company>
+        <Description>HTTP request verification extensions for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
+        <Product>Dalion.HttpMessageSigning.Verification</Product>
+        <Title>Dalion.HttpMessageSigning.Verification</Title>
+        <Company>Dalion</Company>
+        <Authors>David Lievrouw</Authors>
+        <Owners>Dalion</Owners>
+        <Copyright>Copyright (c) $([System.DateTime]::Now.ToString(yyyy)), David Lievrouw</Copyright>
+        <PackageTags>signing http messages verification ietf cavage lievrouw dalion</PackageTags>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageProjectUrl>https://github.com/DavidLievrouw/HttpMessageSigning</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/DavidLievrouw/HttpMessageSigning</RepositoryUrl>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <GenerateNuspecDependsOn>InitVersion</GenerateNuspecDependsOn>
+    </PropertyGroup>
 
+    <ItemGroup>
+        <None Include="..\..\dalion128.png">
+            <PackagePath>\</PackagePath>
+            <Pack>true</Pack>
+        </None>
+    </ItemGroup>
+    
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="[3.1.2,)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="[2.1.2,2.2.0)" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[2.1.1,2.2.0)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="[3.1.2,)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='net472'">
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="[3.1.2,)" />
     </ItemGroup>
     
     <ItemGroup>
@@ -49,18 +74,27 @@
             <BuildCounter Condition="'$(BuildCounter)'==''">0</BuildCounter>
             <ProductVersion Condition="'$(ProductVersion)'=='' And $(PackageVersion.IndexOf('-')) &gt; -1">$(PackageVersion.Substring(0, $(PackageVersion.IndexOf('-')))).$(BuildCounter)</ProductVersion>
             <ProductVersion Condition="'$(ProductVersion)'=='' And $(PackageVersion.IndexOf('-')) &lt; 0">$(PackageVersion).$(BuildCounter)</ProductVersion>
-            <Version>$(ProductVersion)</Version>
+            <Version>$(PackageVersion)</Version>
+            <AssemblyVersion>$(ProductVersion)</AssemblyVersion>
+            <FileVersion>$(ProductVersion)</FileVersion>
             <InformationalVersion>$(ProductVersion)</InformationalVersion>
         </PropertyGroup>
         <Message Text="The $(Product) package version for $(TargetFramework) is '$(PackageVersion)'." Importance="High" />
         <Message Text="The $(Product) product version for $(TargetFramework) is '$(ProductVersion)'." Importance="High" />
     </Target>
 
-    <Target Name="PackNuGetPackages" AfterTargets="AfterBuild" Condition="'$(IsPublishing)' == 'true' And '$(SkipNuGetPack)' != 'true'">
-        <PropertyGroup>
-            <PackagePublishDir Condition="'$(PackagePublishDir)'==''">$(MSBuildThisFileDirectory)bin\Packages\</PackagePublishDir>
-        </PropertyGroup>
-        <Exec Command="dotnet pack &quot;$(MSBuildThisFile)&quot; --include-symbols -c $(Configuration) --no-build -o $(PackagePublishDir) /p:SymbolPackageFormat=snupkg /p:NuspecFile=Dalion.HttpMessageSigning.Verification.nuspec -p:NuspecBasePath=&quot;$(MSBuildProjectDirectory)&quot; -p:NuspecProperties=\&quot;configuration=$(Configuration);version=$(PackageVersion);year=$([System.DateTime]::Now.ToString(yyyy))\&quot;" />
+    <!-- Workaround for NuGet dependency version of a project reference -->
+    <!-- https://github.com/NuGet/Home/issues/5556#issuecomment-585482714 -->
+    <Target Name="_ExactProjectReferencesVersion" AfterTargets="_GetProjectReferenceVersions">
+        <ItemGroup>
+            <_ProjectReferencesWithExactVersions Include="@(_ProjectReferencesWithVersions)">
+                <ProjectVersion>$(PackageVersion)</ProjectVersion>
+            </_ProjectReferencesWithExactVersions>
+        </ItemGroup>
+        <ItemGroup>
+            <_ProjectReferencesWithVersions Remove="@(_ProjectReferencesWithVersions)" />
+            <_ProjectReferencesWithVersions Include="@(_ProjectReferencesWithExactVersions)" />
+        </ItemGroup>
     </Target>
     
 </Project>
