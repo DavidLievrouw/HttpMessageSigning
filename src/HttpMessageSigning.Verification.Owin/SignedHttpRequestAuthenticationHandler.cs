@@ -6,7 +6,11 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
+    /// <summary>
+    /// The HttpMessageSigning Owin authentication handler.
+    /// </summary>
     public class SignedHttpRequestAuthenticationHandler : AuthenticationHandler<SignedHttpRequestAuthenticationOptions> {
+        /// <inheritdoc />
         protected override async Task<AuthenticationTicket> AuthenticateCoreAsync() {
             if (!Request.Headers.ContainsKey("Authorization")) return null;
             if (!AuthenticationHeaderValue.TryParse(Request.Headers["Authorization"], out var headerValue)) return null;
@@ -35,6 +39,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             return null;
         }
 
+        /// <inheritdoc />
         protected override Task ApplyResponseChallengeAsync() {
             if (Response.StatusCode == 401) {
                 var signatureScheme = $"{Options.Scheme} realm=\"{Options.Realm}\"";

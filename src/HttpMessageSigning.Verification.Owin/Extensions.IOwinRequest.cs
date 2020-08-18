@@ -5,6 +5,9 @@ using System.Net.Http;
 using Microsoft.Owin;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
+    /// <summary>
+    ///     Extension methods for this library.
+    /// </summary>
     public static partial class Extensions {
         internal static HttpRequestForVerification ToHttpRequestForVerification(this IOwinRequest owinRequest, Signature signature) {
             if (owinRequest == null) return null;
