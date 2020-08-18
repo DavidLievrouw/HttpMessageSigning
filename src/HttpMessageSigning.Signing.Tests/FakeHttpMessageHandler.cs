@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.Signing {
     public class FakeHttpMessageHandler : HttpMessageHandler {
         public FakeHttpMessageHandler(HttpResponseMessage responseToReturn) {
             ResponseToReturn = responseToReturn ?? throw new ArgumentNullException(nameof(responseToReturn));

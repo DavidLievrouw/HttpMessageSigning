@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {

@@ -40,6 +40,7 @@ ProjectSection(SolutionItems) = preProject
 	..\README.md = ..\README.md
 	..\test.cmd = ..\test.cmd
 	..\version.txt = ..\version.txt
+	..\push.cmd = ..\push.cmd
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Conformance", "Conformance", "{DC276B80-28F0-4F88-895C-53AA2E601364}"
@@ -55,6 +56,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.MongoDb.Tests", "HttpMessageSigning.Verification.MongoDb.Tests\HttpMessageSigning.Verification.MongoDb.Tests.csproj", "{4433F591-0913-479E-841F-DFE488A3B9C0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.Tests", "HttpMessageSigning.Verification.Tests\HttpMessageSigning.Verification.Tests.csproj", "{4A777E51-F403-441B-97AD-163FDBC2606E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Signing.Tests", "HttpMessageSigning.Signing.Tests\HttpMessageSigning.Signing.Tests.csproj", "{A72AE99B-641C-4F65-A3FA-5BCC920407F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -134,6 +137,10 @@ Global
 		{4A777E51-F403-441B-97AD-163FDBC2606E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A777E51-F403-441B-97AD-163FDBC2606E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A777E51-F403-441B-97AD-163FDBC2606E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A72AE99B-641C-4F65-A3FA-5BCC920407F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A72AE99B-641C-4F65-A3FA-5BCC920407F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A72AE99B-641C-4F65-A3FA-5BCC920407F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A72AE99B-641C-4F65-A3FA-5BCC920407F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
