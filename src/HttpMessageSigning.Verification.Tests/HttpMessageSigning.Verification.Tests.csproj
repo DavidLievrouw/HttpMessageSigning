@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
-        <AssemblyName>Dalion.HttpMessageSigning.Tests</AssemblyName>
-        <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
+        <AssemblyName>Dalion.HttpMessageSigning.Verification.Tests</AssemblyName>
+        <RootNamespace>Dalion.HttpMessageSigning.Verification</RootNamespace>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
@@ -20,7 +20,7 @@
             <InformationalVersion>$(ProductVersion)</InformationalVersion>
         </PropertyGroup>
     </Target>
-    
+
     <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
         <DefineConstants>NETFULL;NETSTANDARD;NETFRAMEWORK;NET472</DefineConstants>
     </PropertyGroup>
@@ -30,7 +30,7 @@
     <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP3_1</DefineConstants>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
         <PackageReference Include="CompareNETObjects" Version="4.65.0" />
@@ -63,8 +63,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
-        <ProjectReference Include="..\HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
     </ItemGroup>
 
 </Project>

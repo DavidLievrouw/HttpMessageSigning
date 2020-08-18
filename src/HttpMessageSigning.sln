@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verifica
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.MongoDb.Tests", "HttpMessageSigning.Verification.MongoDb.Tests\HttpMessageSigning.Verification.MongoDb.Tests.csproj", "{4433F591-0913-479E-841F-DFE488A3B9C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.Tests", "HttpMessageSigning.Verification.Tests\HttpMessageSigning.Verification.Tests.csproj", "{4A777E51-F403-441B-97AD-163FDBC2606E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +130,10 @@ Global
 		{4433F591-0913-479E-841F-DFE488A3B9C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4433F591-0913-479E-841F-DFE488A3B9C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4433F591-0913-479E-841F-DFE488A3B9C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A777E51-F403-441B-97AD-163FDBC2606E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A777E51-F403-441B-97AD-163FDBC2606E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A777E51-F403-441B-97AD-163FDBC2606E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A777E51-F403-441B-97AD-163FDBC2606E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
