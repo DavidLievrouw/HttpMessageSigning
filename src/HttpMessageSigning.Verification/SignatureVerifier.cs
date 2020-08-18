@@ -41,12 +41,11 @@ namespace Dalion.HttpMessageSigning.Verification {
             _matchingSignatureStringVerificationTask = matchingSignatureStringVerificationTask ?? throw new ArgumentNullException(nameof(matchingSignatureStringVerificationTask));
         }
 
-        public async Task<SignatureVerificationFailure> VerifySignature(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public async Task<SignatureVerificationFailure> VerifySignature(HttpRequestForSigning signedRequest, Client client) {
             if (signedRequest == null) throw new ArgumentNullException(nameof(signedRequest));
-            if (signature == null) throw new ArgumentNullException(nameof(signature));
             if (client == null) throw new ArgumentNullException(nameof(client));
 
-            var sanitizedSignature = await _signatureSanitizer.Sanitize(signature, client).ConfigureAwait(false);
+            var sanitizedSignature = await _signatureSanitizer.Sanitize(signedRequest.Signature, client).ConfigureAwait(false);
             
             var failure = await _knownAlgorithmVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false) ??
                           await _matchingAlgorithmVerificationTask.Verify(signedRequest, sanitizedSignature, client).ConfigureAwait(false)??

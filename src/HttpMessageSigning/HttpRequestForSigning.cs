@@ -7,13 +7,15 @@ namespace Dalion.HttpMessageSigning {
         public string RequestUri { get; set; }
         public HeaderDictionary Headers { get; set; } = new HeaderDictionary();
         public byte[] Body { get; set; }
+        public Signature Signature { get; set; }
         
         public object Clone() {
             return new HttpRequestForSigning {
                 Method = Method,
                 RequestUri = RequestUri,
                 Body = (byte[]) Body?.Clone(),
-                Headers = Headers == null ? null : new HeaderDictionary(Headers.ToDictionary())
+                Headers = Headers == null ? null : new HeaderDictionary(Headers.ToDictionary()),
+                Signature = (Signature)Signature?.Clone()
             };
         }
     }

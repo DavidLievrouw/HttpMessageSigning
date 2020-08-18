@@ -1,62 +1,51 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Owin;
 
-namespace Dalion.HttpMessageSigning.Verification.Owin {
-    internal class RequestSignatureVerifier : IRequestSignatureVerifier {
-        private readonly ISignatureParser _signatureParser;
+namespace Dalion.HttpMessageSigning.Verification {
+    internal class RequestSignatureVerificationOrchestrator : IRequestSignatureVerificationOrchestrator {
         private readonly IClientStore _clientStore;
         private readonly ISignatureVerifier _signatureVerifier;
         private readonly IVerificationResultCreatorFactory _verificationResultCreatorFactory;
-        private readonly ILogger<RequestSignatureVerifier> _logger;
+        private readonly ILogger<RequestSignatureVerificationOrchestrator> _logger;
 
-        public RequestSignatureVerifier(
-            ISignatureParser signatureParser,
+        public RequestSignatureVerificationOrchestrator(
             IClientStore clientStore,
-            ISignatureVerifier signatureVerifier, 
-            IVerificationResultCreatorFactory verificationResultCreatorFactory, 
-            ILogger<RequestSignatureVerifier> logger = null) {
-            _signatureParser = signatureParser ?? throw new ArgumentNullException(nameof(signatureParser));
+            ISignatureVerifier signatureVerifier,
+            IVerificationResultCreatorFactory verificationResultCreatorFactory,
+            ILogger<RequestSignatureVerificationOrchestrator> logger = null) {
             _clientStore = clientStore ?? throw new ArgumentNullException(nameof(clientStore));
             _signatureVerifier = signatureVerifier ?? throw new ArgumentNullException(nameof(signatureVerifier));
             _verificationResultCreatorFactory = verificationResultCreatorFactory ?? throw new ArgumentNullException(nameof(verificationResultCreatorFactory));
             _logger = logger;
         }
 
-        public async Task<RequestSignatureVerificationResult> VerifySignature(IOwinRequest request, SignedHttpRequestAuthenticationOptions options) {
+        public async Task<RequestSignatureVerificationResult> VerifySignature(HttpRequestForSigning request) {
             if (request == null) throw new ArgumentNullException(nameof(request));
-            if (options == null) throw new ArgumentNullException(nameof(options));
 
             Client client = null;
-            Signature signature = null;
-            
             try {
-                signature = _signatureParser.Parse(request, options);
-                
-                var eventTask = options.OnSignatureParsed;
-                if (eventTask != null) await eventTask.Invoke(request, signature).ConfigureAwait(false);
+                if (request.Signature == null) {
+                    throw new InvalidSignatureException("The signature is missing.");
+                }
                 
                 try {
-                    signature.Validate();
+                    request.Signature.Validate();
                 }
                 catch (ValidationException ex) {
-                    throw new InvalidSignatureException(
-                        "The signature is invalid. See inner exception.",
-                        ex);
+                    throw new InvalidSignatureException("The signature is invalid. See inner exception.", ex);
                 }
                 
-                client = await _clientStore.Get(signature.KeyId).ConfigureAwait(false);
+                client = await _clientStore.Get(request.Signature.KeyId).ConfigureAwait(continueOnCapturedContext: false);
                 if (client == null) {
-                    var failure = SignatureVerificationFailure.InvalidClient($"No {nameof(Client)}s with id '{signature.KeyId}' are registered in the server store.");
+                    var failure = SignatureVerificationFailure.InvalidClient($"No {nameof(Client)}s with id '{request.Signature.KeyId}' are registered in the server store.");
                     _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
-                    return new RequestSignatureVerificationResultFailure(client, signature, failure);
+                    return new RequestSignatureVerificationResultFailure(client, request.Signature, failure);
                 }
                 
-                var requestForSigning = request.ToHttpRequestForSigning(signature);
-                var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, client).ConfigureAwait(false);
+                var verificationFailure = await _signatureVerifier.VerifySignature(request, client).ConfigureAwait(continueOnCapturedContext: false);
 
-                var verificationResultCreator = _verificationResultCreatorFactory.Create(client, signature);
+                var verificationResultCreator = _verificationResultCreatorFactory.Create(client, request.Signature);
                 var result = verificationFailure == null
                     ? verificationResultCreator.CreateForSuccess()
                     : verificationResultCreator.CreateForFailure(verificationFailure);
@@ -73,7 +62,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             catch (InvalidSignatureException ex) {
                 var failure = SignatureVerificationFailure.InvalidSignature(ex.Message, ex);
                 _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
-                return new RequestSignatureVerificationResultFailure(client, signature, failure);
+                return new RequestSignatureVerificationResultFailure(client, request.Signature, failure);
             }
         }
 

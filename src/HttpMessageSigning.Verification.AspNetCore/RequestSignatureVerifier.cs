@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 signature = _signatureParser.Parse(request, options);
 
                 var eventTask = options.OnSignatureParsed;
-                if (eventTask != null) await eventTask.Invoke(request, signature).ConfigureAwait(false);
+                if (eventTask != null) await eventTask.Invoke(request, signature).ConfigureAwait(continueOnCapturedContext: false);
                 
                 try {
                     signature.Validate();
@@ -46,15 +46,15 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                         ex);
                 }
                 
-                client = await _clientStore.Get(signature.KeyId).ConfigureAwait(false);
+                client = await _clientStore.Get(signature.KeyId).ConfigureAwait(continueOnCapturedContext: false);
                 if (client == null) {
                     var failure = SignatureVerificationFailure.InvalidClient($"No {nameof(Client)}s with id '{signature.KeyId}' are registered in the server store.");
                     _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
                     return new RequestSignatureVerificationResultFailure(client, signature, failure);
                 }
                 
-                var requestForSigning = await request.ToRequestForSigning(signature).ConfigureAwait(false);
-                var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, signature, client).ConfigureAwait(false);
+                var requestForSigning = await request.ToHttpRequestForSigning(signature).ConfigureAwait(continueOnCapturedContext: false);
+                var verificationFailure = await _signatureVerifier.VerifySignature(requestForSigning, client).ConfigureAwait(continueOnCapturedContext: false);
 
                 var verificationResultCreator = _verificationResultCreatorFactory.Create(client, signature);
                 var result = verificationFailure == null

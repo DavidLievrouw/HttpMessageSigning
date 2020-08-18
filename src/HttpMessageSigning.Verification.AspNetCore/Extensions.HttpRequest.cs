@@ -2,14 +2,13 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public static partial class Extensions {
-        internal static async Task<HttpRequestForSigning> ToRequestForSigning(this HttpRequest request, Signature signature) {
+        internal static async Task<HttpRequestForSigning> ToHttpRequestForSigning(this HttpRequest request, Signature signature) {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
             if (request == null) return null;
             
@@ -17,7 +16,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 RequestUri = GetRequestUri(request),
                 Method = string.IsNullOrEmpty(request.Method)
                     ? HttpMethod.Get
-                    : new HttpMethod(request.Method)
+                    : new HttpMethod(request.Method),
+                Signature = signature
             };
 
             foreach (var header in request.Headers) {
