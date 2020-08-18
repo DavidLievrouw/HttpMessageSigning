@@ -55,6 +55,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
 
             [Fact]
@@ -66,6 +67,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
 
             [Fact]
@@ -77,6 +79,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
 
             [Fact]
@@ -88,6 +91,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
 
             [Fact]
@@ -113,6 +117,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     Nonce = "abc123"
                 };
                 actual.As<SignatureParsingSuccess>().Signature.Should().BeEquivalentTo(expected);
+                actual.IsSuccess.Should().BeTrue();
             }
 
             [Fact]
@@ -139,6 +144,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     Nonce = "abc123"
                 };
                 actual.As<SignatureParsingSuccess>().Signature.Should().BeEquivalentTo(expected);
+                actual.IsSuccess.Should().BeTrue();
             }
 
             [Fact]
@@ -149,6 +155,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 
                 actual.Should().BeAssignableTo<SignatureParsingSuccess>();
                 actual.As<SignatureParsingSuccess>().Signature.Created.Should().BeNull();
+                actual.IsSuccess.Should().BeTrue();
             }
 
             [Fact]
@@ -159,6 +166,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 actual.Should().BeAssignableTo<SignatureParsingSuccess>();
                 actual.As<SignatureParsingSuccess>().Signature.Created.Should().BeNull();
+                actual.IsSuccess.Should().BeTrue();
             }
 
             [Fact]
@@ -169,6 +177,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 actual.Should().BeAssignableTo<SignatureParsingSuccess>();
                 actual.As<SignatureParsingSuccess>().Signature.Expires.Should().BeNull();
+                actual.IsSuccess.Should().BeTrue();
             }
 
             [Fact]
@@ -179,6 +188,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 actual.Should().BeAssignableTo<SignatureParsingSuccess>();
                 actual.As<SignatureParsingSuccess>().Signature.Expires.Should().BeNull();
+                actual.IsSuccess.Should().BeTrue();
             }
 
             [Fact]
@@ -189,6 +199,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 actual.Should().BeAssignableTo<SignatureParsingSuccess>();
                 actual.As<SignatureParsingSuccess>().Signature.Algorithm.Should().BeNull();
+                actual.IsSuccess.Should().BeTrue();
             }
 
             [Fact]
@@ -200,6 +211,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
 
             [Fact]
@@ -211,6 +223,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
 
             [Fact]
@@ -222,6 +235,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
 
             [Fact]
@@ -232,6 +246,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 
                 actual.Should().BeAssignableTo<SignatureParsingSuccess>();
                 actual.As<SignatureParsingSuccess>().Signature.Nonce.Should().BeNull();
+                actual.IsSuccess.Should().BeTrue();
             }
             
             [Fact]
@@ -243,6 +258,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
             
             [Fact]
@@ -254,6 +270,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
             
             [Fact]
@@ -265,6 +282,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
             
             [Fact]
@@ -276,6 +294,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
             
             [Fact]
@@ -287,6 +306,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
             
             [Fact]
@@ -298,6 +318,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
             
             [Fact]
@@ -309,6 +330,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 act.Should().NotThrow();
                 actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
             
             private static string Compose(

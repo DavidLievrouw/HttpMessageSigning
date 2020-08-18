@@ -8,6 +8,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             Description = description;
             Failure = failure;
         }
+        
         public override bool IsSuccess => false;
 
         public string Description { get; }

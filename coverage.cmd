@@ -7,6 +7,14 @@ IF EXIST %SRCDIR%\coverage-core.net472.xml /F %SRCDIR%\coverage-core.net472.xml
 IF EXIST %SRCDIR%\coverage-core.netcoreapp2.1.xml DEL /F %SRCDIR%\coverage-core.netcoreapp2.1.xml
 IF EXIST %SRCDIR%\coverage-core.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-core.netcoreapp3.1.xml
 
+IF EXIST %SRCDIR%\coverage-signing.net472.xml /F %SRCDIR%\coverage-signing.net472.xml
+IF EXIST %SRCDIR%\coverage-signing.netcoreapp2.1.xml DEL /F %SRCDIR%\coverage-signing.netcoreapp2.1.xml
+IF EXIST %SRCDIR%\coverage-signing.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-signing.netcoreapp3.1.xml
+
+IF EXIST %SRCDIR%\coverage-verification.net472.xml /F %SRCDIR%\coverage-verification.net472.xml
+IF EXIST %SRCDIR%\coverage-verification.netcoreapp2.1.xml DEL /F %SRCDIR%\coverage-verification.netcoreapp2.1.xml
+IF EXIST %SRCDIR%\coverage-verification.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-verification.netcoreapp3.1.xml
+
 IF EXIST %SRCDIR%\coverage-conformance.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-conformance.netcoreapp3.1.xml
 
 IF EXIST %SRCDIR%\coverage-system.netcoreapp2.1.xml DEL /F %SRCDIR%\coverage-system.netcoreapp2.1.xml
