@@ -3,31 +3,8 @@ cls
 SET DIR=%~dp0%
 SET SRCDIR=%DIR%\src
 
-IF EXIST %SRCDIR%\coverage-core.net472.xml /F %SRCDIR%\coverage-core.net472.xml
-IF EXIST %SRCDIR%\coverage-core.netcoreapp2.1.xml DEL /F %SRCDIR%\coverage-core.netcoreapp2.1.xml
-IF EXIST %SRCDIR%\coverage-core.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-core.netcoreapp3.1.xml
-
-IF EXIST %SRCDIR%\coverage-signing.net472.xml /F %SRCDIR%\coverage-signing.net472.xml
-IF EXIST %SRCDIR%\coverage-signing.netcoreapp2.1.xml DEL /F %SRCDIR%\coverage-signing.netcoreapp2.1.xml
-IF EXIST %SRCDIR%\coverage-signing.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-signing.netcoreapp3.1.xml
-
-IF EXIST %SRCDIR%\coverage-verification.net472.xml /F %SRCDIR%\coverage-verification.net472.xml
-IF EXIST %SRCDIR%\coverage-verification.netcoreapp2.1.xml DEL /F %SRCDIR%\coverage-verification.netcoreapp2.1.xml
-IF EXIST %SRCDIR%\coverage-verification.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-verification.netcoreapp3.1.xml
-
-IF EXIST %SRCDIR%\coverage-conformance.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-conformance.netcoreapp3.1.xml
-
-IF EXIST %SRCDIR%\coverage-system.netcoreapp2.1.xml DEL /F %SRCDIR%\coverage-system.netcoreapp2.1.xml
-IF EXIST %SRCDIR%\coverage-system.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-system.netcoreapp3.1.xml
-
-IF EXIST %SRCDIR%\coverage-aspnetcore.netcoreapp2.1.xml DEL /F %SRCDIR%\coverage-aspnetcore.netcoreapp2.1.xml
-IF EXIST %SRCDIR%\coverage-aspnetcore.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-aspnetcore.netcoreapp3.1.xml
-
-IF EXIST %SRCDIR%\coverage-mongodb.net472.xml /F %SRCDIR%\coverage-mongodb.net472.xml
-IF EXIST %SRCDIR%\coverage-mongodb.netcoreapp2.1.xml DEL /F %SRCDIR%\coverage-mongodb.netcoreapp2.1.xml
-IF EXIST %SRCDIR%\coverage-mongodb.netcoreapp3.1.xml DEL /F %SRCDIR%\coverage-mongodb.netcoreapp3.1.xml
-
-IF EXIST %SRCDIR%\coverage-owin.net472.json DEL /F %SRCDIR%\coverage-owin.net472.json
+DEL /F %SRCDIR%\coverage.xml
+DEL /F %SRCDIR%\coverage-*.json
 
 dotnet test %SRCDIR%\HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj --framework net472 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude="[*.Tests]*" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-core.net472.json" /maxcpucount:1
 dotnet test %SRCDIR%\HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj --framework netcoreapp2.1 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude="[*.Tests]*" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-core.netcoreapp2.1.json" /p:MergeWith="../coverage-core.net472.json" /maxcpucount:1

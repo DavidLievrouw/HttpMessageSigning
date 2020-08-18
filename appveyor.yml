@@ -62,6 +62,10 @@ build_script:
 
 test_script:
 - ps: >-
+    DEL ./src/coverage.xml
+
+    DEL ./src/coverage-*.json
+    
     dotnet test ./src/$env:PRODUCT.Tests/$env:PRODUCT.Tests.csproj --framework net472 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.$env:PRODUCT*]*" /p:Exclude="[*.Tests]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage-core.net472.json" /maxcpucount:1
 
     dotnet test ./src/$env:PRODUCT.Tests/$env:PRODUCT.Tests.csproj --framework netcoreapp2.1 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.$env:PRODUCT*]*" /p:Exclude="[*.Tests]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage-core.netcoreapp2.1.json" /p:MergeWith="../coverage-core.net472.json" /maxcpucount:1
