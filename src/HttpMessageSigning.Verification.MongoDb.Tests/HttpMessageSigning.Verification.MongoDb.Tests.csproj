@@ -41,10 +41,13 @@
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="Mongo2Go" Version="2.2.12" />
         <PackageReference Include="xunit" Version="2.4.1" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="coverlet.collector" Version="1.2.0" />
     </ItemGroup>
-
+    
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     </ItemGroup>
