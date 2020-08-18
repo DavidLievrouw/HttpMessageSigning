@@ -11,10 +11,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
         public RequestSignatureVerifier(
             ISignatureParser signatureParser,
-            IRequestSignatureVerificationOrchestrator requestSignatureVerificationOrchestrator,
+            IRequestSignatureVerificationOrchestrator verificationOrchestrator,
             ILogger<RequestSignatureVerifier> logger = null) {
             _signatureParser = signatureParser ?? throw new ArgumentNullException(nameof(signatureParser));
-            _verificationOrchestrator = requestSignatureVerificationOrchestrator ?? throw new ArgumentNullException(nameof(requestSignatureVerificationOrchestrator));
+            _verificationOrchestrator = verificationOrchestrator ?? throw new ArgumentNullException(nameof(verificationOrchestrator));
             _logger = logger;
         }
 
