@@ -14,14 +14,14 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
         public class Verify : ExpiresHeaderGuardVerificationTaskTests {
             private readonly Client _client;
-            private readonly Func<HttpRequestForSigning, Signature, Client, Task<SignatureVerificationFailure>> _method;
+            private readonly Func<HttpRequestForVerification, Signature, Client, Task<SignatureVerificationFailure>> _method;
             private readonly Signature _signature;
-            private readonly HttpRequestForSigning _signedRequest;
+            private readonly HttpRequestForVerification _signedRequest;
 
             public Verify() {
                 _signature = (Signature)TestModels.Signature.Clone();
                 _signature.Headers = _signature.Headers.Concat(new[] {HeaderName.PredefinedHeaderNames.Expires}).ToArray();
-                _signedRequest = (HttpRequestForSigning)TestModels.Request.Clone();
+                _signedRequest = (HttpRequestForVerification)TestModels.RequestForVerification.Clone();
                 _client = new Client(TestModels.Client.Id, TestModels.Client.Name, new CustomSignatureAlgorithm("RSA"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
             }

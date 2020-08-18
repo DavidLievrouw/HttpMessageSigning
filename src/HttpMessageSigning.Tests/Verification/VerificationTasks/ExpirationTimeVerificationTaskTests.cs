@@ -16,15 +16,15 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         }
 
         public class Verify : ExpirationTimeVerificationTaskTests {
-            private readonly HttpRequestForSigning _signedRequest;
+            private readonly HttpRequestForVerification _signedRequest;
             private readonly Client _client;
             private readonly Signature _signature;
-            private readonly Func<HttpRequestForSigning, Signature, Client, Task<SignatureVerificationFailure>> _method;
+            private readonly Func<HttpRequestForVerification, Signature, Client, Task<SignatureVerificationFailure>> _method;
             private readonly DateTimeOffset _now;
 
             public Verify() {
                 _signature = (Signature) TestModels.Signature.Clone();
-                _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
+                _signedRequest = (HttpRequestForVerification) TestModels.RequestForVerification.Clone();
                 _client = (Client) TestModels.Client.Clone();
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
 

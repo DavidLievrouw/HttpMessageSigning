@@ -6,11 +6,11 @@ using Microsoft.Owin;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
     public static partial class Extensions {
-        internal static HttpRequestForSigning ToHttpRequestForSigning(this IOwinRequest owinRequest, Signature signature) {
+        internal static HttpRequestForVerification ToHttpRequestForVerification(this IOwinRequest owinRequest, Signature signature) {
             if (owinRequest == null) return null;
             if (signature == null) throw new ArgumentNullException(nameof(signature));
             
-            var request = new HttpRequestForSigning {
+            var request = new HttpRequestForVerification {
                 Method = new HttpMethod(owinRequest.Method),
                 RequestUri = (owinRequest.Uri.IsAbsoluteUri ? owinRequest.Uri.AbsolutePath : owinRequest.Uri.OriginalString.Split('?')[0]).UrlDecode(),
                 Signature = signature

@@ -8,7 +8,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             HeaderName.PredefinedHeaderNames.Expires
         };
         
-        public override SignatureVerificationFailure VerifySync(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public override SignatureVerificationFailure VerifySync(HttpRequestForVerification signedRequest, Signature signature, Client client) {
             if (signature.Headers.Contains(HeaderName.PredefinedHeaderNames.RequestTarget) && !signature.Headers.Contains(HeaderName.PredefinedHeaderNames.RequestTarget)) {
                 return SignatureVerificationFailure.HeaderMissing($"The {HeaderName.PredefinedHeaderNames.RequestTarget} header is required to be included in the signature.");
             }

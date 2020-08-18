@@ -32,13 +32,13 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 public async Task GivenNullRequest_ReturnsNull() {
                     Microsoft.AspNetCore.Http.HttpRequest nullRequest = null;
                     // ReSharper disable once ExpressionIsAlwaysNull
-                    var actual = await nullRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await nullRequest.ToHttpRequestForVerification(_signature);
                     actual.Should().BeNull();
                 }
 
                 [Fact]
                 public void GivenNullSignature_ThrowsArgumentNullException() {
-                    Func<Task> act = () => _httpRequest.ToHttpRequestForSigning(null);
+                    Func<Task> act = () => _httpRequest.ToHttpRequestForVerification(null);
                     act.Should().Throw<ArgumentNullException>();
                 }
 
@@ -46,21 +46,21 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 public async Task AllowsNullMethod() {
                     _httpRequest.Method = null;
 
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Method.Should().Be(HttpMethod.Get);
                 }
 
                 [Fact]
                 public async Task CopiesSignature() { 
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Signature.Should().Be(_signature);
                 }
                 
                 [Fact]
                 public async Task CopiesUriPath() {
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
                     var expectedUri = "/tests/api/rsc1";
                     actual.RequestUri.Should().Be(expectedUri);
                 }               
@@ -69,7 +69,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 public async Task CanHandleEmptyPathBase() {
                     _httpRequest.PathBase = PathString.Empty;
                     
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
                     
                     var expectedUri = "/api/rsc1";
                     actual.RequestUri.Should().Be(expectedUri);
@@ -80,7 +80,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.PathBase = new PathString("/api");
                     _httpRequest.Path = new PathString("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
                     
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
                     
                     var expectedUri = "/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.";
                     actual.RequestUri.Should().Be(expectedUri);
@@ -98,7 +98,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 public async Task CopiesMethod(string method) {
                     _httpRequest.Method = method;
 
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Method.Should().Be(new HttpMethod(method));
                 }
@@ -109,7 +109,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.Headers.Add("dalion-single-header", "one");
                     _httpRequest.Headers.Add("dalion-multi-header", new Microsoft.Extensions.Primitives.StringValues(new[] {"one", "2"}));
 
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     var expectedHeaders = new HeaderDictionary(new Dictionary<string, StringValues> {
                         {"dalion-empty-header", ""},
@@ -128,7 +128,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.Headers.Add("dalion-multi-header", new Microsoft.Extensions.Primitives.StringValues(new[] {"one", "2"}));
                     _httpRequest.ContentType = "application/json";
 
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     var expectedHeaders = new HeaderDictionary(new Dictionary<string, StringValues> {
                         {"dalion-empty-header", ""},
@@ -145,7 +145,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 public async Task WhenThereIsNoBody_SetsBodyToNull() {
                     _httpRequest.Body = null;
 
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Body.Should().BeNull();
                 }
@@ -159,7 +159,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                     _httpRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Digest);
                     
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
                     actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());
@@ -174,7 +174,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                     _signature.Headers = Array.Empty<HeaderName>();
                     
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
 
@@ -189,7 +189,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.Body = new MemoryStream(bodyBytes);
                     _httpRequest.ContentType = "text/plain";
 
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
 
@@ -206,7 +206,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Digest);
                     _signature.Headers = Array.Empty<HeaderName>();
 
-                    var actual = await _httpRequest.ToHttpRequestForSigning(_signature);
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Body.Should().BeNull();
                     _httpRequest.Body.Position.Should().Be(0);
@@ -218,7 +218,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.Body = new MemoryStream(Encoding.UTF8.GetBytes(bodyPayload));
                     _httpRequest.ContentType = "text/plain";
 
-                    await _httpRequest.ToHttpRequestForSigning(_signature);
+                    await _httpRequest.ToHttpRequestForVerification(_signature);
 
                     _httpRequest.Body.Position.Should().Be(0);
                 }

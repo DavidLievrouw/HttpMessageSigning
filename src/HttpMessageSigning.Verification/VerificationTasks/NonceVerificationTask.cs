@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
         }
 
-        public override async Task<SignatureVerificationFailure> Verify(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public override async Task<SignatureVerificationFailure> Verify(HttpRequestForVerification signedRequest, Signature signature, Client client) {
             if (string.IsNullOrEmpty(signature.Nonce)) return null;
 
             var previousNonce = await _nonceStore.Get(client.Id, signature.Nonce).ConfigureAwait(false);

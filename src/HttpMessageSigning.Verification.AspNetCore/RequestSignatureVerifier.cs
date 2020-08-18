@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             var eventTask = options.OnSignatureParsed;
             if (eventTask != null) await eventTask.Invoke(request, signature).ConfigureAwait(continueOnCapturedContext: false);
 
-            var requestForSigning = await request.ToHttpRequestForSigning(signature).ConfigureAwait(continueOnCapturedContext: false);
+            var requestForSigning = await request.ToHttpRequestForVerification(signature).ConfigureAwait(continueOnCapturedContext: false);
             return await _requestSignatureVerificationOrchestrator.VerifySignature(requestForSigning);
         }
 

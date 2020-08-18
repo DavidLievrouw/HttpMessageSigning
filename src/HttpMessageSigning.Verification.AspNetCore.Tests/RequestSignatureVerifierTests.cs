@@ -80,9 +80,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
                     .Returns(_signature);
 
-                HttpRequestForSigning intercepted = null;
-                A.CallTo(() => _requestSignatureVerificationOrchestrator.VerifySignature(A<HttpRequestForSigning>._))
-                    .Invokes(call => intercepted = call.GetArgument<HttpRequestForSigning>(0))
+                HttpRequestForVerification intercepted = null;
+                A.CallTo(() => _requestSignatureVerificationOrchestrator.VerifySignature(A<HttpRequestForVerification>._))
+                    .Invokes(call => intercepted = call.GetArgument<HttpRequestForVerification>(0))
                     .Returns(_verificationSuccessResult);
                 
                 _options.OnSignatureParsed = (request, sig) => {
@@ -104,7 +104,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
                     .Returns(_signature);
 
-                A.CallTo(() => _requestSignatureVerificationOrchestrator.VerifySignature(A<HttpRequestForSigning>._))
+                A.CallTo(() => _requestSignatureVerificationOrchestrator.VerifySignature(A<HttpRequestForVerification>._))
                     .Returns(_verificationSuccessResult);
 
                 var actual = await _sut.VerifySignature(_httpRequest, _options);

@@ -23,10 +23,10 @@ namespace Dalion.HttpMessageSigning.Verification {
         }
 
         public class VerifySignature : RequestSignatureVerificationOrchestratorTests {
-            private readonly HttpRequestForSigning _request;
+            private readonly HttpRequestForVerification _request;
 
             public VerifySignature() {
-                _request = new HttpRequestForSigning {
+                _request = new HttpRequestForVerification {
                     Method = HttpMethod.Post,
                     RequestUri = "https://unittest.com:9000",
                     Signature = (Signature) TestModels.Signature.Clone()
@@ -71,7 +71,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => _verificationResultCreatorFactory.Create(client, _request.Signature))
                     .Returns(verificationResultCreator);
                     
-                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Client>._))
+                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForVerification>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
                 
                 await _sut.VerifySignature(_request);
@@ -94,7 +94,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => verificationResultCreator.CreateForSuccess())
                     .Returns(new RequestSignatureVerificationResultSuccess(client, _request.Signature, principal));
                 
-                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Client>._))
+                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForVerification>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
                 
                 var actual = await _sut.VerifySignature(_request);
@@ -115,7 +115,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     .Returns(verificationResultCreator);
                 
                 var failure = SignatureVerificationFailure.SignatureExpired("Invalid signature.");
-                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Client>._))
+                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForVerification>._, A<Client>._))
                     .Returns(failure);
                 
                 A.CallTo(() => verificationResultCreator.CreateForFailure(failure))
@@ -133,7 +133,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => _clientStore.Get(_request.Signature.KeyId))
                     .Returns((Client) null);
 
-                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Client>._))
+                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForVerification>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
                 
                 var actual = await _sut.VerifySignature(_request);
@@ -155,7 +155,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     .Returns(verificationResultCreator);
                 
                 var failure = new InvalidOperationException("Not something to do with verification.");
-                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForSigning>._, A<Client>._))
+                A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForVerification>._, A<Client>._))
                     .Throws(failure);
                 
                 Func<Task> act = () => _sut.VerifySignature(_request);

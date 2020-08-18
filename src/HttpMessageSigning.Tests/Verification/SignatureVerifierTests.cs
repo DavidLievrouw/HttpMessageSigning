@@ -51,11 +51,11 @@ namespace Dalion.HttpMessageSigning.Verification {
 
         public class VerifySignature : SignatureVerifierTests {
             private readonly Client _client;
-            private readonly HttpRequestForSigning _signedRequest;
+            private readonly HttpRequestForVerification _signedRequest;
             private readonly Signature _sanitizedSignature;
 
             public VerifySignature() {
-                _signedRequest = new HttpRequestForSigning {
+                _signedRequest = new HttpRequestForVerification {
                     Method = HttpMethod.Post,
                     RequestUri = "https://unittest.com:9001",
                     Signature = new Signature {KeyId = "client1"}
@@ -63,16 +63,16 @@ namespace Dalion.HttpMessageSigning.Verification {
                 
                 _client = new Client("client1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
                 
-                A.CallTo(() => _knownAlgorithmVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
-                A.CallTo(() => _matchingAlgorithmVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
-                A.CallTo(() => _createdHeaderGuardVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
-                A.CallTo(() => _expiresHeaderGuardVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
-                A.CallTo(() => _allHeadersPresentVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
-                A.CallTo(() => _creationTimeVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
-                A.CallTo(() => _expirationTimeVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
-                A.CallTo(() => _nonceVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
-                A.CallTo(() => _digestVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
-                A.CallTo(() => _matchingSignatureStringVerificationTask.Verify(A<HttpRequestForSigning>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _knownAlgorithmVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _matchingAlgorithmVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _createdHeaderGuardVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _expiresHeaderGuardVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _allHeadersPresentVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _creationTimeVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _expirationTimeVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _nonceVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _digestVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
+                A.CallTo(() => _matchingSignatureStringVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
 
                 _sanitizedSignature = (Signature)_signedRequest.Signature.Clone();
                 A.CallTo(() => _signatureSanitizer.Sanitize(_signedRequest.Signature, _client))

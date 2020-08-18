@@ -21,9 +21,9 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
         public class Verify : MatchingSignatureStringVerificationTaskTests {
             private readonly Client _client;
-            private readonly Func<HttpRequestForSigning, Signature, Client, Task<SignatureVerificationFailure>> _method;
+            private readonly Func<HttpRequestForVerification, Signature, Client, Task<SignatureVerificationFailure>> _method;
             private readonly Signature _signature;
-            private readonly HttpRequestForSigning _signedRequest;
+            private readonly HttpRequestForVerification _signedRequest;
             private readonly string _composedSignatureString;
             private readonly CustomSignatureAlgorithm _signatureAlgorithm;
             private readonly DateTimeOffset _now;
@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _now = new DateTimeOffset(2020, 2, 24, 10, 20, 14, TimeSpan.FromHours(0));
                 
                 _signature = (Signature) TestModels.Signature.Clone();
-                _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
+                _signedRequest = (HttpRequestForVerification) TestModels.RequestForVerification.Clone();
                 _signatureAlgorithm = new CustomSignatureAlgorithm("TEST");
                 _client = new Client(TestModels.Client.Id, TestModels.Client.Name, _signatureAlgorithm, TestModels.Client.NonceLifetime, TestModels.Client.ClockSkew, TestModels.Client.Claims);
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);

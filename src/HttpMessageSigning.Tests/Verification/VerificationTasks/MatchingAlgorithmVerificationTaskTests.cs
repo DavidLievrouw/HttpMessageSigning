@@ -17,13 +17,13 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
         public class Verify : MatchingAlgorithmVerificationTaskTests {
             private readonly Client _client;
-            private readonly Func<HttpRequestForSigning, Signature, Client, Task<SignatureVerificationFailure>> _method;
+            private readonly Func<HttpRequestForVerification, Signature, Client, Task<SignatureVerificationFailure>> _method;
             private readonly Signature _signature;
-            private readonly HttpRequestForSigning _signedRequest;
+            private readonly HttpRequestForVerification _signedRequest;
 
             public Verify() {
                 _signature = (Signature) TestModels.Signature.Clone();
-                _signedRequest = (HttpRequestForSigning) TestModels.Request.Clone();
+                _signedRequest = (HttpRequestForVerification) TestModels.RequestForVerification.Clone();
                 _client = new Client(TestModels.Client.Id, TestModels.Client.Name, new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.MD5), TestModels.Client.NonceLifetime, TestModels.Client.ClockSkew, TestModels.Client.Claims);
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
             }

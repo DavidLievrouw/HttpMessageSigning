@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _logger = logger;
         }
 
-        public override SignatureVerificationFailure VerifySync(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public override SignatureVerificationFailure VerifySync(HttpRequestForVerification signedRequest, Signature signature, Client client) {
             if (signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest) &&
                 !signedRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
                 return SignatureVerificationFailure.HeaderMissing($"The {HeaderName.PredefinedHeaderNames.Digest} header is indicated as part of the signature, but it is not included in the request.");

@@ -3,6 +3,6 @@ using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Verification {
     public interface IRequestSignatureVerificationOrchestrator : IDisposable {
-        Task<RequestSignatureVerificationResult> VerifySignature(HttpRequestForSigning request);
+        Task<RequestSignatureVerificationResult> VerifySignature(HttpRequestForVerification request);
     }
 }

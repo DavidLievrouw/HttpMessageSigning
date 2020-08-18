@@ -35,19 +35,19 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 public void GivenNullInput_ReturnsNull() {
                     IOwinRequest nullRequest = null;
                     // ReSharper disable once ExpressionIsAlwaysNull
-                    var actual = nullRequest.ToHttpRequestForSigning(_signature);
+                    var actual = nullRequest.ToHttpRequestForVerification(_signature);
                     actual.Should().BeNull();
                 }
 
                 [Fact]
                 public void GivenNullSignature_ThrowsArgumentNullException() {
-                    Action act = () => _owinRequest.ToHttpRequestForSigning(signature: null);
+                    Action act = () => _owinRequest.ToHttpRequestForVerification(signature: null);
                     act.Should().Throw<ArgumentNullException>();
                 }
 
                 [Fact]
                 public void CopiesSignature() { 
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Signature.Should().Be(_signature);
                 }
@@ -63,7 +63,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 [InlineData("PATCH")]
                 public void CopiesMethod(string method) {
                     _owinRequest.Method = method;
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
                     actual.Method.Should().Be(new HttpMethod(method));
                 }
 
@@ -74,7 +74,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     _owinRequest.PathBase = new PathString("/api");
                     _owinRequest.Path = new PathString("/policies/test");
 
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     actual.RequestUri.Should().Be("/api/policies/test");
                 }
@@ -86,7 +86,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     _owinRequest.PathBase = PathString.Empty;
                     _owinRequest.Path = new PathString("/policies/test");
 
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     actual.RequestUri.Should().Be("/policies/test");
                 }
@@ -98,7 +98,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     _owinRequest.PathBase = new PathString("/api");
                     _owinRequest.Path = new PathString("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
 
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.");
                 }
@@ -109,7 +109,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     _owinRequest.Headers.Add("multiple-value", new[] {"v1", "v2"});
                     _owinRequest.Headers.Add("no-value", Array.Empty<string>());
 
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Headers.ToDictionary().Should().BeEquivalentTo(new Dictionary<string, StringValues> {
                         {"simple-value", (StringValues) new[] {"v1"}},
@@ -123,7 +123,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 public void WhenThereAreNoHeaders_SetsEmptyHeaders() {
                     _owinRequest.Headers.Clear();
 
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Headers.ToDictionary().Should().NotBeNull().And.BeEmpty();
                 }
@@ -132,7 +132,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 public void WhenThereIsNoBody_SetsBodyToNull() {
                     _owinRequest.Body = null;
 
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Body.Should().BeNull();
                 }
@@ -146,7 +146,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     _owinRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Digest);
                     
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     _owinRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
                     actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());
@@ -161,7 +161,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     _signature.Headers = _signature.Headers.Where(h => h != HeaderName.PredefinedHeaderNames.Digest).ToArray();
                     
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     _owinRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
 
@@ -176,7 +176,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     _owinRequest.Body = new MemoryStream(bodyBytes);
                     _owinRequest.ContentType = "text/plain";
 
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     _owinRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
 
@@ -193,7 +193,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     _owinRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Digest);
                     _signature.Headers = _signature.Headers.Where(h => h != HeaderName.PredefinedHeaderNames.Digest).ToArray();
 
-                    var actual = _owinRequest.ToHttpRequestForSigning(_signature);
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Body.Should().BeNull();
                     _owinRequest.Body.Position.Should().Be(0);
@@ -208,7 +208,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                         _owinRequest.Headers.Add("simple-value", new[] {"v1"});
                         _owinRequest.Body = bodyStream;
 
-                        _owinRequest.ToHttpRequestForSigning(_signature);
+                        _owinRequest.ToHttpRequestForVerification(_signature);
 
                         _owinRequest.Body.Position.Should().Be(0);
                     }
@@ -223,7 +223,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                         _owinRequest.Headers.Add("simple-value", new[] {"v1"});
                         _owinRequest.Body = bodyStream;
 
-                        _owinRequest.ToHttpRequestForSigning(_signature);
+                        _owinRequest.ToHttpRequestForVerification(_signature);
 
                         Action act = () => bodyStream.ReadByte();
                         act.Should().Throw<ObjectDisposedException>();
@@ -242,7 +242,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                         _owinRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Digest);
                         _signature.Headers = _signature.Headers.Where(h => h != HeaderName.PredefinedHeaderNames.Digest).ToArray();
                         
-                        _owinRequest.ToHttpRequestForSigning(_signature);
+                        _owinRequest.ToHttpRequestForVerification(_signature);
 
                         Action act = () => bodyStream.ReadByte();
                         act.Should().NotThrow();

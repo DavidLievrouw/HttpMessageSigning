@@ -17,7 +17,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             _logger = logger;
         }
 
-        public override SignatureVerificationFailure VerifySync(HttpRequestForSigning signedRequest, Signature signature, Client client) {
+        public override SignatureVerificationFailure VerifySync(HttpRequestForVerification signedRequest, Signature signature, Client client) {
             var expires = signature.Created.HasValue && signature.Expires.HasValue 
                 ? signature.Expires.Value - signature.Created.Value
                 : new TimeSpan?();

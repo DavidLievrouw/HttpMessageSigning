@@ -19,13 +19,23 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             Nonce = "abc123"
         };
 
-        public static readonly HttpRequestForSigning Request = new HttpRequestForSigning {
+        public static readonly HttpRequestForSigning RequestForSigning = new HttpRequestForSigning {
             RequestUri = "https://dalion.eu/api/rsc1",
             Method = HttpMethod.Get,
             Headers = new HeaderDictionary(new Dictionary<string, StringValues> {
                 {"dalion-app-id", "app-one"},
                 {HeaderName.PredefinedHeaderNames.Date, Signature.Created.Value.ToString("R")}
             })
+        };
+        
+        public static readonly HttpRequestForVerification RequestForVerification = new HttpRequestForVerification {
+            RequestUri = "https://dalion.eu/api/rsc1",
+            Method = HttpMethod.Get,
+            Headers = new HeaderDictionary(new Dictionary<string, StringValues> {
+                {"dalion-app-id", "app-one"},
+                {HeaderName.PredefinedHeaderNames.Date, Signature.Created.Value.ToString("R")}
+            }),
+            Signature = new Signature { KeyId = new KeyId("app-one")}
         };
 
         public static readonly Client Client = new Client(Signature.KeyId, "Unit test app", new CustomSignatureAlgorithm("HMAC"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1.5));

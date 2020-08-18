@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             _logger = logger;
         }
 
-        public async Task<RequestSignatureVerificationResult> VerifySignature(HttpRequestForSigning request) {
+        public async Task<RequestSignatureVerificationResult> VerifySignature(HttpRequestForVerification request) {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             Client client = null;

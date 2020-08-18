@@ -41,7 +41,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             _matchingSignatureStringVerificationTask = matchingSignatureStringVerificationTask ?? throw new ArgumentNullException(nameof(matchingSignatureStringVerificationTask));
         }
 
-        public async Task<SignatureVerificationFailure> VerifySignature(HttpRequestForSigning signedRequest, Client client) {
+        public async Task<SignatureVerificationFailure> VerifySignature(HttpRequestForVerification signedRequest, Client client) {
             if (signedRequest == null) throw new ArgumentNullException(nameof(signedRequest));
             if (client == null) throw new ArgumentNullException(nameof(client));
 
