@@ -54,7 +54,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public async Task WhenSignatureIsParsed_InvokesEventCallback() {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
-                    .Returns(_signature);
+                    .Returns(new SignatureParsingSuccess(_signature));
 
                 Signature interceptedSignature = null;
                 _options.OnSignatureParsed = (request, sig) => {
@@ -69,6 +69,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             
             [Fact]
             public void WhenSignatureIsParsed_AndEventCallbackIsNull_DoesNotThrow() {
+                A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
+                    .Returns(new SignatureParsingSuccess(_signature));
+                
                 _options.OnSignatureParsed = null;
                 
                 Func<Task> act = () => _sut.VerifySignature(_httpRequest, _options);
@@ -78,7 +81,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public async Task VerifiesUsingSignatureManipulatedByCallback() {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
-                    .Returns(_signature);
+                    .Returns(new SignatureParsingSuccess(_signature));
 
                 HttpRequestForVerification intercepted = null;
                 A.CallTo(() => _requestSignatureVerificationOrchestrator.VerifySignature(A<HttpRequestForVerification>._))
@@ -102,7 +105,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public async Task ReturnsVerificationResult() {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
-                    .Returns(_signature);
+                    .Returns(new SignatureParsingSuccess(_signature));
 
                 A.CallTo(() => _requestSignatureVerificationOrchestrator.VerifySignature(A<HttpRequestForVerification>._))
                     .Returns(_verificationSuccessResult);
@@ -114,16 +117,14 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             
             [Fact]
             public async Task WhenSignatureCannotBeParsed_ReturnsFailureResult() {
-                var failure = new InvalidSignatureException("Cannot parse signature.");
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
-                    .Throws(failure);
+                    .Returns(new SignatureParsingFailure("Epic fail."));
                 
                 var actual = await _sut.VerifySignature(_httpRequest, _options);
 
                 actual.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
                 actual.As<RequestSignatureVerificationResultFailure>().IsSuccess.Should().BeFalse();
                 actual.As<RequestSignatureVerificationResultFailure>().Failure.Code.Should().Be("INVALID_SIGNATURE");
-                actual.As<RequestSignatureVerificationResultFailure>().Failure.Exception.Should().Be(failure);
             }
         }
 

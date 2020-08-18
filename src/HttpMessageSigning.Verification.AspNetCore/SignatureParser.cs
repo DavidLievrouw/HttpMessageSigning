@@ -13,27 +13,27 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             _logger = logger;
         }
 
-        public Signature Parse(HttpRequest request, SignedRequestAuthenticationOptions options) {
+        public SignatureParsingResult Parse(HttpRequest request, SignedRequestAuthenticationOptions options) {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             var authHeader = request.Headers[AuthorizationHeaderName];
             if (authHeader == Microsoft.Extensions.Primitives.StringValues.Empty)
-                throw new InvalidSignatureException($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
+                return new SignatureParsingFailure($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
 
             var rawAuthHeader = (string) authHeader;
             var separatorIndex = rawAuthHeader.IndexOf(' ');
             if (separatorIndex < 0) {
-                throw new InvalidSignatureException(
+                return new SignatureParsingFailure(
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             }
             var authScheme = rawAuthHeader.Substring(0, separatorIndex);
             if (authScheme != options.Scheme && authScheme != options.Scheme)
-                throw new InvalidSignatureException(
+                return new SignatureParsingFailure(
                     $"The specified request does not specify the expected {options.Scheme} scheme in the {AuthorizationHeaderName} header.");
 
             if (separatorIndex >= rawAuthHeader.Length - 1)
-                throw new InvalidSignatureException(
+                return new SignatureParsingFailure(
                     $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
             var authParam = rawAuthHeader.Substring(separatorIndex + 1);
 
@@ -54,49 +54,49 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 
                 var keyIdSelector = "keyId=";
                 if (authParamPart.StartsWith(keyIdSelector, StringComparison.Ordinal)) {
-                    if (keyId != KeyId.Empty) throw new InvalidSignatureException($"Duplicate '{keyIdSelector}' found in signature.");
+                    if (keyId != KeyId.Empty) return new SignatureParsingFailure($"Duplicate '{keyIdSelector}' found in signature.");
                     var value = authParamPart.Substring(keyIdSelector.Length).Trim('"');
                     keyId = new KeyId(value);
                 }
                 
                 var algorithmSelector = "algorithm=";
                 if (authParamPart.StartsWith(algorithmSelector, StringComparison.Ordinal)) {
-                    if (algorithm != string.Empty) throw new InvalidSignatureException($"Duplicate '{algorithmSelector}' found in signature.");
+                    if (algorithm != string.Empty) return new SignatureParsingFailure($"Duplicate '{algorithmSelector}' found in signature.");
                     var value = authParamPart.Substring(algorithmSelector.Length).Trim('"');
                     algorithm = value;
                 }
                 
                 var createdSelector = "created=";
                 if (authParamPart.StartsWith(createdSelector, StringComparison.Ordinal)) {
-                    if (createdString != string.Empty) throw new InvalidSignatureException($"Duplicate '{createdSelector}' found in signature.");
+                    if (createdString != string.Empty) return new SignatureParsingFailure($"Duplicate '{createdSelector}' found in signature.");
                     var value = authParamPart.Substring(createdSelector.Length).Trim('"');
                     createdString = value;
                 }
                 
                 var expiresSelector = "expires=";
                 if (authParamPart.StartsWith(expiresSelector, StringComparison.Ordinal)) {
-                    if (expiresString != string.Empty) throw new InvalidSignatureException($"Duplicate '{expiresSelector}' found in signature.");
+                    if (expiresString != string.Empty) return new SignatureParsingFailure($"Duplicate '{expiresSelector}' found in signature.");
                     var value = authParamPart.Substring(expiresSelector.Length).Trim('"');
                     expiresString = value;
                 }
                 
                 var headersSelector = "headers=";
                 if (authParamPart.StartsWith(headersSelector, StringComparison.Ordinal)) {
-                    if (headersString != string.Empty) throw new InvalidSignatureException($"Duplicate '{headersSelector}' found in signature.");
+                    if (headersString != string.Empty) return new SignatureParsingFailure($"Duplicate '{headersSelector}' found in signature.");
                     var value = authParamPart.Substring(headersSelector.Length).Trim('"');
                     headersString = value;
                 }
                 
                 var nonceSelector = "nonce=";
                 if (authParamPart.StartsWith(nonceSelector, StringComparison.Ordinal)) {
-                    if (!string.IsNullOrEmpty(nonce)) throw new InvalidSignatureException($"Duplicate '{nonceSelector}' found in signature.");
+                    if (!string.IsNullOrEmpty(nonce)) return new SignatureParsingFailure($"Duplicate '{nonceSelector}' found in signature.");
                     var value = authParamPart.Substring(nonceSelector.Length).Trim('"');
                     nonce = value;
                 }
                 
                 var signatureSelector = "signature=";
                 if (authParamPart.StartsWith(signatureSelector, StringComparison.Ordinal)) {
-                    if (signature != string.Empty) throw new InvalidSignatureException($"Duplicate '{signatureSelector}' found in signature.");
+                    if (signature != string.Empty) return new SignatureParsingFailure($"Duplicate '{signatureSelector}' found in signature.");
                     var value = authParamPart.Substring(signatureSelector.Length).Trim('"');
                     signature = value;
                 }
@@ -133,12 +133,12 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 parsedSignature.Validate();
             }
             catch (ValidationException ex) {
-                throw new InvalidSignatureException(
+                return new SignatureParsingFailure(
                     $"The specified request does not specify a valid signature in the {AuthorizationHeaderName} header. See inner exception.",
                     ex);
             }
 
-            return parsedSignature;
+            return new SignatureParsingSuccess(parsedSignature);
         }
     }
 }

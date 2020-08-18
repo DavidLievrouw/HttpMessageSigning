@@ -47,46 +47,57 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             }
 
             [Fact]
-            public void WhenRequestHasNoAuthorizationHeader_ThrowsInvalidSignatureException() {
+            public void WhenRequestHasNoAuthorizationHeader_ReturnsFailure() {
                 _request.Headers.Clear();
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
 
             [Fact]
-            public void WhenRequestHasAnInvalidAuthorizationHeader_ThrowsInvalidSignatureException() {
+            public void WhenRequestHasAnInvalidAuthorizationHeader_ReturnsFailure() {
                 _request.Headers["Authorization"] = "{nonsense}";
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
 
             [Fact]
-            public void WhenRequestHasAnAuthorizationHeaderForAnotherScheme_ThrowsInvalidSignatureException() {
+            public void WhenRequestHasAnAuthorizationHeaderForAnotherScheme_ReturnsFailure() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", "SomethingElse");
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
 
             [Fact]
-            public void WhenRequestHasAnAuthorizationHeaderWithoutParam_ThrowsInvalidSignatureException() {
+            public void WhenRequestHasAnAuthorizationHeaderWithoutParam_ReturnsFailure() {
                 _request.Headers["Authorization"] = _options.Scheme + " ";
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
 
             [Fact]
             public void GivenACompleteParam_ParsesAllProperties() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
-                var actual = _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
+
+                act.Should().NotThrow();
 
                 var expected = new Signature {
                     KeyId = new KeyId("app1"),
@@ -101,7 +112,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     String = "xyz123==",
                     Nonce = "abc123"
                 };
-                actual.Should().BeEquivalentTo(expected);
+                actual.As<SignatureParsingSuccess>().Signature.Should().BeEquivalentTo(expected);
             }
 
             [Fact]
@@ -109,7 +120,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
                 _request.Headers["Authorization"] = _request.Headers["Authorization"] + ",additional=true";
 
-                var actual = _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
+
+                act.Should().NotThrow();
 
                 var expected = new Signature {
                     KeyId = new KeyId("app1"),
@@ -124,7 +138,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     String = "xyz123==",
                     Nonce = "abc123"
                 };
-                actual.Should().BeEquivalentTo(expected);
+                actual.As<SignatureParsingSuccess>().Signature.Should().BeEquivalentTo(expected);
             }
 
             [Fact]
@@ -132,8 +146,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 SetHeader(_request, "app1", "rsa-sha256", null, _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
                 var actual = _sut.Parse(_request, _options);
-
-                actual.Created.Should().BeNull();
+                
+                actual.Should().BeAssignableTo<SignatureParsingSuccess>();
+                actual.As<SignatureParsingSuccess>().Signature.Created.Should().BeNull();
             }
 
             [Fact]
@@ -142,7 +157,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 var actual = _sut.Parse(_request, _options);
 
-                actual.Created.Should().BeNull();
+                actual.Should().BeAssignableTo<SignatureParsingSuccess>();
+                actual.As<SignatureParsingSuccess>().Signature.Created.Should().BeNull();
             }
 
             [Fact]
@@ -151,7 +167,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 var actual = _sut.Parse(_request, _options);
 
-                actual.Expires.Should().BeNull();
+                actual.Should().BeAssignableTo<SignatureParsingSuccess>();
+                actual.As<SignatureParsingSuccess>().Signature.Expires.Should().BeNull();
             }
 
             [Fact]
@@ -160,7 +177,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 var actual = _sut.Parse(_request, _options);
 
-                actual.Expires.Should().BeNull();
+                actual.Should().BeAssignableTo<SignatureParsingSuccess>();
+                actual.As<SignatureParsingSuccess>().Signature.Expires.Should().BeNull();
             }
 
             [Fact]
@@ -169,34 +187,41 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 var actual = _sut.Parse(_request, _options);
 
-                actual.Algorithm.Should().BeNull();
+                actual.Should().BeAssignableTo<SignatureParsingSuccess>();
+                actual.As<SignatureParsingSuccess>().Signature.Algorithm.Should().BeNull();
             }
 
             [Fact]
-            public void WhenHeadersIsNotSpecified_ThrowsInvalidSignatureException() {
+            public void WhenHeadersIsNotSpecified_ReturnsFailure() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), null, "xyz123==", "abc123", _options.Scheme);
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
 
             [Fact]
-            public void WhenKeyIdIsNotSpecified_ThrowsInvalidSignatureException() {
+            public void WhenKeyIdIsNotSpecified_ReturnsFailure() {
                 SetHeader(_request, null, "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme);
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
 
             [Fact]
-            public void WhenStringNotSpecified_ThrowsInvalidSignatureException() {
+            public void WhenStringNotSpecified_ReturnsFailure() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", null, "abc123", _options.Scheme);
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
 
             [Fact]
@@ -205,70 +230,85 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 var actual = _sut.Parse(_request, _options);
                 
-                actual.Nonce.Should().BeNull();
+                actual.Should().BeAssignableTo<SignatureParsingSuccess>();
+                actual.As<SignatureParsingSuccess>().Signature.Nonce.Should().BeNull();
             }
             
             [Fact]
-            public void GivenDuplicateKeyId_ThrowsInvalidSignatureException() {
+            public void GivenDuplicateKeyId_ReturnsFailure() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "keyId=\"app2\"");
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
             
             [Fact]
-            public void GivenDuplicateAlgorithm_ThrowsInvalidSignatureException() {
+            public void GivenDuplicateAlgorithm_ReturnsFailure() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "algorithm=\"hs2019\"");
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
             
             [Fact]
-            public void GivenDuplicateCreated_ThrowsInvalidSignatureException() {
+            public void GivenDuplicateCreated_ReturnsFailure() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "created=" + _nowEpoch);
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
             
             [Fact]
-            public void GivenDuplicateExpires_ThrowsInvalidSignatureException() {
+            public void GivenDuplicateExpires_ReturnsFailure() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "expires=" + _expiresEpoch);
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
             
             [Fact]
-            public void GivenDuplicateHeaders_ThrowsInvalidSignatureException() {
+            public void GivenDuplicateHeaders_ReturnsFailure() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "headers=\"(request-target) date\"");
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
             
             [Fact]
-            public void GivenDuplicateNonce_ThrowsInvalidSignatureException() {
+            public void GivenDuplicateNonce_ReturnsFailure() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "nonce=\"xyz987\"");
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
             
             [Fact]
-            public void GivenDuplicateSignature_ThrowsInvalidSignatureException() {
+            public void GivenDuplicateSignature_ReturnsFailure() {
                 SetHeader(_request, "app1", "rsa-sha256", _nowEpoch.ToString(), _expiresEpoch.ToString(), "(request-target) date content-length", "xyz123==", "abc123", _options.Scheme, "signature=\"xyz987==\"");
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<InvalidSignatureException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
             }
             
             private static string Compose(
