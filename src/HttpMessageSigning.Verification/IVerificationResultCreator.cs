@@ -1,5 +1,5 @@
 ﻿namespace Dalion.HttpMessageSigning.Verification {
-    public interface IVerificationResultCreator {
+    internal interface IVerificationResultCreator {
         RequestSignatureVerificationResult CreateForSuccess();
         RequestSignatureVerificationResult CreateForFailure(SignatureVerificationFailure failure);
     }

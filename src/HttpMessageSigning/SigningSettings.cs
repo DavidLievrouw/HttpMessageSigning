@@ -89,10 +89,12 @@ namespace Dalion.HttpMessageSigning {
             return errors;
         }
 
+        /// <inheritdoc />
         public void Dispose() {
             SignatureAlgorithm?.Dispose();
         }
 
+        /// <inheritdoc />
         public object Clone() {
             return new SigningSettings {
                 Expires = Expires,

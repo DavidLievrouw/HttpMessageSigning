@@ -2,9 +2,15 @@
 
 namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
-    /// Represents a value that the server can use to check nonce validity.
+    ///     Represents a value that the server can use to check nonce validity.
     /// </summary>
     public class Nonce {
+        /// <summary>
+        ///     Creates a new instance of this class.
+        /// </summary>
+        /// <param name="clientId">The identity of the client for which the nonce is used.</param>
+        /// <param name="value">The nonce value.</param>
+        /// <param name="expiration">The time when the nonce value can be reused for subsequent requests form the client.</param>
         public Nonce(KeyId clientId, string value, DateTimeOffset expiration) {
             if (string.IsNullOrEmpty(value)) throw new ArgumentException("Value cannot be null or empty.", nameof(value));
             if (clientId == KeyId.Empty) throw new ArgumentException("Value cannot be empty.", nameof(clientId));
@@ -14,17 +20,17 @@ namespace Dalion.HttpMessageSigning.Verification {
         }
 
         /// <summary>
-        /// Gets or sets the identity of the client for which the nonce is used.
+        ///     Gets or sets the identity of the client for which the nonce is used.
         /// </summary>
         public KeyId ClientId { get; set; }
-        
+
         /// <summary>
-        /// Gets or sets the nonce value.
+        ///     Gets or sets the nonce value.
         /// </summary>
         public string Value { get; set; }
-        
+
         /// <summary>
-        /// Gets or sets the time when the nonce value can be reused for subsequent requests form the client.
+        ///     Gets or sets the time when the nonce value can be reused for subsequent requests form the client.
         /// </summary>
         public DateTimeOffset Expiration { get; set; }
     }

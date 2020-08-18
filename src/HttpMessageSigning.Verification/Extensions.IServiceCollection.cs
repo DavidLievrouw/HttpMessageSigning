@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification {
+    /// <summary>
+    ///     Extension methods for this library.
+    /// </summary>
     public static partial class Extensions {
         /// <summary>
         ///     Adds <see cref="ISignatureVerifier"/> registrations to the specified

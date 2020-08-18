@@ -49,6 +49,7 @@ namespace Dalion.HttpMessageSigning {
         /// </summary>
         public string String { get; set; }
 
+        /// <inheritdoc />
         public object Clone() {
             return new Signature {
                 KeyId = KeyId,
