@@ -4,6 +4,11 @@ using System.Text;
 
 namespace Dalion.HttpMessageSigning {
     public static partial class Extensions {
+        /// <summary>
+        /// Perform URL encoding on the specified <see cref="Uri"/>.
+        /// </summary>
+        /// <param name="decoded">The <see cref="Uri"/> that needs to be encoded.</param>
+        /// <returns>The encoded string representation of the specified <see cref="Uri"/>.</returns>
         public static string UrlEncode(this Uri decoded) {
             if (decoded == null) return null;
 
