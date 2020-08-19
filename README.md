@@ -67,7 +67,14 @@ public class HttpRequestSignatureParser {
 ...
 
     public async Task Verify(HttpRequest request) {
-        var verificationResult = await _requestSignatureVerifier.VerifySignature(request);
+        var options = new SignedRequestAuthenticationOptions {
+            Realm = "Sample application",
+            OnSignatureParsed = (httpRequest, signature) => {
+                _logger.LogDebug("Parsed signature for client with key '{0}'.", signature.KeyId);
+                return Task.CompletedTask;
+            }
+        };
+        var verificationResult = await _requestSignatureVerifier.VerifySignature(request, options);
 
         var httpContext = _httpContextAccessor.HttpContext;
         if (verificationResult is RequestSignatureVerificationResultFailure failure) {
