@@ -14,7 +14,17 @@ namespace Conformance {
             request.Host = clientRequest.RequestUri.IsAbsoluteUri ? new HostString(clientRequest.RequestUri.Host, clientRequest.RequestUri.Port) : new HostString();
             request.Path = clientRequest.RequestUri.IsAbsoluteUri ? clientRequest.RequestUri.AbsolutePath : clientRequest.RequestUri.OriginalString.Split('?')[0];
             request.Headers["Authorization"] = clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter;
-
+            
+            if (clientRequest.RequestUri.IsAbsoluteUri) {
+                request.QueryString = new QueryString(clientRequest.RequestUri.Query);
+            }
+            else {
+                var originalString = clientRequest.RequestUri.OriginalString;
+                var idx = originalString.IndexOf('?');
+                var query = idx >= 0 ? originalString.Substring(idx) : "";
+                request.QueryString = new QueryString(query);
+            }
+            
             var bodyTask = clientRequest.Content?.ReadAsStreamAsync();
             if (bodyTask != null) request.Body = await bodyTask;
 
