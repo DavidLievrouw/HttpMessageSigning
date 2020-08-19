@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.ObjectPool;
 
 namespace Dalion.HttpMessageSigning {
     /// <summary>
     ///     Represents the ECDsa signature algorithm.
     /// </summary>
     public class ECDsaSignatureAlgorithm : ISignatureAlgorithm {
+        private static readonly ObjectPoolProvider PoolProvider = new DefaultObjectPoolProvider {MaximumRetained = Environment.ProcessorCount * 3};
+        
         private readonly ECDsa _ecdsa;
+        private readonly ObjectPool<HashAlgorithm> _hasherPool;
 
         /// <summary>
         ///     Creates a new <see cref="ECDsaSignatureAlgorithm" />.
@@ -17,6 +21,7 @@ namespace Dalion.HttpMessageSigning {
         public ECDsaSignatureAlgorithm(HashAlgorithmName hashAlgorithm, ECDsa ecdsa) {
             HashAlgorithm = hashAlgorithm;
             _ecdsa = ecdsa ?? throw new ArgumentNullException(nameof(ecdsa));
+            _hasherPool = PoolProvider.Create(new PooledHashAlgorithmPolicy(() => HashAlgorithmFactory.Create(HashAlgorithm)));
         }
 
         /// <inheritdoc />
@@ -25,6 +30,10 @@ namespace Dalion.HttpMessageSigning {
         /// <inheritdoc />
         public void Dispose() {
             _ecdsa?.Dispose();
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            if (_hasherPool is IDisposable disposable) {
+                disposable.Dispose();
+            }
         }
 
         /// <inheritdoc />
@@ -33,10 +42,15 @@ namespace Dalion.HttpMessageSigning {
         /// <inheritdoc />
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
-
-            using (var hasher = HashAlgorithmFactory.Create(HashAlgorithm)) {
+            
+            HashAlgorithm hasher = null;
+            try {
+                hasher = _hasherPool.Get();
                 var hashedData = hasher.ComputeHash(inputBytes);
                 return _ecdsa.SignHash(hashedData);
+            }
+            finally {
+                if (hasher != null) _hasherPool.Return(hasher);
             }
         }
 
@@ -47,9 +61,14 @@ namespace Dalion.HttpMessageSigning {
 
             var signedBytes = Encoding.UTF8.GetBytes(contentToSign);
 
-            using (var hasher = HashAlgorithmFactory.Create(HashAlgorithm)) {
+            HashAlgorithm hasher = null;
+            try {
+                hasher = _hasherPool.Get();
                 var hashedData = hasher.ComputeHash(signedBytes);
                 return _ecdsa.VerifyHash(hashedData, signature);
+            }
+            finally {
+                if (hasher != null) _hasherPool.Return(hasher);
             }
         }
 

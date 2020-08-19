@@ -1,13 +1,17 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.ObjectPool;
 
 namespace Dalion.HttpMessageSigning {
     /// <summary>
     ///     Represents an RSA algorithm that is used to sign a request, or to verify a signature.
     /// </summary>
     public class RSASignatureAlgorithm : ISignatureAlgorithm {
+        private static readonly ObjectPoolProvider PoolProvider = new DefaultObjectPoolProvider {MaximumRetained = Environment.ProcessorCount * 3};
+        
         private readonly RSA _rsa;
+        private readonly ObjectPool<HashAlgorithm> _hasherPool;
 
         /// <summary>
         ///     Creates a new <see cref="RSASignatureAlgorithm" />.
@@ -17,6 +21,7 @@ namespace Dalion.HttpMessageSigning {
         public RSASignatureAlgorithm(HashAlgorithmName hashAlgorithm, RSA rsa) {
             HashAlgorithm = hashAlgorithm;
             _rsa = rsa ?? throw new ArgumentNullException(nameof(rsa));
+            _hasherPool = PoolProvider.Create(new PooledHashAlgorithmPolicy(() => HashAlgorithmFactory.Create(HashAlgorithm)));
         }
 
         /// <inheritdoc />
@@ -25,6 +30,10 @@ namespace Dalion.HttpMessageSigning {
         /// <inheritdoc />
         public void Dispose() {
             _rsa?.Dispose();
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            if (_hasherPool is IDisposable disposable) {
+                disposable.Dispose();
+            }
         }
 
         /// <inheritdoc />
@@ -33,9 +42,15 @@ namespace Dalion.HttpMessageSigning {
         /// <inheritdoc />
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
-            using (var hasher = HashAlgorithmFactory.Create(HashAlgorithm)) {
+            
+            HashAlgorithm hasher = null;
+            try {
+                hasher = _hasherPool.Get();
                 var hashedData = hasher.ComputeHash(inputBytes);
                 return _rsa.SignHash(hashedData, HashAlgorithm, RSASignaturePadding.Pkcs1);
+            }
+            finally {
+                if (hasher != null) _hasherPool.Return(hasher);
             }
         }
 
@@ -45,9 +60,15 @@ namespace Dalion.HttpMessageSigning {
             if (signature == null) throw new ArgumentNullException(nameof(signature));
 
             var signedBytes = Encoding.UTF8.GetBytes(contentToSign);
-            using (var hasher = HashAlgorithmFactory.Create(HashAlgorithm)) {
+            
+            HashAlgorithm hasher = null;
+            try {
+                hasher = _hasherPool.Get();
                 var hashedData = hasher.ComputeHash(signedBytes);
                 return _rsa.VerifyHash(hashedData, signature, HashAlgorithm, RSASignaturePadding.Pkcs1);
+            }
+            finally {
+                if (hasher != null) _hasherPool.Return(hasher);
             }
         }
 
@@ -80,7 +101,7 @@ namespace Dalion.HttpMessageSigning {
         /// </summary>
         /// <returns>The parameters containing the public key of this RSA algorithm.</returns>
         public RSAParameters GetPublicKey() {
-            return _rsa.ExportParameters(false);
+            return _rsa.ExportParameters(includePrivateParameters: false);
         }
     }
 }
