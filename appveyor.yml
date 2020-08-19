@@ -36,7 +36,7 @@ build_script:
 
 test_script:
 - ps: >-
-    DEL ./src/coverage.xml
+    if (Test-Path ./src/coverage.xml -PathType Leaf) { DEL ./src/coverage.xml }
 
     DEL ./src/coverage-*.json
     
