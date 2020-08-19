@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.ObjectPool;
 
 namespace Dalion.HttpMessageSigning {
     /// <summary>
@@ -17,6 +18,10 @@ namespace Dalion.HttpMessageSigning {
             {HashAlgorithmName.SHA512, key => new HMACSHA512(key)},
         };
 
+        private static readonly ObjectPoolProvider PoolProvider = new DefaultObjectPoolProvider {MaximumRetained = Environment.ProcessorCount * 3};
+        
+        private readonly ObjectPool<HMAC> _hasherPool; 
+        
         /// <summary>
         ///     Creates a new <see cref="HMACSignatureAlgorithm" />.
         /// </summary>
@@ -26,6 +31,7 @@ namespace Dalion.HttpMessageSigning {
             if (secret == null) throw new ArgumentNullException(nameof(secret));
             HashAlgorithm = hashAlgorithm;
             Key = Encoding.UTF8.GetBytes(secret);
+            _hasherPool = PoolProvider.Create(new PooledHMACPolicy(() => CreateHMAC(HashAlgorithm, Key)));
         }
 
         /// <summary>
@@ -42,8 +48,14 @@ namespace Dalion.HttpMessageSigning {
         /// <inheritdoc />
         public byte[] ComputeHash(string contentToSign) {
             var inputBytes = Encoding.UTF8.GetBytes(contentToSign);
-            using (var hasher = CreateHMAC(HashAlgorithm, Key)) {
+
+            HMAC hasher = null;
+            try {
+                hasher = _hasherPool.Get();
                 return hasher.ComputeHash(inputBytes);
+            }
+            finally {
+                if (hasher != null) _hasherPool.Return(hasher);
             }
         }
 
@@ -58,7 +70,10 @@ namespace Dalion.HttpMessageSigning {
 
         /// <inheritdoc />
         public void Dispose() {
-            // Noop
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            if (_hasherPool is IDisposable disposable) {
+                disposable.Dispose();
+            }
         }
 
         private static HMAC CreateHMAC(HashAlgorithmName hashAlgorithmName, byte[] key) {
