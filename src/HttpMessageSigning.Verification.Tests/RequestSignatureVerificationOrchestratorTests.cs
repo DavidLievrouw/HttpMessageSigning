@@ -68,7 +68,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     .Returns(client);
 
                 var verificationResultCreator = A.Fake<IVerificationResultCreator>();
-                A.CallTo(() => _verificationResultCreatorFactory.Create(client, _request.Signature))
+                A.CallTo(() => _verificationResultCreatorFactory.Create(client, _request))
                     .Returns(verificationResultCreator);
                     
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForVerification>._, A<Client>._))
@@ -87,12 +87,12 @@ namespace Dalion.HttpMessageSigning.Verification {
                     .Returns(client);
 
                 var verificationResultCreator = A.Fake<IVerificationResultCreator>();
-                A.CallTo(() => _verificationResultCreatorFactory.Create(client, _request.Signature))
+                A.CallTo(() => _verificationResultCreatorFactory.Create(client, _request))
                     .Returns(verificationResultCreator);
                 
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
                 A.CallTo(() => verificationResultCreator.CreateForSuccess())
-                    .Returns(new RequestSignatureVerificationResultSuccess(client, _request.Signature, principal));
+                    .Returns(new RequestSignatureVerificationResultSuccess(client, _request, principal));
                 
                 A.CallTo(() => _signatureVerifier.VerifySignature(A<HttpRequestForVerification>._, A<Client>._))
                     .Returns((SignatureVerificationFailure)null);
@@ -111,7 +111,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     .Returns(client);
                 
                 var verificationResultCreator = A.Fake<IVerificationResultCreator>();
-                A.CallTo(() => _verificationResultCreatorFactory.Create(client, _request.Signature))
+                A.CallTo(() => _verificationResultCreatorFactory.Create(client, _request))
                     .Returns(verificationResultCreator);
                 
                 var failure = SignatureVerificationFailure.SignatureExpired("Invalid signature.");
@@ -119,7 +119,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     .Returns(failure);
                 
                 A.CallTo(() => verificationResultCreator.CreateForFailure(failure))
-                    .Returns(new RequestSignatureVerificationResultFailure(client, _request.Signature, failure));
+                    .Returns(new RequestSignatureVerificationResultFailure(client, _request, failure));
                 
                 var actual = await _sut.VerifySignature(_request);
 
@@ -151,7 +151,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     .Returns(client);
                 
                 var verificationResultCreator = A.Fake<IVerificationResultCreator>();
-                A.CallTo(() => _verificationResultCreatorFactory.Create(client, _request.Signature))
+                A.CallTo(() => _verificationResultCreatorFactory.Create(client, _request))
                     .Returns(verificationResultCreator);
                 
                 var failure = new InvalidOperationException("Not something to do with verification.");

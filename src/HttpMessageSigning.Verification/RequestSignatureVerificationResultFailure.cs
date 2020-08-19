@@ -9,12 +9,12 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// Creates a new instance of this class.
         /// </summary>
         /// <param name="client">The client for which the verification happened.</param>
-        /// <param name="signature">The signature for which verification was attempted.</param>
+        /// <param name="requestForVerification">The data of the request that was used to verify.</param>
         /// <param name="failure">An object that indicates why the verification failed.</param>
         public RequestSignatureVerificationResultFailure(
             Client client, 
-            Signature signature,
-            SignatureVerificationFailure failure) : base(client, signature) {
+            HttpRequestForVerification requestForVerification,
+            SignatureVerificationFailure failure) : base(client, requestForVerification) {
             Failure = failure ?? throw new ArgumentNullException(nameof(failure));
         }
 

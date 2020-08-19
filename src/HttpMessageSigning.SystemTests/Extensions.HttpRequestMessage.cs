@@ -16,13 +16,13 @@ namespace Dalion.HttpMessageSigning {
             request.Headers["Authorization"] = clientRequest.Headers.Authorization.Scheme + " " + clientRequest.Headers.Authorization.Parameter;
 
             if (clientRequest.RequestUri.IsAbsoluteUri) {
-                request.QueryString = new QueryString(clientRequest.RequestUri.Query);
+                request.QueryString = new Microsoft.AspNetCore.Http.QueryString(clientRequest.RequestUri.Query);
             }
             else {
                 var originalString = clientRequest.RequestUri.OriginalString;
                 var idx = originalString.IndexOf('?');
                 var query = idx >= 0 ? originalString.Substring(idx) : "";
-                request.QueryString = new QueryString(query);
+                request.QueryString = new Microsoft.AspNetCore.Http.QueryString(query);
             }
 
             var bodyTask = clientRequest.Content?.ReadAsStreamAsync();

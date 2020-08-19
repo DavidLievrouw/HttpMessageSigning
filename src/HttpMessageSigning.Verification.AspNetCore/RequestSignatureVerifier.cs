@@ -26,7 +26,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (signatureParsingResult is SignatureParsingFailure parsingFailure) {
                 var failure = SignatureVerificationFailure.InvalidSignature(parsingFailure.Description, parsingFailure.Failure);
                 _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
-                return new RequestSignatureVerificationResultFailure(client: null, signature: null, failure);
+                return new RequestSignatureVerificationResultFailure(client: null, requestForVerification: null, failure);
             }
 
             var parsedSignature = ((SignatureParsingSuccess)signatureParsingResult).Signature;

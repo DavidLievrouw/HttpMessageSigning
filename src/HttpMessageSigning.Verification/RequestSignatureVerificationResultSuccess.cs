@@ -10,14 +10,14 @@ namespace Dalion.HttpMessageSigning.Verification {
         ///     Creates a new instance of this class.
         /// </summary>
         /// <param name="client">The client for which the verification happened.</param>
-        /// <param name="signature">The signature for which verification was attempted.</param>
+        /// <param name="requestForVerification">The data of the request that was used to verify.</param>
         /// <param name="principal">The principal that represents the verified signature.</param>
         public RequestSignatureVerificationResultSuccess(
             Client client,
-            Signature signature,
-            ClaimsPrincipal principal) : base(client, signature) {
+            HttpRequestForVerification requestForVerification,
+            ClaimsPrincipal principal) : base(client, requestForVerification) {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            if (signature == null) throw new ArgumentNullException(nameof(signature));
+            if (requestForVerification == null) throw new ArgumentNullException(nameof(requestForVerification));
             Principal = principal ?? throw new ArgumentNullException(nameof(principal));
         }
 

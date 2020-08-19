@@ -8,8 +8,8 @@ namespace Dalion.HttpMessageSigning.Verification {
             _claimsPrincipalFactory = claimsPrincipalFactory ?? throw new ArgumentNullException(nameof(claimsPrincipalFactory));
         }
 
-        public IVerificationResultCreator Create(Client client, Signature signature) {
-            return new VerificationResultCreator(client, signature, _claimsPrincipalFactory);
+        public IVerificationResultCreator Create(Client client, HttpRequestForVerification requestForVerification) {
+            return new VerificationResultCreator(client, requestForVerification, _claimsPrincipalFactory);
         }
     }
 }

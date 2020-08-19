@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public class SignedRequestAuthenticationHandlerTests {
-        private readonly Microsoft.AspNetCore.Authentication.ISystemClock _clock;
+        private readonly ISystemClock _clock;
         private readonly UrlEncoder _encoder;
         private readonly HttpRequest _httpRequest;
         private readonly ILoggerFactory _logger;
@@ -78,7 +78,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest, _options))
                     .Returns(new RequestSignatureVerificationResultFailure(
                         new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
-                        new Signature(),
+                        new HttpRequestForVerification(),
                         cause));
 
                 var actual = await _sut.DoAuthenticate();
@@ -95,7 +95,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 var cause = SignatureVerificationFailure.InvalidSignatureString("Invalid signature");
                 var failureResult = new RequestSignatureVerificationResultFailure(
                     new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
-                    new Signature(),
+                    new HttpRequestForVerification(), 
                     cause);
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest, _options))
                     .Returns(failureResult);
@@ -117,7 +117,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest, _options))
                     .Returns(new UnknownResult(new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
-                        new Signature()));
+                        new HttpRequestForVerification()));
 
                 var actual = await _sut.DoAuthenticate();
 
@@ -132,7 +132,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest, _options))
                     .Returns(new RequestSignatureVerificationResultSuccess(
                         new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
-                        new Signature(),
+                        new HttpRequestForVerification(),
                         principal));
 
                 var actual = await _sut.DoAuthenticate();
@@ -149,7 +149,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
                 var successResult = new RequestSignatureVerificationResultSuccess(
                     new Client("app1", "Unit test app", new CustomSignatureAlgorithm("test"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
-                    new Signature(),
+                    new HttpRequestForVerification(),
                     principal);
                 A.CallTo(() => _requestSignatureVerifier.VerifySignature(_httpRequest, _options))
                     .Returns(successResult);
@@ -166,7 +166,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             }
 
             private class UnknownResult : RequestSignatureVerificationResult {
-                public UnknownResult(Client client, Signature signature) : base(client, signature) { }
+                public UnknownResult(Client client, HttpRequestForVerification requestForVerification) : base(client, requestForVerification) { }
                 public override bool IsSuccess => false;
             }
         }
@@ -211,7 +211,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
         private class SignedRequestAuthenticationHandlerForTests : SignedRequestAuthenticationHandler {
             public SignedRequestAuthenticationHandlerForTests(IOptionsMonitor<SignedRequestAuthenticationOptions> options, UrlEncoder encoder,
-                Microsoft.AspNetCore.Authentication.ISystemClock clock, IRequestSignatureVerifier requestSignatureVerifier, ILoggerFactory logger = null) : base(options, encoder,
+                ISystemClock clock, IRequestSignatureVerifier requestSignatureVerifier, ILoggerFactory logger = null) : base(options, encoder,
                 clock, requestSignatureVerifier, logger) { }
 
             internal Task DoChallenge() {

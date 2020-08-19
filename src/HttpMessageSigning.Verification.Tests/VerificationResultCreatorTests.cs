@@ -8,29 +8,39 @@ using Xunit;
 namespace Dalion.HttpMessageSigning.Verification {
     public class VerificationResultCreatorTests {
         private readonly Client _client;
-        private readonly Signature _signature;
+        private readonly HttpRequestForVerification _requestForVerification;
         private readonly IClaimsPrincipalFactory _claimsPrincipalFactory;
         private readonly VerificationResultCreator _sut;
 
         public VerificationResultCreatorTests() {
             FakeFactory.Create(out _claimsPrincipalFactory);
-            _signature = new Signature {KeyId = "client1"};
+            _requestForVerification = new HttpRequestForVerification {Signature = new Signature {KeyId = "client1"}};
             _client = new Client("client1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
-            _sut = new VerificationResultCreator(_client, _signature, _claimsPrincipalFactory);
+            _sut = new VerificationResultCreator(_client, _requestForVerification, _claimsPrincipalFactory);
         }
 
         public class CreateForSuccess : VerificationResultCreatorTests {
             [Fact]
             public void GivenNullClient_ThrowsInvalidOperationException() {
-                var sut = new VerificationResultCreator(null, _signature, _claimsPrincipalFactory);
+                var sut = new VerificationResultCreator(null, _requestForVerification, _claimsPrincipalFactory);
                 Action act = () => sut.CreateForSuccess();
                 act.Should().Throw<InvalidOperationException>();
             }
 
             [Fact]
-            public void GivenNullSignature_ThrowsInvalidOperationException() {
+            public void GivenNullRequest_ThrowsInvalidOperationException() {
                 var sut = new VerificationResultCreator(_client, null, _claimsPrincipalFactory);
                 Action act = () => sut.CreateForSuccess();
+                act.Should().Throw<InvalidOperationException>();
+            }
+
+            [Fact]
+            public void GivenRequestWithNullSignature_ThrowsInvalidOperationException() {
+                _requestForVerification.Signature = null;
+                
+                var sut = new VerificationResultCreator(_client, _requestForVerification, _claimsPrincipalFactory);
+                Action act = () => sut.CreateForSuccess();
+                
                 act.Should().Throw<InvalidOperationException>();
             }
 
@@ -43,7 +53,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var actual = _sut.CreateForSuccess();
 
                 actual.Should().NotBeNull().And.BeAssignableTo<RequestSignatureVerificationResultSuccess>();
-                var expected = new RequestSignatureVerificationResultSuccess(_client, _signature, principal);
+                var expected = new RequestSignatureVerificationResultSuccess(_client, _requestForVerification, principal);
                 actual.As<RequestSignatureVerificationResultSuccess>().Should().BeEquivalentTo(expected);
             }
         }
@@ -63,15 +73,25 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public void AllowsForNullClient() {
-                var sut = new VerificationResultCreator(null, _signature, _claimsPrincipalFactory);
+                var sut = new VerificationResultCreator(null, _requestForVerification, _claimsPrincipalFactory);
                 Action act = () => sut.CreateForFailure(_failure);
                 act.Should().NotThrow();
             }
 
             [Fact]
-            public void AllowsForNullSignature() {
+            public void AllowsForNullRequest() {
                 var sut = new VerificationResultCreator(_client, null, _claimsPrincipalFactory);
                 Action act = () => sut.CreateForFailure(_failure);
+                act.Should().NotThrow();
+            }
+
+            [Fact]
+            public void AllowsForRequestWithNullSignature() {
+                _requestForVerification.Signature = null;
+
+                var sut = new VerificationResultCreator(_client, _requestForVerification, _claimsPrincipalFactory);
+                Action act = () => sut.CreateForFailure(_failure);
+                
                 act.Should().NotThrow();
             }
 
@@ -80,7 +100,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var actual = _sut.CreateForFailure(_failure);
                 
                 actual.Should().NotBeNull().And.BeAssignableTo<RequestSignatureVerificationResultFailure>();
-                var expected = new RequestSignatureVerificationResultFailure(_client, _signature, _failure);
+                var expected = new RequestSignatureVerificationResultFailure(_client, _requestForVerification, _failure);
                 actual.As<RequestSignatureVerificationResultFailure>().Should().BeEquivalentTo(expected);
             }
         }

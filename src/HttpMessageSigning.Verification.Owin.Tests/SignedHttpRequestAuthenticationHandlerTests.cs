@@ -79,7 +79,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
                 var successResult = new RequestSignatureVerificationResultSuccess(
                     new Client("c1", "test", SignatureAlgorithm.CreateForVerification("s3cr3t"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
-                    new Signature(),
+                    new HttpRequestForVerification(),
                     principal);
                 A.CallTo(() => _options.RequestSignatureVerifier.VerifySignature(
                         A<IOwinRequest>.That.Matches(ConvertedRequest),
@@ -98,7 +98,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
                 var successResult = new RequestSignatureVerificationResultSuccess(
                     new Client("c1", "test", SignatureAlgorithm.CreateForVerification("s3cr3t"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
-                    new Signature(),
+                    new HttpRequestForVerification(),
                     principal);
                 A.CallTo(() => _options.RequestSignatureVerifier.VerifySignature(
                         A<IOwinRequest>.That.Matches(ConvertedRequest),
@@ -122,7 +122,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                 var failureResult = new RequestSignatureVerificationResultFailure(
                     new Client("c1", "test", SignatureAlgorithm.CreateForVerification("s3cr3t"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
-                    new Signature(),
+                    new HttpRequestForVerification(),
                     SignatureVerificationFailure.HeaderMissing("A header is missing.", null));
                 A.CallTo(() => _options.RequestSignatureVerifier.VerifySignature(
                         A<IOwinRequest>.That.Matches(ConvertedRequest),
@@ -140,7 +140,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                 var failureResult = new RequestSignatureVerificationResultFailure(
                     new Client("c1", "test", SignatureAlgorithm.CreateForVerification("s3cr3t"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)),
-                    new Signature(),
+                    new HttpRequestForVerification(),
                     SignatureVerificationFailure.HeaderMissing("A header is missing.", null));
                 A.CallTo(() => _options.RequestSignatureVerifier.VerifySignature(
                         A<IOwinRequest>.That.Matches(ConvertedRequest),

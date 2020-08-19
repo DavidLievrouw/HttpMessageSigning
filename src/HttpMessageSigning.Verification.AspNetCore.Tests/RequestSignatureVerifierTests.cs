@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -23,8 +24,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         public class VerifySignature : RequestSignatureVerifierTests {
             private readonly HttpRequest _httpRequest;
             private readonly SignedRequestAuthenticationOptions _options;
-            private readonly Signature _signature;
             private readonly RequestSignatureVerificationResultSuccess _verificationSuccessResult;
+            private readonly HttpRequestForVerification _requestForVerification;
 
             public VerifySignature() {
                 _httpRequest = new DefaultHttpContext().Request;
@@ -32,10 +33,14 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 _httpRequest.Scheme = "https";
                 _httpRequest.Host = new HostString("unittest.com", 9000);
                 _options = new SignedRequestAuthenticationOptions();
-                _signature = (Signature) TestModels.Signature.Clone();
+                _requestForVerification = new HttpRequestForVerification {
+                    Method = HttpMethod.Post,
+                    RequestUri = "https://unittest.com:9000",
+                    Signature = (Signature) TestModels.Signature.Clone()
+                };
                 _verificationSuccessResult = new RequestSignatureVerificationResultSuccess(
-                    new Client(_signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)), 
-                    _signature, 
+                    new Client(_requestForVerification.Signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)), 
+                    _requestForVerification, 
                     new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")})));
             }
 
@@ -54,7 +59,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public async Task WhenSignatureIsParsed_InvokesEventCallback() {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
-                    .Returns(new SignatureParsingSuccess(_signature));
+                    .Returns(new SignatureParsingSuccess(_requestForVerification.Signature));
 
                 Signature interceptedSignature = null;
                 _options.OnSignatureParsed = (request, sig) => {
@@ -64,13 +69,13 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 await _sut.VerifySignature(_httpRequest, _options);
 
-                interceptedSignature.Should().Be(_signature);
+                interceptedSignature.Should().Be(_requestForVerification.Signature);
             }
             
             [Fact]
             public void WhenSignatureIsParsed_AndEventCallbackIsNull_DoesNotThrow() {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
-                    .Returns(new SignatureParsingSuccess(_signature));
+                    .Returns(new SignatureParsingSuccess(_requestForVerification.Signature));
                 
                 _options.OnSignatureParsed = null;
                 
@@ -81,7 +86,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public async Task VerifiesUsingSignatureManipulatedByCallback() {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
-                    .Returns(new SignatureParsingSuccess(_signature));
+                    .Returns(new SignatureParsingSuccess(_requestForVerification.Signature));
 
                 HttpRequestForVerification intercepted = null;
                 A.CallTo(() => _requestSignatureVerificationOrchestrator.VerifySignature(A<HttpRequestForVerification>._))
@@ -95,7 +100,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 await _sut.VerifySignature(_httpRequest, _options);
 
-                var expectedSignature = (Signature)_signature.Clone();
+                var expectedSignature = (Signature)_requestForVerification.Signature.Clone();
                 expectedSignature.KeyId = new KeyId("xyz");
                 intercepted.Should().NotBeNull();
                 intercepted.Signature.Should().NotBeNull();
@@ -105,7 +110,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             [Fact]
             public async Task ReturnsVerificationResult() {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
-                    .Returns(new SignatureParsingSuccess(_signature));
+                    .Returns(new SignatureParsingSuccess(_requestForVerification.Signature));
 
                 A.CallTo(() => _requestSignatureVerificationOrchestrator.VerifySignature(A<HttpRequestForVerification>._))
                     .Returns(_verificationSuccessResult);

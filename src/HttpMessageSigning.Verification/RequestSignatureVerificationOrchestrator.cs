@@ -27,26 +27,26 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (request.Signature == null) {
                 var failure = SignatureVerificationFailure.InvalidSignature("The signature is missing from the request.");
                 _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
-                return new RequestSignatureVerificationResultFailure(client: null, request.Signature, failure);
+                return new RequestSignatureVerificationResultFailure(client: null, request, failure);
             }
 
             var firstValidationError = request.Signature.GetValidationErrors().FirstOrDefault();
             if (firstValidationError != default) {
                 var failure = SignatureVerificationFailure.InvalidSignature($"The signature is invalid: {firstValidationError.Message}");
                 _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
-                return new RequestSignatureVerificationResultFailure(client: null, request.Signature, failure);
+                return new RequestSignatureVerificationResultFailure(client: null, request, failure);
             }
 
             var client = await _clientStore.Get(request.Signature.KeyId).ConfigureAwait(continueOnCapturedContext: false);
             if (client == null) {
                 var failure = SignatureVerificationFailure.InvalidClient($"No {nameof(Client)}s with id '{request.Signature.KeyId}' are registered in the server store.");
                 _logger?.LogWarning("Request signature verification failed ({0}): {1}", failure.Code, failure.Message);
-                return new RequestSignatureVerificationResultFailure(client: null, request.Signature, failure);
+                return new RequestSignatureVerificationResultFailure(client: null, request, failure);
             }
 
             var verificationFailure = await _signatureVerifier.VerifySignature(request, client).ConfigureAwait(continueOnCapturedContext: false);
 
-            var verificationResultCreator = _verificationResultCreatorFactory.Create(client, request.Signature);
+            var verificationResultCreator = _verificationResultCreatorFactory.Create(client, request);
             var result = verificationFailure == null
                 ? verificationResultCreator.CreateForSuccess()
                 : verificationResultCreator.CreateForFailure(verificationFailure);

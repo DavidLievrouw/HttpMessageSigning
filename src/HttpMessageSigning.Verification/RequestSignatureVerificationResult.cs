@@ -6,11 +6,11 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// <summary>
         ///     Creates a new instance of this class.
         /// </summary>
-        /// <param name="client">The client for which the verification happened.</param>
-        /// <param name="signature">The signature for which verification was attempted.</param>
-        protected RequestSignatureVerificationResult(Client client, Signature signature) {
+        /// <param name="client">The client for which the verification happened.</param> 
+        /// <param name="requestForVerification">The data of the request that was used to verify.</param>
+        protected RequestSignatureVerificationResult(Client client, HttpRequestForVerification requestForVerification) {
             Client = client; // Can be null, because a failure might have occurred when looking up the client
-            Signature = signature;
+            RequestForVerification = requestForVerification; // Can be null, because a failure might have occurred before extracting the data
         }
 
         /// <summary>
@@ -19,9 +19,9 @@ namespace Dalion.HttpMessageSigning.Verification {
         public Client Client { get; }
 
         /// <summary>
-        ///     Gets the signature for which verification was attempted.
+        /// Gets the data of the request that was used to verify.
         /// </summary>
-        public Signature Signature { get; }
+        public HttpRequestForVerification RequestForVerification { get; }
 
         /// <summary>
         ///     Gets a value indicating whether the signature was successfully verified.

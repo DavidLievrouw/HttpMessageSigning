@@ -3,24 +3,25 @@
 namespace Dalion.HttpMessageSigning.Verification {
     internal class VerificationResultCreator : IVerificationResultCreator {
         private readonly Client _client;
-        private readonly Signature _signature;
+        private readonly HttpRequestForVerification _requestForVerification;
         private readonly IClaimsPrincipalFactory _claimsPrincipalFactory;
 
-        public VerificationResultCreator(Client client, Signature signature, IClaimsPrincipalFactory claimsPrincipalFactory) {
+        public VerificationResultCreator(Client client, HttpRequestForVerification requestForVerification, IClaimsPrincipalFactory claimsPrincipalFactory) {
             _client = client; // Can be null when specifying an unknown client
-            _signature = signature; // Can be null when the signature cannot be parsed
+            _requestForVerification = requestForVerification; // Can be null, because a failure might have occurred before extracting the data
             _claimsPrincipalFactory = claimsPrincipalFactory ?? throw new ArgumentNullException(nameof(claimsPrincipalFactory));
         }
 
         public RequestSignatureVerificationResult CreateForSuccess() {
             if (_client == null) throw new InvalidOperationException($"Cannot create a success {nameof(RequestSignatureVerificationResult)} without specifying a valid {nameof(Client)}.");
-            if (_signature == null) throw new InvalidOperationException($"Cannot create a success {nameof(RequestSignatureVerificationResult)} without specifying a valid {nameof(Signature)}.");
-            return new RequestSignatureVerificationResultSuccess(_client, _signature, _claimsPrincipalFactory.CreateForClient(_client));
+            if (_requestForVerification == null) throw new InvalidOperationException($"Cannot create a success {nameof(RequestSignatureVerificationResult)} without specifying a valid {nameof(HttpRequestForVerification)}.");
+            if (_requestForVerification.Signature == null) throw new InvalidOperationException($"Cannot create a success {nameof(RequestSignatureVerificationResult)} without specifying a valid {nameof(Signature)} in the {nameof(HttpRequestForVerification)}.");
+            return new RequestSignatureVerificationResultSuccess(_client, _requestForVerification, _claimsPrincipalFactory.CreateForClient(_client));
         }
 
         public RequestSignatureVerificationResult CreateForFailure(SignatureVerificationFailure failure) {
             if (failure == null) throw new ArgumentNullException(nameof(failure));
-            return new RequestSignatureVerificationResultFailure(_client, _signature, failure);
+            return new RequestSignatureVerificationResultFailure(_client, _requestForVerification, failure);
         }
     }
 }
