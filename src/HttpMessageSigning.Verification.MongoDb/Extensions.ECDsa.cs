@@ -4,6 +4,9 @@ using System.Security.Cryptography;
 using System.Xml;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
+    /// <summary>
+    ///     Extension methods for this library.
+    /// </summary>
     public static partial class Extensions {
         internal static void FromXml(this ECDsa ecdsa, string xmlString) {
             if (string.IsNullOrEmpty(xmlString)) throw new ArgumentException("Value cannot be null or empty.", nameof(xmlString));
