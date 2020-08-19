@@ -1,8 +1,10 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
@@ -20,6 +22,8 @@ namespace Benchmark {
 
         public SignRequestWithDigest() {
             var keyId = new KeyId("e0e8dcd638334c409e1b88daf821d135");
+            var cert = new X509Certificate2(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
+            
             var serviceProvider = new ServiceCollection()
                 .AddHttpMessageSigning(
                     keyId,

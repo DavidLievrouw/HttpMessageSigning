@@ -10,4 +10,10 @@
       <ProjectReference Include="..\HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="dalion.local.pfx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
