@@ -61,7 +61,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 [Fact]
                 public async Task CopiesUriPath() {
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
-                    var expectedUri = "/tests/api/rsc1";
+                    var expectedUri = "/tests/api/rsc1?query=1&cache=false";
                     actual.RequestUri.Should().Be(expectedUri);
                 }               
                 
@@ -71,7 +71,30 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
                     
-                    var expectedUri = "/api/rsc1";
+                    var expectedUri = "/api/rsc1?query=1&cache=false";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }          
+                
+                [Fact]
+                public async Task CanHandleEmptyPath() {
+                    _httpRequest.PathBase = PathString.Empty;
+                    _httpRequest.Path = PathString.Empty;
+                    
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
+                    
+                    var expectedUri = "/?query=1&cache=false";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }    
+                
+                [Fact]
+                public async Task CanHandleEmptyPathAndQuery() {
+                    _httpRequest.PathBase = PathString.Empty;
+                    _httpRequest.Path = PathString.Empty;
+                    _httpRequest.QueryString = QueryString.Empty;
+                    
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
+                    
+                    var expectedUri = "/";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
@@ -82,10 +105,21 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
                     
-                    var expectedUri = "/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.";
+                    var expectedUri = "/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query=1&cache=false";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
 
+                [Fact]
+                public async Task DecodesUriPathAndQueryString() {
+                    _httpRequest.PathBase = new PathString("/api");
+                    _httpRequest.Path = new PathString("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
+                    _httpRequest.QueryString = new QueryString("?query%2Bstring=%7Bbrooks%7D");
+
+                    var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
+
+                    actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query+string={brooks}");
+                }
+                
                 [Theory]
                 [InlineData("POST")]
                 [InlineData("PUT")]

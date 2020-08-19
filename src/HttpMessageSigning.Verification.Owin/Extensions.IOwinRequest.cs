@@ -15,7 +15,9 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             
             var request = new HttpRequestForVerification {
                 Method = new HttpMethod(owinRequest.Method),
-                RequestUri = (owinRequest.Uri.IsAbsoluteUri ? owinRequest.Uri.AbsolutePath : owinRequest.Uri.OriginalString.Split('?')[0]).UrlDecode(),
+                RequestUri = owinRequest.Uri.IsAbsoluteUri
+                    ? owinRequest.Uri.PathAndQuery.UrlDecode()
+                    : owinRequest.Uri.OriginalString.UrlDecode(),
                 Signature = signature
             };
 

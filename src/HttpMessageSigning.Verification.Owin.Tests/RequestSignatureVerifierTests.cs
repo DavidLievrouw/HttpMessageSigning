@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             private readonly RequestSignatureVerificationResultSuccess _verificationSuccessResult;
 
             public VerifySignature() {
-                _httpRequest = new FakeOwinRequest {
+                _httpRequest = new OwinRequest {
                     Method = "POST", 
                     Scheme = "https", 
                     Host = new HostString("unittest.com:9000")

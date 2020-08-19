@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             private readonly SignedHttpRequestAuthenticationOptions _options;
 
             public Parse() {
-                _request = new FakeOwinRequest();
+                _request = new OwinRequest();
                 _now = new DateTimeOffset(2020, 2, 25, 10, 29, 29, TimeSpan.Zero);
                 _expires = _now.AddMinutes(10);
                 _nowEpoch = _now.ToUnixTimeSeconds();

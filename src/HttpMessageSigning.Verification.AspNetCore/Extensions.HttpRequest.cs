@@ -50,7 +50,11 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             var path = request.Path;
             var combinedPath = pathBase.HasValue || path.HasValue ? (pathBase + path).ToString() : "/";
             
-            return combinedPath.UrlDecode();
+            var query = request.QueryString.HasValue
+                ? request.QueryString.Value.UrlDecode()
+                : string.Empty;
+            
+            return combinedPath.UrlDecode() + query;
         }
     }
 }

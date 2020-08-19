@@ -17,13 +17,13 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 private readonly Signature _signature;
 
                 public ToHttpRequestForSigning() {
-                    _owinRequest = new FakeOwinRequest {
+                    _owinRequest = new OwinRequest {
                         Method = "GET",
                         Scheme = "https",
                         Host = new HostString("unittest.com:9000"),
                         PathBase = new PathString("/tests"),
                         Path = new PathString("/api/rsc1"),
-                        QueryString = new QueryString("?query=1&cache=false"),
+                        QueryString = new QueryString("query=1&cache=false"),
                         Headers = {
                             {HeaderName.PredefinedHeaderNames.Digest, new [] {"SHA-256=xyz123="}}
                         }
@@ -76,7 +76,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/api/policies/test");
+                    actual.RequestUri.Should().Be("/api/policies/test?query=1&cache=false");
                 }
 
                 [Fact]
@@ -88,9 +88,32 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/policies/test");
+                    actual.RequestUri.Should().Be("/policies/test?query=1&cache=false");
                 }
-
+          
+                [Fact]
+                public void CanHandleEmptyPath() {
+                    _owinRequest.PathBase = PathString.Empty;
+                    _owinRequest.Path = PathString.Empty;
+                    
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
+                    
+                    var expectedUri = "/?query=1&cache=false";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }    
+                
+                [Fact]
+                public void CanHandleEmptyPathAndQuery() {
+                    _owinRequest.PathBase = PathString.Empty;
+                    _owinRequest.Path = PathString.Empty;
+                    _owinRequest.QueryString = QueryString.Empty;
+                    
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
+                    
+                    var expectedUri = "/";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
                 [Fact]
                 public void DecodesUriPath() {
                     _owinRequest.Scheme = "https";
@@ -100,7 +123,20 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.");
+                    actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query=1&cache=false");
+                }
+
+                [Fact]
+                public void DecodesUriPathAndQueryString() {
+                    _owinRequest.Scheme = "https";
+                    _owinRequest.Host = new HostString("unittest.com:9000");
+                    _owinRequest.PathBase = new PathString("/api");
+                    _owinRequest.Path = new PathString("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
+                    _owinRequest.QueryString = new QueryString("query%2Bstring=%7Bbrooks%7D");
+
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
+
+                    actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query+string={brooks}");
                 }
 
                 [Fact]
@@ -112,10 +148,11 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
                     actual.Headers.ToDictionary().Should().BeEquivalentTo(new Dictionary<string, StringValues> {
-                        {"simple-value", (StringValues) new[] {"v1"}},
+                        {"simple-value", "v1"},
                         {"multiple-value", (StringValues) new[] {"v1", "v2"}},
                         {"no-value", StringValues.Empty},
-                        {HeaderName.PredefinedHeaderNames.Digest, (StringValues) new[] {"SHA-256=xyz123="}}
+                        {HeaderName.PredefinedHeaderNames.Digest, "SHA-256=xyz123="},
+                        {"Host", "unittest.com:9000"}
                     });
                 }
 

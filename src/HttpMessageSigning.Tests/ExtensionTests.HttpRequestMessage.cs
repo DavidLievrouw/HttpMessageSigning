@@ -33,39 +33,53 @@ namespace Dalion.HttpMessageSigning {
                 }
                 
                 [Fact]
-                public void CopiesUriPath() {
+                public void GivenAbsoluteUri_CopiesUriPathAndQuery() {
                     var actual = _httpRequestMessage.ToRequestForSigning();
-                    var expectedUri = "/tests/api/rsc1";
+                    var expectedUri = "/tests/api/rsc1?query=1&cache=false";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public void OmitsQueryString() {
-                    _httpRequestMessage.RequestUri = new Uri("http://dalion.eu/api/resource/id1?blah=true");
-
+                public void GivenRelativeUriAbsoluteUri_CopiesUriPathAndQuery() {
+                    _httpRequestMessage.RequestUri = new Uri("/tests/api/rsc1?query=1&cache=false", UriKind.Relative);
                     var actual = _httpRequestMessage.ToRequestForSigning();
-                    
-                    var expectedUri = "/api/resource/id1";
-                    actual.RequestUri.Should().Be(expectedUri);
-                }
-
-                [Fact]
-                public void CanHandleRelativeUris() {
-                    _httpRequestMessage.RequestUri = new Uri("/api/resource/id1", UriKind.Relative);
-
-                    var actual = _httpRequestMessage.ToRequestForSigning();
-                    
-                    var expectedUri = "/api/resource/id1";
+                    var expectedUri = "/tests/api/rsc1?query=1&cache=false";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public void CanHandleRelativeUrisWithQuery() {
-                    _httpRequestMessage.RequestUri = new Uri("/api/resource/id1?blah=true", UriKind.Relative);
+                public void GivenAbsoluteUri_UrlDecodesPathAndQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("https://dalion.eu:9000/tests/api/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D");
+                    var actual = _httpRequestMessage.ToRequestForSigning();
+                    var expectedUri = "/tests/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query+string={brooks}";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void GivenRelativeUri_UrlDecodesPathAndQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("/tests/api/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D", UriKind.Relative);
+                    var actual = _httpRequestMessage.ToRequestForSigning();
+                    var expectedUri = "/tests/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query+string={brooks}";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void GivenAbsoluteUri_OmitsHash() {
+                    _httpRequestMessage.RequestUri = new Uri("http://dalion.eu/api/resource/id1?blah=true#section=one");
 
                     var actual = _httpRequestMessage.ToRequestForSigning();
                     
-                    var expectedUri = "/api/resource/id1";
+                    var expectedUri = "/api/resource/id1?blah=true";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void GivenRelativeUri_OmitsHash() {
+                    _httpRequestMessage.RequestUri = new Uri("/api/resource/id1?blah=true#section=one", UriKind.Relative);
+
+                    var actual = _httpRequestMessage.ToRequestForSigning();
+                    
+                    var expectedUri = "/api/resource/id1?blah=true";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
