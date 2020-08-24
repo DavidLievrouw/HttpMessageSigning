@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
@@ -23,11 +22,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             var clientSettings = MongoClientSettings.FromUrl(mongoUrl);
             var client = new MongoClient(clientSettings);
 
-            var databaseName = clientSettings.Credential != null
-                ? clientSettings.Credential.Source
-                : mongoUrl.ToString().Split('/').Last().Split('?').First();
-
-            return client.GetDatabase(databaseName);
+            return client.GetDatabase(mongoUrl.DatabaseName);
         }
     }
 }
