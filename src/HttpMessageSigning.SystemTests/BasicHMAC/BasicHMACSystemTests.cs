@@ -70,7 +70,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
         [Fact]
         public async Task SupportsRelativeUris() {
             var request = new HttpRequestMessage {
-                RequestUri = new Uri("/post?id=3", UriKind.Relative),
+                RequestUri = new Uri("https://httpbin.org/post?id=3"),
                 Method = HttpMethod.Post,
                 Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
                 Headers = {
@@ -98,7 +98,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
         [Fact]
         public async Task SupportsEncodedUris() {
             var request = new HttpRequestMessage {
-                RequestUri = new Uri("/post/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?id=3", UriKind.Relative),
+                RequestUri = new Uri("https://httpbin.org/post/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?id=3"),
                 Method = HttpMethod.Post,
                 Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
                 Headers = {
@@ -126,7 +126,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
         [Fact]
         public async Task SupportsPartiallyEncodedUris() {
             var request = new HttpRequestMessage {
-                RequestUri = new Uri("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.", UriKind.Relative),
+                RequestUri = new Uri("https://httpbin.org/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co."),
                 Method = HttpMethod.Post,
                 Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
                 Headers = {
