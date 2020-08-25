@@ -22,6 +22,7 @@ namespace Console {
                     await SendGetRequest(signerFactory, logger);
                     await SendPostRequest(signerFactory, logger);
                     await SendEncodedRequest(signerFactory, logger);
+                    await SendPartiallyEncodedRequest(signerFactory, logger);
                     SendConcurrentRequests(signerFactory, logger);
                 }
             }
@@ -88,7 +89,30 @@ namespace Console {
         private static async Task SendEncodedRequest(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {
             var request = new HttpRequestMessage {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/%7BBrooks%7D%20was%20here/api/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.")
+                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/%7BBrooks%7D%20was%20here/api/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.")
+            };
+
+            var requestSigner = requestSignerFactory.CreateFor(KeyId);
+            await requestSigner.Sign(request);
+
+            using (var httpClient = new HttpClient()) {
+                var response = await httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode) {
+                    logger?.LogInformation("{0} - Encoded GET request response: {1}", response.StatusCode, response.StatusCode);
+                }
+                else {
+                    logger?.LogError("{0} - Encoded GET request response: {1}", response.StatusCode, response.ReasonPhrase);
+                }
+                var responseContentTask = response.Content?.ReadAsStringAsync();
+                var responseContent = responseContentTask == null ? null : await responseContentTask;
+                if (responseContent != null) logger?.LogInformation(responseContent);
+            }
+        }
+        
+        private static async Task SendPartiallyEncodedRequest(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {
+            var request = new HttpRequestMessage {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/{Brooks} was%20here/api/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.")
             };
 
             var requestSigner = requestSignerFactory.CreateFor(KeyId);
