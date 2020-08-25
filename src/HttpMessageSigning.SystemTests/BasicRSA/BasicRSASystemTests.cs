@@ -1,11 +1,11 @@
-﻿using System;
-using System.IO;
+﻿#if NETCORE
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -122,6 +122,34 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
         }
+        
+        [Fact]
+        public async Task SupportsPartiallyEncodedUris() {
+            var request = new HttpRequestMessage {
+                RequestUri = new Uri("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.", UriKind.Relative),
+                Method = HttpMethod.Post,
+                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Headers = {
+                    {"Dalion-App-Id", "ringor"}
+                }
+            };
+            
+            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            await requestSigner.Sign(request);
+
+            var receivedRequest = await request.ToServerSideHttpRequest();
+
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
+                var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
+                _output.WriteLine("Request signature verification succeeded: {0}", claimsString);
+            }
+            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
+                throw new SignatureVerificationException(failureResult.Failure.ToString());
+            }
+        }
 
         [Fact]
         public async Task InvalidSignatureString_ReturnsFailure() {
@@ -151,20 +179,22 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
         }
         
         private static void ConfigureServices(IServiceCollection services) {
-            var cert = new X509Certificate2(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
+            var rsa = new RSACryptoServiceProvider();
+            var privateKey = rsa.ExportParameters(includePrivateParameters: true);
+            var publicKey = rsa.ExportParameters(includePrivateParameters: false);
             
             services
                 .AddHttpMessageSigning(
                     new KeyId("4d8f14b6c4184dc1b677c88a2b60bfd2"),
                     provider => new SigningSettings {
-                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning(cert)
+                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning(privateKey)
                     })
                 .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
                         new KeyId("4d8f14b6c4184dc1b677c88a2b60bfd2"),
                         "HttpMessageSigningSampleRSA",
-                        SignatureAlgorithm.CreateForVerification(cert),
+                        SignatureAlgorithm.CreateForVerification(publicKey),
                         TimeSpan.FromMinutes(5),
                         TimeSpan.FromMinutes(1),
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
@@ -173,3 +203,4 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
         }
     }
 }
+#endif

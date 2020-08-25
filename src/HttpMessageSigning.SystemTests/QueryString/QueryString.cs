@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETCORE
+using System;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Security.Claims;
@@ -83,7 +84,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var queryString = ExtractQueryStringFromUri(new Uri(successResult.RequestForVerification.RequestUri, UriKind.Relative));
                 _output.WriteLine("Verified query string: {0}", queryString);
-                queryString.Should().Be("?query+string={brooks}");
+                queryString.Should().Be("?query%2Bstring=%7Bbrooks%7D");
             }
             else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
@@ -182,3 +183,4 @@ namespace Dalion.HttpMessageSigning.QueryString {
         }
     }
 }
+#endif

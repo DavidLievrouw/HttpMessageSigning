@@ -1,6 +1,5 @@
 using System;
 using System.Net.Http;
-using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,7 +17,7 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
             var request = new HttpRequestMessage {
                 RequestUri = uri,
                 Method = HttpMethod.Post,
-                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Content = new StringContent("{'id':42}", Encoding.UTF8, "application/json"),
                 Headers = {
                     {"Dalion-App-Id", "ringor"}
                 }

@@ -12,11 +12,11 @@ using Xunit;
 namespace Dalion.HttpMessageSigning.Verification.Owin {
     public class ExtensionsTests {
         public class ForIOwinRequest : ExtensionsTests {
-            public class ToHttpRequestForSigning : ForIOwinRequest {
+            public class ToHttpRequestForVerification : ForIOwinRequest {
                 private readonly IOwinRequest _owinRequest;
                 private readonly Signature _signature;
 
-                public ToHttpRequestForSigning() {
+                public ToHttpRequestForVerification() {
                     _owinRequest = new OwinRequest {
                         Method = "GET",
                         Scheme = "https",
@@ -115,7 +115,19 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 }
                 
                 [Fact]
-                public void DecodesUriPath() {
+                public void CanHandleDefaultPort() {
+                    _owinRequest.Scheme = "https";
+                    _owinRequest.Host = new HostString("unittest.com");
+                    _owinRequest.PathBase = PathString.Empty;
+                    _owinRequest.Path = new PathString("/policies/test");
+
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
+
+                    actual.RequestUri.Should().Be("/policies/test?query=1&cache=false");
+                }
+                
+                [Fact]
+                public void DoesNotUrlDecodeUriPath() {
                     _owinRequest.Scheme = "https";
                     _owinRequest.Host = new HostString("unittest.com:9000");
                     _owinRequest.PathBase = new PathString("/api");
@@ -123,11 +135,11 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query=1&cache=false");
+                    actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query=1&cache=false");
                 }
 
                 [Fact]
-                public void DecodesUriPathAndQueryString() {
+                public void DoesNotUrlDecodeUriPathAndQueryString() {
                     _owinRequest.Scheme = "https";
                     _owinRequest.Host = new HostString("unittest.com:9000");
                     _owinRequest.PathBase = new PathString("/api");
@@ -136,7 +148,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query+string={brooks}");
+                    actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D");
                 }
 
                 [Fact]

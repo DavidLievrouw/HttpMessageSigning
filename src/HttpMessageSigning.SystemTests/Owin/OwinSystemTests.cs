@@ -1,9 +1,8 @@
-﻿#if NETCORE
+﻿#if NETFULL
 using System;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Mime;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,26 +10,26 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.Signing;
 using Dalion.HttpMessageSigning.Verification;
-using Dalion.HttpMessageSigning.Verification.AspNetCore;
+using Dalion.HttpMessageSigning.Verification.Owin;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Dalion.HttpMessageSigning.BasicHMAC {
-    public class BasicHMACSystemTests : IDisposable {
+namespace Dalion.HttpMessageSigning.Owin {
+    public class OwinSystemTests : IDisposable {
         private readonly ITestOutputHelper _output;
         private readonly ServiceProvider _serviceProvider;
         private readonly IRequestSignerFactory _requestSignerFactory;
         private readonly IRequestSignatureVerifier _verifier;
-        private readonly SignedRequestAuthenticationOptions _options;
+        private readonly SignedHttpRequestAuthenticationOptions _options;
 
-        public BasicHMACSystemTests(ITestOutputHelper output) {
+        public OwinSystemTests(ITestOutputHelper output) {
             _output = output;
             _serviceProvider = new ServiceCollection().Configure(ConfigureServices).BuildServiceProvider();
             _requestSignerFactory = _serviceProvider.GetRequiredService<IRequestSignerFactory>();
             _verifier = _serviceProvider.GetRequiredService<IRequestSignatureVerifier>();
-            _options = new SignedRequestAuthenticationOptions();
+            _options = new SignedHttpRequestAuthenticationOptions();
         }
 
         public void Dispose() {
@@ -44,7 +43,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post"),
                 Method = HttpMethod.Post,
-                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Content = new StringContent("{'id':42}", Encoding.UTF8, "application/json"),
                 Headers = {
                     {"Dalion-App-Id", "ringor"}
                 }
@@ -53,7 +52,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
-            var receivedRequest = await request.ToServerSideHttpRequest();
+            var receivedRequest = await request.ToServerSideOwinRequest();
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
@@ -72,7 +71,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("/post?id=3", UriKind.Relative),
                 Method = HttpMethod.Post,
-                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Content = new StringContent("{'id':42}", Encoding.UTF8, "application/json"),
                 Headers = {
                     {"Dalion-App-Id", "ringor"}
                 }
@@ -81,7 +80,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
-            var receivedRequest = await request.ToServerSideHttpRequest();
+            var receivedRequest = await request.ToServerSideOwinRequest();
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
@@ -100,7 +99,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("/post/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?id=3", UriKind.Relative),
                 Method = HttpMethod.Post,
-                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Content = new StringContent("{'id':42}", Encoding.UTF8, "application/json"),
                 Headers = {
                     {"Dalion-App-Id", "ringor"}
                 }
@@ -109,7 +108,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
-            var receivedRequest = await request.ToServerSideHttpRequest();
+            var receivedRequest = await request.ToServerSideOwinRequest();
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
@@ -128,7 +127,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.", UriKind.Relative),
                 Method = HttpMethod.Post,
-                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Content = new StringContent("{'id':42}", Encoding.UTF8, "application/json"),
                 Headers = {
                     {"Dalion-App-Id", "ringor"}
                 }
@@ -137,7 +136,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
-            var receivedRequest = await request.ToServerSideHttpRequest();
+            var receivedRequest = await request.ToServerSideOwinRequest();
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
@@ -156,7 +155,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post"),
                 Method = HttpMethod.Post,
-                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Content = new StringContent("{'id':42}", Encoding.UTF8, "application/json"),
                 Headers = {
                     {"Dalion-App-Id", "ringor"}
                 }
@@ -171,7 +170,7 @@ namespace Dalion.HttpMessageSigning.BasicHMAC {
                 request.Headers.Authorization.Scheme,
                 request.Headers.Authorization.Parameter.Replace(match.Groups["signature"].Value, "a" + match.Groups["signature"].Value));
             
-            var receivedRequest = await request.ToServerSideHttpRequest();
+            var receivedRequest = await request.ToServerSideOwinRequest();
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             verificationResult.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();

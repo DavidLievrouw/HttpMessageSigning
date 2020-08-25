@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.SystemTests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -21,6 +21,9 @@
         </PropertyGroup>
     </Target>
 
+    <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
+        <DefineConstants>NETFULL;NETSTANDARD;NETFRAMEWORK;NET472</DefineConstants>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
         <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP2_1</DefineConstants>
     </PropertyGroup>
@@ -60,17 +63,19 @@
         <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
     </ItemGroup>
 
+    <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Owin" Version="4.1.0" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification.Owin\HttpMessageSigning.Verification.Owin.csproj" />
+    </ItemGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
         <ProjectReference Include="..\HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj" />
         <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
         <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="dalion.local.pfx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
 </Project>

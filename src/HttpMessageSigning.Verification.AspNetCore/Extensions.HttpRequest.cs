@@ -46,15 +46,15 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         }
 
         private static string GetRequestUri(HttpRequest request) {
-            var pathBase = request.PathBase;
-            var path = request.Path;
-            var combinedPath = pathBase.HasValue || path.HasValue ? (pathBase + path).ToString() : "/";
+            var pathBase = request.PathBase.Value;
+            var path = request.Path.Value;
+            var combinedPath = request.PathBase.HasValue || request.Path.HasValue ? pathBase + path : "/";
             
             var query = request.QueryString.HasValue
-                ? request.QueryString.Value.UrlDecode()
+                ? request.QueryString.Value
                 : string.Empty;
             
-            return combinedPath.UrlDecode() + query;
+            return combinedPath + query;
         }
     }
 }
