@@ -48,18 +48,18 @@ namespace Dalion.HttpMessageSigning {
                 }
                 
                 [Fact]
-                public void GivenAbsoluteUri_DoesNotUrlDecodePathAndQueryString() {
-                    _httpRequestMessage.RequestUri = new Uri("https://dalion.eu:9000/tests/api/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D");
+                public void GivenAbsoluteUri_EncodesPathAndQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("https://dalion.eu:9000/tests/api/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring={brooks}");
                     var actual = _httpRequestMessage.ToRequestForSigning();
-                    var expectedUri = "/tests/api/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public void GivenRelativeUri_DoesNotUrlDecodePathAndQueryString() {
-                    _httpRequestMessage.RequestUri = new Uri("/tests/api/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D", UriKind.Relative);
+                public void GivenRelativeUri_EncodesPathAndQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("/tests/api/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring={brooks}", UriKind.Relative);
                     var actual = _httpRequestMessage.ToRequestForSigning();
-                    var expectedUri = "/tests/api/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 

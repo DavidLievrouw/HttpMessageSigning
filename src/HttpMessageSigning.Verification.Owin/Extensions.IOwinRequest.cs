@@ -44,15 +44,11 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         }
         
         private static string GetRequestUri(IOwinRequest request) {
-            var pathBase = request.PathBase.Value;
-            var path = request.Path.Value;
-            var combinedPath = request.PathBase.HasValue || request.Path.HasValue ? pathBase + path : "/";
+            var absoluteUri = request.Uri.IsAbsoluteUri
+                ? request.Uri
+                : new Uri("https://dalion.eu" + request.Uri.OriginalString, UriKind.Absolute);
             
-            var query = request.QueryString.HasValue
-                ? "?" + request.QueryString.Value
-                : string.Empty;
-            
-            return combinedPath + query;
+            return absoluteUri.GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
         }
     }
 }

@@ -7,12 +7,14 @@ namespace Dalion.HttpMessageSigning {
     public static partial class Extensions {
         internal static HttpRequestForSigning ToRequestForSigning(this HttpRequestMessage httpRequestMessage) {
             if (httpRequestMessage == null) return null;
+
+            var absoluteUri = httpRequestMessage.RequestUri.IsAbsoluteUri
+                ? httpRequestMessage.RequestUri
+                : new Uri("https://dalion.eu" + httpRequestMessage.RequestUri.OriginalString, UriKind.Absolute);
             
             var requestForSigning = new HttpRequestForSigning {
                 Method = httpRequestMessage.Method,
-                RequestUri = httpRequestMessage.RequestUri.IsAbsoluteUri
-                    ? httpRequestMessage.RequestUri.OriginalString.Split('#')[0].Substring(httpRequestMessage.RequestUri.GetLeftPart(UriPartial.Authority).Length)
-                    : httpRequestMessage.RequestUri.OriginalString.Split('#')[0]
+                RequestUri = absoluteUri.GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped)
             };
             
             foreach (var header in httpRequestMessage.Headers) {

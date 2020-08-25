@@ -109,25 +109,25 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 }
                 
                 [Fact]
-                public async Task DoesNotUrlDecodeUriPath() {
+                public async Task UrlEncodesUriPath() {
                     _httpRequest.PathBase = new PathString("/api");
-                    _httpRequest.Path = new PathString("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
+                    _httpRequest.Path = new PathString("/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.");
                     
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
                     
-                    var expectedUri = "/api/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query=1&cache=false";
+                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query=1&cache=false";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public async Task DoesNotUrlDecodeUriPathAndQueryString() {
+                public async Task UrlEncodesUriPathAndQueryString() {
                     _httpRequest.PathBase = new PathString("/api");
-                    _httpRequest.Path = new PathString("/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
+                    _httpRequest.Path = new PathString("/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.");
                     _httpRequest.QueryString = new QueryString("?query%2Bstring=%7Bbrooks%7D");
 
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/api/{Brooks} was here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D");
+                    actual.RequestUri.Should().Be("/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring=%7Bbrooks%7D");
                 }
                 
                 [Theory]

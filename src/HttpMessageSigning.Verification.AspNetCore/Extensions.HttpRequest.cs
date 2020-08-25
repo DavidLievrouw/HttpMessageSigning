@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
@@ -46,15 +47,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         }
 
         private static string GetRequestUri(HttpRequest request) {
-            var pathBase = request.PathBase.Value;
-            var path = request.Path.Value;
-            var combinedPath = request.PathBase.HasValue || request.Path.HasValue ? pathBase + path : "/";
-            
-            var query = request.QueryString.HasValue
-                ? request.QueryString.Value
-                : string.Empty;
-            
-            return combinedPath + query;
+            var uri = new Uri(request.GetDisplayUrl());
+            return uri.GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
         }
     }
 }

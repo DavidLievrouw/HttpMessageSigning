@@ -87,12 +87,12 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
         
         [Fact]
         public async Task CanHandleEncodedUris() {
-            var uri = new Uri("/anything/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.", UriKind.Relative);
+            var uri = new Uri("/anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.", UriKind.Relative);
 
             var response = await _senderService.SendTo(uri);
 
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            _signedRequest.RequestUri.Should().Be(new Uri("https://httpbin.org/anything/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co."));
+            _signedRequest.RequestUri.Should().Be(new Uri("https://httpbin.org/anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co."));
             
             var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
 
