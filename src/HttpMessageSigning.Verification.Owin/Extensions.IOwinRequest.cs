@@ -44,11 +44,8 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         }
         
         private static string GetRequestUri(IOwinRequest request) {
-            var absoluteUri = request.Uri.IsAbsoluteUri
-                ? request.Uri
-                : new Uri("https://dalion.eu" + request.Uri.OriginalString, UriKind.Absolute);
-            
-            return absoluteUri.GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
+            return new Uri("https://dalion.eu" + request.Uri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped), UriKind.Absolute)
+                .GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
         }
     }
 }

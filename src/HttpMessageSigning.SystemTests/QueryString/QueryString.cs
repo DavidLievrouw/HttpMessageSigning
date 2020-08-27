@@ -65,7 +65,35 @@ namespace Dalion.HttpMessageSigning.QueryString {
         }
 
         [Fact]
-        public async Task CanVerifyRequestContainingEncodedQueryString() {
+        public async Task CanVerifyRequestContainingPathEncodedQueryString() {
+            var request = new HttpRequestMessage {
+                RequestUri = new Uri("https://httpbin.org/post?query+string=%7Bbrooks%7D"),
+                Method = HttpMethod.Post,
+                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Headers = {
+                    {"Dalion-App-Id", "ringor"}
+                }
+            };
+            
+            var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
+            await requestSigner.Sign(request);
+
+            var receivedRequest = await request.ToServerSideHttpRequest();
+
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var queryString = ExtractQueryStringFromUri(new Uri(successResult.RequestForVerification.RequestUri, UriKind.Relative));
+                _output.WriteLine("Verified query string: {0}", queryString);
+                queryString.Should().Be("?query+string=%7Bbrooks%7D");
+            }
+            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
+                throw new SignatureVerificationException(failureResult.Failure.ToString());
+            }
+        }
+
+        [Fact]
+        public async Task CanVerifyRequestContainingEscapedQueryString() {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post?query%2Bstring=%7Bbrooks%7D"),
                 Method = HttpMethod.Post,
@@ -84,7 +112,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var queryString = ExtractQueryStringFromUri(new Uri(successResult.RequestForVerification.RequestUri, UriKind.Relative));
                 _output.WriteLine("Verified query string: {0}", queryString);
-                queryString.Should().Be("?query%2Bstring=%7Bbrooks%7D");
+                queryString.Should().Be("?query+string=%7Bbrooks%7D");
             }
             else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);

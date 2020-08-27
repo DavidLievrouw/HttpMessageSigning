@@ -90,7 +90,7 @@ namespace Console {
         private static async Task SendEncodedRequest(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {
             var request = new HttpRequestMessage {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/%7BBrooks%7D%20was%20here/api/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.")
+                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/%7BBrooks%7D%20was%20here/api/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring=%7Bbrooks%7D")
             };
 
             var requestSigner = requestSignerFactory.CreateFor(KeyId);
@@ -113,7 +113,7 @@ namespace Console {
         private static async Task SendPartiallyEncodedRequest(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {
             var request = new HttpRequestMessage {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/{Brooks} was%20here/api/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.")
+                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/{Brooks} was%20here/api/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks}")
             };
 
             var requestSigner = requestSignerFactory.CreateFor(KeyId);
@@ -136,7 +136,7 @@ namespace Console {
         private static async Task SendDecodedRequest(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {
             var request = new HttpRequestMessage {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/{Brooks} was here/api/David & Partners + Siebe at 100% * co.")
+                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/{Brooks} was here/api/David & Partners + Siebe at 100% * co.?query+string={brooks}")
             };
 
             var requestSigner = requestSignerFactory.CreateFor(KeyId);

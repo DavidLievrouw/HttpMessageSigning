@@ -21,8 +21,10 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
         private readonly IRequestSignerFactory _requestSignerFactory;
         private readonly IRequestSignatureVerifier _verifier;
         private readonly SenderService _senderService;
-        private HttpRequestMessage _signedRequest;
         private readonly SignedRequestAuthenticationOptions _options;
+        
+        private HttpRequestMessage _signedRequest;
+        private string _signatureString;
 
         public DelegatingHandlerSystemTests(ITestOutputHelper output) {
             _output = output;
@@ -86,13 +88,59 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
         }        
         
         [Fact]
-        public async Task CanHandleEncodedUris() {
-            var uri = new Uri("/anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.", UriKind.Relative);
+        public async Task CanHandlePathEncodedUris() {
+            var uri = new Uri("/anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D", UriKind.Relative);
 
             var response = await _senderService.SendTo(uri);
 
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            _signedRequest.RequestUri.Should().Be(new Uri("https://httpbin.org/anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co."));
+            _signatureString.Should().Contain("(request-target): post /anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D");
+            
+            var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
+
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
+                var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
+                _output.WriteLine("Request signature verification succeeded: {0}", claimsString);
+            }
+            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
+                throw new SignatureVerificationException(failureResult.Failure.ToString());
+            }
+        }
+        
+        [Fact]
+        public async Task CanHandleDecodedUris() {
+            var uri = new Uri("/anything/David & Partners + Siebe at 100% * co.?query+string={brooks}", UriKind.Relative);
+
+            var response = await _senderService.SendTo(uri);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            _signatureString.Should().Contain("(request-target): post /anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D");
+            
+            var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
+
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
+                var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
+                _output.WriteLine("Request signature verification succeeded: {0}", claimsString);
+            }
+            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
+                throw new SignatureVerificationException(failureResult.Failure.ToString());
+            }
+        }
+        
+        [Fact]
+        public async Task CanHandleEscapedUris() {
+            var uri = new Uri("/anything/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D", UriKind.Relative);
+
+            var response = await _senderService.SendTo(uri);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            _signatureString.Should().Contain("(request-target): post /anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D");
             
             var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
 
@@ -122,7 +170,8 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
                             (HeaderName) "Dalion-App-Id"
                         },
                         Events = new RequestSigningEvents {
-                            OnRequestSigned = OnRequestSigned
+                            OnRequestSigned = OnRequestSigned,
+                            OnSigningStringComposed = OnSignatureStringComposed
                         }
                     })
                 .AddHttpMessageSignatureVerification(provider => {
@@ -141,6 +190,11 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
                 .AddHttpMessageHandler(() => new FakeDelegatingHandler(new HttpResponseMessage(HttpStatusCode.Created)))
                 .Services
                 .AddTransient<HttpRequestSigningHandler>();
+        }
+
+        private Task OnSignatureStringComposed(HttpRequestMessage request, string signatureString) {
+            _signatureString = signatureString;
+            return Task.CompletedTask;
         }
 
         private Task OnRequestSigned(HttpRequestMessage request, Signature signature, SigningSettings settings) {

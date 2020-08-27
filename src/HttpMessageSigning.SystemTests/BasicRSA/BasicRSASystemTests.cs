@@ -96,9 +96,37 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
         }
         
         [Fact]
-        public async Task SupportsEncodedUris() {
+        public async Task SupportsPathEncodedUris() {
             var request = new HttpRequestMessage {
-                RequestUri = new Uri("https://httpbin.org/post/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?id=42"),
+                RequestUri = new Uri("https://httpbin.org/post/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D"),
+                Method = HttpMethod.Post,
+                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Headers = {
+                    {"Dalion-App-Id", "ringor"}
+                }
+            };
+            
+            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            await requestSigner.Sign(request);
+
+            var receivedRequest = await request.ToServerSideHttpRequest();
+
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
+                var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
+                _output.WriteLine("Request signature verification succeeded: {0}", claimsString);
+            }
+            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
+                throw new SignatureVerificationException(failureResult.Failure.ToString());
+            }
+        }
+        
+        [Fact]
+        public async Task SupportsEscapedUris() {
+            var request = new HttpRequestMessage {
+                RequestUri = new Uri("https://httpbin.org/post/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D"),
                 Method = HttpMethod.Post,
                 Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
                 Headers = {
@@ -127,6 +155,34 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
         public async Task SupportsPartiallyEncodedUris() {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co."),
+                Method = HttpMethod.Post,
+                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Headers = {
+                    {"Dalion-App-Id", "ringor"}
+                }
+            };
+            
+            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            await requestSigner.Sign(request);
+
+            var receivedRequest = await request.ToServerSideHttpRequest();
+
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
+                var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
+                _output.WriteLine("Request signature verification succeeded: {0}", claimsString);
+            }
+            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
+                throw new SignatureVerificationException(failureResult.Failure.ToString());
+            }
+        }
+        
+        [Fact]
+        public async Task SupportsDecodedUris() {
+            var request = new HttpRequestMessage {
+                RequestUri = new Uri("https://httpbin.org/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query+string={brooks}"),
                 Method = HttpMethod.Post,
                 Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
                 Headers = {

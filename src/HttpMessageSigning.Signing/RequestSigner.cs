@@ -49,15 +49,15 @@ namespace Dalion.HttpMessageSigning.Signing {
                 
                 var clonedSettings = (SigningSettings)_signingSettings.Clone();
                 var onRequestSigningTask = _signingSettings.Events?.OnRequestSigning?.Invoke(request, clonedSettings);
-                if (onRequestSigningTask != null) await onRequestSigningTask.ConfigureAwait(false);
+                if (onRequestSigningTask != null) await onRequestSigningTask.ConfigureAwait(continueOnCapturedContext: false);
                 
                 _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(clonedSettings, request);
                 
                 clonedSettings.Validate();
                 
-                await _signatureHeaderEnsurer.EnsureHeader(request, clonedSettings, timeOfSigning).ConfigureAwait(false);
+                await _signatureHeaderEnsurer.EnsureHeader(request, clonedSettings, timeOfSigning).ConfigureAwait(continueOnCapturedContext: false);
                 
-                var signature = await _signatureCreator.CreateSignature(request, clonedSettings, timeOfSigning, expires).ConfigureAwait(false);
+                var signature = await _signatureCreator.CreateSignature(request, clonedSettings, timeOfSigning, expires).ConfigureAwait(continueOnCapturedContext: false);
                 var authParam = _authorizationHeaderParamCreator.CreateParam(signature);
 
                 _logger?.LogDebug("Setting Authorization scheme to '{0}' and param to '{1}'.", clonedSettings.AuthorizationScheme, authParam);
@@ -65,7 +65,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 request.Headers.Authorization = new AuthenticationHeaderValue(clonedSettings.AuthorizationScheme, authParam);
                 
                 var onRequestSignedTask = _signingSettings.Events?.OnRequestSigned?.Invoke(request, signature, clonedSettings);
-                if (onRequestSignedTask != null) await onRequestSignedTask.ConfigureAwait(false);
+                if (onRequestSignedTask != null) await onRequestSignedTask.ConfigureAwait(continueOnCapturedContext: false);
             }
             catch (Exception ex) {
                 _logger?.LogError(ex, "Could not sign the specified request. See inner exception.");

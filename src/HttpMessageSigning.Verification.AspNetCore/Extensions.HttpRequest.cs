@@ -48,7 +48,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
         private static string GetRequestUri(HttpRequest request) {
             var uri = new Uri(request.GetDisplayUrl());
-            return uri.GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
+            return new Uri("https://dalion.eu" + uri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped), UriKind.Absolute)
+                .GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
         }
     }
 }

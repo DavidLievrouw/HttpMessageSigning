@@ -125,32 +125,43 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     actual.RequestUri.Should().Be("/policies/test?query=1&cache=false");
                 }
+
+                [Fact]
+                public void UrlEncodesPathEncodedUriPathAndQueryString() {
+                    _owinRequest.PathBase = new PathString("/api");
+                    _owinRequest.Path = new PathString("/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.");
+                    _owinRequest.QueryString = new QueryString("query+string=%7Bbrooks%7D");
+                    
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
+                    
+                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
                 
                 [Fact]
-                public void UrlEncodesUriPath() {
-                    _owinRequest.Scheme = "https";
-                    _owinRequest.Host = new HostString("unittest.com:9000");
+                public void UrlEncodesEscapedUriPathAndQueryString() {
                     _owinRequest.PathBase = new PathString("/api");
-                    _owinRequest.Path = new PathString("/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.");
-
-                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
-
-                    actual.RequestUri.Should().Be("/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query=1&cache=false");
-                }
-
-                [Fact]
-                public void UrlEncodesUriPathAndQueryString() {
-                    _owinRequest.Scheme = "https";
-                    _owinRequest.Host = new HostString("unittest.com:9000");
-                    _owinRequest.PathBase = new PathString("/api");
-                    _owinRequest.Path = new PathString("/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.");
+                    _owinRequest.Path = new PathString("/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
                     _owinRequest.QueryString = new QueryString("query%2Bstring=%7Bbrooks%7D");
+                    
+                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
+                    
+                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void UrlEncodesDecodedUriPathAndQueryString() {
+                    _owinRequest.PathBase = new PathString("/api");
+                    _owinRequest.Path = new PathString("/{Brooks} was here/create/David & Partners + Siebe at 100% * co.");
+                    _owinRequest.QueryString = new QueryString("query+string={brooks}");
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring=%7Bbrooks%7D");
+                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    actual.RequestUri.Should().Be(expectedUri);
                 }
-
+                
                 [Fact]
                 public void CopiesAllHeadersWithValues() {
                     _owinRequest.Headers.Add("simple-value", new[] {"v1"});
