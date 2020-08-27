@@ -102,3 +102,6 @@ See [Wiki](https://github.com/DavidLievrouw/HttpMessageSigning/wiki).
 If you've got value from any of the content which I have created, but pull requests are not your thing, then I would also very much appreciate your support by buying me a coffee.
 
 <a href="https://www.buymeacoffee.com/DavidLievrouw" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+
+---
+"Anybody can make something that works. Software craftsmanship is the ability to keep it understandable, maintainable and extensible."
