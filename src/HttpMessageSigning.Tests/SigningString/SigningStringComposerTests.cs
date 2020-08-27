@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using Dalion.HttpMessageSigning.TestUtils;
 using FakeItEasy;
 using FluentAssertions;
 using Xunit;

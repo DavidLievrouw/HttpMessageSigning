@@ -1,6 +1,7 @@
 using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.TestUtils;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;

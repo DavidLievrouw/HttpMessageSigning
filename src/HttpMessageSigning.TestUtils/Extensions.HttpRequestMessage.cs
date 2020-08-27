@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.TestUtils {
     public static partial class Extensions {
         public static async Task<HttpRequest> ToServerSideHttpRequest(this HttpRequestMessage clientRequest) {
             if (clientRequest == null) return null;
@@ -58,7 +58,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.TestUtils {
     public static partial class Extensions {
         public static async Task<IOwinRequest> ToServerSideOwinRequest(this HttpRequestMessage clientRequest) {
             if (clientRequest == null) return null;

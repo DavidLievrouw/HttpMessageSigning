@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.Signing;
+using Dalion.HttpMessageSigning.TestUtils;
 using Dalion.HttpMessageSigning.Verification;
 using Dalion.HttpMessageSigning.Verification.Owin;
 using FluentAssertions;

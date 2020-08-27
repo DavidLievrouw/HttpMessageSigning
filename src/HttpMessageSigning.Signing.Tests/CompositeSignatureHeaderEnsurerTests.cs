@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.TestUtils;
 using FakeItEasy;
 using Xunit;
 

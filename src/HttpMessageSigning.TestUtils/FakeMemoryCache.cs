@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb {
+namespace Dalion.HttpMessageSigning.TestUtils {
     public class FakeMemoryCache : IMemoryCache {
         public FakeMemoryCache() {
             InternalData = new Dictionary<object, ICacheEntry>();

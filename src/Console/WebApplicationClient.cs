@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning;
 using Dalion.HttpMessageSigning.Signing;
+using Dalion.HttpMessageSigning.TestUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

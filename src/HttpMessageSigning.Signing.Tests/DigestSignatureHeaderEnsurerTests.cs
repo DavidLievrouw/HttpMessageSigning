@@ -5,6 +5,7 @@ using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.TestUtils;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Primitives;

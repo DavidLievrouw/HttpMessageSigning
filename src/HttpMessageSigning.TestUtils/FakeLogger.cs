@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.TestUtils {
     public class FakeLogger<T> : ILogger<T> {
         public List<LogEntry> LoggedEntries { get; } = new List<LogEntry>();
 

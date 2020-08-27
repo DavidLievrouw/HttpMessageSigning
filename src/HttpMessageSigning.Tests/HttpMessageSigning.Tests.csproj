@@ -67,6 +67,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning.TestUtils\HttpMessageSigning.TestUtils.csproj" />
         <ProjectReference Include="..\HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj" />
     </ItemGroup>
 

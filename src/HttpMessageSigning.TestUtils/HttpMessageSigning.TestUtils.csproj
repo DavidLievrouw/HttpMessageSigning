@@ -2,10 +2,9 @@
 
     <PropertyGroup>
         <TargetFrameworks>net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
-        <AssemblyName>Dalion.HttpMessageSigning.Signing.Tests</AssemblyName>
-        <RootNamespace>Dalion.HttpMessageSigning.Signing</RootNamespace>
+        <AssemblyName>Dalion.HttpMessageSigning.TestUtils</AssemblyName>
+        <RootNamespace>Dalion.HttpMessageSigning.TestUtils</RootNamespace>
         <IsPackable>false</IsPackable>
-        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
     <Target Name="InitVersion" BeforeTargets="BeforeBuild">
@@ -32,36 +31,33 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
-        <PackageReference Include="CompareNETObjects" Version="4.65.0" />
-        <PackageReference Include="coverlet.msbuild" Version="2.8.0" />
         <PackageReference Include="FakeItEasy" Version="6.0.0" />
-        <PackageReference Include="FluentAssertions" Version="5.10.3" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-        <PackageReference Include="xunit" Version="2.4.1" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="coverlet.collector" Version="1.2.0" />
-    </ItemGroup>
-    
-    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='net472'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Owin.Security" Version="4.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
+        <Reference Include="System.Net.Http" />
+    </ItemGroup>
+    
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+        <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="[2.1.2,2.2.0)" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="[2.1.2,2.2.0)" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[2.1.1,2.2.0)" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[2.1.1,2.2.0)" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
     </ItemGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
-        <ProjectReference Include="..\HttpMessageSigning.TestUtils\HttpMessageSigning.TestUtils.csproj" />
+        <PackageReference Include="FakeItEasy" Version="6.0.0" />
     </ItemGroup>
-
+    
 </Project>
