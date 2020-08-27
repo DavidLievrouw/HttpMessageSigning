@@ -48,18 +48,34 @@ namespace Dalion.HttpMessageSigning {
                 }
                 
                 [Fact]
-                public void GivenAbsoluteUri_EncodesPathAndQueryString() {
-                    _httpRequestMessage.RequestUri = new Uri("https://dalion.eu:9000/tests/api/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring={brooks}");
+                public void GivenAbsoluteUri_PathEncodesPathAndQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("https://dalion.eu:9000/tests/api/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string={brooks}");
                     var actual = _httpRequestMessage.ToRequestForSigning();
-                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring=%7Bbrooks%7D";
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public void GivenRelativeUri_EncodesPathAndQueryString() {
-                    _httpRequestMessage.RequestUri = new Uri("/tests/api/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring={brooks}", UriKind.Relative);
+                public void GivenRelativeUri_PathEncodesPathAndQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("/tests/api/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string={brooks}", UriKind.Relative);
                     var actual = _httpRequestMessage.ToRequestForSigning();
-                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring=%7Bbrooks%7D";
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void GivenAbsoluteUri_PathEncodesEscapedPathAndQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("https://dalion.eu:9000/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D");
+                    var actual = _httpRequestMessage.ToRequestForSigning();
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void GivenRelativeUri_PathEncodesEscapedPathAndQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D", UriKind.Relative);
+                    var actual = _httpRequestMessage.ToRequestForSigning();
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 

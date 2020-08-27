@@ -14,9 +14,10 @@ namespace Dalion.HttpMessageSigning {
             
             var requestForSigning = new HttpRequestForSigning {
                 Method = httpRequestMessage.Method,
-                RequestUri = absoluteUri.GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped)
+                RequestUri = new Uri("https://dalion.eu" + absoluteUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped))
+                    .GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped)
             };
-            
+
             foreach (var header in httpRequestMessage.Headers) {
                 requestForSigning.Headers[header.Key] = new StringValues(header.Value.ToArray());
             }
