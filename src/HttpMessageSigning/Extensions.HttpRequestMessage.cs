@@ -5,7 +5,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning {
     public static partial class Extensions {
-        internal static HttpRequestForSigning ToRequestForSigning(this HttpRequestMessage httpRequestMessage) {
+        internal static HttpRequestForSigning ToHttpRequestForSigning(this HttpRequestMessage httpRequestMessage) {
             if (httpRequestMessage == null) return null;
 
             var absoluteUri = httpRequestMessage.RequestUri.IsAbsoluteUri
