@@ -48,50 +48,66 @@ namespace Dalion.HttpMessageSigning {
                 }
                 
                 [Fact]
-                public void GivenAbsoluteUri_PathEncodesUnescapedPathAndQueryString() {
+                public void GivenAbsoluteUri_RFC3986EscapesPathAndQueryString() {
                     _httpRequestMessage.RequestUri = new Uri("https://dalion.eu:9000/tests/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query+string={brooks}");
                     var actual = _httpRequestMessage.ToHttpRequestForSigning();
-                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public void GivenRelativeUri_PathEncodesUnescapedPathAndQueryString() {
+                public void GivenRelativeUri_RFC3986EscapesPathAndQueryString() {
                     _httpRequestMessage.RequestUri = new Uri("/tests/api/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query+string={brooks}", UriKind.Relative);
                     var actual = _httpRequestMessage.ToHttpRequestForSigning();
-                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public void GivenAbsoluteUri_PathEncodesPartiallyEscapedPathAndQueryString() {
+                public void GivenAbsoluteUri_RFC3986EscapesPartiallyEscapedPathAndQueryString() {
                     _httpRequestMessage.RequestUri = new Uri("https://dalion.eu:9000/tests/api/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string={brooks}");
                     var actual = _httpRequestMessage.ToHttpRequestForSigning();
-                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public void GivenRelativeUri_PathEncodessPartiallyEscapedPathAndQueryString() {
+                public void GivenRelativeUri_RFC3986EscapesRFC2396EscapedPathAndQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string={brooks}", UriKind.Relative);
+                    var actual = _httpRequestMessage.ToHttpRequestForSigning();
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void GivenAbsoluteUri_RFC3986EscapesRFC2396EscapedPathAndQueryString() {
+                    _httpRequestMessage.RequestUri = new Uri("https://dalion.eu:9000/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string={brooks}");
+                    var actual = _httpRequestMessage.ToHttpRequestForSigning();
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
+                    actual.RequestUri.Should().Be(expectedUri);
+                }
+                
+                [Fact]
+                public void GivenRelativeUri_RFC3986EscapesPartiallyEscapedPathAndQueryString() {
                     _httpRequestMessage.RequestUri = new Uri("/tests/api/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string={brooks}", UriKind.Relative);
                     var actual = _httpRequestMessage.ToHttpRequestForSigning();
-                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public void GivenAbsoluteUri_PathEncodesEscapedPathAndQueryString() {
+                public void GivenAbsoluteUri_KeepsRFC3686Escaping() {
                     _httpRequestMessage.RequestUri = new Uri("https://dalion.eu:9000/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D");
                     var actual = _httpRequestMessage.ToHttpRequestForSigning();
-                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public void GivenRelativeUri_PathEncodesEscapedPathAndQueryString() {
+                public void GivenRelativeUri_KeepsRFC3986Escaping() {
                     _httpRequestMessage.RequestUri = new Uri("/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D", UriKind.Relative);
                     var actual = _httpRequestMessage.ToHttpRequestForSigning();
-                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    var expectedUri = "/tests/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
