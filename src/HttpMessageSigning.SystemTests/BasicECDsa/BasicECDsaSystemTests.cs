@@ -97,7 +97,7 @@ namespace Dalion.HttpMessageSigning.BasicECDsa {
         }
         
         [Fact]
-        public async Task SupportsPathEncodedUris() {
+        public async Task SupportsRFC2396EscapedUris() {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D"),
                 Method = HttpMethod.Post,
@@ -125,7 +125,7 @@ namespace Dalion.HttpMessageSigning.BasicECDsa {
         }
         
         [Fact]
-        public async Task SupportsEscapedUris() {
+        public async Task SupportsRFC3986EscapedUris() {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D"),
                 Method = HttpMethod.Post,
@@ -153,7 +153,7 @@ namespace Dalion.HttpMessageSigning.BasicECDsa {
         }
         
         [Fact]
-        public async Task SupportsPartiallyEncodedUris() {
+        public async Task SupportsPartiallyEscapedUris() {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co."),
                 Method = HttpMethod.Post,
@@ -181,7 +181,7 @@ namespace Dalion.HttpMessageSigning.BasicECDsa {
         }
         
         [Fact]
-        public async Task SupportsDecodedUris() {
+        public async Task SupportsUnescapedUris() {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/{Brooks} was here/create/David & Partners + Siebe at 100% * co.?query+string={brooks}"),
                 Method = HttpMethod.Post,

@@ -22,7 +22,8 @@ namespace Console {
                     var logger = serviceProvider.GetService<ILogger<WebApplicationClient>>();
                     await SendGetRequest(signerFactory, logger);
                     await SendPostRequest(signerFactory, logger);
-                    await SendEncodedRequest(signerFactory, logger);
+                    await SendRFC3986EncodedRequest(signerFactory, logger);
+                    await SendRFC2396EncodedRequest(signerFactory, logger);
                     await SendPartiallyEncodedRequest(signerFactory, logger);
                     await SendDecodedRequest(signerFactory, logger);
                     SendConcurrentRequests(signerFactory, logger);
@@ -88,10 +89,33 @@ namespace Console {
             }
         }
         
-        private static async Task SendEncodedRequest(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {
+        private static async Task SendRFC3986EncodedRequest(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {
             var request = new HttpRequestMessage {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/%7BBrooks%7D%20was%20here/api/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query%2Bstring=%7Bbrooks%7D")
+                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/%7BBrooks%7D%20was%20here/api/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D")
+            };
+
+            var requestSigner = requestSignerFactory.CreateFor(KeyId);
+            await requestSigner.Sign(request);
+
+            using (var httpClient = new HttpClient()) {
+                var response = await httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode) {
+                    logger?.LogInformation("{0} - Encoded GET request response: {1}", response.StatusCode, response.StatusCode);
+                }
+                else {
+                    logger?.LogError("{0} - Encoded GET request response: {1}", response.StatusCode, response.ReasonPhrase);
+                }
+                var responseContentTask = response.Content?.ReadAsStringAsync();
+                var responseContent = responseContentTask == null ? null : await responseContentTask;
+                if (responseContent != null) logger?.LogInformation(responseContent);
+            }
+        }
+        
+        private static async Task SendRFC2396EncodedRequest(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {
+            var request = new HttpRequestMessage {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/%7BBrooks%7D%20was%20here/api/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D")
             };
 
             var requestSigner = requestSignerFactory.CreateFor(KeyId);
@@ -114,7 +138,7 @@ namespace Console {
         private static async Task SendPartiallyEncodedRequest(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {
             var request = new HttpRequestMessage {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/{Brooks} was%20here/api/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks}")
+                RequestUri = new Uri("http://localhost:" + Port + "/userinfo/api/{Brooks} was%20here/api/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks}")
             };
 
             var requestSigner = requestSignerFactory.CreateFor(KeyId);
@@ -159,7 +183,7 @@ namespace Console {
         
         private static void SendConcurrentRequests(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {
             for (var i = 0; i < 199; i++) {
-                Task.Factory.StartNew(() => SendGetRequest(requestSignerFactory, logger), TaskCreationOptions.LongRunning);
+                Task.Factory.StartNew(() => SendRFC3986EncodedRequest(requestSignerFactory, logger), TaskCreationOptions.LongRunning);
             }
         }
     }

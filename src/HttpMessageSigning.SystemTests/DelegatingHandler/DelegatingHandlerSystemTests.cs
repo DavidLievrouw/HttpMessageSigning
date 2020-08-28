@@ -89,13 +89,13 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
         }        
         
         [Fact]
-        public async Task CanHandlePathEncodedUris() {
+        public async Task CanHandleRFC2396EscapedUris() {
             var uri = new Uri("/anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D", UriKind.Relative);
 
             var response = await _senderService.SendTo(uri);
 
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            _signatureString.Should().Contain("(request-target): post /anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D");
+            _signatureString.Should().Contain("(request-target): post /anything/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D");
             
             var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
 
@@ -112,13 +112,13 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
         }
         
         [Fact]
-        public async Task CanHandleDecodedUris() {
+        public async Task CanHandleUnescapedUris() {
             var uri = new Uri("/anything/David & Partners + Siebe at 100% * co.?query+string={brooks}", UriKind.Relative);
 
             var response = await _senderService.SendTo(uri);
 
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            _signatureString.Should().Contain("(request-target): post /anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D");
+            _signatureString.Should().Contain("(request-target): post /anything/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D");
             
             var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
 
@@ -135,13 +135,13 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
         }
         
         [Fact]
-        public async Task CanHandleEscapedUris() {
+        public async Task CanHandleRFC3986EscapedUris() {
             var uri = new Uri("/anything/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D", UriKind.Relative);
 
             var response = await _senderService.SendTo(uri);
 
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            _signatureString.Should().Contain("(request-target): post /anything/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D");
+            _signatureString.Should().Contain("(request-target): post /anything/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D");
             
             var receivedRequest = await _signedRequest.ToServerSideHttpRequest();
 

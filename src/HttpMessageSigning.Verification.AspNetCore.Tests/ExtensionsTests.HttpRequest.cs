@@ -109,38 +109,38 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 }
                 
                 [Fact]
-                public async Task UrlEncodesPathEncodedUriPathAndQueryString() {
+                public async Task UrlEncodesRFC2396EscapedUriPathAndQueryString() {
                     _httpRequest.PathBase = new PathString("/api");
-                    _httpRequest.Path = new PathString("/{Brooks} was here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.");
+                    _httpRequest.Path = new PathString("/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.");
                     _httpRequest.QueryString = new QueryString("?query+string=%7Bbrooks%7D");
                     
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
                     
-                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public async Task UrlEncodesEscapedUriPathAndQueryString() {
+                public async Task UrlEncodesRFC3986EscapedUriPathAndQueryString() {
                     _httpRequest.PathBase = new PathString("/api");
                     _httpRequest.Path = new PathString("/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
                     _httpRequest.QueryString = new QueryString("?query%2Bstring=%7Bbrooks%7D");
                     
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
                     
-                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
-                public async Task UrlEncodesDecodedUriPathAndQueryString() {
+                public async Task UrlEncodesUnescapedUriPathAndQueryString() {
                     _httpRequest.PathBase = new PathString("/api");
                     _httpRequest.Path = new PathString("/{Brooks} was here/create/David & Partners + Siebe at 100% * co.");
                     _httpRequest.QueryString = new QueryString("?query+string={brooks}");
 
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
-                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.?query+string=%7Bbrooks%7D";
+                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 

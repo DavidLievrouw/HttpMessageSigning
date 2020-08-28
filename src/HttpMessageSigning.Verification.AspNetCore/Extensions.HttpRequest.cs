@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
@@ -14,7 +13,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (request == null) return null;
             
             var requestMessage = new HttpRequestForVerification {
-                RequestUri = GetRequestUri(request),
+                RequestUri = GetPathAndQuery(request).UrlEncode(),
                 Method = string.IsNullOrEmpty(request.Method)
                     ? HttpMethod.Get
                     : new HttpMethod(request.Method),
@@ -46,10 +45,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                    (request.Headers?.ContainsKey(HeaderName.PredefinedHeaderNames.Digest) ?? false);
         }
 
-        private static string GetRequestUri(HttpRequest request) {
-            var uri = new Uri(request.GetDisplayUrl());
-            return new Uri("https://dalion.eu" + uri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped), UriKind.Absolute)
-                .GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
+        private static string GetPathAndQuery(HttpRequest request) {
+            var path = request.PathBase.HasValue || request.Path.HasValue ? (request.PathBase + request.Path).ToString() : "/";
+            return path + request.QueryString;
         }
     }
 }

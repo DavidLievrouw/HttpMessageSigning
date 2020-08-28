@@ -15,7 +15,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             
             var request = new HttpRequestForVerification {
                 Method = new HttpMethod(owinRequest.Method),
-                RequestUri = GetRequestUri(owinRequest),
+                RequestUri = owinRequest.Uri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped).UrlEncode(),
                 Signature = signature
             };
 
@@ -41,11 +41,6 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             if (request.Body == null) return false;
             return (signature.Headers?.Any(h => h == HeaderName.PredefinedHeaderNames.Digest) ?? false) || 
                    (request.Headers?.ContainsKey(HeaderName.PredefinedHeaderNames.Digest) ?? false);
-        }
-        
-        private static string GetRequestUri(IOwinRequest request) {
-            return new Uri("https://dalion.eu" + request.Uri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped), UriKind.Absolute)
-                .GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
         }
     }
 }

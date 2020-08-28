@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning {
             
             var requestForSigning = new HttpRequestForSigning {
                 Method = httpRequestMessage.Method,
-                RequestUri =  httpRequestMessage.RequestUri.IsAbsoluteUri
+                RequestUri = httpRequestMessage.RequestUri.IsAbsoluteUri
                  ? httpRequestMessage.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped).UrlEncode()
                  : httpRequestMessage.RequestUri.OriginalString.UrlEncode()
             };

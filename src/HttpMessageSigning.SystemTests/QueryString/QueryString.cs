@@ -66,7 +66,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
         }
 
         [Fact]
-        public async Task CanVerifyRequestContainingPathEncodedQueryString() {
+        public async Task CanVerifyRequestContainingRFC2396EncodedQueryString() {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post?query+string=%7Bbrooks%7D"),
                 Method = HttpMethod.Post,
@@ -85,7 +85,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var queryString = ExtractQueryStringFromUri(new Uri(successResult.RequestForVerification.RequestUri, UriKind.Relative));
                 _output.WriteLine("Verified query string: {0}", queryString);
-                queryString.Should().Be("?query+string=%7Bbrooks%7D");
+                queryString.Should().Be("?query%2Bstring=%7Bbrooks%7D");
             }
             else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
@@ -94,7 +94,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
         }
 
         [Fact]
-        public async Task CanVerifyRequestContainingEscapedQueryString() {
+        public async Task CanVerifyRequestContainingRFC3986EscapedQueryString() {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post?query%2Bstring=%7Bbrooks%7D"),
                 Method = HttpMethod.Post,
@@ -113,7 +113,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
                 var queryString = ExtractQueryStringFromUri(new Uri(successResult.RequestForVerification.RequestUri, UriKind.Relative));
                 _output.WriteLine("Verified query string: {0}", queryString);
-                queryString.Should().Be("?query+string=%7Bbrooks%7D");
+                queryString.Should().Be("?query%2Bstring=%7Bbrooks%7D");
             }
             else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
