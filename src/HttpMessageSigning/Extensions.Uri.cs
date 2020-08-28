@@ -25,14 +25,15 @@ namespace Dalion.HttpMessageSigning {
             var path = string.Join("/", pathSegments);
 
             var queryStringCollection = ExtractQueryString(decodedQuery);
-            var qsSegments = queryStringCollection.AllKeys
+            var qsSegments = queryStringCollection
+                ?.AllKeys
                 .Select(key => {
                     var val = queryStringCollection[key];
                     return string.IsNullOrEmpty(val)
                         ? Uri.EscapeDataString(key)
                         : Uri.EscapeDataString(key) + "=" + Uri.EscapeDataString(val);
                 });
-            var queryString = string.Join("&", qsSegments);
+            var queryString = qsSegments == null ? string.Empty : string.Join("&", qsSegments);
 
             var sb = new StringBuilder();
             if (isAbsolute) {
@@ -55,14 +56,15 @@ namespace Dalion.HttpMessageSigning {
         }
 
         private static System.Collections.Specialized.NameValueCollection ExtractQueryString(string decodedQuery) {
-            var result = new System.Collections.Specialized.NameValueCollection(capacity: 4);
-            if (string.IsNullOrEmpty(decodedQuery)) return result;
+            if (string.IsNullOrEmpty(decodedQuery)) return null;
 
+            System.Collections.Specialized.NameValueCollection result = null;
             var query = decodedQuery.Split('#')[0];
             var pairs = query.Split('&');
             foreach (var pair in pairs) {
+                if (result == null) result = new System.Collections.Specialized.NameValueCollection();
                 var parts = pair.Split(new[] {'='}, count: 2);
-                var name = Uri.UnescapeDataString(parts[0]);
+                var name = parts[0];
                 var value = parts.Length == 1 ? string.Empty : parts[1];
                 result.Add(name, value);
             }
