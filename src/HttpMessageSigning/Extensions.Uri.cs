@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -13,27 +14,22 @@ namespace Dalion.HttpMessageSigning {
             if (decoded == null) return null;
 
             var isAbsolute = decoded.IsAbsoluteUri;
-            var absoluteUri = isAbsolute
-                ? decoded
-                : new Uri("https://dalion.eu/" + decoded.OriginalString.TrimStart('/'), UriKind.Absolute);
-            var decodedPath = absoluteUri.GetComponents(UriComponents.Path, UriFormat.Unescaped);
-            var decodedQuery = absoluteUri.GetComponents(UriComponents.Query, UriFormat.Unescaped);
+            var originalString = decoded.OriginalString;
+            
+            var decodedPath = isAbsolute
+                ? decoded.GetComponents(UriComponents.Path, UriFormat.Unescaped).TrimStart('/')
+                : FastSplitInTwo(originalString, separator: '?')[0].TrimStart('/');
+            
+            string decodedQuery = null;
+            if (originalString.IndexOf(value: '?') > -1) {
+                decodedQuery = isAbsolute
+                    ? decoded.GetComponents(UriComponents.Query, UriFormat.Unescaped)
+                    : FastSplitInTwo(FastSplitInTwo(originalString, separator: '?')[1], separator: '#')[0];
+            }
 
-            var pathSegments = decodedPath
-                .Split(new[] {"/"}, StringSplitOptions.None)
-                .Select(Uri.EscapeDataString);
-            var path = string.Join("/", pathSegments);
+            var pathSegments = FastSplit(decodedPath, separator: '/').Select(Uri.EscapeDataString);
 
-            var queryStringCollection = ExtractQueryString(decodedQuery);
-            var qsSegments = queryStringCollection
-                ?.AllKeys
-                .Select(key => {
-                    var val = queryStringCollection[key];
-                    return string.IsNullOrEmpty(val)
-                        ? Uri.EscapeDataString(key)
-                        : Uri.EscapeDataString(key) + "=" + Uri.EscapeDataString(val);
-                });
-            var queryString = qsSegments == null ? string.Empty : string.Join("&", qsSegments);
+            var queryString = ExtractQueryString(decodedQuery)?.ToString();
 
             var sb = new StringBuilder();
             if (isAbsolute) {
@@ -41,13 +37,15 @@ namespace Dalion.HttpMessageSigning {
                 sb.Append("://");
                 sb.Append(decoded.Host);
                 if (!decoded.IsDefaultPort) {
-                    sb.Append(':');
+                    sb.Append(value: ':');
                     sb.Append(decoded.Port);
                 }
+                sb.Append(value: '/');
             }
 
-            if (isAbsolute || decoded.OriginalString.StartsWith("/", StringComparison.Ordinal)) sb.Append('/');
-            sb.Append(path);
+            if (!isAbsolute && originalString.StartsWith("/", StringComparison.Ordinal)) sb.Append(value: '/');
+            sb.Append(string.Join("/", pathSegments));
+            
             if (!string.IsNullOrEmpty(queryString)) {
                 sb.Append("?" + queryString);
             }
@@ -55,21 +53,80 @@ namespace Dalion.HttpMessageSigning {
             return sb.ToString();
         }
 
-        private static System.Collections.Specialized.NameValueCollection ExtractQueryString(string decodedQuery) {
-            if (string.IsNullOrEmpty(decodedQuery)) return null;
+        private static StringBuilder ExtractQueryString(string decodedQuery) {
+            if (decodedQuery == null) return null;
+            if (decodedQuery == string.Empty) return null;
 
-            System.Collections.Specialized.NameValueCollection result = null;
-            var query = decodedQuery.Split('#')[0];
-            var pairs = query.Split('&');
-            foreach (var pair in pairs) {
-                if (result == null) result = new System.Collections.Specialized.NameValueCollection();
-                var parts = pair.Split(new[] {'='}, count: 2);
-                var name = parts[0];
-                var value = parts.Length == 1 ? string.Empty : parts[1];
-                result.Add(name, value);
+            var query = decodedQuery.IndexOf(value: '#') < 0
+                ? decodedQuery
+                : FastSplitInTwo(decodedQuery, separator: '#')[0];
+
+            var pairs = query.IndexOf(value: '&') < 0
+                ? (object)query
+                : (object)FastSplit(query, separator: '&');
+
+            var sb = new StringBuilder();
+            
+            if (pairs is string str) {
+                var parts = FastSplitInTwo(str, separator: '=');
+                
+                sb.Append(Uri.EscapeDataString(parts[0]));
+                if (parts.Length > 1) {
+                    sb.Append('=');
+                    sb.Append(Uri.EscapeDataString(parts[1]));
+                }
+
+                return sb;
             }
 
-            return result;
+            var isFirst = true;
+            foreach (var pair in (IEnumerable<string>) pairs) {
+                var parts = FastSplitInTwo(pair, separator: '=');
+
+                if (!isFirst) sb.Append('&');
+
+                sb.Append(Uri.EscapeDataString(parts[0]));
+                if (parts.Length > 1) {
+                    sb.Append('=');
+                    sb.Append(Uri.EscapeDataString(parts[1]));
+                }
+
+                isFirst = false;
+            }
+
+            return sb;
+        }
+
+        private static List<string> FastSplit(string input, char separator) {
+            var span = input.AsSpan();
+
+            var index = span.IndexOf(separator);
+
+            var items = new List<string>();
+            while (index > -1) {
+                var item = span.Slice(start: 0, index).ToString();
+                span = span.Slice(index + 1);
+                items.Add(item);
+                index = span.IndexOf(separator);
+            }
+            
+            items.Add(span.ToString());
+
+            return items;
+        }
+        
+        private static string[] FastSplitInTwo(string input, char separator) {
+            var span = input.AsSpan();
+
+            var index = span.IndexOf(separator);
+            if (index < 0) return new[] {input};
+            
+            var part1 = span.Slice(start: 0, index).ToString();
+            span = span.Slice(index + 1);
+
+            var part2 = span.ToString();
+
+            return new[] {part1, part2};
         }
     }
 }

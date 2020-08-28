@@ -65,10 +65,24 @@ namespace Dalion.HttpMessageSigning {
                 }
 
                 [Fact]
+                public void CorrectlyEncodesMultipleQueryString() {
+                    var encoded = new Uri("https://dalion.eu/api/{Brooks} was here?query string={Brooks}&id=42?", UriKind.Absolute);
+                    var actual = encoded.UrlEncode();
+                    actual.Should().Be("https://dalion.eu/api/%7BBrooks%7D%20was%20here?query%20string=%7BBrooks%7D&id=42%3F");
+                }
+
+                [Fact]
                 public void AlsoEncodesQueryStringWithoutValue() {
                     var encoded = new Uri("https://dalion.eu/api/{Brooks} was here?query string", UriKind.Absolute);
                     var actual = encoded.UrlEncode();
                     actual.Should().Be("https://dalion.eu/api/%7BBrooks%7D%20was%20here?query%20string");
+                }
+
+                [Fact]
+                public void DropsEmptyQueryString() {
+                    var encoded = new Uri("https://dalion.eu/api/{Brooks} was here?", UriKind.Absolute);
+                    var actual = encoded.UrlEncode();
+                    actual.Should().Be("https://dalion.eu/api/%7BBrooks%7D%20was%20here");
                 }
 
                 [Fact]
