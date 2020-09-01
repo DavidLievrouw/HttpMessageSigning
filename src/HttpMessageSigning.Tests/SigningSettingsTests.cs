@@ -218,7 +218,7 @@ namespace Dalion.HttpMessageSigning {
 
         public class Clone : SigningSettingsTests {
             [Fact]
-            public void ClonesAllPropertiesExceptEvents() {
+            public void ClonesAllSimpleProperties() {
                 var actual = (SigningSettings)_sut.Clone();
                 actual.Should().BeEquivalentTo(_sut, options => options.Excluding(_ => _.Events));
             }
