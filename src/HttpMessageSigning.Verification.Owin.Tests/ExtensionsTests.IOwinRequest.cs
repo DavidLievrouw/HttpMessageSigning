@@ -127,7 +127,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 }
 
                 [Fact]
-                public void UrlEncodesRFC2396EscapedUriPathAndQueryString() {
+                public void UriEscapesRFC2396EscapedUriPathAndQueryString() {
                     _owinRequest.PathBase = new PathString("/api");
                     _owinRequest.Path = new PathString("/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.");
                     _owinRequest.QueryString = new QueryString("query+string=%7Bbrooks%7D");
@@ -139,7 +139,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 }
                 
                 [Fact]
-                public void UrlEncodesRFC3986EscapedUriPathAndQueryString() {
+                public void UriEscapesRFC3986EscapedUriPathAndQueryString() {
                     _owinRequest.PathBase = new PathString("/api");
                     _owinRequest.Path = new PathString("/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
                     _owinRequest.QueryString = new QueryString("query%2Bstring=%7Bbrooks%7D");
@@ -151,7 +151,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 }
                 
                 [Fact]
-                public void UrlEncodesUnescapedUriPathAndQueryString() {
+                public void UriEscapesUnescapedUriPathAndQueryString() {
                     _owinRequest.PathBase = new PathString("/api");
                     _owinRequest.Path = new PathString("/{Brooks} was here/create/David & Partners + Siebe at 100% * co.");
                     _owinRequest.QueryString = new QueryString("query+string={brooks}");

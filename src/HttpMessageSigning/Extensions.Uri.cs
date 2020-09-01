@@ -6,11 +6,11 @@ using System.Text;
 namespace Dalion.HttpMessageSigning {
     public static partial class Extensions {
         /// <summary>
-        ///     Perform URI encoding, according to RFC 3986, on the specified <see cref="Uri" />.
+        ///     Perform URI escaping, according to RFC 3986, on the specified <see cref="Uri" />.
         /// </summary>
-        /// <param name="decoded">The <see cref="Uri" /> that needs to be encoded.</param>
-        /// <returns>The encoded string representation of the specified <see cref="Uri" />, according to RFC 3986.</returns>
-        public static string UrlEncode(this Uri decoded) {
+        /// <param name="decoded">The <see cref="Uri" /> that needs to be escaped.</param>
+        /// <returns>The escaped string representation of the specified <see cref="Uri" />, according to RFC 3986.</returns>
+        public static string UriEscape(this Uri decoded) {
             if (decoded == null) return null;
 
             var isAbsolute = decoded.IsAbsoluteUri;

@@ -66,7 +66,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
         }
 
         [Fact]
-        public async Task CanVerifyRequestContainingRFC2396EncodedQueryString() {
+        public async Task CanVerifyRequestContainingRFC2396EscapedQueryString() {
             var request = new HttpRequestMessage {
                 RequestUri = new Uri("https://httpbin.org/post?query+string=%7Bbrooks%7D"),
                 Method = HttpMethod.Post,

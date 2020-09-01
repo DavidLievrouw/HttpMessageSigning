@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Sign {
         }
 
         [Fact]
-        public async Task ShouldGenerateABase64EncodedSignatureString() {
+        public async Task ShouldGenerateABase64EscapedSignatureString() {
             var signedMessage = await Signer.Run(_options).ToHttpRequestMessage();
 
             Base64SignatureRegex.IsMatch(signedMessage.Headers.Authorization.Parameter).Should().BeTrue();
