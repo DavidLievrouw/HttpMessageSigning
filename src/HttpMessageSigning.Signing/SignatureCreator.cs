@@ -8,17 +8,17 @@ namespace Dalion.HttpMessageSigning.Signing {
     internal class SignatureCreator : ISignatureCreator {
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IBase64Converter _base64Converter;
-        private readonly INonceGenerator _nonceGenerator;
+        private readonly ISigningStringCompositionRequestFactory _stringCompositionRequestFactory;
         private readonly ILogger<SignatureCreator> _logger;
 
         public SignatureCreator(
             ISigningStringComposer signingStringComposer,
             IBase64Converter base64Converter,
-            INonceGenerator nonceGenerator,
+            ISigningStringCompositionRequestFactory stringCompositionRequestFactory,
             ILogger<SignatureCreator> logger = null) {
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
-            _nonceGenerator = nonceGenerator ?? throw new ArgumentNullException(nameof(nonceGenerator));
+            _stringCompositionRequestFactory = stringCompositionRequestFactory ?? throw new ArgumentNullException(nameof(stringCompositionRequestFactory));
             _logger = logger;
         }
 
@@ -26,15 +26,9 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (settings == null) throw new ArgumentNullException(nameof(settings));
             
-            var nonce = settings.EnableNonce ? _nonceGenerator.GenerateNonce() : null;
             var requestForSigning = request.ToHttpRequestForSigning();
-            var signingString = _signingStringComposer.Compose(
-                requestForSigning, 
-                settings.RequestTargetEscaping,
-                settings.Headers, 
-                timeOfSigning, 
-                expires, 
-                nonce);
+            var compositionRequest = _stringCompositionRequestFactory.CreateForSigning(requestForSigning, settings, timeOfSigning, expires);
+            var signingString = _signingStringComposer.Compose(compositionRequest);
 
             var eventTask = settings.Events?.OnSigningStringComposed?.Invoke(request, signingString);
             if (eventTask != null) await eventTask.ConfigureAwait(false);
@@ -54,7 +48,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 Created = timeOfSigning,
                 Expires = timeOfSigning.Add(expires),
                 Headers = settings.Headers,
-                Nonce = nonce,
+                Nonce = compositionRequest.Nonce,
                 String = signatureString
             };
 

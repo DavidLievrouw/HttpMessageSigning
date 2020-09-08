@@ -13,11 +13,12 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         private readonly IBase64Converter _base64Converter;
         private readonly ILogger<MatchingSignatureStringVerificationTask> _logger;
         private readonly ISigningStringComposer _signingStringComposer;
+        private readonly ISigningStringCompositionRequestFactory _stringCompositionRequestFactory;
         private readonly MatchingSignatureStringVerificationTask _sut;
 
         public MatchingSignatureStringVerificationTaskTests() {
-            FakeFactory.Create(out _signingStringComposer, out _base64Converter, out _logger);
-            _sut = new MatchingSignatureStringVerificationTask(_signingStringComposer, _base64Converter, _logger);
+            FakeFactory.Create(out _signingStringComposer, out _base64Converter, out _stringCompositionRequestFactory, out _logger);
+            _sut = new MatchingSignatureStringVerificationTask(_signingStringComposer, _base64Converter, _stringCompositionRequestFactory, _logger);
         }
 
         public class Verify : MatchingSignatureStringVerificationTaskTests {
@@ -40,67 +41,31 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
 
                 _composedSignatureString = "abc123";
-                _composeCall = () => A.CallTo(() => _signingStringComposer.Compose(
-                    A<HttpRequestForSigning>._, 
-                    A<RequestTargetEscaping>._, 
-                    A<HeaderName[]>._, 
-                    A<DateTimeOffset>._, 
-                    A<TimeSpan?>._, 
-                    A<string>._));
+                _composeCall = () => A.CallTo(() => _signingStringComposer.Compose(A<SigningStringCompositionRequest>._));
                 _composeCall().Returns(_composedSignatureString);
                 _signature.String = _base64Converter.ToBase64(_client.SignatureAlgorithm.ComputeHash(_composedSignatureString));
             }
 
             [Fact]
-            public async Task WhenSignatureDoesNotSpecifyACreationTime_UsesPassesNullCreationTime() {
-                _signature.Created = null;
+            public async Task WhenEverythingIsSpecified_CallsSigningStringComposerWithCreatedCompositionRequest() {
+                var compositionRequest = new SigningStringCompositionRequest {
+                    Request = _signedRequest,
+                    Expires = _signature.Expires.Value - _signature.Created.Value,
+                    HeadersToInclude = _signature.Headers,
+                    RequestTargetEscaping = RequestTargetEscaping.RFC3986, // ToDo #13
+                    TimeOfComposing = _now
+                };
+                A.CallTo(() => _stringCompositionRequestFactory.CreateForVerification(_signedRequest, _client, _signature))
+                    .Returns(compositionRequest);
                 
-                DateTimeOffset? interceptedCreated = null;
-                _composeCall().Invokes(call => { interceptedCreated = call.GetArgument<DateTimeOffset?>(2); })
-                    .Returns(_composedSignatureString);
-                
-                await _method(_signedRequest, _signature, _client);
+                SigningStringCompositionRequest interceptedRequest = null;
 
-                interceptedCreated.Should().BeNull();
-            }
-            
-            [Fact]
-            public async Task WhenSignatureDoesNotSpecifyACreationTime_UsesNullExpiresValue() {
-                _signature.Created = null;
-                
-                TimeSpan? interceptedExpires = null;
-                _composeCall().Invokes(call => { interceptedExpires = call.GetArgument<TimeSpan?>(3); })
-                    .Returns(_composedSignatureString);
-                
-                await _method(_signedRequest, _signature, _client);
-
-                interceptedExpires.Should().BeNull();
-            }
-
-            [Fact]
-            public async Task WhenEverythingIsSpecified_CallsSigningStringComposerWithExpectedParameters() {
-                HttpRequestForSigning interceptedRequest = null;
-                HeaderName[] interceptedHeaderNames = null;
-                DateTimeOffset? interceptedCreated = null;
-                TimeSpan? interceptedExpires = null;
-                RequestTargetEscaping? interceptedRequestTargetEscaping = null;
-
-                _composeCall().Invokes(call => {
-                        interceptedRequest = call.GetArgument<HttpRequestForSigning>(0);
-                        interceptedRequestTargetEscaping = call.GetArgument<RequestTargetEscaping>(1);
-                        interceptedHeaderNames = call.GetArgument<HeaderName[]>(2);
-                        interceptedCreated = call.GetArgument<DateTimeOffset>(3);
-                        interceptedExpires = call.GetArgument<TimeSpan?>(4);
-                    })
+                _composeCall().Invokes(call => interceptedRequest = call.GetArgument<SigningStringCompositionRequest>(0))
                     .Returns(_composedSignatureString);
 
                 await _method(_signedRequest, _signature, _client);
 
-                interceptedCreated.Should().Be(_signature.Created);
-                interceptedExpires.Should().Be(_signature.Expires.Value - _signature.Created.Value);
-                interceptedRequest.Should().Be(_signedRequest);
-                interceptedHeaderNames.Should().Equal(_signature.Headers);
-                interceptedRequestTargetEscaping.Should().Be(RequestTargetEscaping.RFC3986); // ToDo #13
+                interceptedRequest.Should().Be(compositionRequest);
             }
 
             [Fact]

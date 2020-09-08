@@ -17,57 +17,51 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public class Compose : SigningStringComposerTests {
-            private readonly HttpRequestForSigning _httpRequest;
-            private readonly HeaderName[] _headerNames;
             private readonly IHeaderAppender _headerAppender;
-            private readonly DateTimeOffset _timeOfComposing;
-            private readonly TimeSpan _expires;
-            private readonly string _nonce;
-            private readonly RequestTargetEscaping _requestTargetEscaping;
+            private readonly SigningStringCompositionRequest _compositionRequest;
 
             public Compose() {
-                _timeOfComposing = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.FromHours(1));
-                _expires = TimeSpan.FromMinutes(5);
-                _httpRequest = new HttpRequestForSigning {
+                var timeOfComposing = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.FromHours(1));
+                var expires = TimeSpan.FromMinutes(5);
+                var httpRequest = new HttpRequestForSigning {
                     Method = HttpMethod.Post,
                     RequestUri = "http://dalion.eu/api/resource/id1".ToUri()
                 };
-                _headerNames = new[] {
+                var headerNames = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
                     HeaderName.PredefinedHeaderNames.Date,
                     new HeaderName("dalion_app_id")
                 };
-                _requestTargetEscaping = RequestTargetEscaping.Unescaped;
-                _nonce = "abc123";
+                var requestTargetEscaping = RequestTargetEscaping.Unescaped;
+                var nonce = "abc123";
+
+                _compositionRequest = new SigningStringCompositionRequest {
+                    Request = httpRequest,
+                    Expires = expires,
+                    Nonce = nonce,
+                    HeadersToInclude = headerNames,
+                    RequestTargetEscaping = requestTargetEscaping,
+                    TimeOfComposing = timeOfComposing
+                };
 
                 FakeFactory.Create(out _headerAppender);
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _requestTargetEscaping, _timeOfComposing, _expires))
+                A.CallTo(() => _headerAppenderFactory.Create(
+                        _compositionRequest.Request,
+                        _compositionRequest.RequestTargetEscaping,
+                        _compositionRequest.TimeOfComposing,
+                        _compositionRequest.Expires))
                     .Returns(_headerAppender);
             }
 
             [Fact]
             public void GivenNullRequest_ThrowsArgumentNullException() {
-                Action act = () => _sut.Compose(null, _requestTargetEscaping, _headerNames, _timeOfComposing, _expires, _nonce);
+                Action act = () => _sut.Compose(null);
                 act.Should().Throw<ArgumentNullException>();
-            }            
+            }
             
             [Fact]
-            public void GivenNullHeaders_ThrowsArgumentNullException() {
-                Action act = () => _sut.Compose(_httpRequest, _requestTargetEscaping, null, _timeOfComposing, _expires, _nonce);
-                act.Should().Throw<ArgumentNullException>();
-            }
-
-            [Theory]
-            [InlineData(null)]
-            [InlineData("")]
-            public void GivenNullOrEmptyNonce_DoesNotThrow(string nullOrEmpty) {
-                Action act = () => _sut.Compose(_httpRequest, _requestTargetEscaping, _headerNames, _timeOfComposing, _expires, nullOrEmpty);
-                act.Should().NotThrow();
-            }
-
-            [Fact]
             public void ExcludesEmptyHeaderNames() {
-                var headerNames = new[] {
+                _compositionRequest.HeadersToInclude = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
                     HeaderName.Empty, 
                     HeaderName.PredefinedHeaderNames.Date,
@@ -78,10 +72,10 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
                     .ReturnsLazily(call => call.GetArgument<HeaderName>(0) + ",");
 
-                A.CallTo(() => _nonceAppender.BuildStringToAppend(_nonce))
+                A.CallTo(() => _nonceAppender.BuildStringToAppend(_compositionRequest.Nonce))
                     .Returns("abc123,");
                 
-                var actual = _sut.Compose(_httpRequest, _requestTargetEscaping, headerNames, _timeOfComposing, _expires, _nonce);
+                var actual = _sut.Compose(_compositionRequest);
 
                 var expected = "(request-target),date,dalion_app_id,abc123,";
                 actual.Should().Be(expected);
@@ -92,13 +86,26 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
                     .ReturnsLazily(call => "\n" + call.GetArgument<HeaderName>(0) + ",");
 
-                A.CallTo(() => _nonceAppender.BuildStringToAppend(_nonce))
+                A.CallTo(() => _nonceAppender.BuildStringToAppend(_compositionRequest.Nonce))
                     .Returns("abc123,");
                 
-                var actual = _sut.Compose(_httpRequest, _requestTargetEscaping, _headerNames, _timeOfComposing, _expires, _nonce);
+                var actual = _sut.Compose(_compositionRequest);
 
                 var expected = "(request-target),\ndate,\ndalion_app_id,abc123,";
                 actual.Should().Be(expected);
+            }
+            
+            [Fact]
+            public void AppendsNonce() {
+                A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
+                    .ReturnsLazily(call => "\n" + call.GetArgument<HeaderName>(0) + ",");
+
+                A.CallTo(() => _nonceAppender.BuildStringToAppend(_compositionRequest.Nonce))
+                    .Returns("abc123,");
+                
+                var actual = _sut.Compose(_compositionRequest);
+
+                actual.Should().Contain(",abc123,");
             }
             
             [Fact]
@@ -106,10 +113,10 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
                     .ReturnsLazily(call => "\n" + call.GetArgument<HeaderName>(0) + ",");
 
-                A.CallTo(() => _nonceAppender.BuildStringToAppend(_nonce))
+                A.CallTo(() => _nonceAppender.BuildStringToAppend(_compositionRequest.Nonce))
                     .Returns("abc123,");
                 
-                var actual = _sut.Compose(_httpRequest, _requestTargetEscaping, _headerNames, _timeOfComposing, _expires, _nonce);
+                var actual = _sut.Compose(_compositionRequest);
 
                 var expected = "(request-target),\ndate,\ndalion_app_id,abc123,";
                 actual.Should().Be(expected);

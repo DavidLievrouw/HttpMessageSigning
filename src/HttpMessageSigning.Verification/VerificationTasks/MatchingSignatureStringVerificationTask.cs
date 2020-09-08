@@ -6,29 +6,23 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class MatchingSignatureStringVerificationTask : VerificationTask {
         private readonly ISigningStringComposer _signingStringComposer;
         private readonly IBase64Converter _base64Converter;
+        private readonly ISigningStringCompositionRequestFactory _stringCompositionRequestFactory;
         private readonly ILogger<MatchingSignatureStringVerificationTask> _logger;
 
         public MatchingSignatureStringVerificationTask(
             ISigningStringComposer signingStringComposer, 
             IBase64Converter base64Converter,
+            ISigningStringCompositionRequestFactory stringCompositionRequestFactory,
             ILogger<MatchingSignatureStringVerificationTask> logger = null) {
             _signingStringComposer = signingStringComposer ?? throw new ArgumentNullException(nameof(signingStringComposer));
             _base64Converter = base64Converter ?? throw new ArgumentNullException(nameof(base64Converter));
+            _stringCompositionRequestFactory = stringCompositionRequestFactory ?? throw new ArgumentNullException(nameof(stringCompositionRequestFactory));
             _logger = logger;
         }
 
         public override SignatureVerificationFailure VerifySync(HttpRequestForVerification signedRequest, Signature signature, Client client) {
-            var expires = signature.Created.HasValue && signature.Expires.HasValue 
-                ? signature.Expires.Value - signature.Created.Value
-                : new TimeSpan?();
-
-            var signingString = _signingStringComposer.Compose(
-                signedRequest, 
-                RequestTargetEscaping.RFC3986, // ToDo #13
-                signature.Headers,
-                signature.Created, 
-                expires, 
-                signature.Nonce);
+            var compositionRequest = _stringCompositionRequestFactory.CreateForVerification(signedRequest, client, signature);
+            var signingString = _signingStringComposer.Compose(compositionRequest);
             
             _logger?.LogDebug("Composed the following signing string for request verification: {0}", signingString);
 

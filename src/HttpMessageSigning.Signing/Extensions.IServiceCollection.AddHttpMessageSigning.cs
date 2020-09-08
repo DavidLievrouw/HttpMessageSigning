@@ -185,6 +185,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 .AddSingleton<ISignatureHeaderEnsurer>(provider => new CompositeSignatureHeaderEnsurer(
                     new DateSignatureHeaderEnsurer(),
                     new DigestSignatureHeaderEnsurer(provider.GetRequiredService<IBase64Converter>())))
+                .AddSingleton<ISigningStringCompositionRequestFactory, SigningStringCompositionRequestFactory>()
                 .AddSingleton<IRequestSignerFactory, RequestSignerFactory>();
         }
     }

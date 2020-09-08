@@ -12,24 +12,21 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _nonceAppender = nonceAppender ?? throw new ArgumentNullException(nameof(nonceAppender));
         }
 
-        public string Compose(
-            HttpRequestForSigning request, 
-            RequestTargetEscaping requestTargetEscaping, 
-            HeaderName[] headerNames, 
-            DateTimeOffset? timeOfComposing, 
-            TimeSpan? expires, 
-            string nonce) {
-            if (request == null) throw new ArgumentNullException(nameof(request));
-            if (headerNames == null) throw new ArgumentNullException(nameof(headerNames));
+        public string Compose(SigningStringCompositionRequest compositionRequest) {
+            if (compositionRequest == null) throw new ArgumentNullException(nameof(compositionRequest));
             
-            var headerAppender = _headerAppenderFactory.Create(request, requestTargetEscaping, timeOfComposing, expires);
+            var headerAppender = _headerAppenderFactory.Create(
+                compositionRequest.Request, 
+                compositionRequest.RequestTargetEscaping, 
+                compositionRequest.TimeOfComposing,
+                compositionRequest.Expires);
 
             var sb = new StringBuilder();
-            foreach (var headerName in headerNames.Where(h => h != HeaderName.Empty)) {
+            foreach (var headerName in compositionRequest.HeadersToInclude.Where(h => h != HeaderName.Empty)) {
                 sb = sb.Append(headerAppender.BuildStringToAppend(headerName));
             }
 
-            sb.Append(_nonceAppender.BuildStringToAppend(nonce));
+            sb.Append(_nonceAppender.BuildStringToAppend(compositionRequest.Nonce));
             
             return sb.ToString().TrimStart();
         }
