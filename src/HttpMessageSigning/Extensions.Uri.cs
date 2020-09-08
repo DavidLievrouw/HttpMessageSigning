@@ -9,8 +9,20 @@ namespace Dalion.HttpMessageSigning {
         ///     Perform URI escaping, according to RFC 3986, on the specified <see cref="Uri" />.
         /// </summary>
         /// <param name="decoded">The <see cref="Uri" /> that needs to be escaped.</param>
+        /// <param name="escaping">The rule set to follow when escaping.</param>
         /// <returns>The escaped string representation of the specified <see cref="Uri" />, according to RFC 3986.</returns>
-        public static string UriEscape(this Uri decoded) {
+        public static string UriEscape(this Uri decoded, UriEscaping escaping = UriEscaping.RFC3986) {
+            switch (escaping) {
+                case UriEscaping.RFC3986:
+                    return decoded.UriEscapeRFC3986();
+                case UriEscaping.RFC2396:
+                    return decoded.UriEscapeRFC2396();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(escaping), escaping, $"The specified {nameof(UriEscaping)} value is currently not supported.");
+            }
+        }
+
+        private static string UriEscapeRFC3986(this Uri decoded) {
             if (decoded == null) return null;
 
             var isAbsolute = decoded.IsAbsoluteUri;
@@ -43,7 +55,7 @@ namespace Dalion.HttpMessageSigning {
                 sb.Append(value: '/');
             }
 
-            if (!isAbsolute && originalString.StartsWith("/", StringComparison.Ordinal)) sb.Append(value: '/');
+            if (!isAbsolute) sb.Append(value: '/');
             sb.Append(string.Join("/", pathSegments));
             
             if (!string.IsNullOrEmpty(queryString)) {
@@ -51,6 +63,24 @@ namespace Dalion.HttpMessageSigning {
             }
 
             return sb.ToString();
+        }
+        
+        private static string UriEscapeRFC2396(this Uri decoded) {
+            if (decoded == null) return null;
+
+            if (decoded.IsAbsoluteUri) {
+                return new Uri(decoded.OriginalString.UriUnescape())
+                    .GetComponents(UriComponents.HttpRequestUrl, UriFormat.UriEscaped);
+            }
+
+            var originalString = decoded.OriginalString;
+            var withoutHash = originalString.IndexOf(value: '#') < 0
+                ? originalString
+                : FastSplitInTwo(originalString, separator: '#')[0];
+
+            var absoluteUri = new Uri("https://dalion.eu/" + withoutHash.TrimStart('/'), UriKind.Absolute);
+            
+            return absoluteUri.GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
         }
 
         private static StringBuilder ExtractQueryString(string decodedQuery) {

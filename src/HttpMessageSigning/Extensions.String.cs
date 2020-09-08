@@ -17,11 +17,12 @@ namespace Dalion.HttpMessageSigning {
         ///     Perform URI escaping, according to RFC 3986, on the specified <see cref="string" /> representation of the <see cref="Uri" />.
         /// </summary>
         /// <param name="unescaped">The <see cref="String" /> representation of the <see cref="Uri" /> that needs to be encoded.</param>
+        /// <param name="escaping">The rule set to follow when escaping.</param>
         /// <returns>The escaped string representation of the specified Uri <see cref="String" />, according to RFC 3986.</returns>
-        public static string UriEscape(this string unescaped) {
+        public static string UriEscape(this string unescaped, UriEscaping escaping = UriEscaping.RFC3986) {
             return unescaped == null
                 ? null
-                : new Uri(unescaped, UriKind.RelativeOrAbsolute).UriEscape();
+                : new Uri(unescaped, UriKind.RelativeOrAbsolute).UriEscape(escaping);
         }
     }
 }
