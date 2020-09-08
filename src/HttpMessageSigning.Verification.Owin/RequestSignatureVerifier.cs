@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             if (eventTask != null) await eventTask.Invoke(request, parsedSignature).ConfigureAwait(continueOnCapturedContext: false);
 
             var requestForVerification = request.ToHttpRequestForVerification(parsedSignature);
-            return await _verificationOrchestrator.VerifySignature(requestForVerification);
+            return await _verificationOrchestrator.VerifySignature(requestForVerification).ConfigureAwait(continueOnCapturedContext: false);
         }
 
         public void Dispose() {
