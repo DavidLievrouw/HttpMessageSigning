@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// <param name="claims">The additional claims that the validated principal will have upon successful signature verification.</param>
         [Obsolete("Please use an overload that takes a " + nameof(NonceLifetime) + " and a " + nameof(ClockSkew) + " argument.")]
         public Client(KeyId id, string name, ISignatureAlgorithm signatureAlgorithm, params Claim[] claims) : this(id, name, signatureAlgorithm, DefaultNonceLifetime,
-            DefaultClockSkew, claims) { }
+            DefaultClockSkew, RequestTargetEscaping.RFC3986, claims) { }
 
         /// <summary>
         ///     Create a new instance of the <see cref="Client" /> class.
@@ -39,7 +39,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// <param name="claims">The additional claims that the validated principal will have upon successful signature verification.</param>
         [Obsolete("Please use an overload that takes a " + nameof(ClockSkew) + " argument.")]
         public Client(KeyId id, string name, ISignatureAlgorithm signatureAlgorithm, TimeSpan nonceLifetime, params Claim[] claims) : this(id, name, signatureAlgorithm,
-            nonceLifetime, DefaultClockSkew, claims) { }
+            nonceLifetime, DefaultClockSkew, RequestTargetEscaping.RFC3986, claims) { }
 
         /// <summary>
         ///     Create a new instance of the <see cref="Client" /> class.
@@ -50,13 +50,28 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// <param name="nonceLifetime">The time span after which repeated nonce values are allowed again.</param>
         /// <param name="clockSkew">The clock skew to allow when validation a time.</param>
         /// <param name="claims">The additional claims that the validated principal will have upon successful signature verification.</param>
-        public Client(KeyId id, string name, ISignatureAlgorithm signatureAlgorithm, TimeSpan nonceLifetime, TimeSpan clockSkew, params Claim[] claims) {
+        [Obsolete("Please use an overload that takes a " + nameof(RequestTargetEscaping) + " argument.")]
+        public Client(KeyId id, string name, ISignatureAlgorithm signatureAlgorithm, TimeSpan nonceLifetime, TimeSpan clockSkew, params Claim[] claims)  : this(id, name, signatureAlgorithm,
+            nonceLifetime, DefaultClockSkew, RequestTargetEscaping.RFC3986, claims) { }
+        
+        /// <summary>
+        ///     Create a new instance of the <see cref="Client" /> class.
+        /// </summary>
+        /// <param name="id">The identity of the client that can be looked up by the server.</param>
+        /// <param name="name">The descriptive name of the client</param>
+        /// <param name="signatureAlgorithm">The <see cref="Dalion.HttpMessageSigning.ISignatureAlgorithm" /> that is used to verify the signature.</param>
+        /// <param name="nonceLifetime">The time span after which repeated nonce values are allowed again.</param>
+        /// <param name="clockSkew">The clock skew to allow when validation a time.</param>
+        /// <param name="claims">The additional claims that the validated principal will have upon successful signature verification.</param>
+        /// <param name="requestTargetEscaping">The method of escaping the value of the (request-target) pseudo-header.</param>
+        public Client(KeyId id, string name, ISignatureAlgorithm signatureAlgorithm, TimeSpan nonceLifetime, TimeSpan clockSkew, RequestTargetEscaping requestTargetEscaping, params Claim[] claims) {
             if (id == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(id));
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
             if (nonceLifetime <= TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(nonceLifetime), nonceLifetime, "The specified nonce expiration time span is invalid");
             if (clockSkew <= TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(clockSkew), clockSkew, "The specified clock skew time span is invalid");
             NonceLifetime = nonceLifetime;
             ClockSkew = clockSkew;
+            RequestTargetEscaping = requestTargetEscaping;
             Claims = claims ?? Array.Empty<Claim>();
             Id = id;
             Name = name;
@@ -87,6 +102,11 @@ namespace Dalion.HttpMessageSigning.Verification {
         ///     Gets the clock skew to allow when validation a time.
         /// </summary>
         public TimeSpan ClockSkew { get; }
+        
+        /// <summary>
+        ///     Gets or sets the method of escaping the value of the (request-target) pseudo-header.
+        /// </summary>
+        public RequestTargetEscaping RequestTargetEscaping { get; }
 
         /// <summary>
         ///     Gets the additional claims that the validated principal will have upon successful signature verification.
@@ -95,7 +115,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
         /// <inheritdoc />
         public object Clone() {
-            return new Client(Id, Name, SignatureAlgorithm, NonceLifetime, ClockSkew, (Claim[]) Claims.Clone());
+            return new Client(Id, Name, SignatureAlgorithm, NonceLifetime, ClockSkew, RequestTargetEscaping, (Claim[]) Claims.Clone());
         }
 
         /// <inheritdoc />

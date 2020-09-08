@@ -11,5 +11,6 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         public ClaimDataRecord[] Claims { get; set; }
         public double? NonceExpiration { get; set; }
         public double? ClockSkew { get; set; }
+        public string RequestTargetEscaping { get; set; }
     }
 }

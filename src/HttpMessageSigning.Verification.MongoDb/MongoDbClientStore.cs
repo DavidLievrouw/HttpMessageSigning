@@ -30,7 +30,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 NonceExpiration = client.NonceLifetime.TotalSeconds,
                 ClockSkew = client.ClockSkew.TotalSeconds,
                 Claims = client.Claims?.Select(ClaimDataRecord.FromClaim)?.ToArray(),
-                SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm)
+                SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm),
+                RequestTargetEscaping = client.RequestTargetEscaping.ToString()
             };
 
             var collection = _lazyCollection.Value;
@@ -43,8 +44,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             var collection = _lazyCollection.Value;
 
-            var findResult = await collection.FindAsync(r => r.Id == clientId).ConfigureAwait(false);
-            var matches = await findResult.ToListAsync().ConfigureAwait(false);
+            var findResult = await collection.FindAsync(r => r.Id == clientId).ConfigureAwait(continueOnCapturedContext: false);
+            var matches = await findResult.ToListAsync().ConfigureAwait(continueOnCapturedContext: false);
             if (!matches.Any()) return null;
 
             var match = matches.Single();
@@ -56,6 +57,13 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             var clockSkew = !match.ClockSkew.HasValue || match.ClockSkew.Value <= 0.0
                 ? Client.DefaultClockSkew
                 : TimeSpan.FromSeconds(match.ClockSkew.Value);
+
+            var requestTargetEscaping = RequestTargetEscaping.RFC3986;
+            if (!string.IsNullOrEmpty(match.RequestTargetEscaping)) {
+                if (Enum.TryParse<RequestTargetEscaping>(match.RequestTargetEscaping, ignoreCase: true, out var parsed)) {
+                    requestTargetEscaping = parsed;
+                }
+            }
             
             return new Client(
                 match.Id,
@@ -63,6 +71,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 match.SignatureAlgorithm.ToSignatureAlgorithm(),
                 nonceExpiration,
                 clockSkew,
+                requestTargetEscaping,
                 match.Claims?.Select(c => c.ToClaim())?.ToArray());
         }
     }
