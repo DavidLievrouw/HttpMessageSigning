@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Net.Http;
 using Microsoft.Extensions.Primitives;
@@ -10,9 +9,7 @@ namespace Dalion.HttpMessageSigning {
             
             var requestForSigning = new HttpRequestForSigning {
                 Method = httpRequestMessage.Method,
-                RequestUri = httpRequestMessage.RequestUri.IsAbsoluteUri
-                 ? new Uri(httpRequestMessage.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped), UriKind.Relative)
-                 : httpRequestMessage.RequestUri
+                RequestUri = httpRequestMessage.RequestUri
             };
 
             foreach (var header in httpRequestMessage.Headers) {

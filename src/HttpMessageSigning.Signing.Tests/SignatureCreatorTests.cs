@@ -127,7 +127,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 interceptedRequest.Should().BeEquivalentTo(new HttpRequestForSigning {
                     Method = HttpMethod.Post,
-                    RequestUri = "/api/resource/id1".ToUri(),
+                    RequestUri = "http://dalion.eu/api/resource/id1".ToUri(),
                     Headers = new HeaderDictionary(new Dictionary<string, StringValues> {{"H1", "v1"}})
                 });
             }
