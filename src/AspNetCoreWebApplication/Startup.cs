@@ -62,6 +62,7 @@ namespace WebApplication {
                     SignatureAlgorithm.CreateForVerification("G#6l$!D16E2UPoYKu&oL@AjAOj9vipKJTSII%*8iY*q6*MOis2R", HashAlgorithmName.SHA512),
                     TimeSpan.FromMinutes(5),
                     TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986,
                     new Claim(SignedHttpRequestClaimTypes.Role, "user.read")))
                 .GetAwaiter().GetResult();
 

@@ -53,7 +53,8 @@ namespace Conformance {
                         "ConformanceClient",
                         signatureAlgorithmForVerification,
                         TimeSpan.FromSeconds(30),
-                        TimeSpan.FromMinutes(1)));
+                        TimeSpan.FromMinutes(1),
+                        RequestTargetEscaping.RFC3986));
                     return clientStore;
                 })
                 .BuildServiceProvider();

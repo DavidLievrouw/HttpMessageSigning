@@ -49,6 +49,7 @@ namespace Benchmark {
                         SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                         TimeSpan.FromMilliseconds(1),
                         TimeSpan.FromMinutes(1),
+                        RequestTargetEscaping.RFC3986,
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 })
