@@ -49,7 +49,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             [Fact]
             public async Task WhenEverythingIsSpecified_CallsSigningStringComposerWithCreatedCompositionRequest() {
                 var compositionRequest = new SigningStringCompositionRequest {
-                    Request = _signedRequest,
+                    Request = _signedRequest.ToHttpRequestForSignatureString(),
                     Expires = _signature.Expires.Value - _signature.Created.Value,
                     HeadersToInclude = _signature.Headers,
                     RequestTargetEscaping = RequestTargetEscaping.RFC3986, // ToDo #13

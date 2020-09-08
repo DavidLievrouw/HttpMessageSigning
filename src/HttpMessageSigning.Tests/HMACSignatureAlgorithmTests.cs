@@ -1,6 +1,5 @@
 using System;
 using System.Security.Cryptography;
-using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using FluentAssertions;
 using Xunit;
 

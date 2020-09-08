@@ -5,9 +5,9 @@ using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class DateHeaderAppender : IHeaderAppender {
-        private readonly HttpRequestForSigning _request;
+        private readonly HttpRequestForSignatureString _request;
         
-        public DateHeaderAppender(HttpRequestForSigning request) {
+        public DateHeaderAppender(HttpRequestForSignatureString request) {
             _request = request ?? throw new ArgumentNullException(nameof(request));
         }
 

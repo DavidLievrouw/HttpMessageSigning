@@ -7,14 +7,14 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     public class RequestTargetHeaderAppenderTests {
-        private readonly HttpRequestForSigning _httpRequest;
+        private readonly HttpRequestForSignatureString _httpRequest;
         private readonly RequestTargetHeaderAppender _sut;
         private readonly IRequestTargetEscaper _requestTargetEscaper;
         private readonly RequestTargetEscaping _requestTargetEscaping;
 
         public RequestTargetHeaderAppenderTests() {
             FakeFactory.Create(out _requestTargetEscaper);
-            _httpRequest = new HttpRequestForSigning {
+            _httpRequest = new HttpRequestForSignatureString {
                 Method = HttpMethod.Post,
                 RequestUri = "/api/resource/id1".ToUri()
             };

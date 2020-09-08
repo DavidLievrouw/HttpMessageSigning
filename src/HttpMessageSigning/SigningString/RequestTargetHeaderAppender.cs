@@ -3,11 +3,11 @@ using Dalion.HttpMessageSigning.SigningString.RequestTarget;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class RequestTargetHeaderAppender : IHeaderAppender {
-        private readonly HttpRequestForSigning _request;
+        private readonly HttpRequestForSignatureString _request;
         private readonly RequestTargetEscaping _requestTargetEscaping;
         private readonly IRequestTargetEscaper _requestTargetEscaper;
 
-        public RequestTargetHeaderAppender(HttpRequestForSigning request, RequestTargetEscaping requestTargetEscaping, IRequestTargetEscaper requestTargetEscaper) {
+        public RequestTargetHeaderAppender(HttpRequestForSignatureString request, RequestTargetEscaping requestTargetEscaping, IRequestTargetEscaper requestTargetEscaper) {
             _request = request ?? throw new ArgumentNullException(nameof(request));
             _requestTargetEscaping = requestTargetEscaping;
             _requestTargetEscaper = requestTargetEscaper ?? throw new ArgumentNullException(nameof(requestTargetEscaper));

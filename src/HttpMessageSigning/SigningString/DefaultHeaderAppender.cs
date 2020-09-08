@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class DefaultHeaderAppender : IHeaderAppender {
-        private readonly HttpRequestForSigning _request;
+        private readonly HttpRequestForSignatureString _request;
         
-        public DefaultHeaderAppender(HttpRequestForSigning request) {
+        public DefaultHeaderAppender(HttpRequestForSignatureString request) {
             _request = request ?? throw new ArgumentNullException(nameof(request));
         }
 

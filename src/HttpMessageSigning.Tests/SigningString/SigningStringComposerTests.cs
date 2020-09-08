@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             public Compose() {
                 var timeOfComposing = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.FromHours(1));
                 var expires = TimeSpan.FromMinutes(5);
-                var httpRequest = new HttpRequestForSigning {
+                var httpRequest = new HttpRequestForSignatureString {
                     Method = HttpMethod.Post,
                     RequestUri = "http://dalion.eu/api/resource/id1".ToUri()
                 };

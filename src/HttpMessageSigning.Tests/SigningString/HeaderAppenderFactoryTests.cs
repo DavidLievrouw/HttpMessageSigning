@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public class Create : HeaderAppenderFactoryTests {
-            private readonly HttpRequestForSigning _httpRequest;
+            private readonly HttpRequestForSignatureString _httpRequest;
             private readonly DateTimeOffset _timeOfComposing;
             private readonly TimeSpan _expires;
             private readonly RequestTargetEscaping _requestTargetEscaping;
@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             public Create() {
                 _timeOfComposing = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.FromHours(1));
                 _expires = TimeSpan.FromMinutes(5);
-                _httpRequest = new HttpRequestForSigning {
+                _httpRequest = new HttpRequestForSignatureString {
                     Method = HttpMethod.Post,
                     RequestUri = "http://dalion.eu/api/resource/id1".ToUri()
                 };

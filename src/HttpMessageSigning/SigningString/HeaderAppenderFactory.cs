@@ -9,7 +9,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _requestTargetEscaper = requestTargetEscaper ?? throw new ArgumentNullException(nameof(requestTargetEscaper));
         }
 
-        public IHeaderAppender Create(HttpRequestForSigning request, RequestTargetEscaping requestTargetEscaping, DateTimeOffset? timeOfComposing, TimeSpan? expires) {
+        public IHeaderAppender Create(HttpRequestForSignatureString request, RequestTargetEscaping requestTargetEscaping, DateTimeOffset? timeOfComposing, TimeSpan? expires) {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             return new CompositeHeaderAppender(

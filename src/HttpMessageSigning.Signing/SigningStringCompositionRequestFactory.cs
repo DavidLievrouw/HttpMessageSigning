@@ -18,7 +18,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
 
             return new SigningStringCompositionRequest {
-                Request = request,
+                Request = request.ToHttpRequestForSignatureString(),
                 RequestTargetEscaping = signingSettings.RequestTargetEscaping,
                 HeadersToInclude = signingSettings.Headers,
                 TimeOfComposing = timeOfComposing,
