@@ -62,7 +62,13 @@ namespace Dalion.HttpMessageSigning.Verification {
                     Signature = new Signature {KeyId = "client1"}
                 };
                 
-                _client = new Client("client1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                _client = new Client(
+                    "client1", 
+                    "Unit test app", 
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
                 
                 A.CallTo(() => _knownAlgorithmVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);
                 A.CallTo(() => _matchingAlgorithmVerificationTask.Verify(A<HttpRequestForVerification>._, A<Signature>._, A<Client>._)).Returns((SignatureVerificationFailure)null);

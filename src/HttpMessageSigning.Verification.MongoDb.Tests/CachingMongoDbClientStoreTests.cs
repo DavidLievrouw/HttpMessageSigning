@@ -28,16 +28,27 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
 
         public class Register : CachingMongoDbClientStoreTests {
-            private readonly KeyId _keyId;
             private readonly string _cacheKey;
             private readonly Client _cachedClient;
             private readonly Client _newClient;
             
             public Register() {
-                _keyId = new KeyId("c1");
-                _cacheKey = $"CacheEntry_Client_{_keyId}";
-                _cachedClient = new Client(_keyId, "cached", new CustomSignatureAlgorithm("cAlg"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
-                _newClient = new Client(_keyId, "client one", new CustomSignatureAlgorithm("cAlg"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                var keyId = new KeyId("c1");
+                _cacheKey = $"CacheEntry_Client_{keyId}";
+                _cachedClient = new Client(
+                    keyId,
+                    "cached", 
+                    new CustomSignatureAlgorithm("cAlg"), 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
+                _newClient = new Client(
+                    keyId, 
+                    "client one", 
+                    new CustomSignatureAlgorithm("cAlg"), 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
             }
             
             [Fact]
@@ -99,8 +110,20 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 _keyId = new KeyId("c1");
                 _cacheKey = $"CacheEntry_Client_{_keyId}";
 
-                _cachedClient = new Client(_keyId, "cached", new CustomSignatureAlgorithm("cAlg"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
-                _newClient = new Client(_keyId, "new", new CustomSignatureAlgorithm("cAlg"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                _cachedClient = new Client(
+                    _keyId,
+                    "cached", 
+                    new CustomSignatureAlgorithm("cAlg"),
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
+                _newClient = new Client(
+                    _keyId, 
+                    "new", 
+                    new CustomSignatureAlgorithm("cAlg"), 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
                 A.CallTo(() => _decorated.Get(_keyId)).Returns(_newClient);
             }
 

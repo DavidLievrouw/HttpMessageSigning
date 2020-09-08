@@ -24,7 +24,14 @@ namespace Dalion.HttpMessageSigning.Verification {
             
             [Fact]
             public async Task RegistersSpecifiedClients() {
-                var entry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new Claim("c1", "v1"));
+                var entry = new Client(
+                    (KeyId) "entry1",
+                    "Unit test app", 
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986,
+                    new Claim("c1", "v1"));
                 var sut = new InMemoryClientStore(entry);
                 
                 var registeredEntry = await sut.Get(entry.Id);
@@ -42,10 +49,24 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenEntryAlreadyExists_ReplacesValue() {
-                var existingEntry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new Claim("c1", "v1"));
+                var existingEntry = new Client(
+                    (KeyId) "entry1", 
+                    "Unit test app",
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986, 
+                    new Claim("c1", "v1"));
                 await _sut.Register(existingEntry);
                 
-                var updatedEntry = new Client((KeyId) "entry1", "Unit test app - updated", new HMACSignatureAlgorithm("s3cr3t_002", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(2), TimeSpan.FromMinutes(1), new Claim("c1", "v2"));
+                var updatedEntry = new Client(
+                    (KeyId) "entry1", 
+                    "Unit test app - updated",
+                    new HMACSignatureAlgorithm("s3cr3t_002", HashAlgorithmName.SHA256),
+                    TimeSpan.FromMinutes(2),
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986, 
+                    new Claim("c1", "v2"));
                 await _sut.Register(updatedEntry);
                 
                 var registeredEntry = await _sut.Get(existingEntry.Id);
@@ -55,7 +76,14 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task AddsEntry() {
-                var entry = new Client((KeyId) "entry1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new Claim("c1", "v1"));
+                var entry = new Client(
+                    (KeyId) "entry1", 
+                    "Unit test app", 
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986, 
+                    new Claim("c1", "v1"));
                 await _sut.Register(entry);
                 var registeredEntry = await _sut.Get(entry.Id);
                 registeredEntry.Should().Be(entry);
@@ -86,7 +114,8 @@ namespace Dalion.HttpMessageSigning.Verification {
                     "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
                     TimeSpan.FromMinutes(1),
-                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986, 
                     new Claim("c1", "v1"));
                 await _sut.Register(entry);
                 var registeredEntry = await _sut.Get(entry.Id);
@@ -98,8 +127,23 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void DisposesAllEntries() {
                 var entries = new[] {
-                    new Client((KeyId) "entry1", "Unit test app 1", A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new Claim("c1", "v1")),
-                    new Client((KeyId) "entry2", "Unit test app 2", A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new Claim("c1", "v1"))
+                    new Client(
+                        (KeyId) "entry1", 
+                        "Unit test app 1",
+                        A.Fake<ISignatureAlgorithm>(), 
+                        TimeSpan.FromMinutes(1), 
+                        TimeSpan.FromMinutes(1),
+                        RequestTargetEscaping.RFC3986, 
+                        new Claim("c1", "v1")),
+                    new Client(
+                        (KeyId) 
+                        "entry2", 
+                        "Unit test app 2",
+                        A.Fake<ISignatureAlgorithm>(),
+                        TimeSpan.FromMinutes(1),
+                        TimeSpan.FromMinutes(1),
+                        RequestTargetEscaping.RFC3986, 
+                        new Claim("c1", "v1"))
                 };
                 
                 var sut = new InMemoryClientStore(entries);
@@ -114,8 +158,22 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task ClearsEntries() {
                 var entries = new[] {
-                    new Client((KeyId) "entry1", "Unit test app 1", A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new Claim("c1", "v1")),
-                    new Client((KeyId) "entry2", "Unit test app 2", A.Fake<ISignatureAlgorithm>(), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1), new Claim("c1", "v1"))
+                    new Client(
+                        (KeyId) "entry1", 
+                        "Unit test app 1", 
+                        A.Fake<ISignatureAlgorithm>(), 
+                        TimeSpan.FromMinutes(1), 
+                        TimeSpan.FromMinutes(1),
+                        RequestTargetEscaping.RFC3986, 
+                        new Claim("c1", "v1")),
+                    new Client(
+                        (KeyId) "entry2", 
+                        "Unit test app 2", 
+                        A.Fake<ISignatureAlgorithm>(),
+                        TimeSpan.FromMinutes(1), 
+                        TimeSpan.FromMinutes(1),
+                        RequestTargetEscaping.RFC3986, 
+                        new Claim("c1", "v1"))
                 };
                 
                 var sut = new InMemoryClientStore(entries);

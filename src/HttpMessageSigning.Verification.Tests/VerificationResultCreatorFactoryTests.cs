@@ -20,7 +20,13 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             public Create() {
                 _requestForVerification = new HttpRequestForVerification {Signature = new Signature {KeyId = "client1"}};
-                _client = new Client("client1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                _client = new Client(
+                    "client1", 
+                    "Unit test app", 
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1),
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
             }
 
             [Fact]

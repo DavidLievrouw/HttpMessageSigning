@@ -177,6 +177,7 @@ namespace Dalion.HttpMessageSigning.Nonce {
                         SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                         TimeSpan.FromMinutes(5),
                         TimeSpan.FromMinutes(1),
+                        RequestTargetEscaping.RFC3986,
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 });

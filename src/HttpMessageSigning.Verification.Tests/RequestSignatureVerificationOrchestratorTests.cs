@@ -64,7 +64,13 @@ namespace Dalion.HttpMessageSigning.Verification {
             
             [Fact]
             public async Task VerifiesSignatureOfClient_ThatMatchesTheKeyIdFromTheRequest() {
-                var client = new Client(_request.Signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                var client = new Client(
+                    _request.Signature.KeyId, 
+                    "Unit test app", 
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
                 A.CallTo(() => _clientStore.Get(_request.Signature.KeyId))
                     .Returns(client);
 
@@ -83,7 +89,13 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenVerificationSucceeds_ReturnsSuccessResultWithClaimsPrincipal() {
-                var client = new Client(_request.Signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                var client = new Client(
+                    _request.Signature.KeyId,
+                    "Unit test app",
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1),
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
                 A.CallTo(() => _clientStore.Get(_request.Signature.KeyId))
                     .Returns(client);
 
@@ -107,7 +119,13 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenVerificationFails_ReturnsFailureResult() {
-                var client = new Client(_request.Signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                var client = new Client(
+                    _request.Signature.KeyId,
+                    "Unit test app", 
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
                 A.CallTo(() => _clientStore.Get(_request.Signature.KeyId))
                     .Returns(client);
                 
@@ -147,7 +165,13 @@ namespace Dalion.HttpMessageSigning.Verification {
             
             [Fact]
             public void WhenVerificationReturnsAnUnexpectedException_Rethrows() {
-                var client = new Client(_request.Signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                var client = new Client(
+                    _request.Signature.KeyId, 
+                    "Unit test app", 
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
                 A.CallTo(() => _clientStore.Get(_request.Signature.KeyId))
                     .Returns(client);
                 

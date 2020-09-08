@@ -24,7 +24,8 @@ namespace Dalion.HttpMessageSigning.Verification {
                 "Unit test app",
                 new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                 TimeSpan.FromMinutes(1),
-                TimeSpan.FromMinutes(1));
+                TimeSpan.FromMinutes(1),
+                RequestTargetEscaping.RFC3986);
             _failure = new InvalidSignatureStringSignatureVerificationFailure(
                 "The verification failed",
                 new InvalidOperationException("Epic fail"));

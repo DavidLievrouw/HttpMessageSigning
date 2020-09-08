@@ -40,7 +40,13 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     Signature = (Signature) TestModels.Signature.Clone()
                 };
                 _verificationSuccessResult = new RequestSignatureVerificationResultSuccess(
-                    new Client(_requestForVerification.Signature.KeyId, "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1)), 
+                    new Client(
+                        _requestForVerification.Signature.KeyId, 
+                        "Unit test app", 
+                        new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
+                        TimeSpan.FromMinutes(1), 
+                        TimeSpan.FromMinutes(1),
+                        RequestTargetEscaping.RFC3986), 
                     _requestForVerification, 
                     new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")})));
             }

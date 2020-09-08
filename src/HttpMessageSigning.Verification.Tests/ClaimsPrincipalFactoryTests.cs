@@ -40,6 +40,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986,
                     null);
                 
                 var actual = _sut.CreateForClient(client);
@@ -59,7 +60,8 @@ namespace Dalion.HttpMessageSigning.Verification {
                     "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
                     TimeSpan.FromMinutes(1),
-                    TimeSpan.FromMinutes(1));
+                    TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986);
                 
                 var actual = _sut.CreateForClient(client);
 
@@ -79,6 +81,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
                     TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986,
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
                     new Claim("c2", "v2"));
@@ -104,6 +107,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986,
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
                     new Claim("c2", "v2"));
@@ -123,6 +127,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
                     TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1),
+                    RequestTargetEscaping.RFC3986,
                     new Claim("c1", "v1"),
                     new Claim("c1", "v2"),
                     new Claim("c2", "v2"));

@@ -25,7 +25,8 @@ namespace Dalion.HttpMessageSigning.Verification {
                 "Unit test app",
                 new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                 TimeSpan.FromMinutes(1),
-                TimeSpan.FromMinutes(1));
+                TimeSpan.FromMinutes(1),
+                RequestTargetEscaping.RFC3986);
             _principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
             _sut = new RequestSignatureVerificationResultSuccess(_client, _request, _principal);
         }
