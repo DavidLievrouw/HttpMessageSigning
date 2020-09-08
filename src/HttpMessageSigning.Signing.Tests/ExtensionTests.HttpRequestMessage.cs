@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
@@ -8,7 +9,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Primitives;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.Signing {
     public partial class ExtensionTests {
         public class ForHttpRequestMessage : ExtensionTests {
             public class ToHttpRequestForSigning : ForHttpRequestMessage {
@@ -27,8 +28,10 @@ namespace Dalion.HttpMessageSigning {
                 }
 
                 [Fact]
+                [SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
                 public void GivenNullRequest_ReturnsNull() {
-                    var actual = Extensions.ToHttpRequestForSigning(httpRequestMessage: null);
+                    HttpRequestMessage nullRequest = null;
+                    var actual = nullRequest.ToHttpRequestForSigning();
                     actual.Should().BeNull();
                 }
                 

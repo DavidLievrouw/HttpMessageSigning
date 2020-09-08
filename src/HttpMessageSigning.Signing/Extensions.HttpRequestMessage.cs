@@ -2,7 +2,7 @@ using System.Linq;
 using System.Net.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.Signing {
     public static partial class Extensions {
         internal static HttpRequestForSigning ToHttpRequestForSigning(this HttpRequestMessage httpRequestMessage) {
             if (httpRequestMessage == null) return null;

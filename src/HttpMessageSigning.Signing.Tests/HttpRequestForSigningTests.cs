@@ -4,7 +4,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Primitives;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning {
+namespace Dalion.HttpMessageSigning.Signing {
     public class HttpRequestForSigningTests {
         private readonly HttpRequestForSigning _sut;
 
