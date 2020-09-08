@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
@@ -13,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (request == null) return null;
             
             var requestMessage = new HttpRequestForVerification {
-                RequestUri = new Uri(GetPathAndQuery(request), UriKind.Relative),
+                RequestUri = new Uri(request.GetDisplayUrl(), UriKind.Absolute),
                 Method = string.IsNullOrEmpty(request.Method)
                     ? HttpMethod.Get
                     : new HttpMethod(request.Method),

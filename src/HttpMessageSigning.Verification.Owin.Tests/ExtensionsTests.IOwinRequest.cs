@@ -21,7 +21,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     _owinRequest = new OwinRequest {
                         Method = "GET",
                         Scheme = "https",
-                        Host = new HostString("unittest.com:9000"),
+                        Host = new HostString("dalion.eu:9000"),
                         PathBase = new PathString("/tests"),
                         Path = new PathString("/api/rsc1"),
                         QueryString = new QueryString("query=1&cache=false"),
@@ -71,25 +71,25 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 [Fact]
                 public void CopiesUriPath() {
                     _owinRequest.Scheme = "https";
-                    _owinRequest.Host = new HostString("unittest.com:9000");
+                    _owinRequest.Host = new HostString("dalion.eu:9000");
                     _owinRequest.PathBase = new PathString("/api");
                     _owinRequest.Path = new PathString("/policies/test");
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/api/policies/test?query=1&cache=false".ToUri());
+                    actual.RequestUri.Should().Be("https://dalion.eu:9000/api/policies/test?query=1&cache=false".ToUri());
                 }
 
                 [Fact]
                 public void CanHandleEmptyPathBase() {
                     _owinRequest.Scheme = "https";
-                    _owinRequest.Host = new HostString("unittest.com:9000");
+                    _owinRequest.Host = new HostString("dalion.eu:9000");
                     _owinRequest.PathBase = PathString.Empty;
                     _owinRequest.Path = new PathString("/policies/test");
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/policies/test?query=1&cache=false".ToUri());
+                    actual.RequestUri.Should().Be("https://dalion.eu:9000/policies/test?query=1&cache=false".ToUri());
                 }
           
                 [Fact]
@@ -99,7 +99,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
                     
-                    var expectedUri = "/?query=1&cache=false".ToUri();
+                    var expectedUri = "https://dalion.eu:9000/?query=1&cache=false".ToUri();
                     actual.RequestUri.Should().Be(expectedUri);
                 }    
                 
@@ -111,58 +111,22 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
                     
-                    var expectedUri = "/";
+                    var expectedUri = "https://dalion.eu:9000/";
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
                 [Fact]
                 public void CanHandleDefaultPort() {
                     _owinRequest.Scheme = "https";
-                    _owinRequest.Host = new HostString("unittest.com");
+                    _owinRequest.Host = new HostString("dalion.eu");
                     _owinRequest.PathBase = PathString.Empty;
                     _owinRequest.Path = new PathString("/policies/test");
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/policies/test?query=1&cache=false".ToUri());
+                    actual.RequestUri.Should().Be("https://dalion.eu/policies/test?query=1&cache=false".ToUri());
                 }
 
-                [Fact]
-                public void UriEscapesRFC2396EscapedUriPathAndQueryString() {
-                    _owinRequest.PathBase = new PathString("/api");
-                    _owinRequest.Path = new PathString("/%7BBrooks%7D%20was%20here/create/David%20&%20Partners%20+%20Siebe%20at%20100%25%20*%20co.");
-                    _owinRequest.QueryString = new QueryString("query+string=%7Bbrooks%7D");
-                    
-                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
-                    
-                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D".ToUri();
-                    actual.RequestUri.Should().Be(expectedUri);
-                }
-                
-                [Fact]
-                public void UriEscapesRFC3986EscapedUriPathAndQueryString() {
-                    _owinRequest.PathBase = new PathString("/api");
-                    _owinRequest.Path = new PathString("/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.");
-                    _owinRequest.QueryString = new QueryString("query%2Bstring=%7Bbrooks%7D");
-                    
-                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
-                    
-                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D".ToUri();
-                    actual.RequestUri.Should().Be(expectedUri);
-                }
-                
-                [Fact]
-                public void UriEscapesUnescapedUriPathAndQueryString() {
-                    _owinRequest.PathBase = new PathString("/api");
-                    _owinRequest.Path = new PathString("/{Brooks} was here/create/David & Partners + Siebe at 100% * co.");
-                    _owinRequest.QueryString = new QueryString("query+string={brooks}");
-
-                    var actual = _owinRequest.ToHttpRequestForVerification(_signature);
-
-                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D".ToUri();
-                    actual.RequestUri.Should().Be(expectedUri);
-                }
-                
                 [Fact]
                 public void CopiesAllHeadersWithValues() {
                     _owinRequest.Headers.Add("simple-value", new[] {"v1"});
@@ -176,7 +140,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                         {"multiple-value", (StringValues) new[] {"v1", "v2"}},
                         {"no-value", StringValues.Empty},
                         {HeaderName.PredefinedHeaderNames.Digest, "SHA-256=xyz123="},
-                        {"Host", "unittest.com:9000"}
+                        {"Host", "dalion.eu:9000"}
                     });
                 }
 
