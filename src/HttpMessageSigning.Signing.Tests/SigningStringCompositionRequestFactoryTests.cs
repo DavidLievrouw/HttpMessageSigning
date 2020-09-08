@@ -58,7 +58,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             public void CreatesRequestWithExpectedPropertyValues() {
                 var actual = _sut.CreateForSigning(_request, _settings, _timeOfComposingUtc, _expires);
 
-                actual.Request.Should().Be(_request);
+                actual.Request.Should().BeEquivalentTo(_request.ToHttpRequestForSignatureString());
                 actual.RequestTargetEscaping.Should().Be(_settings.RequestTargetEscaping);
                 actual.HeadersToInclude.Should().BeEquivalentTo(_settings.Headers, opts => opts.WithStrictOrdering());
                 actual.TimeOfComposing.Should().Be(_timeOfComposingUtc);

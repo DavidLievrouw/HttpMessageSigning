@@ -50,7 +50,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void CreatesRequestWithExpectedPropertyValues() {
                 var actual = _sut.CreateForVerification(_signedRequest, _client, _signature);
 
-                actual.Request.Should().Be(_signedRequest);
+                actual.Request.Should().BeEquivalentTo(_signedRequest.ToHttpRequestForSignatureString());
                 actual.RequestTargetEscaping.Should().Be(RequestTargetEscaping.RFC3986); // ToDo #13
                 actual.HeadersToInclude.Should().BeEquivalentTo(_signature.Headers, opts => opts.WithStrictOrdering());
                 actual.TimeOfComposing.Should().Be(_signature.Created);
