@@ -23,6 +23,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             private readonly DateTimeOffset _timeOfComposing;
             private readonly TimeSpan _expires;
             private readonly string _nonce;
+            private readonly RequestTargetEscaping _requestTargetEscaping;
 
             public Compose() {
                 _timeOfComposing = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.FromHours(1));
@@ -36,22 +37,23 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     HeaderName.PredefinedHeaderNames.Date,
                     new HeaderName("dalion_app_id")
                 };
+                _requestTargetEscaping = RequestTargetEscaping.Unescaped;
                 _nonce = "abc123";
 
                 FakeFactory.Create(out _headerAppender);
-                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _timeOfComposing, _expires))
+                A.CallTo(() => _headerAppenderFactory.Create(_httpRequest, _requestTargetEscaping, _timeOfComposing, _expires))
                     .Returns(_headerAppender);
             }
 
             [Fact]
             public void GivenNullRequest_ThrowsArgumentNullException() {
-                Action act = () => _sut.Compose(null, _headerNames, _timeOfComposing, _expires, _nonce);
+                Action act = () => _sut.Compose(null, _requestTargetEscaping, _headerNames, _timeOfComposing, _expires, _nonce);
                 act.Should().Throw<ArgumentNullException>();
             }            
             
             [Fact]
             public void GivenNullHeaders_ThrowsArgumentNullException() {
-                Action act = () => _sut.Compose(_httpRequest, null, _timeOfComposing, _expires, _nonce);
+                Action act = () => _sut.Compose(_httpRequest, _requestTargetEscaping, null, _timeOfComposing, _expires, _nonce);
                 act.Should().Throw<ArgumentNullException>();
             }
 
@@ -59,7 +61,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             [InlineData(null)]
             [InlineData("")]
             public void GivenNullOrEmptyNonce_DoesNotThrow(string nullOrEmpty) {
-                Action act = () => _sut.Compose(_httpRequest, _headerNames, _timeOfComposing, _expires, nullOrEmpty);
+                Action act = () => _sut.Compose(_httpRequest, _requestTargetEscaping, _headerNames, _timeOfComposing, _expires, nullOrEmpty);
                 act.Should().NotThrow();
             }
 
@@ -79,7 +81,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 A.CallTo(() => _nonceAppender.BuildStringToAppend(_nonce))
                     .Returns("abc123,");
                 
-                var actual = _sut.Compose(_httpRequest, headerNames, _timeOfComposing, _expires, _nonce);
+                var actual = _sut.Compose(_httpRequest, _requestTargetEscaping, headerNames, _timeOfComposing, _expires, _nonce);
 
                 var expected = "(request-target),date,dalion_app_id,abc123,";
                 actual.Should().Be(expected);
@@ -93,7 +95,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 A.CallTo(() => _nonceAppender.BuildStringToAppend(_nonce))
                     .Returns("abc123,");
                 
-                var actual = _sut.Compose(_httpRequest, _headerNames, _timeOfComposing, _expires, _nonce);
+                var actual = _sut.Compose(_httpRequest, _requestTargetEscaping, _headerNames, _timeOfComposing, _expires, _nonce);
 
                 var expected = "(request-target),\ndate,\ndalion_app_id,abc123,";
                 actual.Should().Be(expected);
@@ -107,7 +109,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 A.CallTo(() => _nonceAppender.BuildStringToAppend(_nonce))
                     .Returns("abc123,");
                 
-                var actual = _sut.Compose(_httpRequest, _headerNames, _timeOfComposing, _expires, _nonce);
+                var actual = _sut.Compose(_httpRequest, _requestTargetEscaping, _headerNames, _timeOfComposing, _expires, _nonce);
 
                 var expected = "(request-target),\ndate,\ndalion_app_id,abc123,";
                 actual.Should().Be(expected);

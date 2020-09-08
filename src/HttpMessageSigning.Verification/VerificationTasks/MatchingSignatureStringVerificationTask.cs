@@ -24,6 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             var signingString = _signingStringComposer.Compose(
                 signedRequest, 
+                RequestTargetEscaping.RFC3986, // ToDo #13
                 signature.Headers,
                 signature.Created, 
                 expires, 

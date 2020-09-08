@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Dalion.HttpMessageSigning.SigningString;
+using Dalion.HttpMessageSigning.SigningString.RequestTarget;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Signing {
@@ -174,6 +175,11 @@ namespace Dalion.HttpMessageSigning.Signing {
                 .AddSingleton<ISigningSettingsSanitizer, SigningSettingsSanitizer>()
                 .AddSingleton<IAuthorizationHeaderParamCreator, AuthorizationHeaderParamCreator>()
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
+                .AddSingleton<IRequestTargetEscaper>(provider => new CompositeRequestTargetEscaper(
+                    new RFC3986RequestTargetEscaper(), 
+                    new RFC2396RequestTargetEscaper(), 
+                    new UnescapedRequestTargetEscaper(), 
+                    new OriginalStringRequestTargetEscaper()))
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
                 .AddSingleton<IRegisteredSignerSettingsStore, RegisteredSignerSettingsStore>()
                 .AddSingleton<ISignatureHeaderEnsurer>(provider => new CompositeSignatureHeaderEnsurer(

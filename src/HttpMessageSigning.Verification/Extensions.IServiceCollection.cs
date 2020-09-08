@@ -1,5 +1,6 @@
 ﻿using System;
 using Dalion.HttpMessageSigning.SigningString;
+using Dalion.HttpMessageSigning.SigningString.RequestTarget;
 using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,6 +34,11 @@ namespace Dalion.HttpMessageSigning.Verification {
                 .AddSingleton<IClaimsPrincipalFactory>(new ClaimsPrincipalFactory(typeof(ISignatureVerifier).Assembly.GetName().Version.ToString(2)))
                 .AddSingleton<IDefaultSignatureHeadersProvider, DefaultSignatureHeadersProvider>()
                 .AddSingleton<ISignatureSanitizer, SignatureSanitizer>()
+                .AddSingleton<IRequestTargetEscaper>(provider => new CompositeRequestTargetEscaper(
+                    new RFC3986RequestTargetEscaper(), 
+                    new RFC2396RequestTargetEscaper(), 
+                    new UnescapedRequestTargetEscaper(), 
+                    new OriginalStringRequestTargetEscaper()))
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
                 .AddSingleton<IVerificationResultCreatorFactory, VerificationResultCreatorFactory>()

@@ -54,12 +54,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
             var receivedRequest = await request.ToServerSideHttpRequest();
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
-            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                var queryString = ExtractQueryStringFromUri(successResult.RequestForVerification.RequestUri);
-                _output.WriteLine("Verified query string: {0}", queryString);
-                queryString.Should().Be("?hasQueryString=true");
-            }
-            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+            if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
@@ -82,12 +77,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
             var receivedRequest = await request.ToServerSideHttpRequest();
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
-            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                var queryString = ExtractQueryStringFromUri(successResult.RequestForVerification.RequestUri);
-                _output.WriteLine("Verified query string: {0}", queryString);
-                queryString.Should().Be("?query%2Bstring=%7Bbrooks%7D");
-            }
-            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+            if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
@@ -110,12 +100,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
             var receivedRequest = await request.ToServerSideHttpRequest();
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
-            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                var queryString = ExtractQueryStringFromUri(successResult.RequestForVerification.RequestUri);
-                _output.WriteLine("Verified query string: {0}", queryString);
-                queryString.Should().Be("?query%2Bstring=%7Bbrooks%7D");
-            }
-            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+            if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
@@ -138,12 +123,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
             var receivedRequest = await request.ToServerSideHttpRequest();
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
-            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                var queryString = ExtractQueryStringFromUri(successResult.RequestForVerification.RequestUri);
-                _output.WriteLine("Verified query string: {0}", queryString);
-                queryString.Should().BeEmpty();
-            }
-            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+            if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
@@ -198,17 +178,6 @@ namespace Dalion.HttpMessageSigning.QueryString {
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
                     return clientStore;
                 });
-        }
-
-        private static string ExtractQueryStringFromUri(Uri uri) {
-            if (uri.IsAbsoluteUri) {
-                return uri.Query;
-            }
-
-            var originalString = uri.OriginalString;
-            var idx = originalString.IndexOf('?');
-            var query = idx >= 0 ? originalString.Substring(idx) : "";
-            return query;
         }
     }
 }

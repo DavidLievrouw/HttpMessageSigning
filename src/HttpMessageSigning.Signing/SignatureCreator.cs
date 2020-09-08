@@ -30,6 +30,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             var requestForSigning = request.ToHttpRequestForSigning();
             var signingString = _signingStringComposer.Compose(
                 requestForSigning, 
+                settings.RequestTargetEscaping,
                 settings.Headers, 
                 timeOfSigning, 
                 expires, 
