@@ -37,7 +37,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 _options = new SignedHttpRequestAuthenticationOptions();
                 _requestForVerification = new HttpRequestForVerification {
                     Method = HttpMethod.Post,
-                    RequestUri = "https://unittest.com:9000",
+                    RequestUri = "https://unittest.com:9000".ToUri(),
                     Signature = (Signature) TestModels.Signature.Clone()
                 };
                 _verificationSuccessResult = new RequestSignatureVerificationResultSuccess(

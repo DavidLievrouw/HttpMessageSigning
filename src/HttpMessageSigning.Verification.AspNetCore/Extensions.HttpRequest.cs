@@ -13,7 +13,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (request == null) return null;
             
             var requestMessage = new HttpRequestForVerification {
-                RequestUri = GetPathAndQuery(request).UriEscape(),
+                RequestUri = new Uri(GetPathAndQuery(request), UriKind.Relative),
                 Method = string.IsNullOrEmpty(request.Method)
                     ? HttpMethod.Get
                     : new HttpMethod(request.Method),

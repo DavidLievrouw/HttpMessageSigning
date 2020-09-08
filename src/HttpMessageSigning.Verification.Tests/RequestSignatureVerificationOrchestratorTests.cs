@@ -29,7 +29,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public VerifySignature() {
                 _request = new HttpRequestForVerification {
                     Method = HttpMethod.Post,
-                    RequestUri = "https://unittest.com:9000",
+                    RequestUri = "https://unittest.com:9000".ToUri(),
                     Signature = (Signature) TestModels.Signature.Clone()
                 };
             }

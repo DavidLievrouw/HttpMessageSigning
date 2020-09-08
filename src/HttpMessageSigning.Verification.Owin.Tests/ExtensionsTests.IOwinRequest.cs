@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using Dalion.HttpMessageSigning.TestUtils;
 using FluentAssertions;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Owin;
@@ -76,7 +77,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/api/policies/test?query=1&cache=false");
+                    actual.RequestUri.Should().Be("/api/policies/test?query=1&cache=false".ToUri());
                 }
 
                 [Fact]
@@ -88,7 +89,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/policies/test?query=1&cache=false");
+                    actual.RequestUri.Should().Be("/policies/test?query=1&cache=false".ToUri());
                 }
           
                 [Fact]
@@ -98,7 +99,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
                     
-                    var expectedUri = "/?query=1&cache=false";
+                    var expectedUri = "/?query=1&cache=false".ToUri();
                     actual.RequestUri.Should().Be(expectedUri);
                 }    
                 
@@ -123,7 +124,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    actual.RequestUri.Should().Be("/policies/test?query=1&cache=false");
+                    actual.RequestUri.Should().Be("/policies/test?query=1&cache=false".ToUri());
                 }
 
                 [Fact]
@@ -134,7 +135,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
                     
-                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
+                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D".ToUri();
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
@@ -146,7 +147,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
                     
-                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
+                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D".ToUri();
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 
@@ -158,7 +159,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D";
+                    var expectedUri = "/api/%7BBrooks%7D%20was%20here/create/David%20%26%20Partners%20%2B%20Siebe%20at%20100%25%20%2A%20co.?query%2Bstring=%7Bbrooks%7D".ToUri();
                     actual.RequestUri.Should().Be(expectedUri);
                 }
                 

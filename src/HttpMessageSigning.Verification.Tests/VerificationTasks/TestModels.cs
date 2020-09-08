@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Dalion.HttpMessageSigning.TestUtils;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
@@ -18,18 +19,9 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             String = "xyz123=",
             Nonce = "abc123"
         };
-
-        public static readonly HttpRequestForSigning RequestForSigning = new HttpRequestForSigning {
-            RequestUri = "https://dalion.eu/api/rsc1",
-            Method = HttpMethod.Get,
-            Headers = new HeaderDictionary(new Dictionary<string, StringValues> {
-                {"dalion-app-id", "app-one"},
-                {HeaderName.PredefinedHeaderNames.Date, Signature.Created.Value.ToString("R")}
-            })
-        };
         
         public static readonly HttpRequestForVerification RequestForVerification = new HttpRequestForVerification {
-            RequestUri = "https://dalion.eu/api/rsc1",
+            RequestUri = "https://dalion.eu/api/rsc1".ToUri(),
             Method = HttpMethod.Get,
             Headers = new HeaderDictionary(new Dictionary<string, StringValues> {
                 {"dalion-app-id", "app-one"},

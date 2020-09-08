@@ -58,7 +58,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public VerifySignature() {
                 _signedRequest = new HttpRequestForVerification {
                     Method = HttpMethod.Post,
-                    RequestUri = "https://unittest.com:9001",
+                    RequestUri = "https://unittest.com:9001".ToUri(),
                     Signature = new Signature {KeyId = "client1"}
                 };
                 

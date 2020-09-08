@@ -11,8 +11,8 @@ namespace Dalion.HttpMessageSigning {
             var requestForSigning = new HttpRequestForSigning {
                 Method = httpRequestMessage.Method,
                 RequestUri = httpRequestMessage.RequestUri.IsAbsoluteUri
-                 ? httpRequestMessage.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped).UriEscape()
-                 : httpRequestMessage.RequestUri.OriginalString.UriEscape()
+                 ? new Uri(httpRequestMessage.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped), UriKind.Relative)
+                 : httpRequestMessage.RequestUri
             };
 
             foreach (var header in httpRequestMessage.Headers) {

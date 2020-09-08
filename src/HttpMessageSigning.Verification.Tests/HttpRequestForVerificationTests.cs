@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using Dalion.HttpMessageSigning.TestUtils;
 using FluentAssertions;
 using Microsoft.Extensions.Primitives;
 using Xunit;
@@ -15,7 +16,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     {"h3", StringValues.Empty}
                 },
                 Method = HttpMethod.Options,
-                RequestUri = "https://unittest.com:9000/api?test=true",
+                RequestUri = "https://unittest.com:9000/api?test=true".ToUri(),
                 Signature = new Signature {
                     KeyId = new KeyId("abc123"),
                     Algorithm = "hs2019",

@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using Dalion.HttpMessageSigning.TestUtils;
 using FluentAssertions;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         public DefaultHeaderAppenderTests() {
             _httpRequest = new HttpRequestForSigning {
                 Method = HttpMethod.Post,
-                RequestUri = "http://dalion.eu/api/resource/id1"
+                RequestUri = "http://dalion.eu/api/resource/id1".ToUri()
             };
             _sut = new DefaultHeaderAppender(_httpRequest);
         }

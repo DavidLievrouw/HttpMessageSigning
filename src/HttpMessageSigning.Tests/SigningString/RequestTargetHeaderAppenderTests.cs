@@ -1,4 +1,5 @@
 using System.Net.Http;
+using Dalion.HttpMessageSigning.TestUtils;
 using FluentAssertions;
 using Xunit;
 
@@ -10,7 +11,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         public RequestTargetHeaderAppenderTests() {
             _httpRequest = new HttpRequestForSigning {
                 Method = HttpMethod.Post,
-                RequestUri = "/api/resource/id1"
+                RequestUri = "/api/resource/id1".ToUri()
             };
             _sut = new RequestTargetHeaderAppender(_httpRequest);
         }
@@ -25,7 +26,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             [Fact]
             public void DoesNotTouchCasingOfPath() {
-                _httpRequest.RequestUri = "/Api/resource/ID1";
+                _httpRequest.RequestUri = "/Api/resource/ID1".ToUri();
 
                 var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget);
 

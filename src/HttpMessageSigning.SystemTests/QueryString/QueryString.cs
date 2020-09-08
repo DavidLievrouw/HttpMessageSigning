@@ -55,7 +55,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                var queryString = ExtractQueryStringFromUri(new Uri(successResult.RequestForVerification.RequestUri, UriKind.Relative));
+                var queryString = ExtractQueryStringFromUri(successResult.RequestForVerification.RequestUri);
                 _output.WriteLine("Verified query string: {0}", queryString);
                 queryString.Should().Be("?hasQueryString=true");
             }
@@ -83,7 +83,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                var queryString = ExtractQueryStringFromUri(new Uri(successResult.RequestForVerification.RequestUri, UriKind.Relative));
+                var queryString = ExtractQueryStringFromUri(successResult.RequestForVerification.RequestUri);
                 _output.WriteLine("Verified query string: {0}", queryString);
                 queryString.Should().Be("?query%2Bstring=%7Bbrooks%7D");
             }
@@ -111,7 +111,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                var queryString = ExtractQueryStringFromUri(new Uri(successResult.RequestForVerification.RequestUri, UriKind.Relative));
+                var queryString = ExtractQueryStringFromUri(successResult.RequestForVerification.RequestUri);
                 _output.WriteLine("Verified query string: {0}", queryString);
                 queryString.Should().Be("?query%2Bstring=%7Bbrooks%7D");
             }
@@ -139,7 +139,7 @@ namespace Dalion.HttpMessageSigning.QueryString {
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _authenticationOptions);
             if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
-                var queryString = ExtractQueryStringFromUri(new Uri(successResult.RequestForVerification.RequestUri, UriKind.Relative));
+                var queryString = ExtractQueryStringFromUri(successResult.RequestForVerification.RequestUri);
                 _output.WriteLine("Verified query string: {0}", queryString);
                 queryString.Should().BeEmpty();
             }

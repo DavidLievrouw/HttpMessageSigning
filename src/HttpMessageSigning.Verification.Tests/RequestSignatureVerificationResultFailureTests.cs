@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Security.Cryptography;
+using Dalion.HttpMessageSigning.TestUtils;
 using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using FluentAssertions;
 using Xunit;
@@ -15,7 +16,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         public RequestSignatureVerificationResultFailureTests() {
             _request = new HttpRequestForVerification {
                 Method = HttpMethod.Post,
-                RequestUri = "https://unittest.com:9000",
+                RequestUri = "https://unittest.com:9000".ToUri(),
                 Signature = (Signature) TestModels.Signature.Clone()
             };
             _client = new Client(

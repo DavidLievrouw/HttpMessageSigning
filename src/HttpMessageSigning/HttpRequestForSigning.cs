@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning {
         /// <summary>
         ///     Gets or sets the target URI of the request.
         /// </summary>
-        public string RequestUri { get; set; }
+        public Uri RequestUri { get; set; }
 
         /// <summary>
         ///     Gets or sets the headers of the request.

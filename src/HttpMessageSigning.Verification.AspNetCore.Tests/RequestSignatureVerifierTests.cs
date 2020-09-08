@@ -36,7 +36,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 _options = new SignedRequestAuthenticationOptions();
                 _requestForVerification = new HttpRequestForVerification {
                     Method = HttpMethod.Post,
-                    RequestUri = "https://unittest.com:9000",
+                    RequestUri = "https://unittest.com:9000".ToUri(),
                     Signature = (Signature) TestModels.Signature.Clone()
                 };
                 _verificationSuccessResult = new RequestSignatureVerificationResultSuccess(
