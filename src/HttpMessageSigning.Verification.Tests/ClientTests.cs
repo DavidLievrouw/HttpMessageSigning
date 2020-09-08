@@ -66,7 +66,9 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void WhenUsingLegacyConstructor_SetsDefaultRequestTargetEscaping() {
                 Client client = null;
 #pragma warning disable 618
-                Action act = () => client = new Client((KeyId)"id1", "Unit test app", null, TimeSpan.FromSeconds(50), TimeSpan.FromMinutes(1));
+                Action act = () => client = new Client(
+                    (KeyId)"id1", "Unit test app", 
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
 #pragma warning restore 618
                 act.Should().NotThrow();
                 client.RequestTargetEscaping.Should().Be(RequestTargetEscaping.RFC3986);
@@ -76,7 +78,10 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void WhenUsingLegacyConstructor_SetsDefaultNonceExpiration() {
                 Client client = null;
 #pragma warning disable 618
-                Action act = () => client = new Client((KeyId)"id1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
+                Action act = () => client = new Client(
+                    (KeyId)"id1", 
+                    "Unit test app", 
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
 #pragma warning restore 618
                 act.Should().NotThrow();
                 client.NonceLifetime.Should().Be(Client.DefaultNonceLifetime);
@@ -86,7 +91,10 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void WhenUsingLegacyConstructor_SetsDefaultClockSkew() {
                 Client client = null;
 #pragma warning disable 618
-                Action act = () => client = new Client((KeyId)"id1", "Unit test app", new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
+                Action act = () => client = new Client(
+                    (KeyId)"id1", 
+                    "Unit test app", 
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
 #pragma warning restore 618
                 act.Should().NotThrow();
                 client.ClockSkew.Should().Be(Client.DefaultClockSkew);

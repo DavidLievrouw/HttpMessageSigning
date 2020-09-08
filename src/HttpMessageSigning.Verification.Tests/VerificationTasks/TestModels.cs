@@ -30,6 +30,12 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
             Signature = new Signature { KeyId = new KeyId("app-one")}
         };
 
-        public static readonly Client Client = new Client(Signature.KeyId, "Unit test app", new CustomSignatureAlgorithm("HMAC"), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1.5));
+        public static readonly Client Client = new Client(
+            Signature.KeyId, 
+            "Unit test app",
+            new CustomSignatureAlgorithm("HMAC"), 
+            TimeSpan.FromMinutes(1),
+            TimeSpan.FromMinutes(1.5),
+            RequestTargetEscaping.Unescaped);
     }
 }

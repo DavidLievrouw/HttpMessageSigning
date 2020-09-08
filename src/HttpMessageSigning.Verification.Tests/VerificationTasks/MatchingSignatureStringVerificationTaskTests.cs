@@ -37,7 +37,14 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _signature = (Signature) TestModels.Signature.Clone();
                 _signedRequest = (HttpRequestForVerification) TestModels.RequestForVerification.Clone();
                 _signatureAlgorithm = new CustomSignatureAlgorithm("TEST");
-                _client = new Client(TestModels.Client.Id, TestModels.Client.Name, _signatureAlgorithm, TestModels.Client.NonceLifetime, TestModels.Client.ClockSkew, TestModels.Client.Claims);
+                _client = new Client(
+                    TestModels.Client.Id,
+                    TestModels.Client.Name, 
+                    _signatureAlgorithm, 
+                    TestModels.Client.NonceLifetime, 
+                    TestModels.Client.ClockSkew,
+                    TestModels.Client.RequestTargetEscaping,
+                    TestModels.Client.Claims);
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
 
                 _composedSignatureString = "abc123";
@@ -52,7 +59,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     Request = _signedRequest.ToHttpRequestForSignatureString(),
                     Expires = _signature.Expires.Value - _signature.Created.Value,
                     HeadersToInclude = _signature.Headers,
-                    RequestTargetEscaping = RequestTargetEscaping.RFC3986, // ToDo #13
+                    RequestTargetEscaping = _client.RequestTargetEscaping,
                     TimeOfComposing = _now
                 };
                 A.CallTo(() => _stringCompositionRequestFactory.CreateForVerification(_signedRequest, _client, _signature))

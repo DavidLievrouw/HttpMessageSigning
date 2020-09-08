@@ -25,6 +25,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new CustomSignatureAlgorithm("TEST"), 
                     TestModels.Client.NonceLifetime,
                     TestModels.Client.ClockSkew,
+                    TestModels.Client.RequestTargetEscaping,
                     TestModels.Client.Claims);
             }
 
@@ -51,7 +52,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var actual = _sut.CreateForVerification(_signedRequest, _client, _signature);
 
                 actual.Request.Should().BeEquivalentTo(_signedRequest.ToHttpRequestForSignatureString());
-                actual.RequestTargetEscaping.Should().Be(RequestTargetEscaping.RFC3986); // ToDo #13
+                actual.RequestTargetEscaping.Should().Be(_client.RequestTargetEscaping);
                 actual.HeadersToInclude.Should().BeEquivalentTo(_signature.Headers, opts => opts.WithStrictOrdering());
                 actual.TimeOfComposing.Should().Be(_signature.Created);
                 actual.Nonce.Should().Be(_signature.Nonce);

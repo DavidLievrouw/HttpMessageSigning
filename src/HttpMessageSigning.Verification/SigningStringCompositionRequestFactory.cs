@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             return new SigningStringCompositionRequest {
                 Request = request.ToHttpRequestForSignatureString(),
-                RequestTargetEscaping = RequestTargetEscaping.RFC3986, // ToDo #13
+                RequestTargetEscaping = client.RequestTargetEscaping,
                 HeadersToInclude = signature.Headers,
                 TimeOfComposing = signature.Created,
                 Expires = expires,
