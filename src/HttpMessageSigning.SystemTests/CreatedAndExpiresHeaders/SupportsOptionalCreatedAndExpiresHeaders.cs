@@ -95,6 +95,59 @@ namespace Dalion.HttpMessageSigning.CreatedAndExpiresHeaders {
             _output.WriteLine("Request signature verification failed: {0}", verificationResult.As<RequestSignatureVerificationResultFailure>().Failure);
         }
         
+        [Fact]
+        public async Task ExpiresIsOptional() {
+            var request = new HttpRequestMessage {
+                RequestUri = new Uri("https://httpbin.org/post"),
+                Method = HttpMethod.Post,
+                Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
+                Headers = {
+                    {"Dalion-App-Id", "ringor"}
+                }
+            };
+
+            var requestSigner = _requestSignerFactory.Create(
+                new KeyId("e0e8dcd638334c409e1b88daf821d135"),
+                new SigningSettings {
+                    SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("yumACY64r%hm"),
+                    DigestHashAlgorithm = HashAlgorithmName.SHA256,
+                    Expires = TimeSpan.FromMinutes(1),
+                    Headers = new[] {
+                        (HeaderName) "Dalion-App-Id",
+                        HeaderName.PredefinedHeaderNames.Date,
+                        HeaderName.PredefinedHeaderNames.Created,
+                        HeaderName.PredefinedHeaderNames.Expires
+                    },
+                    Events = {
+                        OnSigningStringComposed = (HttpRequestMessage requestToSign, ref string signingString) => {
+                            var signingStringRegEx = new Regex(@"\(expires\): ([0-9]+)\n", RegexOptions.Compiled);
+                            signingString = signingStringRegEx.Replace(signingString, string.Empty); // Remove (expires) from signing string
+                            return Task.CompletedTask;
+                        },
+                        OnSignatureCreated = (requestToSign, signature, settings) => {
+                            // Exclude expires header and value
+                            signature.Expires = null; 
+                            signature.Headers = signature.Headers.Where(_ => _ != HeaderName.PredefinedHeaderNames.Expires).ToArray();
+                            return Task.CompletedTask;
+                        }
+                    }
+                });
+            await requestSigner.Sign(request);
+            
+            var receivedRequest = await request.ToServerSideHttpRequest();
+
+            var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
+            if (verificationResult is RequestSignatureVerificationResultSuccess successResult) {
+                var simpleClaims = successResult.Principal.Claims.Select(c => new {c.Type, c.Value}).ToList();
+                var claimsString = string.Join(", ", simpleClaims.Select(c => $"{{type:{c.Type},value:{c.Value}}}"));
+                _output.WriteLine("Request signature verification succeeded: {0}", claimsString);
+            }
+            else if (verificationResult is RequestSignatureVerificationResultFailure failureResult) {
+                _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
+                throw new SignatureVerificationException(failureResult.Failure.ToString());
+            }
+        }
+        
         private static void ConfigureServices(IServiceCollection services) {
             services
                 .AddHttpMessageSigning(
@@ -110,18 +163,17 @@ namespace Dalion.HttpMessageSigning.CreatedAndExpiresHeaders {
                             HeaderName.PredefinedHeaderNames.Expires
                         }
                     })
-                .AddHttpMessageSignatureVerification(provider => {
-                    var clientStore = new InMemoryClientStore();
-                    clientStore.Register(new Client(
+                .AddHttpMessageSignatureVerification(
+                    new Client(
                         new KeyId("e0e8dcd638334c409e1b88daf821d135"),
                         "HttpMessageSigningSampleHMAC",
                         SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                         TimeSpan.FromMinutes(5),
                         TimeSpan.FromMinutes(1),
                         RequestTargetEscaping.RFC3986,
-                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
-                    return clientStore;
-                });
+                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")
+                    )
+                );
         }
     }
 }
