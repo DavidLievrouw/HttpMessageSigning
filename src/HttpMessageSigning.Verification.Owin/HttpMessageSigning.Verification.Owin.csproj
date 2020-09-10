@@ -13,6 +13,7 @@
     <PropertyGroup>
         <PackageId>Dalion.HttpMessageSigning.Verification.Owin</PackageId>
         <PackageIconUrl>https://dalion.eu/dalion128.png</PackageIconUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>dalion128.png</PackageIcon>
         <Company>Dalion</Company>
         <Description>Owin extensions for the Dalion HttpMessageSigning C# implementation of the IETF Internet-Draft "Signing HTTP Messages".</Description>
