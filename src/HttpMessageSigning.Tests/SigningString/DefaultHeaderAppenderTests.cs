@@ -86,6 +86,16 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
                 actual.Should().Be("\ndalion-test: Forty-Two, Forty-Three");
             }
+            
+            [Fact]
+            public void DoesLineFolding() {
+                _httpRequest.Headers.Add("Dalion-test", new[] {@"Obsolete
+                    line folding."});
+
+                var actual = _sut.BuildStringToAppend(_headerName);
+
+                actual.Should().Be("\ndalion-test: Obsolete line folding.");
+            }
         }
     }
 }
