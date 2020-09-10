@@ -176,7 +176,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public async Task InvokesOnSigningStringComposedEvent() {
                 string interceptedSigningString = null;
-                _settings.Events.OnSigningStringComposed = (request, signingString) => {
+                _settings.Events.OnSigningStringComposed = (HttpRequestMessage requestToSign, ref string signingString) => {
                     interceptedSigningString = signingString;
                     return Task.CompletedTask;
                 };

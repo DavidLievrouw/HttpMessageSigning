@@ -58,6 +58,9 @@ namespace Dalion.HttpMessageSigning.Signing {
                 await _signatureHeaderEnsurer.EnsureHeader(request, clonedSettings, timeOfSigning).ConfigureAwait(continueOnCapturedContext: false);
                 
                 var signature = await _signatureCreator.CreateSignature(request, clonedSettings, timeOfSigning, expires).ConfigureAwait(continueOnCapturedContext: false);
+                var onSignatureCreatedTask = _signingSettings.Events?.OnSignatureCreated?.Invoke(request, signature, clonedSettings);
+                if (onSignatureCreatedTask != null) await onSignatureCreatedTask.ConfigureAwait(continueOnCapturedContext: false);
+                
                 var authParam = _authorizationHeaderParamCreator.CreateParam(signature);
 
                 _logger?.LogDebug("Setting Authorization scheme to '{0}' and param to '{1}'.", clonedSettings.AuthorizationScheme, authParam);

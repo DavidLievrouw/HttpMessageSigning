@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.Signing;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,7 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
                 .BuildServiceProvider();
             var requestSignerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>();
 
-            string signingString = null;
+            string interceptedSigningString = null;
 
             var signingSettings = new SigningSettings {
                 SignatureAlgorithm = new CustomSignatureAlgorithm(options.Algorithm ?? "hs2019"),
@@ -24,8 +25,8 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
                     .Select(h => new HeaderName(h))
                     .ToArray(),
                 Events = new RequestSigningEvents {
-                    OnSigningStringComposed = (message, str) => {
-                        signingString = str;
+                    OnSigningStringComposed = (HttpRequestMessage requestToSign, ref string signingString) => {
+                        interceptedSigningString = signingString;
                         return Task.CompletedTask;
                     }
                 }
@@ -47,7 +48,7 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
 
             await signer.Sign(options.Message, created, expires);
 
-            return signingString;
+            return interceptedSigningString;
         }
     }
 }

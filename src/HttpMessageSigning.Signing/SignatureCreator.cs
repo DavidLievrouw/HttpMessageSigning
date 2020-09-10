@@ -30,8 +30,8 @@ namespace Dalion.HttpMessageSigning.Signing {
             var compositionRequest = _stringCompositionRequestFactory.CreateForSigning(requestForSigning, settings, timeOfSigning, expires);
             var signingString = _signingStringComposer.Compose(compositionRequest);
 
-            var eventTask = settings.Events?.OnSigningStringComposed?.Invoke(request, signingString);
-            if (eventTask != null) await eventTask.ConfigureAwait(false);
+            var eventTask = settings.Events?.OnSigningStringComposed?.Invoke(request, ref signingString);
+            if (eventTask != null) await eventTask.ConfigureAwait(continueOnCapturedContext: false);
 
             _logger?.LogDebug("Composed the following signing string for request signing: {0}", signingString);
 

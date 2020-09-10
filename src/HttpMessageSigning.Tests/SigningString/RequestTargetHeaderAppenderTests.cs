@@ -59,6 +59,12 @@ namespace Dalion.HttpMessageSigning.SigningString {
             [InlineData("GET", "https", "www.example.com", "get /")]
             [InlineData("CONNECT", "http", "server.example.com:80", "connect /")]
             [InlineData("OPTIONS", "", "*", "options *")]
+            [InlineData("PUT", "http", "www.example.com:80/foo?param=value&pet=dog", "put /foo?param=value&pet=dog")]
+            [InlineData("POST", "", "/?param=value", "post /?param=value")]
+            [InlineData("CUSTOM", "", "/a/b", "custom /a/b")]
+            [InlineData("GET", "", "/a", "get /a")]
+            [InlineData("GET", "", "", "get /")]
+            [InlineData("PUT", "", "/foo?param=value&pet=dog", "put /foo?param=value&pet=dog")]
             public void ExamplesFromSpec(string httpMethod, string scheme, string requestUri, string expectedValue) {
                 _httpRequest.Method = new HttpMethod(httpMethod);
                 var requestUriString = string.IsNullOrEmpty(scheme)

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning;
 using Dalion.HttpMessageSigning.Signing;
@@ -28,7 +29,7 @@ namespace Conformance {
                     .Select(h => new HeaderName(h))
                     .ToArray(),
                 Events = new RequestSigningEvents {
-                    OnSigningStringComposed = (message, signingString) => {
+                    OnSigningStringComposed = (HttpRequestMessage requestToSign, ref string signingString) => {
                         Log.Information(signingString);
                         return Task.CompletedTask;
                     }

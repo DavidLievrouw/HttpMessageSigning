@@ -194,7 +194,7 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
                 .AddTransient<HttpRequestSigningHandler>();
         }
 
-        private Task OnSignatureStringComposed(HttpRequestMessage request, string signatureString) {
+        private Task OnSignatureStringComposed(HttpRequestMessage request, ref string signatureString) {
             _signatureString = signatureString;
             return Task.CompletedTask;
         }

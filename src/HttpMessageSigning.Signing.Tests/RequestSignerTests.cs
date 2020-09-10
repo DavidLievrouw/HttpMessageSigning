@@ -170,7 +170,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public async Task BeforeSigning_InvokesEvent_WhenNotNull() {
-                var onRequestSigning = A.Fake<Func<HttpRequestMessage, SigningSettings, Task>>();
+                var onRequestSigning = A.Fake<RequestSigningEvents.OnRequestSigningDelegate>();
                 _signingSettings.Events.OnRequestSigning = onRequestSigning;
                 
                 await _sut.Sign(_httpRequest);
@@ -180,8 +180,25 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
             
             [Fact]
+            public async Task AfterSignatureCreated_InvokesEvent_WhenNotNull() {
+                var signature = new Signature {String = "abc123="};
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>._, _timeOfSigning, _signingSettings.Expires))
+                    .Returns(signature);
+
+                Signature interceptedSignature = null;
+                _signingSettings.Events.OnSignatureCreated = (message, sig, settings) => {
+                    interceptedSignature = sig;
+                    return Task.CompletedTask;
+                };
+                
+                await _sut.Sign(_httpRequest);
+
+                interceptedSignature.Should().Be(signature);
+            }
+            
+            [Fact]
             public async Task AfterSigning_InvokesEvent_WhenNotNull() {
-                var onRequestSigned = A.Fake<Func<HttpRequestMessage, Signature, SigningSettings, Task>>();
+                var onRequestSigned = A.Fake<RequestSigningEvents.OnRequestSignedDelegate>();
                 _signingSettings.Events.OnRequestSigned = onRequestSigned;
                 
                 await _sut.Sign(_httpRequest);
@@ -322,7 +339,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             [Fact]
             public async Task BeforeSigning_InvokesEvent_WhenNotNull() {
-                var onRequestSigning = A.Fake<Func<HttpRequestMessage, SigningSettings, Task>>();
+                var onRequestSigning = A.Fake<RequestSigningEvents.OnRequestSigningDelegate>();
                 _signingSettings.Events.OnRequestSigning = onRequestSigning;
                 
                 await _sut.Sign(_httpRequest, _timeOfSigning, _expires);
@@ -330,10 +347,27 @@ namespace Dalion.HttpMessageSigning.Signing {
                 A.CallTo(onRequestSigning).MustHaveHappened()
                     .Then(A.CallTo(() => _signatureCreator.CreateSignature(A<HttpRequestMessage>._, A<SigningSettings>._, A<DateTimeOffset>._, A<TimeSpan>._)).MustHaveHappened());
             }
+
+            [Fact]
+            public async Task AfterSignatureCreated_InvokesEvent_WhenNotNull() {
+                var signature = new Signature {String = "abc123="};
+                A.CallTo(() => _signatureCreator.CreateSignature(_httpRequest, A<SigningSettings>._, _timeOfSigning, _expires))
+                    .Returns(signature);
+
+                Signature interceptedSignature = null;
+                _signingSettings.Events.OnSignatureCreated = (message, sig, settings) => {
+                    interceptedSignature = sig;
+                    return Task.CompletedTask;
+                };
+                
+                await _sut.Sign(_httpRequest, _timeOfSigning, _expires);
+
+                interceptedSignature.Should().Be(signature);
+            }
             
             [Fact]
             public async Task AfterSigning_InvokesEvent_WhenNotNull() {
-                var onRequestSigned = A.Fake<Func<HttpRequestMessage, Signature, SigningSettings, Task>>();
+                var onRequestSigned = A.Fake<RequestSigningEvents.OnRequestSignedDelegate>();
                 _signingSettings.Events.OnRequestSigned = onRequestSigned;
                 
                 await _sut.Sign(_httpRequest, _timeOfSigning, _expires);

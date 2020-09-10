@@ -86,7 +86,8 @@ namespace Dalion.HttpMessageSigning {
                 Events = new RequestSigningEvents {
                     OnRequestSigned = Events?.OnRequestSigned,
                     OnRequestSigning = Events?.OnRequestSigning,
-                    OnSigningStringComposed = Events?.OnSigningStringComposed
+                    OnSigningStringComposed = Events?.OnSigningStringComposed,
+                    OnSignatureCreated = Events?.OnSignatureCreated
                 }
             };
         }

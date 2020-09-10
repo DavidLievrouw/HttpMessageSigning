@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -27,7 +28,8 @@ namespace Dalion.HttpMessageSigning {
                 Events = new RequestSigningEvents {
                     OnRequestSigned = (message, signature, settings) => Task.CompletedTask,
                     OnRequestSigning = (message, settings) => Task.CompletedTask,
-                    OnSigningStringComposed = (message, signingString) => Task.CompletedTask
+                    OnSigningStringComposed = (HttpRequestMessage requestToSign, ref string signingString) => Task.CompletedTask,
+                    OnSignatureCreated = (message, signature, settings) => Task.CompletedTask
                 },
                 UseDeprecatedAlgorithmParameter = true
             };
@@ -230,6 +232,7 @@ namespace Dalion.HttpMessageSigning {
                 actual.Events.OnRequestSigned.Should().BeSameAs(_sut.Events.OnRequestSigned);
                 actual.Events.OnRequestSigning.Should().BeSameAs(_sut.Events.OnRequestSigning);
                 actual.Events.OnSigningStringComposed.Should().BeSameAs(_sut.Events.OnSigningStringComposed);
+                actual.Events.OnSignatureCreated.Should().BeSameAs(_sut.Events.OnSignatureCreated);
             }
         }
     }
