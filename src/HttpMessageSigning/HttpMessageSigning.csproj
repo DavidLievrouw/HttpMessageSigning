@@ -23,7 +23,7 @@
         <Authors>David Lievrouw</Authors>
         <Owners>Dalion</Owners>
         <Copyright>Copyright (c) $([System.DateTime]::Now.ToString(yyyy)), David Lievrouw</Copyright>
-        <PackageTags>signing http messages ietf cavage lievrouw dalion</PackageTags>
+        <PackageTags>signing http messages ietf signatures lievrouw dalion</PackageTags>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <PackageProjectUrl>https://github.com/DavidLievrouw/HttpMessageSigning</PackageProjectUrl>
         <RepositoryUrl>https://github.com/DavidLievrouw/HttpMessageSigning</RepositoryUrl>
