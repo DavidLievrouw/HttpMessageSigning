@@ -61,19 +61,14 @@ namespace Dalion.HttpMessageSigning {
                 String = String
             };
         }
-
-        /// <summary>
-        ///     Validates the properties of this instance, and throws an <see cref="ValidationException" /> when any of them have invalid values.
-        /// </summary>
+        
+        /// <inheritdoc />
         public void Validate() {
             var error = GetValidationErrors().FirstOrDefault();
             if (error != null) throw new ValidationException(error.Message);
         }
 
-        /// <summary>
-        ///     Validates the properties of this instance, and returns a list of validation errors.
-        /// </summary>
-        /// <returns>The list with validation errors, or an empty list, when this instance is valid.</returns>
+        /// <inheritdoc />
         public IEnumerable<ValidationError> GetValidationErrors() {
             var errors = new List<ValidationError>();
             if (KeyId == KeyId.Empty) errors.Add(new ValidationError(nameof(KeyId), $"The {nameof(Signature)} do not specify a valid {nameof(KeyId)}."));

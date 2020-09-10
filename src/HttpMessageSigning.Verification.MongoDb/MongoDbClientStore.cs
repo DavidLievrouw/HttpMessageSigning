@@ -51,11 +51,11 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             var match = matches.Single();
 
             var nonceExpiration = !match.NonceExpiration.HasValue || match.NonceExpiration.Value <= 0.0
-                ? Client.DefaultNonceLifetime
+                ? ClientOptions.DefaultNonceLifetime
                 : TimeSpan.FromSeconds(match.NonceExpiration.Value);
             
             var clockSkew = !match.ClockSkew.HasValue || match.ClockSkew.Value <= 0.0
-                ? Client.DefaultClockSkew
+                ? ClientOptions.DefaultClockSkew
                 : TimeSpan.FromSeconds(match.ClockSkew.Value);
 
             var requestTargetEscaping = RequestTargetEscaping.RFC3986;
