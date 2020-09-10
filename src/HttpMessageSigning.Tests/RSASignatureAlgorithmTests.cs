@@ -4,12 +4,12 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning {
-    public class RSASignatureAlgorithmTests {
-        private readonly RSASignatureAlgorithm _signer;
-        private readonly RSASignatureAlgorithm _verifier;
+    public class RSASignatureAlgorithmTests : IDisposable {
         private readonly RSAParameters _privateKeyParams;
         private readonly RSAParameters _publicKeyParams;
         private readonly RSACryptoServiceProvider _rsa;
+        private readonly RSASignatureAlgorithm _signer;
+        private readonly RSASignatureAlgorithm _verifier;
 
         public RSASignatureAlgorithmTests() {
             _rsa = new RSACryptoServiceProvider();
@@ -17,6 +17,12 @@ namespace Dalion.HttpMessageSigning {
             _privateKeyParams = _rsa.ExportParameters(true);
             _signer = RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA1, _privateKeyParams);
             _verifier = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA1, _publicKeyParams);
+        }
+
+        public void Dispose() {
+            _signer?.Dispose();
+            _verifier?.Dispose();
+            _rsa?.Dispose();
         }
 
         public class Name : RSASignatureAlgorithmTests {
@@ -43,7 +49,7 @@ namespace Dalion.HttpMessageSigning {
                 act.Should().Throw<NotSupportedException>();
             }
         }
-        
+
         public class VerifySignature : RSASignatureAlgorithmTests {
             [Fact]
             public void CanVerifyValidSignature() {
@@ -70,7 +76,7 @@ namespace Dalion.HttpMessageSigning {
                 var actual = verifier.VerifySignature(payload, signature);
                 actual.Should().BeTrue();
             }
-            
+
             [Fact]
             public void CanVerifyWithAlgorithmThatKnowsAboutThePrivateKey() {
                 var payload = "_abc_123_";
@@ -94,6 +100,7 @@ namespace Dalion.HttpMessageSigning {
                 actual.P.Should().BeEquivalentTo(_publicKeyParams.P);
                 actual.Q.Should().BeEquivalentTo(_publicKeyParams.Q);
             }
+
             [Fact]
             public void DoesNotReturnPrivateKeyParameters() {
                 var actual = _verifier.GetPublicKey();

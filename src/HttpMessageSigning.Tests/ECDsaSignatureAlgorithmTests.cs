@@ -4,7 +4,7 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning {
-    public class ECDsaSignatureAlgorithmTests {
+    public class ECDsaSignatureAlgorithmTests : IDisposable {
         private readonly ECDsa _ecdsa;
         private readonly ECParameters _privateKeyParams;
         private readonly ECParameters _publicKeyParams;
@@ -17,6 +17,12 @@ namespace Dalion.HttpMessageSigning {
             _privateKeyParams = _ecdsa.ExportParameters(true);
             _signer = ECDsaSignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA1, _privateKeyParams);
             _verifier = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA1, _publicKeyParams);
+        }
+
+        public void Dispose() {
+            _signer?.Dispose();
+            _verifier?.Dispose();
+            _ecdsa?.Dispose();
         }
 
         public class Name : ECDsaSignatureAlgorithmTests {

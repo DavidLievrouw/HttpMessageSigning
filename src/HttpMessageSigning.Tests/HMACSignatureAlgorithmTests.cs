@@ -4,11 +4,15 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning {
-    public class HMACSignatureAlgorithmTests {
+    public class HMACSignatureAlgorithmTests : IDisposable {
         private readonly HMACSignatureAlgorithm _sut;
 
         public HMACSignatureAlgorithmTests() {
             _sut = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
+        }
+
+        public void Dispose() {
+            _sut?.Dispose();
         }
 
         public class Constructor : HMACSignatureAlgorithmTests {
