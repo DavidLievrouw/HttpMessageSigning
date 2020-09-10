@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning {
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForSigning(RSA rsa) {
             if (rsa == null) throw new ArgumentNullException(nameof(rsa));
-            return CreateForSigning(rsa, HashAlgorithmName.SHA256);
+            return CreateForSigning(rsa, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Dalion.HttpMessageSigning {
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForSigning(ECDsa ecdsa) {
             if (ecdsa == null) throw new ArgumentNullException(nameof(ecdsa));
-            return CreateForSigning(ecdsa, HashAlgorithmName.SHA256);
+            return CreateForSigning(ecdsa, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning {
         /// <param name="privateParameters">The private RSA algorithm parameters to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForSigning(RSAParameters privateParameters) {
-            return CreateForSigning(privateParameters, HashAlgorithmName.SHA256);
+            return CreateForSigning(privateParameters, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Dalion.HttpMessageSigning {
         /// <param name="privateParameters">The private ECDsa algorithm parameters to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForSigning(ECParameters privateParameters) {
-            return CreateForSigning(privateParameters, HashAlgorithmName.SHA256);
+            return CreateForSigning(privateParameters, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Dalion.HttpMessageSigning {
         /// <param name="certificate">The X.509 certificate to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForSigning(X509Certificate2 certificate) {
-            return CreateForSigning(certificate, HashAlgorithmName.SHA256);
+            return CreateForSigning(certificate, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Dalion.HttpMessageSigning {
         /// <param name="hmacSecret">The shared HMAC secret to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForSigning(string hmacSecret) {
-            return CreateForSigning(hmacSecret, HashAlgorithmName.SHA256);
+            return CreateForSigning(hmacSecret, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace Dalion.HttpMessageSigning {
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForVerification(RSA rsa) {
             if (rsa == null) throw new ArgumentNullException(nameof(rsa));
-            return CreateForVerification(rsa, HashAlgorithmName.SHA256);
+            return CreateForVerification(rsa, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Dalion.HttpMessageSigning {
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForVerification(ECDsa ecdsa) {
             if (ecdsa == null) throw new ArgumentNullException(nameof(ecdsa));
-            return CreateForVerification(ecdsa, HashAlgorithmName.SHA256);
+            return CreateForVerification(ecdsa, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Dalion.HttpMessageSigning {
         /// <param name="publicParameters">The public RSA algorithm parameters to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForVerification(RSAParameters publicParameters) {
-            return CreateForVerification(publicParameters, HashAlgorithmName.SHA256);
+            return CreateForVerification(publicParameters, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace Dalion.HttpMessageSigning {
         /// <param name="publicParameters">The public ECDsa algorithm parameters to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForVerification(ECParameters publicParameters) {
-            return CreateForVerification(publicParameters, HashAlgorithmName.SHA256);
+            return CreateForVerification(publicParameters, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace Dalion.HttpMessageSigning {
         /// <param name="certificate">The X.509 certificate to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForVerification(X509Certificate2 certificate) {
-            return CreateForVerification(certificate, HashAlgorithmName.SHA256);
+            return CreateForVerification(certificate, HashAlgorithmName.SHA512);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Dalion.HttpMessageSigning {
         /// <param name="hmacSecret">The shared HMAC secret to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForVerification(string hmacSecret) {
-            return CreateForVerification(hmacSecret, HashAlgorithmName.SHA256);
+            return CreateForVerification(hmacSecret, HashAlgorithmName.SHA512);
         }
 
         /// <summary>

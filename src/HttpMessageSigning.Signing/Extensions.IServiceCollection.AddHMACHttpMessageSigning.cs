@@ -125,7 +125,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 keyIdFactory,
                 prov => {
                     var signingSettings = new SigningSettings {
-                        SignatureAlgorithm = new HMACSignatureAlgorithm(hmacSecretFactory(prov), HashAlgorithmName.SHA256)
+                        SignatureAlgorithm = new HMACSignatureAlgorithm(hmacSecretFactory(prov), HashAlgorithmName.SHA512)
                     };
                     signingSettingsConfig?.Invoke(prov, signingSettings);
                     return signingSettings;

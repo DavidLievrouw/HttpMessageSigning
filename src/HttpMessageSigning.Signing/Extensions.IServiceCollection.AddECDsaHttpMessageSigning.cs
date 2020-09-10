@@ -119,7 +119,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 keyIdFactory,
                 prov => {
                     var signingSettings = new SigningSettings {
-                        SignatureAlgorithm = new ECDsaSignatureAlgorithm(HashAlgorithmName.SHA256, ecdsaFactory(prov))
+                        SignatureAlgorithm = new ECDsaSignatureAlgorithm(HashAlgorithmName.SHA512, ecdsaFactory(prov))
                     };
                     signingSettingsConfig?.Invoke(prov, signingSettings);
                     return signingSettings;

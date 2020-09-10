@@ -196,7 +196,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         public static Client Create(KeyId id, string name, string hmacSecret, HashAlgorithmName hashAlgorithm = default, Action<ClientOptions> configure = null) {
             var signatureAlgorithm = HttpMessageSigning.SignatureAlgorithm.CreateForVerification(
                 hmacSecret,
-                hashAlgorithm == default ? HashAlgorithmName.SHA256 : hashAlgorithm);
+                hashAlgorithm == default ? HashAlgorithmName.SHA512 : hashAlgorithm);
 
             return Create(id, name, signatureAlgorithm, configure);
         }
@@ -215,7 +215,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             var signatureAlgorithm = HttpMessageSigning.SignatureAlgorithm.CreateForVerification(
                 publicParameters,
-                hashAlgorithm == default ? HashAlgorithmName.SHA256 : hashAlgorithm);
+                hashAlgorithm == default ? HashAlgorithmName.SHA512 : hashAlgorithm);
 
             return Create(id, name, signatureAlgorithm, configure);
         }
@@ -234,7 +234,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             var signatureAlgorithm = HttpMessageSigning.SignatureAlgorithm.CreateForVerification(
                 publicParameters,
-                hashAlgorithm == default ? HashAlgorithmName.SHA256 : hashAlgorithm);
+                hashAlgorithm == default ? HashAlgorithmName.SHA512 : hashAlgorithm);
 
             return Create(id, name, signatureAlgorithm, configure);
         }
