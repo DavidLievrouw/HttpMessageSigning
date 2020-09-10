@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using Dalion.HttpMessageSigning.SigningString.RequestTarget;
 using Dalion.HttpMessageSigning.TestUtils;
@@ -44,10 +45,33 @@ namespace Dalion.HttpMessageSigning.SigningString {
             public void ReturnsExpectedString() {
                 A.CallTo(() => _requestTargetEscaper.Escape(_httpRequest.RequestUri, _requestTargetEscaping))
                     .Returns("/api/escaped");
-                
+
                 var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget);
 
                 var expected = "\n(request-target): post /api/escaped";
+                actual.Should().Be(expected);
+            }
+
+            [Theory]
+            [InlineData("POST", "http", "www.example.com/?param=value", "post /?param=value")]
+            [InlineData("CUSTOM", "http", "www.example.com/a/b", "custom /a/b")]
+            [InlineData("GET", "http", "www.example.com/a", "get /a")]
+            [InlineData("GET", "https", "www.example.com", "get /")]
+            [InlineData("CONNECT", "http", "server.example.com:80", "connect /")]
+            [InlineData("OPTIONS", "", "*", "options *")]
+            public void ExamplesFromSpec(string httpMethod, string scheme, string requestUri, string expectedValue) {
+                _httpRequest.Method = new HttpMethod(httpMethod);
+                var requestUriString = string.IsNullOrEmpty(scheme)
+                    ? requestUri
+                    : scheme + "://" + requestUri;
+                _httpRequest.RequestUri = new Uri(requestUriString, UriKind.RelativeOrAbsolute);
+
+                A.CallTo(() => _requestTargetEscaper.Escape(_httpRequest.RequestUri, _requestTargetEscaping))
+                    .ReturnsLazily(call => new RFC3986RequestTargetEscaper().Escape(call.GetArgument<Uri>(0), RequestTargetEscaping.RFC3986));
+
+                var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget);
+
+                var expected = "\n(request-target): " + expectedValue;
                 actual.Should().Be(expected);
             }
         }

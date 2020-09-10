@@ -14,7 +14,9 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public string BuildStringToAppend(HeaderName header) {
-            var path = _requestTargetEscaper.Escape(_request.RequestUri, _requestTargetEscaping);
+            var path = _request.RequestUri.OriginalString == "*"
+                ? _request.RequestUri.OriginalString
+                : _requestTargetEscaper.Escape(_request.RequestUri, _requestTargetEscaping);
 
             return "\n" + new Header(
                        HeaderName.PredefinedHeaderNames.RequestTarget,
