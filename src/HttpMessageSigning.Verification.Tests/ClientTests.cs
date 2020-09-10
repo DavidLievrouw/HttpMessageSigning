@@ -342,7 +342,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void GivenDefaultHashAlgorithmName_SetsDefaultHashAlgorithm() {
                 var client = Client.Create(_keyId, _name, _secret);
 
-                client.SignatureAlgorithm.HashAlgorithm.Should().Be(HashAlgorithmName.SHA256);
+                client.SignatureAlgorithm.HashAlgorithm.Should().Be(HashAlgorithmName.SHA512);
             }
 
             [Fact]
@@ -428,7 +428,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void GivenDefaultHashAlgorithmName_SetsDefaultHashAlgorithm() {
                 var client = Client.Create(_keyId, _name, _publicParameters);
 
-                client.SignatureAlgorithm.HashAlgorithm.Should().Be(HashAlgorithmName.SHA256);
+                client.SignatureAlgorithm.HashAlgorithm.Should().Be(HashAlgorithmName.SHA512);
             }
 
             [Fact]
@@ -523,7 +523,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public void GivenDefaultHashAlgorithmName_SetsDefaultHashAlgorithm() {
                 var client = Client.Create(_keyId, _name, _publicParameters);
 
-                client.SignatureAlgorithm.HashAlgorithm.Should().Be(HashAlgorithmName.SHA256);
+                client.SignatureAlgorithm.HashAlgorithm.Should().Be(HashAlgorithmName.SHA512);
             }
 
             [Fact]
