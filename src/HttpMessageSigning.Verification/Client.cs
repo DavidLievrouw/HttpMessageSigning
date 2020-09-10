@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
     ///     Represents an entry in the list of known clients, that the server maintains.
     /// </summary>
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
-    public class Client : IEquatable<Client>, ICloneable, IDisposable {        
+    public class Client : IEquatable<Client>, ICloneable, IDisposable {
         /// <summary>
         ///     Represents the default time span after which repeated nonce values are allowed again.
         /// </summary>
@@ -19,7 +21,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// </summary>
         [Obsolete("Please use the " + nameof(ClientOptions.DefaultClockSkew) + " property from the " + nameof(ClientOptions) + " class.")]
         public static readonly TimeSpan DefaultClockSkew = ClientOptions.DefaultClockSkew;
-        
+
         private readonly ClientOptions _options;
 
         /// <summary>
@@ -141,7 +143,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         }
 
         /// <inheritdoc />
-        public virtual void Dispose() {
+        public void Dispose() {
             SignatureAlgorithm?.Dispose();
         }
 
@@ -165,6 +167,76 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// <inheritdoc />
         public override string ToString() {
             return Id;
+        }
+
+        /// <summary>
+        ///     Create a new instance of the <see cref="Client" /> class, with the specified options.
+        /// </summary>
+        /// <param name="id">The identity of the client that can be looked up by the server.</param>
+        /// <param name="name">The descriptive name of the client.</param>
+        /// <param name="signatureAlgorithm">The <see cref="Dalion.HttpMessageSigning.ISignatureAlgorithm" /> that is used to verify the signature.</param>
+        /// <param name="configure">A delegate that allows configuring additional options for the new instance. Pass <see langword="null" /> to use the default options.</param>
+        /// <returns>The newly created <see cref="Client" /> instance.</returns>
+        public static Client Create(KeyId id, string name, ISignatureAlgorithm signatureAlgorithm, Action<ClientOptions> configure = null) {
+            var options = new ClientOptions();
+            configure?.Invoke(options);
+
+            return new Client(id, name, signatureAlgorithm, options);
+        }
+
+        /// <summary>
+        ///     Create a new instance of the <see cref="Client" /> class, with the specified options.
+        /// </summary>
+        /// <param name="id">The identity of the client that can be looked up by the server.</param>
+        /// <param name="name">The descriptive name of the client.</param>
+        /// <param name="hmacSecret">The shared secret for the HMAC algorithm.</param>
+        /// <param name="hashAlgorithm">The name of the hash algorithm to use. Pass <see langword="default" /> to use the default.</param>
+        /// <param name="configure">A delegate that allows configuring additional options for the new instance. Pass <see langword="null" /> to use the default options.</param>
+        /// <returns>The newly created <see cref="Client" /> instance.</returns>
+        public static Client Create(KeyId id, string name, string hmacSecret, HashAlgorithmName hashAlgorithm = default, Action<ClientOptions> configure = null) {
+            var signatureAlgorithm = HttpMessageSigning.SignatureAlgorithm.CreateForVerification(
+                hmacSecret,
+                hashAlgorithm == default ? HashAlgorithmName.SHA256 : hashAlgorithm);
+
+            return Create(id, name, signatureAlgorithm, configure);
+        }
+
+        /// <summary>
+        ///     Create a new instance of the <see cref="Client" /> class, with the specified options.
+        /// </summary>
+        /// <param name="id">The identity of the client that can be looked up by the server.</param>
+        /// <param name="name">The descriptive name of the client.</param>
+        /// <param name="publicParameters">The public RSA algorithm parameters to use.</param>
+        /// <param name="hashAlgorithm">The name of the hash algorithm to use. Pass <see langword="default" /> to use the default.</param>
+        /// <param name="configure">A delegate that allows configuring additional options for the new instance. Pass <see langword="null" /> to use the default options.</param>
+        /// <returns>The newly created <see cref="Client" /> instance.</returns>
+        public static Client Create(KeyId id, string name, RSAParameters publicParameters, HashAlgorithmName hashAlgorithm = default, Action<ClientOptions> configure = null) {
+            if (EqualityComparer<RSAParameters>.Default.Equals(publicParameters, default)) throw new ArgumentNullException(nameof(publicParameters));
+
+            var signatureAlgorithm = HttpMessageSigning.SignatureAlgorithm.CreateForVerification(
+                publicParameters,
+                hashAlgorithm == default ? HashAlgorithmName.SHA256 : hashAlgorithm);
+
+            return Create(id, name, signatureAlgorithm, configure);
+        }
+
+        /// <summary>
+        ///     Create a new instance of the <see cref="Client" /> class, with the specified options.
+        /// </summary>
+        /// <param name="id">The identity of the client that can be looked up by the server.</param>
+        /// <param name="name">The descriptive name of the client.</param>
+        /// <param name="publicParameters">The public ECDsa algorithm parameters to use.</param>
+        /// <param name="hashAlgorithm">The name of the hash algorithm to use. Pass <see langword="default" /> to use the default.</param>
+        /// <param name="configure">A delegate that allows configuring additional options for the new instance. Pass <see langword="null" /> to use the default options.</param>
+        /// <returns>The newly created <see cref="Client" /> instance.</returns>
+        public static Client Create(KeyId id, string name, ECParameters publicParameters, HashAlgorithmName hashAlgorithm = default, Action<ClientOptions> configure = null) {
+            if (EqualityComparer<ECParameters>.Default.Equals(publicParameters, default)) throw new ArgumentNullException(nameof(publicParameters));
+
+            var signatureAlgorithm = HttpMessageSigning.SignatureAlgorithm.CreateForVerification(
+                publicParameters,
+                hashAlgorithm == default ? HashAlgorithmName.SHA256 : hashAlgorithm);
+
+            return Create(id, name, signatureAlgorithm, configure);
         }
     }
 }
