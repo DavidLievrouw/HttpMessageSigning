@@ -27,6 +27,18 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
         }
 
+        public class DefaultProperty : ClientOptionsTests {
+            [Fact]
+            public void ReturnsInstanceWithDefaultValues() {
+                var actual = ClientOptions.Default;
+                
+                actual.Claims.Should().NotBeNull().And.BeEmpty();
+                actual.ClockSkew.Should().Be(TimeSpan.FromMinutes(1));
+                actual.NonceLifetime.Should().Be(TimeSpan.FromMinutes(5));
+                actual.RequestTargetEscaping.Should().Be(RequestTargetEscaping.RFC3986);
+            }
+        }
+        
         public class Validate : ClientOptionsTests {
             [Fact]
             public void WhenClockSkewIsNegative_ThrowsValidationException() {

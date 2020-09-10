@@ -19,6 +19,11 @@ namespace Dalion.HttpMessageSigning.Verification {
         public static readonly TimeSpan DefaultClockSkew = TimeSpan.FromMinutes(1);
 
         /// <summary>
+        ///     Gets an instance of the <see cref="ClientOptions" /> class, with the default property values.
+        /// </summary>
+        public static ClientOptions Default { get; } = new ClientOptions();
+
+        /// <summary>
         ///     Gets or sets the time span after which repeated nonce values are allowed again.
         /// </summary>
         public TimeSpan NonceLifetime { get; set; } = DefaultNonceLifetime;
