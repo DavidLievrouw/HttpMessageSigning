@@ -13,14 +13,14 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// <summary>
         ///     Represents the default time span after which repeated nonce values are allowed again.
         /// </summary>
-        [Obsolete("Please use the " + nameof(ClientOptions.DefaultNonceLifetime) + " property from the " + nameof(ClientOptions) + " class.")]
-        public static readonly TimeSpan DefaultNonceLifetime = ClientOptions.DefaultNonceLifetime;
+        [Obsolete("Please use the " + nameof(ClientOptions) + "." + nameof(ClientOptions.Default) + "." + nameof(ClientOptions.Default.NonceLifetime) + " property instead.")]
+        public static readonly TimeSpan DefaultNonceLifetime = ClientOptions.Default.NonceLifetime;
 
         /// <summary>
         ///     Represents the default clock skew to allow when validation a time.
         /// </summary>
-        [Obsolete("Please use the " + nameof(ClientOptions.DefaultClockSkew) + " property from the " + nameof(ClientOptions) + " class.")]
-        public static readonly TimeSpan DefaultClockSkew = ClientOptions.DefaultClockSkew;
+        [Obsolete("Please use the " + nameof(ClientOptions) + "." + nameof(ClientOptions.Default) + "." + nameof(ClientOptions.Default.ClockSkew) + " property instead.")]
+        public static readonly TimeSpan DefaultClockSkew = ClientOptions.Default.ClockSkew;
 
         private readonly ClientOptions _options;
 

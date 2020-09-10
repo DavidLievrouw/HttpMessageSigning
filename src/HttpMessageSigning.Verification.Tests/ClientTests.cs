@@ -189,7 +189,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
 #pragma warning restore 618
                 act.Should().NotThrow();
-                client.NonceLifetime.Should().Be(ClientOptions.DefaultNonceLifetime);
+                client.NonceLifetime.Should().Be(ClientOptions.Default.NonceLifetime);
             }
 
             [Fact]
@@ -202,7 +202,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
 #pragma warning restore 618
                 act.Should().NotThrow();
-                client.ClockSkew.Should().Be(ClientOptions.DefaultClockSkew);
+                client.ClockSkew.Should().Be(ClientOptions.Default.ClockSkew);
             }
         }
 

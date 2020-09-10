@@ -8,15 +8,8 @@ namespace Dalion.HttpMessageSigning.Verification {
     ///     Represents options for the creation of <see cref="Client" /> instances.
     /// </summary>
     public class ClientOptions : IValidatable {
-        /// <summary>
-        ///     Represents the default time span after which repeated nonce values are allowed again.
-        /// </summary>
-        public static readonly TimeSpan DefaultNonceLifetime = TimeSpan.FromMinutes(5);
-
-        /// <summary>
-        ///     Represents the default clock skew to allow when validation a time.
-        /// </summary>
-        public static readonly TimeSpan DefaultClockSkew = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan DefaultNonceLifetime = TimeSpan.FromMinutes(5);
+        private static readonly TimeSpan DefaultClockSkew = TimeSpan.FromMinutes(1);
 
         /// <summary>
         ///     Gets an instance of the <see cref="ClientOptions" /> class, with the default property values.
