@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning {
 
                 var item = sut["H1"];
 
-                item.Should().Equal(new StringValues(new[] {"v1"}));
+                item.Should().Equal(new StringValues(new[] {"v2"}));
             }
         }
 
