@@ -1,4 +1,4 @@
-﻿﻿using MongoDB.Driver;
+﻿using MongoDB.Driver;
 
  namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class MongoClient {
