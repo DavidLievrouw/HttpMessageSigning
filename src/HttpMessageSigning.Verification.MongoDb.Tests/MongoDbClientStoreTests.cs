@@ -168,6 +168,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 loaded.SignatureAlgorithm.Parameter.Should().NotBeNullOrEmpty();
                 var unencryptedKey = Encoding.UTF8.GetString(hmac.Key);
                 loaded.SignatureAlgorithm.Parameter.Should().NotBe(unencryptedKey);
+                loaded.SignatureAlgorithm.IsParameterEncrypted.Should().BeTrue();
             }
 
             [Fact]
@@ -216,6 +217,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     loaded.SignatureAlgorithm.Parameter.Should().NotBeNullOrEmpty();
                     var unencryptedKey = Encoding.UTF8.GetString(hmac.Key);
                     loaded.SignatureAlgorithm.Parameter.Should().Be(unencryptedKey);
+                    loaded.SignatureAlgorithm.IsParameterEncrypted.Should().BeFalse();
                 }
             }
         }
@@ -311,14 +313,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             }
             
             [Fact]
-            public async Task CanDeserializeLegacyClientsWithoutClockSkew() {
+            public async Task CanDeserializeLegacyClientsWithoutClockSkewOrVersion() {
                 var collection = Database.GetCollection<BsonDocument>(_collectionName);
                 var legacyJson = @"{ 
     ""_id"" : ""c3"", 
     ""Name"" : ""app one"", 
     ""SignatureAlgorithm"" : {
         ""Type"" : ""HMAC"", 
-        ""Parameter"" : ""VbB9IMM3ID9bc4l3gJnzlsZuYFWNqI6WUfRufiP1JHiwNcGRZWSn5Q82Imkn5luw"", 
+        ""Parameter"" : ""s3cr3t"", 
         ""HashAlgorithm"" : ""SHA384""
     }, 
     ""NonceExpiration"" : 300.0,
@@ -338,8 +340,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             ""Value"" : ""HttpMessageSigning"", 
             ""ValueType"" : ""http://www.w3.org/2001/XMLSchema#string""
         }
-    ],
-    ""V"": 2
+    ]
 }";
                 var legacyDocument = BsonSerializer.Deserialize<BsonDocument>(legacyJson);
                 await collection.InsertOneAsync(legacyDocument);
@@ -363,14 +364,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             }
             
             [Fact]
-            public async Task CanDeserializeLegacyClientsWithoutRequestTargetEscaping() {
+            public async Task CanDeserializeLegacyClientsWithoutRequestTargetEscapingOrVersion() {
                 var collection = Database.GetCollection<BsonDocument>(_collectionName);
                 var legacyJson = @"{ 
     ""_id"" : ""c4"", 
     ""Name"" : ""app one"", 
     ""SignatureAlgorithm"" : {
         ""Type"" : ""HMAC"", 
-        ""Parameter"" : ""VbB9IMM3ID9bc4l3gJnzlsZuYFWNqI6WUfRufiP1JHiwNcGRZWSn5Q82Imkn5luw"", 
+        ""Parameter"" : ""s3cr3t"", 
         ""HashAlgorithm"" : ""SHA384""
     }, 
     ""NonceExpiration"" : 300.0,
@@ -390,8 +391,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             ""Value"" : ""HttpMessageSigning"", 
             ""ValueType"" : ""http://www.w3.org/2001/XMLSchema#string""
         }
-    ],
-    ""V"": 2
+    ]
 }";
                 var legacyDocument = BsonSerializer.Deserialize<BsonDocument>(legacyJson);
                 await collection.InsertOneAsync(legacyDocument);

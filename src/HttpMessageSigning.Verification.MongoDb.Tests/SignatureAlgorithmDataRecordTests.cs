@@ -45,7 +45,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     var actual = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(hmac, _encryptionKey);
                     var expected = new SignatureAlgorithmDataRecord {
                         Type = "HMAC",
-                        HashAlgorithm = HashAlgorithmName.SHA384.Name
+                        HashAlgorithm = HashAlgorithmName.SHA384.Name,
+                        IsParameterEncrypted = true
                     };
                     actual.Should().BeEquivalentTo(expected, opts => opts.Excluding(_ => _.Parameter));
                     actual.Parameter.Should().NotBe(_unencryptedKey);
@@ -59,6 +60,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 using (var hmac = SignatureAlgorithm.CreateForVerification(_unencryptedKey, HashAlgorithmName.SHA384)) {
                     var actual = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(hmac, nullOrEmpty);
                     actual.Parameter.Should().Be(_unencryptedKey);
+                    actual.IsParameterEncrypted.Should().BeFalse();
                 }
             }
             
@@ -70,7 +72,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                         var expected = new SignatureAlgorithmDataRecord {
                             Type = "RSA",
                             Parameter = rsa.ExportParameters(false).ToXml(),
-                            HashAlgorithm = HashAlgorithmName.SHA384.Name
+                            HashAlgorithm = HashAlgorithmName.SHA384.Name,
+                            IsParameterEncrypted = false
                         };
                         actual.Should().BeEquivalentTo(expected);
                     }
@@ -85,7 +88,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                         var expected = new SignatureAlgorithmDataRecord {
                             Type = "ECDsa",
                             Parameter = ecdsa.ExportParameters(false).ToXml(),
-                            HashAlgorithm = HashAlgorithmName.SHA384.Name
+                            HashAlgorithm = HashAlgorithmName.SHA384.Name,
+                            IsParameterEncrypted = false
                         };
                         actual.Should().BeEquivalentTo(expected);
                     }
@@ -104,7 +108,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 _sut = new SignatureAlgorithmDataRecord {
                     Type = "HMAC",
                     Parameter = _encryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name
+                    HashAlgorithm = HashAlgorithmName.MD5.Name,
+                    IsParameterEncrypted = true
                 };
             }
 
@@ -156,6 +161,23 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 actualKey.Should().Be(_unencryptedKey);
             }
             
+            [Fact]
+            public void WhenParameterIsNotEncrypted_DoesNotDecryptParameter() {
+                var sut = new SignatureAlgorithmDataRecord {
+                    Type = "HMAC",
+                    Parameter = _unencryptedKey,
+                    HashAlgorithm = HashAlgorithmName.MD5.Name,
+                    IsParameterEncrypted = false
+                };
+                
+                var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion);
+
+                actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
+                var actualKeyBytes = actual.As<HMACSignatureAlgorithm>().Key;
+                var actualKey = Encoding.UTF8.GetString(actualKeyBytes);
+                actualKey.Should().Be(_unencryptedKey);
+            }
+            
             [Theory]
             [InlineData(null)]
             [InlineData(0)]
@@ -182,7 +204,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     var sut = new SignatureAlgorithmDataRecord {
                         Type = "RSA",
                         Parameter = publicParameters.ToXml(),
-                        HashAlgorithm = HashAlgorithmName.MD5.Name
+                        HashAlgorithm = HashAlgorithmName.MD5.Name,
+                        IsParameterEncrypted = false
                     };
 
                     using (var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion)) {
@@ -201,7 +224,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     var sut = new SignatureAlgorithmDataRecord {
                         Type = "ECDsa",
                         Parameter = publicParameters.ToXml(),
-                        HashAlgorithm = HashAlgorithmName.MD5.Name
+                        HashAlgorithm = HashAlgorithmName.MD5.Name,
+                        IsParameterEncrypted = false
                     };
 
                     using (var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion)) {
@@ -218,7 +242,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 var sut = new SignatureAlgorithmDataRecord {
                     Type = "HMAC",
                     Parameter = _encryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name
+                    HashAlgorithm = HashAlgorithmName.MD5.Name,
+                    IsParameterEncrypted = true
                 };
 
                 using (var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion)) {
