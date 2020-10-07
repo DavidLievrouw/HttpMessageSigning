@@ -97,6 +97,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _options.Validate();
+            if (IsProhibitedId(id)) throw new ArgumentException($"The specified id value is prohibited ({id}).", nameof(id));
             Id = id;
             Name = name;
             SignatureAlgorithm = signatureAlgorithm ?? throw new ArgumentNullException(nameof(signatureAlgorithm));
@@ -237,6 +238,10 @@ namespace Dalion.HttpMessageSigning.Verification {
                 hashAlgorithm == default ? HashAlgorithmName.SHA512 : hashAlgorithm);
 
             return Create(id, name, signatureAlgorithm, configure);
+        }
+
+        private static bool IsProhibitedId(KeyId id) {
+            return id == "_version";
         }
     }
 }

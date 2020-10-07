@@ -5,12 +5,14 @@ using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     internal class MongoDbClientStore : IMongoDbClientStore {
+        private readonly string _encryptionKey;
         private readonly Lazy<IMongoCollection<ClientDataRecord>> _lazyCollection;
 
-        public MongoDbClientStore(IMongoDatabaseClientProvider clientProvider, string collectionName) {
+        public MongoDbClientStore(IMongoDatabaseClientProvider clientProvider, string collectionName, string encryptionKey) {
             if (clientProvider == null) throw new ArgumentNullException(nameof(clientProvider));
             if (string.IsNullOrEmpty(collectionName)) throw new ArgumentException("Value cannot be null or empty.", nameof(collectionName));
-            
+            _encryptionKey = encryptionKey;
+
             _lazyCollection = new Lazy<IMongoCollection<ClientDataRecord>>(() => {
                 var database = clientProvider.Provide();
                 return database.GetCollection<ClientDataRecord>(collectionName);
@@ -30,8 +32,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 NonceExpiration = client.NonceLifetime.TotalSeconds,
                 ClockSkew = client.ClockSkew.TotalSeconds,
                 Claims = client.Claims?.Select(ClaimDataRecord.FromClaim)?.ToArray(),
-                SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm),
-                RequestTargetEscaping = client.RequestTargetEscaping.ToString()
+                SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm, _encryptionKey),
+                RequestTargetEscaping = client.RequestTargetEscaping.ToString(),
+                V = 2
             };
 
             var collection = _lazyCollection.Value;
@@ -68,7 +71,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             return new Client(
                 match.Id,
                 match.Name,
-                match.SignatureAlgorithm.ToSignatureAlgorithm(),
+                match.SignatureAlgorithm.ToSignatureAlgorithm(_encryptionKey, match.V),
                 nonceExpiration,
                 clockSkew,
                 requestTargetEscaping,

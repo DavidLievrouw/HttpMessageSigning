@@ -100,7 +100,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     return new CachingMongoDbClientStore(
                         new MongoDbClientStore(
                             new MongoDatabaseClientProvider(mongoSettings.ConnectionString),
-                            mongoSettings.CollectionName),
+                            mongoSettings.CollectionName,
+                            mongoSettings.SharedSecretEncryptionKey),
                         prov.GetRequiredService<IMemoryCache>(),
                         mongoSettings.ClientCacheEntryExpiration,
                         prov.GetRequiredService<IBackgroundTaskStarter>());

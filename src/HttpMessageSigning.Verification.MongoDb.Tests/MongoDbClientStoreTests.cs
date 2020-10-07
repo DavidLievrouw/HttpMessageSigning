@@ -6,22 +6,37 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class MongoDbClientStoreTests : MongoIntegrationTest, IDisposable {
         private readonly MongoDbClientStore _sut;
         private readonly string _collectionName;
+        private readonly string _encryptionKey;
 
         public MongoDbClientStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
             _collectionName = "clients";
-            _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName);
+            _encryptionKey = "The_Big_Secret";
+            _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey);
         }
 
         public void Dispose() {
             _sut?.Dispose();
         }
 
+        public class Construction : MongoDbClientStoreTests {
+            public Construction(MongoSetup mongoSetup) : base(mongoSetup) { }
+            
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void AllowsForNullOrEmptyEncryptionKey(string nullOrEmpty) {
+                Action act = () => new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty);
+                act.Should().NotThrow();
+            }
+        }
+        
         public class Register : MongoDbClientStoreTests {
             public Register(MongoSetup mongoSetup) : base(mongoSetup) { }
 
@@ -131,6 +146,78 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
                 actual.Should().BeEquivalentTo(client2, options => options.ComparingByMembers<Client>());
             }
+
+            [Fact]
+            public async Task EncryptsHMACSecretInDatabase() {
+                var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
+                var client = new Client(
+                    "c1", 
+                    "app one", 
+                    hmac, 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(2),
+                    RequestTargetEscaping.RFC2396,
+                    new Claim("company", "Dalion"),
+                    new Claim("scope", "HttpMessageSigning"));
+                await _sut.Register(client);
+                
+                var collection = Database.GetCollection<ClientDataRecord>(_collectionName);
+                var findResult = await collection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == client.Id));
+                var loaded = await findResult.SingleAsync();
+
+                loaded.SignatureAlgorithm.Parameter.Should().NotBeNullOrEmpty();
+                var unencryptedKey = Encoding.UTF8.GetString(hmac.Key);
+                loaded.SignatureAlgorithm.Parameter.Should().NotBe(unencryptedKey);
+            }
+
+            [Fact]
+            public async Task MarksRecordsWithCorrectVersion() {
+                var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
+                var client = new Client(
+                    "c1", 
+                    "app one", 
+                    hmac, 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(2),
+                    RequestTargetEscaping.RFC2396,
+                    new Claim("company", "Dalion"),
+                    new Claim("scope", "HttpMessageSigning"));
+                await _sut.Register(client);
+                
+                var collection = Database.GetCollection<ClientDataRecord>(_collectionName);
+                var findResult = await collection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == client.Id));
+                var loaded = await findResult.SingleAsync();
+
+                loaded.V.Should().NotBeNull();
+                loaded.V.Should().Be(2); // Current version
+            }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public async Task WhenEncryptionKeyIsNullOrEmpty_DoesNotEncryptHMACSecretInDatabase(string nullOrEmpty) {
+                using (var sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty)) {
+                    var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
+                    var client = new Client(
+                        "c1",
+                        "app one",
+                        hmac,
+                        TimeSpan.FromMinutes(1),
+                        TimeSpan.FromMinutes(2),
+                        RequestTargetEscaping.RFC2396,
+                        new Claim("company", "Dalion"),
+                        new Claim("scope", "HttpMessageSigning"));
+                    await sut.Register(client);
+
+                    var collection = Database.GetCollection<ClientDataRecord>(_collectionName);
+                    var findResult = await collection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == client.Id));
+                    var loaded = await findResult.SingleAsync();
+
+                    loaded.SignatureAlgorithm.Parameter.Should().NotBeNullOrEmpty();
+                    var unencryptedKey = Encoding.UTF8.GetString(hmac.Key);
+                    loaded.SignatureAlgorithm.Parameter.Should().Be(unencryptedKey);
+                }
+            }
         }
 
         public class Get : MongoDbClientStoreTests {
@@ -175,7 +262,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             }
             
             [Fact]
-            public async Task CanDeserializeLegacyClientsWithoutNonceExpirationRequestTargetEscapingOrClockSkew() {
+            public async Task CanDeserializeLegacyClientsWithoutNonceExpirationRequestTargetEscapingOrClockSkewOrVersion() {
                 var collection = Database.GetCollection<BsonDocument>(_collectionName);
                 var legacyJson = @"{ 
     ""_id"" : ""c2"", 
@@ -231,7 +318,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     ""Name"" : ""app one"", 
     ""SignatureAlgorithm"" : {
         ""Type"" : ""HMAC"", 
-        ""Parameter"" : ""s3cr3t"", 
+        ""Parameter"" : ""VbB9IMM3ID9bc4l3gJnzlsZuYFWNqI6WUfRufiP1JHiwNcGRZWSn5Q82Imkn5luw"", 
         ""HashAlgorithm"" : ""SHA384""
     }, 
     ""NonceExpiration"" : 300.0,
@@ -251,7 +338,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             ""Value"" : ""HttpMessageSigning"", 
             ""ValueType"" : ""http://www.w3.org/2001/XMLSchema#string""
         }
-    ]
+    ],
+    ""V"": 2
 }";
                 var legacyDocument = BsonSerializer.Deserialize<BsonDocument>(legacyJson);
                 await collection.InsertOneAsync(legacyDocument);
@@ -282,10 +370,63 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     ""Name"" : ""app one"", 
     ""SignatureAlgorithm"" : {
         ""Type"" : ""HMAC"", 
+        ""Parameter"" : ""VbB9IMM3ID9bc4l3gJnzlsZuYFWNqI6WUfRufiP1JHiwNcGRZWSn5Q82Imkn5luw"", 
+        ""HashAlgorithm"" : ""SHA384""
+    }, 
+    ""NonceExpiration"" : 300.0,
+    ""ClockSkew"" : 240.0,
+    ""Claims"" : [
+        {
+            ""Issuer"" : ""LOCAL AUTHORITY"", 
+            ""OriginalIssuer"" : ""LOCAL AUTHORITY"", 
+            ""Type"" : ""company"", 
+            ""Value"" : ""Dalion"", 
+            ""ValueType"" : ""http://www.w3.org/2001/XMLSchema#string""
+        }, 
+        {
+            ""Issuer"" : ""LOCAL AUTHORITY"", 
+            ""OriginalIssuer"" : ""LOCAL AUTHORITY"", 
+            ""Type"" : ""scope"", 
+            ""Value"" : ""HttpMessageSigning"", 
+            ""ValueType"" : ""http://www.w3.org/2001/XMLSchema#string""
+        }
+    ],
+    ""V"": 2
+}";
+                var legacyDocument = BsonSerializer.Deserialize<BsonDocument>(legacyJson);
+                await collection.InsertOneAsync(legacyDocument);
+                
+                var actual = await _sut.Get(new KeyId("c4"));
+
+                var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
+                var expected = new Client(
+                    "c4", 
+                    "app one", 
+                    hmac, 
+                    TimeSpan.FromMinutes(5), 
+                    TimeSpan.FromMinutes(4), 
+                    RequestTargetEscaping.RFC3986, 
+                    new Claim("company", "Dalion"), 
+                    new Claim("scope", "HttpMessageSigning"));
+                actual.Should().BeEquivalentTo(expected, options => options.ComparingByMembers<Client>());
+                actual.SignatureAlgorithm.Should().BeAssignableTo<HMACSignatureAlgorithm>();
+                actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().Key.Should().Equal(Encoding.UTF8.GetBytes("s3cr3t"));
+                actual.SignatureAlgorithm.As<HMACSignatureAlgorithm>().HashAlgorithm.Should().Be(HashAlgorithmName.SHA384);
+            }
+            
+            [Fact]
+            public async Task CanDeserializeLegacyClientsWithoutVersion() {
+                var collection = Database.GetCollection<BsonDocument>(_collectionName);
+                var legacyJson = @"{ 
+    ""_id"" : ""c5"", 
+    ""Name"" : ""app one"", 
+    ""SignatureAlgorithm"" : {
+        ""Type"" : ""HMAC"", 
         ""Parameter"" : ""s3cr3t"", 
         ""HashAlgorithm"" : ""SHA384""
     }, 
     ""NonceExpiration"" : 300.0,
+    ""RequestTargetEscaping"" : ""RFC2396"",
     ""ClockSkew"" : 240.0,
     ""Claims"" : [
         {
@@ -307,16 +448,16 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 var legacyDocument = BsonSerializer.Deserialize<BsonDocument>(legacyJson);
                 await collection.InsertOneAsync(legacyDocument);
                 
-                var actual = await _sut.Get(new KeyId("c4"));
+                var actual = await _sut.Get(new KeyId("c5"));
 
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var expected = new Client(
-                    "c4", 
+                    "c5", 
                     "app one", 
                     hmac, 
                     TimeSpan.FromMinutes(5), 
                     TimeSpan.FromMinutes(4), 
-                    RequestTargetEscaping.RFC3986, 
+                    RequestTargetEscaping.RFC2396, 
                     new Claim("company", "Dalion"), 
                     new Claim("scope", "HttpMessageSigning"));
                 actual.Should().BeEquivalentTo(expected, options => options.ComparingByMembers<Client>());
