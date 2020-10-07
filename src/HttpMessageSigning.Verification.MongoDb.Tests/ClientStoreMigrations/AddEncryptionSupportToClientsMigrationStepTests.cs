@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
     public class AddEncryptionSupportToClientsMigrationStepTests : MongoIntegrationTest {
         private readonly MongoDbClientStoreSettings _settings;
         private readonly AddEncryptionSupportToClientsMigrationStep _sut;

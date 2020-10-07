@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
-    internal class Migrator : IMigrator {
-        private readonly IBaseliner _baseliner;
-        private readonly IEnumerable<IMigrationStep> _migrationSteps;
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
+    internal class ClientStoreMigrator : IClientStoreMigrator {
+        private readonly IClientStoreBaseliner _baseliner;
+        private readonly IEnumerable<IClientStoreMigrationStep> _migrationSteps;
 
-        public Migrator(IEnumerable<IMigrationStep> migrationSteps, IBaseliner baseliner) {
+        public ClientStoreMigrator(IEnumerable<IClientStoreMigrationStep> migrationSteps, IClientStoreBaseliner baseliner) {
             _migrationSteps = migrationSteps ?? throw new ArgumentNullException(nameof(migrationSteps));
             _baseliner = baseliner ?? throw new ArgumentNullException(nameof(baseliner));
         }
@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
             return lastVersion;
         }
 
-        private async Task<IEnumerable<IMigrationStep>> GetStepsToExecute() {
+        private async Task<IEnumerable<IClientStoreMigrationStep>> GetStepsToExecute() {
             var baseline = await _baseliner.GetBaseline();
             return _migrationSteps
                 .OrderBy(_ => _.Version)

@@ -2,17 +2,17 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
-    internal class OnlyOnceMigrator : IMigrator {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
+    internal class OnlyOnceClientStoreMigrator : IClientStoreMigrator {
         private static readonly TimeSpan MaxLockWaitTime = TimeSpan.FromSeconds(1);
 
-        private readonly IMigrator _decorated;
+        private readonly IClientStoreMigrator _decorated;
         private readonly ISemaphoreFactory _semaphoreFactory;
         private readonly Lazy<Task<int?>> _lazyBaseline;
         private readonly SemaphoreSlim _semaphore;
         private int? _runResult;
 
-        public OnlyOnceMigrator(IMigrator decorated, IBaseliner baseliner, ISemaphoreFactory semaphoreFactory) {
+        public OnlyOnceClientStoreMigrator(IClientStoreMigrator decorated, IClientStoreBaseliner baseliner, ISemaphoreFactory semaphoreFactory) {
             if (baseliner == null) throw new ArgumentNullException(nameof(baseliner));
             _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
             _semaphoreFactory = semaphoreFactory ?? throw new ArgumentNullException(nameof(semaphoreFactory));

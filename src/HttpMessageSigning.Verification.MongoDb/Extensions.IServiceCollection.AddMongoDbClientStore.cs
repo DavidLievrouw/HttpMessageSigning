@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Dalion.HttpMessageSigning.Verification.MongoDb.Migrations;
+using Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -108,17 +108,17 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     return new MongoDatabaseClientProvider(mongoSettings.ConnectionString);
                 })
                 
-                // Migrations
-                .AddSingleton<IBaseliner, Baseliner>()
+                // ClientStore Migrations
+                .AddSingleton<IClientStoreBaseliner, ClientStoreBaseliner>()
                 .AddSingleton<ISemaphoreFactory, SemaphoreFactory>()
-                .AddSingleton<IMigrator>(prov =>
-                    new OnlyOnceMigrator(
-                        new Migrator(
-                            prov.GetRequiredService<IEnumerable<IMigrationStep>>(),
-                            prov.GetRequiredService<IBaseliner>()),
-                        prov.GetRequiredService<IBaseliner>(),
+                .AddSingleton<IClientStoreMigrator>(prov =>
+                    new OnlyOnceClientStoreMigrator(
+                        new ClientStoreMigrator(
+                            prov.GetRequiredService<IEnumerable<IClientStoreMigrationStep>>(),
+                            prov.GetRequiredService<IClientStoreBaseliner>()),
+                        prov.GetRequiredService<IClientStoreBaseliner>(),
                         prov.GetRequiredService<ISemaphoreFactory>()))
-                .AddSingleton<IMigrationStep, AddEncryptionSupportToClientsMigrationStep>()
+                .AddSingleton<IClientStoreMigrationStep, AddEncryptionSupportToClientsMigrationStep>()
                 
                 // The actual store
                 .AddSingleton<IClientStore>(prov => {
@@ -128,7 +128,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                             prov.GetRequiredService<IMongoDatabaseClientProvider>(),
                             mongoSettings.CollectionName,
                             mongoSettings.SharedSecretEncryptionKey,
-                            prov.GetRequiredService<IMigrator>()),
+                            prov.GetRequiredService<IClientStoreMigrator>()),
                         prov.GetRequiredService<IMemoryCache>(),
                         mongoSettings.ClientCacheEntryExpiration,
                         prov.GetRequiredService<IBackgroundTaskStarter>());

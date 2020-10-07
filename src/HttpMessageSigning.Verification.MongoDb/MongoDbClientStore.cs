@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Verification.MongoDb.Migrations;
+using Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations;
 using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     internal class MongoDbClientStore : IMongoDbClientStore {
         private readonly SharedSecretEncryptionKey _encryptionKey;
-        private readonly IMigrator _migrator;
+        private readonly IClientStoreMigrator _migrator;
         private readonly Lazy<IMongoCollection<ClientDataRecord>> _lazyCollection;
 
         public MongoDbClientStore(
             IMongoDatabaseClientProvider clientProvider, 
             string collectionName, 
             SharedSecretEncryptionKey encryptionKey,
-            IMigrator migrator) {
+            IClientStoreMigrator migrator) {
             if (clientProvider == null) throw new ArgumentNullException(nameof(clientProvider));
             if (string.IsNullOrEmpty(collectionName)) throw new ArgumentException("Value cannot be null or empty.", nameof(collectionName));
             _encryptionKey = encryptionKey;

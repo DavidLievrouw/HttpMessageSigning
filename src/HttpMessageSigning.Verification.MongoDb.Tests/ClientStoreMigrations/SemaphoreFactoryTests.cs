@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
     public class SemaphoreFactoryTests {
         private readonly SemaphoreFactory _sut;
 

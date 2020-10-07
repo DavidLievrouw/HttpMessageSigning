@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
     internal interface ISemaphoreFactory {
         SemaphoreSlim CreateLock();
     }

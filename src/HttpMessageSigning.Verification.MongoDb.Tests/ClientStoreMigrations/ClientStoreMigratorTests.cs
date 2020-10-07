@@ -8,23 +8,23 @@ using FluentAssertions;
 using MongoDB.Driver;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
-    public class MigratorTests {
-        private readonly IBaseliner _baseliner;
-        private readonly IEnumerable<FakeMigrationStep> _migrationSteps;
-        private readonly Migrator _sut;
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
+    public class ClientStoreMigratorTests {
+        private readonly IClientStoreBaseliner _baseliner;
+        private readonly IEnumerable<FakeClientStoreMigrationStep> _migrationSteps;
+        private readonly ClientStoreMigrator _sut;
 
-        public MigratorTests() {
+        public ClientStoreMigratorTests() {
             FakeFactory.Create(out _baseliner);
             _migrationSteps = new[] {
-                new FakeMigrationStep(2, () => Task.Delay(TimeSpan.FromMilliseconds(100))),
-                new FakeMigrationStep(4, () => Task.Delay(TimeSpan.FromMilliseconds(100))),
-                new FakeMigrationStep(3, () => Task.Delay(TimeSpan.FromMilliseconds(100))),
+                new FakeClientStoreMigrationStep(2, () => Task.Delay(TimeSpan.FromMilliseconds(100))),
+                new FakeClientStoreMigrationStep(4, () => Task.Delay(TimeSpan.FromMilliseconds(100))),
+                new FakeClientStoreMigrationStep(3, () => Task.Delay(TimeSpan.FromMilliseconds(100))),
             };
-            _sut = new Migrator(_migrationSteps, _baseliner);
+            _sut = new ClientStoreMigrator(_migrationSteps, _baseliner);
         }
 
-        public class Migrate : MigratorTests {
+        public class Migrate : ClientStoreMigratorTests {
             [Fact]
             public async Task WhenThereIsNoBaselineYet_RunsAllSteps() {
                 A.CallTo(() => _baseliner.GetBaseline())
@@ -43,7 +43,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
                 A.CallTo(() => _baseliner.GetBaseline())
                     .Returns(Task.FromResult<int?>(null));
 
-                var sut = new Migrator(Enumerable.Empty<IMigrationStep>(), _baseliner);
+                var sut = new ClientStoreMigrator(Enumerable.Empty<IClientStoreMigrationStep>(), _baseliner);
 
                 var actual = await sut.Migrate();
 

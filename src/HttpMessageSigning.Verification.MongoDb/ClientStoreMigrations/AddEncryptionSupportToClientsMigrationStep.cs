@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
-    internal class AddEncryptionSupportToClientsMigrationStep : IMigrationStep {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
+    internal class AddEncryptionSupportToClientsMigrationStep : IClientStoreMigrationStep {
         private readonly MongoDbClientStoreSettings _mongoDbClientStoreSettings;
         private readonly Lazy<IMongoCollection<ClientDataRecord>> _lazyCollection;
 

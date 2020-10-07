@@ -6,27 +6,27 @@ using FakeItEasy;
 using FluentAssertions;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
-    public class OnlyOnceMigratorTests : IDisposable {
-        private readonly IBaseliner _baseliner;
-        private readonly IMigrator _decorated;
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
+    public class OnlyOnceClientStoreMigratorTests : IDisposable {
+        private readonly IClientStoreBaseliner _baseliner;
+        private readonly IClientStoreMigrator _decorated;
         private readonly ISemaphoreFactory _semaphoreFactory;
         private readonly SemaphoreSlim _semaphore;
-        private readonly OnlyOnceMigrator _sut;
+        private readonly OnlyOnceClientStoreMigrator _sut;
 
-        public OnlyOnceMigratorTests() {
+        public OnlyOnceClientStoreMigratorTests() {
             FakeFactory.Create(out _decorated, out _baseliner, out _semaphoreFactory);
             _semaphore = new SemaphoreSlim(1, 1);
             A.CallTo(() => _semaphoreFactory.CreateLock())
                 .Returns(_semaphore);
-            _sut = new OnlyOnceMigrator(_decorated, _baseliner, _semaphoreFactory);
+            _sut = new OnlyOnceClientStoreMigrator(_decorated, _baseliner, _semaphoreFactory);
         }
 
         public void Dispose() {
             _semaphore?.Dispose();
         }
 
-        public class Migrate : OnlyOnceMigratorTests {
+        public class Migrate : OnlyOnceClientStoreMigratorTests {
             private readonly int _baselineBeforeMigration;
 
             public Migrate() {

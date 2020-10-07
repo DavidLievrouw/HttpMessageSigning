@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
-    public class FakeMigrationStep : IMigrationStep {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
+    public class FakeClientStoreMigrationStep : IClientStoreMigrationStep {
         private readonly Func<Task> _runAction;
         private Exception _failure;
         private readonly List<DateTimeOffset> _runs;
 
-        public FakeMigrationStep(int version, Func<Task> runAction = null) {
+        public FakeClientStoreMigrationStep(int version, Func<Task> runAction = null) {
             _runAction = runAction;
             Version = version;
             _runs = new List<DateTimeOffset>();

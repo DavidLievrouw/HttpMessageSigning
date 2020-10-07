@@ -2,25 +2,25 @@
 using System.Threading.Tasks;
 using MongoDB.Driver;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
-    internal class Baseliner : IBaseliner {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
+    internal class ClientStoreBaseliner : IClientStoreBaseliner {
         private readonly ISystemClock _systemClock;
-        private readonly Lazy<IMongoCollection<VersionDocument>> _lazyCollection;
+        private readonly Lazy<IMongoCollection<ClientStoreVersionDocument>> _lazyCollection;
 
-        public Baseliner(ISystemClock systemClock, IMongoDatabaseClientProvider clientProvider, MongoDbClientStoreSettings mongoDbClientStoreSettings) {
+        public ClientStoreBaseliner(ISystemClock systemClock, IMongoDatabaseClientProvider clientProvider, MongoDbClientStoreSettings mongoDbClientStoreSettings) {
             if (clientProvider == null) throw new ArgumentNullException(nameof(clientProvider));
             if (mongoDbClientStoreSettings == null) throw new ArgumentNullException(nameof(mongoDbClientStoreSettings));
             
             _systemClock = systemClock ?? throw new ArgumentNullException(nameof(systemClock));
 
-            _lazyCollection = new Lazy<IMongoCollection<VersionDocument>>(() => {
+            _lazyCollection = new Lazy<IMongoCollection<ClientStoreVersionDocument>>(() => {
                 var database = clientProvider.Provide();
-                return database.GetCollection<VersionDocument>(mongoDbClientStoreSettings.CollectionName);
+                return database.GetCollection<ClientStoreVersionDocument>(mongoDbClientStoreSettings.CollectionName);
             });
         }
 
-        public async Task SetBaseline(IMigrationStep step) {
-            var versionDoc = new VersionDocument {
+        public async Task SetBaseline(IClientStoreMigrationStep step) {
+            var versionDoc = new ClientStoreVersionDocument {
                 Time = _systemClock.UtcNow,
                 Version = step.Version,
                 PackageVersion = GetType().Assembly.GetName().Version.ToString(3),
@@ -31,7 +31,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
             if (currentBaseline > step.Version) throw new InvalidOperationException($"Cannot set the baseline to '{step.Version}'. There already is a newer version deployed ({currentBaseline}).");
             
             var result = await _lazyCollection.Value.ReplaceOneAsync(
-                filter: new JsonFilterDefinition<VersionDocument>("{'_id': '" + VersionDocument.VersionDocumentId + "'}"),
+                filter: new JsonFilterDefinition<ClientStoreVersionDocument>("{'_id': '" + ClientStoreVersionDocument.VersionDocumentId + "'}"),
                 options: new ReplaceOptions {IsUpsert = true},
                 replacement: versionDoc);
 
@@ -40,8 +40,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
 
         public async Task<int?> GetBaseline() {
             var latestVersion = await _lazyCollection.Value
-                .Find(new JsonFilterDefinition<VersionDocument>("{'_id': '" + VersionDocument.VersionDocumentId + "'}"))
-                .Sort(new JsonSortDefinition<VersionDocument>("{'version':-1}"))
+                .Find(new JsonFilterDefinition<ClientStoreVersionDocument>("{'_id': '" + ClientStoreVersionDocument.VersionDocumentId + "'}"))
+                .Sort(new JsonSortDefinition<ClientStoreVersionDocument>("{'version':-1}"))
                 .Limit(1)
                 .FirstOrDefaultAsync();
 

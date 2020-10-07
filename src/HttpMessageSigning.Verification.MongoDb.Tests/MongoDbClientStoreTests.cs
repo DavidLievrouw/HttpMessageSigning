@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Verification.MongoDb.Migrations;
+using Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations;
 using FakeItEasy;
 using FluentAssertions;
 using MongoDB.Bson;
@@ -16,10 +16,10 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         private readonly MongoDbClientStore _sut;
         private readonly string _collectionName;
         private readonly SharedSecretEncryptionKey _encryptionKey;
-        private readonly IMigrator _migrator;
+        private readonly IClientStoreMigrator _migrator;
 
         public MongoDbClientStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
-            _migrator = A.Fake<IMigrator>();
+            _migrator = A.Fake<IClientStoreMigrator>();
             _collectionName = "clients";
             _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
             _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey, _migrator);

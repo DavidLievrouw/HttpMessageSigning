@@ -3,9 +3,9 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
     [BsonIgnoreExtraElements]
-    internal class VersionDocument {
+    internal class ClientStoreVersionDocument {
         internal const string VersionDocumentId = "_version";
 
         [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
