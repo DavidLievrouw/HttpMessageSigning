@@ -5,10 +5,10 @@ using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     internal class MongoDbClientStore : IMongoDbClientStore {
-        private readonly string _encryptionKey;
+        private readonly SharedSecretEncryptionKey _encryptionKey;
         private readonly Lazy<IMongoCollection<ClientDataRecord>> _lazyCollection;
 
-        public MongoDbClientStore(IMongoDatabaseClientProvider clientProvider, string collectionName, string encryptionKey) {
+        public MongoDbClientStore(IMongoDatabaseClientProvider clientProvider, string collectionName, SharedSecretEncryptionKey encryptionKey) {
             if (clientProvider == null) throw new ArgumentNullException(nameof(clientProvider));
             if (string.IsNullOrEmpty(collectionName)) throw new ArgumentException("Value cannot be null or empty.", nameof(collectionName));
             _encryptionKey = encryptionKey;

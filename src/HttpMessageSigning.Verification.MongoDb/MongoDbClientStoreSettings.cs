@@ -19,7 +19,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         /// Gets or sets the encryption key for the shared secrets.
         /// </summary>
         /// <remarks>This only applies to signature algorithms that use symmetric keys, e.g. HMAC. Set this value to <see langword="null" /> to disable encryption.</remarks>
-        public string SharedSecretEncryptionKey { get; set; }
+        public SharedSecretEncryptionKey SharedSecretEncryptionKey { get; set; }
         
         /// <summary>
         /// Gets or sets the time that client queries are cached in memory.

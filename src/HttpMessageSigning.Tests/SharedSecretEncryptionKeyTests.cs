@@ -4,32 +4,32 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning {
-    public class KeyIdTests {
-        public class Construction : KeyIdTests {
+    public class SharedSecretEncryptionKeyTests {
+        public class Construction : SharedSecretEncryptionKeyTests {
             [Fact]
-            public void DefaultConstructor_CreatesEmptyKeyId() {
-                var actual = new KeyId();
-                actual.Should().Be(KeyId.Empty);
+            public void DefaultConstructor_CreatesEmptySharedSecretEncryptionKey() {
+                var actual = new SharedSecretEncryptionKey();
+                actual.Should().Be(SharedSecretEncryptionKey.Empty);
             }
 
             [Fact]
-            public void Constructor_CreatesKeyIdWithValue() {
-                var actual = new KeyId("theValue");
+            public void Constructor_CreatesSharedSecretEncryptionKeyWithValue() {
+                var actual = new SharedSecretEncryptionKey("theValue");
                 actual.Value.Should().Be("theValue");
             }
 
             [Fact]
-            public void NullValue_ReturnsEmptyKeyId() {
-                var actual = new KeyId(null);
-                actual.Should().Be(KeyId.Empty);
+            public void NullValue_ReturnsEmptySharedSecretEncryptionKey() {
+                var actual = new SharedSecretEncryptionKey(null);
+                actual.Should().Be(SharedSecretEncryptionKey.Empty);
             }
         }
 
-        public class Equality : KeyIdTests {
+        public class Equality : SharedSecretEncryptionKeyTests {
             [Fact]
             public void WhenValuesAreEqual_AreEqual() {
-                var first = new KeyId("abc123");
-                var second = new KeyId(first);
+                var first = new SharedSecretEncryptionKey("abc123");
+                var second = new SharedSecretEncryptionKey(first);
 
                 first.Equals(second).Should().BeTrue();
                 (first == second).Should().BeTrue();
@@ -39,8 +39,8 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void WhenValuesAreDifferent_AreNotEqual() {
-                var first = new KeyId("abc123");
-                var second = new KeyId("xyz123");
+                var first = new SharedSecretEncryptionKey("abc123");
+                var second = new SharedSecretEncryptionKey("xyz123");
 
                 first.Equals(second).Should().BeFalse();
                 (first == second).Should().BeFalse();
@@ -49,8 +49,8 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void WhenValuesAreDifferentlyCased_AreNotEqual() {
-                var first = new KeyId("abc123");
-                var second = new KeyId("aBc123");
+                var first = new SharedSecretEncryptionKey("abc123");
+                var second = new SharedSecretEncryptionKey("aBc123");
 
                 first.Equals(second).Should().BeFalse();
                 (first == second).Should().BeFalse();
@@ -59,8 +59,8 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void WhenValuesAreEmpty_AreEqual() {
-                var first = new KeyId("");
-                var second = new KeyId("");
+                var first = new SharedSecretEncryptionKey("");
+                var second = new SharedSecretEncryptionKey("");
 
                 first.Equals(second).Should().BeTrue();
                 (first == second).Should().BeTrue();
@@ -70,8 +70,8 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void WhenValueIsEmpty_IsEqualToEmpty() {
-                var first = new KeyId("");
-                var second = KeyId.Empty;
+                var first = new SharedSecretEncryptionKey("");
+                var second = SharedSecretEncryptionKey.Empty;
 
                 first.Equals(second).Should().BeTrue();
                 (first == second).Should().BeTrue();
@@ -80,28 +80,28 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void GivenOtherObjectIsNotAKeyId_AreNotEqual() {
-                var first = new KeyId("abc123");
+            public void GivenOtherObjectIsNotASharedSecretEncryptionKey_AreNotEqual() {
+                var first = new SharedSecretEncryptionKey("abc123");
                 var second = new object();
 
                 first.Equals(second).Should().BeFalse();
             }
         }
 
-        public class ToStringRepresentation : KeyIdTests {
+        public class ToStringRepresentation : SharedSecretEncryptionKeyTests {
             [Fact]
             public void ReturnsValue() {
                 var value = Guid.NewGuid().ToString();
-                var actual = new KeyId(value).ToString();
+                var actual = new SharedSecretEncryptionKey(value).ToString();
                 actual.Should().Be(value);
             }
         }
 
-        public class ConversionOperatorsForString : KeyIdTests {
+        public class ConversionOperatorsForString : SharedSecretEncryptionKeyTests {
             [Fact]
             public void IsExplicitlyConvertibleToString() {
                 var value = Guid.NewGuid().ToString();
-                var obj = new KeyId(value);
+                var obj = new SharedSecretEncryptionKey(value);
                 var actual = (string) obj;
                 actual.Should().Be(value);
             }    
@@ -109,7 +109,7 @@ namespace Dalion.HttpMessageSigning {
             [Fact]
             public void IsImplicitlyConvertibleToString() {
                 var value = Guid.NewGuid().ToString();
-                var obj = new KeyId(value);
+                var obj = new SharedSecretEncryptionKey(value);
                 string actual = obj;
                 actual.Should().Be(value);
             }
@@ -118,8 +118,8 @@ namespace Dalion.HttpMessageSigning {
             public void IsExplicitlyConvertibleFromString() {
                 var value = Guid.NewGuid().ToString();
                 var str = value;
-                var actual = (KeyId) str;
-                var expected = new KeyId(value);
+                var actual = (SharedSecretEncryptionKey) str;
+                var expected = new SharedSecretEncryptionKey(value);
                 actual.Should().Be(expected);
             }
 
@@ -127,28 +127,28 @@ namespace Dalion.HttpMessageSigning {
             public void IsImplicitlyConvertibleFromString() {
                 var value = Guid.NewGuid().ToString();
                 var str = value;
-                KeyId actual = str;
-                var expected = new KeyId(value);
+                SharedSecretEncryptionKey actual = str;
+                var expected = new SharedSecretEncryptionKey(value);
                 actual.Should().Be(expected);
             }
 
             [Fact]
             [SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
-            public void GivenNullString_ReturnsEmptyKeyId() {
+            public void GivenNullString_ReturnsEmptySharedSecretEncryptionKey() {
                 string nullString = null;
-                var actual = (KeyId) nullString;
-                actual.Should().NotBeNull().And.BeOfType<KeyId>();
-                actual.Should().Be(KeyId.Empty);
+                var actual = (SharedSecretEncryptionKey) nullString;
+                actual.Should().NotBeNull().And.BeOfType<SharedSecretEncryptionKey>();
+                actual.Should().Be(SharedSecretEncryptionKey.Empty);
             }
         }
 
-        public class TryParse : KeyIdTests {
+        public class TryParse : SharedSecretEncryptionKeyTests {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
             [InlineData("abc123")]
             public void ReturnsTrue(string value) {
-                var actual = KeyId.TryParse(value, out _);
+                var actual = SharedSecretEncryptionKey.TryParse(value, out _);
                 actual.Should().BeTrue();
             }
             
@@ -157,8 +157,8 @@ namespace Dalion.HttpMessageSigning {
             [InlineData("", "")]
             [InlineData("abc123", "abc123")]
             public void Parses(string value, string expected) {
-                KeyId.TryParse(value, out var actual);
-                actual.Should().Be((KeyId) expected);
+                SharedSecretEncryptionKey.TryParse(value, out var actual);
+                actual.Should().Be((SharedSecretEncryptionKey) expected);
             }
         }
     }

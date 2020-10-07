@@ -7,11 +7,11 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class SignatureAlgorithmDataRecordTests {
-        private readonly string _encryptionKey;
+        private readonly SharedSecretEncryptionKey _encryptionKey;
         private readonly string _unencryptedKey;
 
         public SignatureAlgorithmDataRecordTests() {
-            _encryptionKey = "The_Big_Secret";
+            _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
             _unencryptedKey = "s3cr3t";
         }
 

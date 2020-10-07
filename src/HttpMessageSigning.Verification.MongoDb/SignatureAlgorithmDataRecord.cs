@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         public string Parameter { get; set; }
         public string HashAlgorithm { get; set; }
 
-        public static SignatureAlgorithmDataRecord FromSignatureAlgorithm(ISignatureAlgorithm signatureAlgorithm, string encryptionKey) {
+        public static SignatureAlgorithmDataRecord FromSignatureAlgorithm(ISignatureAlgorithm signatureAlgorithm, SharedSecretEncryptionKey encryptionKey) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
 
             switch (signatureAlgorithm) {
@@ -38,7 +38,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             }
         }
 
-        public ISignatureAlgorithm ToSignatureAlgorithm(string encryptionKey, int? recordVersion) {
+        public ISignatureAlgorithm ToSignatureAlgorithm(SharedSecretEncryptionKey encryptionKey, int? recordVersion) {
             switch (Type) {
                 case string str when str.Equals("rsa", StringComparison.OrdinalIgnoreCase):
                     using (var rsaForVerification = new RSACryptoServiceProvider()) {
@@ -60,17 +60,17 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             }
         }
 
-        private static string GetKeyWithEncryption(HMACSignatureAlgorithm hmac, string encryptionKey) {
+        private static string GetKeyWithEncryption(HMACSignatureAlgorithm hmac, SharedSecretEncryptionKey encryptionKey) {
             var unencrypted = Encoding.UTF8.GetString(hmac.Key);
 
-            if (string.IsNullOrEmpty(encryptionKey)) return unencrypted;
+            if (encryptionKey == SharedSecretEncryptionKey.Empty) return unencrypted;
             
             var protector = new SymmetricStringProtector(encryptionKey);
             return protector.Protect(unencrypted);
         }
 
-        private static string GetUnencryptedKey(string parameter, string encryptionKey, int? recordVersion) {
-            if (string.IsNullOrEmpty(encryptionKey)) return parameter;
+        private static string GetUnencryptedKey(string parameter, SharedSecretEncryptionKey encryptionKey, int? recordVersion) {
+            if (encryptionKey == SharedSecretEncryptionKey.Empty) return parameter;
             if (!recordVersion.HasValue || recordVersion.Value < 2) return parameter; // Encryption not yet supported
 
             var protector = new SymmetricStringProtector(encryptionKey);
