@@ -8,7 +8,6 @@ using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using Dalion.HttpMessageSigning.Verification.MongoDb;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -40,12 +39,13 @@ namespace WebApplication {
                 .AddMongoDbClientStore(provider => new MongoDbClientStoreSettings {
                     ConnectionString = "mongodb://localhost:27017/HttpMessageSigningDb",
                     CollectionName = "known_clients",
-                    ClientCacheEntryExpiration = TimeSpan.FromMinutes(3)
+                    ClientCacheEntryExpiration = TimeSpan.FromMinutes(3),
+                    SharedSecretEncryptionKey = "The_Big_S3cr37"
                 })
                 .AddMongoDbNonceStore(provider => new MongoDbNonceStoreSettings {
                     ConnectionString = "mongodb://localhost:27017/HttpMessageSigningDb",
                     CollectionName = "client_nonces"
-                })*/;
+                });*/
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
