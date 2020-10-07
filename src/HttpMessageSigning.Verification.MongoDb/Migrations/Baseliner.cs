@@ -31,7 +31,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
             if (currentBaseline > step.Version) throw new InvalidOperationException($"Cannot set the baseline to '{step.Version}'. There already is a newer version deployed ({currentBaseline}).");
             
             var result = await _lazyCollection.Value.ReplaceOneAsync(
-                filter: new JsonFilterDefinition<VersionDocument>("{'_id': '" + versionDoc.Id + "'}"),
+                filter: new JsonFilterDefinition<VersionDocument>("{'_id': '" + VersionDocument.VersionDocumentId + "'}"),
                 options: new ReplaceOptions {IsUpsert = true},
                 replacement: versionDoc);
 
@@ -40,7 +40,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.Migrations {
 
         public async Task<int?> GetBaseline() {
             var latestVersion = await _lazyCollection.Value
-                .Find("{}")
+                .Find(new JsonFilterDefinition<VersionDocument>("{'_id': '" + VersionDocument.VersionDocumentId + "'}"))
                 .Sort(new JsonSortDefinition<VersionDocument>("{'version':-1}"))
                 .Limit(1)
                 .FirstOrDefaultAsync();
