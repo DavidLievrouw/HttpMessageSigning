@@ -3,6 +3,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Verification.MongoDb.Migrations;
+using FakeItEasy;
 using FluentAssertions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -13,12 +15,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class MongoDbClientStoreTests : MongoIntegrationTest, IDisposable {
         private readonly MongoDbClientStore _sut;
         private readonly string _collectionName;
-        private readonly string _encryptionKey;
+        private readonly SharedSecretEncryptionKey _encryptionKey;
+        private readonly IMigrator _migrator;
 
         public MongoDbClientStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
+            _migrator = A.Fake<IMigrator>();
             _collectionName = "clients";
-            _encryptionKey = "The_Big_Secret";
-            _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey);
+            _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
+            _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey, _migrator);
         }
 
         public void Dispose() {
@@ -32,7 +36,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(null)]
             [InlineData("")]
             public void AllowsForNullOrEmptyEncryptionKey(string nullOrEmpty) {
-                Action act = () => new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty);
+                Action act = () => new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty, _migrator);
                 act.Should().NotThrow();
             }
         }
@@ -44,6 +48,25 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public void GivenNullClient_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.Register(null);
                 act.Should().Throw<ArgumentNullException>();
+            }
+
+            [Fact]
+            public async Task PerformsMigrations() {
+                var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
+                var client = new Client(
+                    "c1", 
+                    "app one", 
+                    hmac, 
+                    TimeSpan.FromMinutes(1), 
+                    TimeSpan.FromMinutes(2),
+                    RequestTargetEscaping.RFC2396,
+                    new Claim("company", "Dalion"),
+                    new Claim("scope", "HttpMessageSigning"));
+                
+                await _sut.Register(client);
+
+                A.CallTo(() => _migrator.Migrate())
+                    .MustHaveHappened();
             }
 
             [Fact]
@@ -197,7 +220,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(null)]
             [InlineData("")]
             public async Task WhenEncryptionKeyIsNullOrEmpty_DoesNotEncryptHMACSecretInDatabase(string nullOrEmpty) {
-                using (var sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty)) {
+                using (var sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty, _migrator)) {
                     var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                     var client = new Client(
                         "c1",
@@ -233,6 +256,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 act.Should().Throw<ArgumentException>();
             }
 
+            [Fact]
+            public async Task PerformsMigrations() {
+                await _sut.Get("c1");
+
+                A.CallTo(() => _migrator.Migrate())
+                    .MustHaveHappened();
+            }
+            
             [Fact]
             public void WhenClientIsNotFound_ReturnsNull() {
                 Client actual = null;

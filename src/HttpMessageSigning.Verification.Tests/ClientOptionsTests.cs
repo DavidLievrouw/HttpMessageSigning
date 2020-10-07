@@ -42,14 +42,14 @@ namespace Dalion.HttpMessageSigning.Verification {
         public class Validate : ClientOptionsTests {
             [Fact]
             public void WhenClockSkewIsNegative_ThrowsValidationException() {
-                _sut.NonceLifetime = TimeSpan.FromSeconds(-1);
+                _sut.ClockSkew = TimeSpan.FromSeconds(-1);
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }
 
             [Fact]
             public void WhenClockSkewIsZero_ThrowsValidationException() {
-                _sut.NonceLifetime = TimeSpan.Zero;
+                _sut.ClockSkew = TimeSpan.Zero;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }

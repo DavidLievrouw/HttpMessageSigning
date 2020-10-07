@@ -20,6 +20,15 @@ namespace Dalion.HttpMessageSigning.Verification {
         ///     Gets or sets the time span after which repeated nonce values are allowed again.
         /// </summary>
         public TimeSpan NonceLifetime { get; set; } = DefaultNonceLifetime;
+        
+        /// <summary>
+        ///     Gets or sets the time span after which repeated nonce values are allowed again.
+        /// </summary>
+        [Obsolete("Please use the " + nameof(NonceLifetime) + " property instead.")]
+        public TimeSpan NonceExpiration {
+            get => NonceLifetime;
+            set => NonceLifetime = value;
+        }
 
         /// <summary>
         ///     Gets or sets the clock skew to allow when validation a time.

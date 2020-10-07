@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Dalion.HttpMessageSigning.Verification.MongoDb.Migrations;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -90,18 +92,43 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             if (clientStoreSettingsFactory == null) throw new ArgumentNullException(nameof(clientStoreSettingsFactory));
 
             return services
+                // Services
                 .AddMemoryCache()
+                .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<IDelayer, Delayer>()
                 .AddSingleton<IBackgroundTaskStarter, BackgroundTaskStarter>()
+                .AddSingleton(prov => {
+                    var settings = clientStoreSettingsFactory(prov);
+                    if (settings == null) throw new ValidationException($"Invalid {nameof(MongoDbClientStoreSettings)} were specified.");
+                    settings.Validate();
+                    return settings;
+                })
+                .AddSingleton<IMongoDatabaseClientProvider>(prov => {
+                    var mongoSettings = prov.GetRequiredService<MongoDbClientStoreSettings>();
+                    return new MongoDatabaseClientProvider(mongoSettings.ConnectionString);
+                })
+                
+                // Migrations
+                .AddSingleton<IBaseliner, Baseliner>()
+                .AddSingleton<ISemaphoreFactory, SemaphoreFactory>()
+                .AddSingleton<IMigrator>(prov =>
+                    new OnlyOnceMigrator(
+                        new Migrator(
+                            prov.GetRequiredService<IEnumerable<IMigrationStep>>(),
+                            prov.GetRequiredService<IBaseliner>()),
+                        prov.GetRequiredService<IBaseliner>(),
+                        prov.GetRequiredService<ISemaphoreFactory>()))
+                .AddSingleton<IMigrationStep, AddEncryptionSupportToClientsMigrationStep>()
+                
+                // The actual store
                 .AddSingleton<IClientStore>(prov => {
-                    var mongoSettings = clientStoreSettingsFactory(prov);
-                    if (mongoSettings == null) throw new ValidationException($"Invalid {nameof(MongoDbClientStoreSettings)} were specified.");
-                    mongoSettings.Validate();
+                    var mongoSettings = prov.GetRequiredService<MongoDbClientStoreSettings>();
                     return new CachingMongoDbClientStore(
                         new MongoDbClientStore(
-                            new MongoDatabaseClientProvider(mongoSettings.ConnectionString),
+                            prov.GetRequiredService<IMongoDatabaseClientProvider>(),
                             mongoSettings.CollectionName,
-                            mongoSettings.SharedSecretEncryptionKey),
+                            mongoSettings.SharedSecretEncryptionKey,
+                            prov.GetRequiredService<IMigrator>()),
                         prov.GetRequiredService<IMemoryCache>(),
                         mongoSettings.ClientCacheEntryExpiration,
                         prov.GetRequiredService<IBackgroundTaskStarter>());
