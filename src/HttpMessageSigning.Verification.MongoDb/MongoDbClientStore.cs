@@ -8,7 +8,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     internal class MongoDbClientStore : IMongoDbClientStore {
         private readonly SharedSecretEncryptionKey _encryptionKey;
         private readonly IClientStoreMigrator _migrator;
-        private readonly Lazy<IMongoCollection<ClientDataRecord>> _lazyCollection;
+        private readonly Lazy<IMongoCollection<ClientDataRecordV2>> _lazyCollection;
 
         public MongoDbClientStore(
             IMongoDatabaseClientProvider clientProvider, 
@@ -20,9 +20,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             _encryptionKey = encryptionKey;
             _migrator = migrator ?? throw new ArgumentNullException(nameof(migrator));
 
-            _lazyCollection = new Lazy<IMongoCollection<ClientDataRecord>>(() => {
+            _lazyCollection = new Lazy<IMongoCollection<ClientDataRecordV2>>(() => {
                 var database = clientProvider.Provide();
-                return database.GetCollection<ClientDataRecord>(collectionName);
+                return database.GetCollection<ClientDataRecordV2>(collectionName);
             });
         }
 
@@ -35,16 +35,16 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             await _migrator.Migrate();
             
-            var record = new ClientDataRecord {
+            var record = new ClientDataRecordV2 {
                 Id = client.Id,
                 Name = client.Name,
                 NonceLifetime = client.NonceLifetime.TotalSeconds,
                 ClockSkew = client.ClockSkew.TotalSeconds,
-                Claims = client.Claims?.Select(ClaimDataRecord.FromClaim)?.ToArray(),
-                SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm, _encryptionKey),
-                RequestTargetEscaping = client.RequestTargetEscaping.ToString(),
-                V = 2
+                Claims = client.Claims?.Select(ClaimDataRecordV2.FromClaim)?.ToArray(),
+                SignatureAlgorithm = SignatureAlgorithmDataRecordV2.FromSignatureAlgorithm(client.SignatureAlgorithm, _encryptionKey),
+                RequestTargetEscaping = client.RequestTargetEscaping.ToString()
             };
+            record.V = record.GetV();
 
             var collection = _lazyCollection.Value;
 

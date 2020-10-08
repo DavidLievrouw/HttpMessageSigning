@@ -5,10 +5,10 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class ClaimDataRecordTests {
-        private readonly ClaimDataRecord _sut;
+        private readonly ClaimDataRecordV2 _sut;
 
         public ClaimDataRecordTests() {
-            _sut = new ClaimDataRecord();
+            _sut = new ClaimDataRecordV2();
         }
 
         public class ToClaim : ClaimDataRecordTests {
@@ -62,7 +62,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         public class FromClaim : ClaimDataRecordTests {
             [Fact]
             public void GivenNullClaim_ThrowsArgumentNullException() {
-                Action act = () => ClaimDataRecord.FromClaim(null);
+                Action act = () => ClaimDataRecordV2.FromClaim(null);
                 act.Should().Throw<ArgumentNullException>();
             }
 
@@ -70,11 +70,11 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public void CopiesAllValues() {
                 var minimalClaim = new Claim("t1", "v1", "vt", "i", "oi");
 
-                ClaimDataRecord actual = null;
-                Action act = () => actual = ClaimDataRecord.FromClaim(minimalClaim);
+                ClaimDataRecordV2 actual = null;
+                Action act = () => actual = ClaimDataRecordV2.FromClaim(minimalClaim);
                 act.Should().NotThrow();
 
-                var expected = new ClaimDataRecord {
+                var expected = new ClaimDataRecordV2 {
                     Type = "t1",
                     Value = "v1",
                     OriginalIssuer = "oi",
@@ -88,11 +88,11 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public void GivenMinimalClaim_DoesNotThrow() {
                 var minimalClaim = new Claim("t1", "v1");
 
-                ClaimDataRecord actual = null;
-                Action act = () => actual = ClaimDataRecord.FromClaim(minimalClaim);
+                ClaimDataRecordV2 actual = null;
+                Action act = () => actual = ClaimDataRecordV2.FromClaim(minimalClaim);
                 act.Should().NotThrow();
 
-                var expected = new ClaimDataRecord {
+                var expected = new ClaimDataRecordV2 {
                     Type = "t1",
                     Value = "v1",
                     OriginalIssuer = "LOCAL AUTHORITY",

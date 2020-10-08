@@ -4,13 +4,13 @@ using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     [BsonIgnoreExtraElements]
-    internal class ClientDataRecord {
+    internal class ClientDataRecordV2 {
         [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
         public string Id { get; set; }
 
         public string Name { get; set; }
-        public SignatureAlgorithmDataRecord SignatureAlgorithm { get; set; }
-        public ClaimDataRecord[] Claims { get; set; }
+        public SignatureAlgorithmDataRecordV2 SignatureAlgorithm { get; set; }
+        public ClaimDataRecordV2[] Claims { get; set; }
         public double? ClockSkew { get; set; }
         public string RequestTargetEscaping { get; set; }
         public int? V { get; set; }
@@ -18,5 +18,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
         [Obsolete("Please use the " + nameof(NonceLifetime) + " property instead.")]
         public double? NonceExpiration  { get; set; }
+
+        public int GetV() {
+            return 2;
+        }
     }
 }

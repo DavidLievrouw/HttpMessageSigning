@@ -184,8 +184,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     new Claim("scope", "HttpMessageSigning"));
                 await _sut.Register(client);
                 
-                var collection = Database.GetCollection<ClientDataRecord>(_collectionName);
-                var findResult = await collection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == client.Id));
+                var collection = Database.GetCollection<ClientDataRecordV2>(_collectionName);
+                var findResult = await collection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == client.Id));
                 var loaded = await findResult.SingleAsync();
 
                 loaded.SignatureAlgorithm.Parameter.Should().NotBeNullOrEmpty();
@@ -208,8 +208,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     new Claim("scope", "HttpMessageSigning"));
                 await _sut.Register(client);
                 
-                var collection = Database.GetCollection<ClientDataRecord>(_collectionName);
-                var findResult = await collection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == client.Id));
+                var collection = Database.GetCollection<ClientDataRecordV2>(_collectionName);
+                var findResult = await collection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == client.Id));
                 var loaded = await findResult.SingleAsync();
 
                 loaded.V.Should().NotBeNull();
@@ -233,8 +233,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                         new Claim("scope", "HttpMessageSigning"));
                     await sut.Register(client);
 
-                    var collection = Database.GetCollection<ClientDataRecord>(_collectionName);
-                    var findResult = await collection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == client.Id));
+                    var collection = Database.GetCollection<ClientDataRecordV2>(_collectionName);
+                    var findResult = await collection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == client.Id));
                     var loaded = await findResult.SingleAsync();
 
                     loaded.SignatureAlgorithm.Parameter.Should().NotBeNullOrEmpty();

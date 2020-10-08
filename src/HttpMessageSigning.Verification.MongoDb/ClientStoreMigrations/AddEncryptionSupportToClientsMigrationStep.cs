@@ -6,23 +6,23 @@ using MongoDB.Driver;
 namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
     internal class AddEncryptionSupportToClientsMigrationStep : IClientStoreMigrationStep {
         private readonly MongoDbClientStoreSettings _mongoDbClientStoreSettings;
-        private readonly Lazy<IMongoCollection<ClientDataRecord>> _lazyCollection;
+        private readonly Lazy<IMongoCollection<ClientDataRecordV2>> _lazyCollection;
 
         public AddEncryptionSupportToClientsMigrationStep(IMongoDatabaseClientProvider clientProvider, MongoDbClientStoreSettings mongoDbClientStoreSettings) {
             if (clientProvider == null) throw new ArgumentNullException(nameof(clientProvider));
             
             _mongoDbClientStoreSettings = mongoDbClientStoreSettings ?? throw new ArgumentNullException(nameof(mongoDbClientStoreSettings));
 
-            _lazyCollection = new Lazy<IMongoCollection<ClientDataRecord>>(() => {
+            _lazyCollection = new Lazy<IMongoCollection<ClientDataRecordV2>>(() => {
                 var database = clientProvider.Provide();
-                return database.GetCollection<ClientDataRecord>(mongoDbClientStoreSettings.CollectionName);
+                return database.GetCollection<ClientDataRecordV2>(mongoDbClientStoreSettings.CollectionName);
             });
         }
 
         public async Task Run() {
             var collection = _lazyCollection.Value;
             
-            var allClients = await collection.FindAsync(FilterDefinition<ClientDataRecord>.Empty);
+            var allClients = await collection.FindAsync(FilterDefinition<ClientDataRecordV2>.Empty);
             var clientsToMigrate = (await allClients.ToListAsync())
                 .Where(c => !c.V.HasValue || c.V.Value < 2)
                 .ToList();
@@ -53,7 +53,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 #pragma warning restore 618
                 
                 // Update version
-                clientToMigrate.V = 2;
+                clientToMigrate.V = clientToMigrate.GetV();
 
                 // Store migrated client
                 await collection.ReplaceOneAsync(_ => _.Id == clientToMigrate.Id, clientToMigrate, new ReplaceOptions { IsUpsert = false });

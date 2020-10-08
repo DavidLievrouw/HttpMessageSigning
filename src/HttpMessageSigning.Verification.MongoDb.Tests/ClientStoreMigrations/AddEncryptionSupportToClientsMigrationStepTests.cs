@@ -24,26 +24,26 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
         }
 
         public class Run : AddEncryptionSupportToClientsMigrationStepTests {
-            private readonly IMongoCollection<ClientDataRecord> _mongoCollection;
+            private readonly IMongoCollection<ClientDataRecordV2> _mongoCollection;
 
             public Run(MongoSetup mongoSetup)
                 : base(mongoSetup) {
-                _mongoCollection = Database.GetCollection<ClientDataRecord>(_settings.CollectionName);
-                _mongoCollection.DeleteMany(FilterDefinition<ClientDataRecord>.Empty);
+                _mongoCollection = Database.GetCollection<ClientDataRecordV2>(_settings.CollectionName);
+                _mongoCollection.DeleteMany(FilterDefinition<ClientDataRecordV2>.Empty);
             }
 
             [Fact]
             public async Task WhenThereAreNoClients_DoesNothing() {
                 await _sut.Run();
 
-                var findResult = await _mongoCollection.FindAsync<ClientDataRecord>(FilterDefinition<ClientDataRecord>.Empty);
+                var findResult = await _mongoCollection.FindAsync<ClientDataRecordV2>(FilterDefinition<ClientDataRecordV2>.Empty);
                 var clients = await findResult.ToListAsync();
                 clients.Should().BeEmpty();
             }
 
             [Fact]
             public async Task DoesNotMigrateUpToDateClients() {
-                var upToDateClient = new ClientDataRecord {
+                var upToDateClient = new ClientDataRecordV2 {
                     Id = "c1",
                     Name = "Up-to-date client",
                     ClockSkew = 60,
@@ -51,7 +51,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 #pragma warning disable 618
                     NonceExpiration = null,
 #pragma warning restore 618
-                    SignatureAlgorithm = new SignatureAlgorithmDataRecord {
+                    SignatureAlgorithm = new SignatureAlgorithmDataRecordV2 {
                         Type = "HMAC",
                         Parameter = "s3cr37",
                         HashAlgorithm = "SHA384",
@@ -60,7 +60,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
                     V = 2,
                     RequestTargetEscaping = "RFC3986",
                     Claims = new[] {
-                        ClaimDataRecord.FromClaim(new Claim("company", "Dalion"))
+                        ClaimDataRecordV2.FromClaim(new Claim("company", "Dalion"))
                     }
                 };
 
@@ -68,7 +68,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 
                 await _sut.Run();
 
-                var findResult = await _mongoCollection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == upToDateClient.Id));
+                var findResult = await _mongoCollection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == upToDateClient.Id));
                 var loaded = await findResult.SingleAsync();
 
                 loaded.Should().BeEquivalentTo(upToDateClient);
@@ -76,7 +76,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 
             [Fact]
             public async Task MigratesApplicableClientsAndEncryptsParameters() {
-                var upToDateClient = new ClientDataRecord {
+                var upToDateClient = new ClientDataRecordV2 {
                     Id = "c2",
                     Name = "Up-to-date client",
                     ClockSkew = 60,
@@ -84,7 +84,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 #pragma warning disable 618
                     NonceExpiration = null,
 #pragma warning restore 618
-                    SignatureAlgorithm = new SignatureAlgorithmDataRecord {
+                    SignatureAlgorithm = new SignatureAlgorithmDataRecordV2 {
                         Type = "HMAC",
                         Parameter = "s3cr37",
                         HashAlgorithm = "SHA384",
@@ -93,7 +93,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
                     V = 2,
                     RequestTargetEscaping = "RFC3986",
                     Claims = new[] {
-                        ClaimDataRecord.FromClaim(new Claim("company", "Dalion"))
+                        ClaimDataRecordV2.FromClaim(new Claim("company", "Dalion"))
                     }
                 };
                 await _mongoCollection.InsertOneAsync(upToDateClient);
@@ -129,15 +129,15 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 
                 await _sut.Run();
 
-                var findUpToDateResult = await _mongoCollection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == upToDateClient.Id));
+                var findUpToDateResult = await _mongoCollection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == upToDateClient.Id));
                 var loadedUpToDate = await findUpToDateResult.SingleAsync();
 
                 loadedUpToDate.Should().BeEquivalentTo(upToDateClient);
 
-                var findLegacyResult = await _mongoCollection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == "c3"));
+                var findLegacyResult = await _mongoCollection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == "c3"));
                 var loadedLegacy = await findLegacyResult.SingleAsync();
 
-                var expectedMigratedClient = new ClientDataRecord {
+                var expectedMigratedClient = new ClientDataRecordV2 {
                     Id = "c3",
                     Name = "Legacy client",
                     ClockSkew = 60.0,
@@ -145,7 +145,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 #pragma warning disable 618
                     NonceExpiration = null,
 #pragma warning restore 618
-                    SignatureAlgorithm = new SignatureAlgorithmDataRecord {
+                    SignatureAlgorithm = new SignatureAlgorithmDataRecordV2 {
                         Type = "HMAC",
                         Parameter = "s3cr3t",
                         HashAlgorithm = "SHA384",
@@ -154,8 +154,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
                     V = 2,
                     RequestTargetEscaping = "RFC3986",
                     Claims = new[] {
-                        ClaimDataRecord.FromClaim(new Claim("company", "Dalion")),
-                        ClaimDataRecord.FromClaim(new Claim("scope", "HttpMessageSigning"))
+                        ClaimDataRecordV2.FromClaim(new Claim("company", "Dalion")),
+                        ClaimDataRecordV2.FromClaim(new Claim("scope", "HttpMessageSigning"))
                     }
                 };
                 loadedLegacy.Should().BeEquivalentTo(expectedMigratedClient, options => options.Excluding(_ => _.SignatureAlgorithm.Parameter));
@@ -197,10 +197,10 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 
                 await _sut.Run();
 
-                var findLegacyResult = await _mongoCollection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == "c4"));
+                var findLegacyResult = await _mongoCollection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == "c4"));
                 var loadedLegacy = await findLegacyResult.SingleAsync();
 
-                var expectedMigratedClient = new ClientDataRecord {
+                var expectedMigratedClient = new ClientDataRecordV2 {
                     Id = "c4",
                     Name = "Legacy client",
                     ClockSkew = 60.0,
@@ -208,7 +208,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 #pragma warning disable 618
                     NonceExpiration = null,
 #pragma warning restore 618
-                    SignatureAlgorithm = new SignatureAlgorithmDataRecord {
+                    SignatureAlgorithm = new SignatureAlgorithmDataRecordV2 {
                         Type = "HMAC",
                         Parameter = "s3cr3t",
                         HashAlgorithm = "SHA384",
@@ -217,8 +217,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
                     V = 2,
                     RequestTargetEscaping = "RFC3986",
                     Claims = new[] {
-                        ClaimDataRecord.FromClaim(new Claim("company", "Dalion")),
-                        ClaimDataRecord.FromClaim(new Claim("scope", "HttpMessageSigning"))
+                        ClaimDataRecordV2.FromClaim(new Claim("company", "Dalion")),
+                        ClaimDataRecordV2.FromClaim(new Claim("scope", "HttpMessageSigning"))
                     }
                 };
                 loadedLegacy.Should().BeEquivalentTo(expectedMigratedClient);
@@ -257,10 +257,10 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 
                 await _sut.Run();
 
-                var findLegacyResult = await _mongoCollection.FindAsync<ClientDataRecord>(new ExpressionFilterDefinition<ClientDataRecord>(r => r.Id == "c5"));
+                var findLegacyResult = await _mongoCollection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == "c5"));
                 var loadedLegacy = await findLegacyResult.SingleAsync();
 
-                var expectedMigratedClient = new ClientDataRecord {
+                var expectedMigratedClient = new ClientDataRecordV2 {
                     Id = "c5",
                     Name = "Legacy client",
                     ClockSkew = 60.0,
@@ -268,7 +268,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 #pragma warning disable 618
                     NonceExpiration = null,
 #pragma warning restore 618
-                    SignatureAlgorithm = new SignatureAlgorithmDataRecord {
+                    SignatureAlgorithm = new SignatureAlgorithmDataRecordV2 {
                         Type = "RSA",
                         Parameter = "s3cr3t",
                         HashAlgorithm = "SHA384",
@@ -277,8 +277,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
                     V = 2,
                     RequestTargetEscaping = "RFC3986",
                     Claims = new[] {
-                        ClaimDataRecord.FromClaim(new Claim("company", "Dalion")),
-                        ClaimDataRecord.FromClaim(new Claim("scope", "HttpMessageSigning"))
+                        ClaimDataRecordV2.FromClaim(new Claim("company", "Dalion")),
+                        ClaimDataRecordV2.FromClaim(new Claim("scope", "HttpMessageSigning"))
                     }
                 };
                 loadedLegacy.Should().BeEquivalentTo(expectedMigratedClient);
