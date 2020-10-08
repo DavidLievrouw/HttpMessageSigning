@@ -204,17 +204,6 @@ namespace Dalion.HttpMessageSigning.Verification {
                 act.Should().NotThrow();
                 client.ClockSkew.Should().Be(ClientOptions.Default.ClockSkew);
             }
-
-            [Theory]
-            [InlineData("_version")]
-            public void DoesNotAcceptProhibitedIds(string prohibitedId) {
-                Action act = () => new Client(
-                    (KeyId) prohibitedId, "Unit test app",
-                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
-                    ClientOptions.Default);
-
-                act.Should().Throw<ArgumentException>();
-            }
         }
 
         public class CreateWithSignatureAlgorithm : ClientTests {

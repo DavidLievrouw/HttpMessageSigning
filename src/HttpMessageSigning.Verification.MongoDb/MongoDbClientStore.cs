@@ -35,6 +35,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             await _migrator.Migrate();
             
+            if (IsProhibitedId(client.Id)) throw new ArgumentException($"The id value of the specified {nameof(Client)} is prohibited ({client.Id}).", nameof(client));
+            
             var record = new ClientDataRecordV2 {
                 Id = client.Id,
                 Name = client.Name,
@@ -55,6 +57,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             if (clientId == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(clientId));
             
             await _migrator.Migrate();
+
+            if (IsProhibitedId(clientId)) return null;
             
             var collection = _lazyCollection.Value;
 
@@ -88,5 +92,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 requestTargetEscaping,
                 match.Claims?.Select(c => c.ToClaim())?.ToArray());
         }
+        
+        private static bool IsProhibitedId(KeyId id) {
+            return ProhibitedIds.Contains(id);
+        }
+
+        private static readonly KeyId[] ProhibitedIds = {
+            KeyId.Empty,
+            "_version"
+        };
     }
 }

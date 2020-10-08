@@ -50,6 +50,19 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 act.Should().Throw<ArgumentNullException>();
             }
 
+            [Theory]
+            [InlineData("_version")]
+            public void DoesNotAcceptProhibitedIds(string prohibitedId) {
+                var client = new Client(
+                    (KeyId) prohibitedId, "Unit test app",
+                    new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
+                    ClientOptions.Default);
+
+                Func<Task> act = () => _sut.Register(client);
+                
+                act.Should().Throw<ArgumentException>();
+            }
+            
             [Fact]
             public async Task PerformsMigrations() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
@@ -262,6 +275,44 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
                 A.CallTo(() => _migrator.Migrate())
                     .MustHaveHappened();
+            }
+            
+            [Theory]
+            [InlineData("_version")]
+            public async Task WhenProhibitedIdIsSpecified_ReturnsNull(string prohibitedId) {
+                var collection = Database.GetCollection<BsonDocument>(_collectionName);
+                var legacyJson = @"{ 
+    ""_id"" : """ + prohibitedId + @""", 
+    ""Name"" : ""app one"", 
+    ""SignatureAlgorithm"" : {
+        ""Type"" : ""HMAC"", 
+        ""Parameter"" : ""s3cr3t"", 
+        ""HashAlgorithm"" : ""SHA384""
+    }, 
+    ""Claims"" : [
+        {
+            ""Issuer"" : ""LOCAL AUTHORITY"", 
+            ""OriginalIssuer"" : ""LOCAL AUTHORITY"", 
+            ""Type"" : ""company"", 
+            ""Value"" : ""Dalion"", 
+            ""ValueType"" : ""http://www.w3.org/2001/XMLSchema#string""
+        }, 
+        {
+            ""Issuer"" : ""LOCAL AUTHORITY"", 
+            ""OriginalIssuer"" : ""LOCAL AUTHORITY"", 
+            ""Type"" : ""scope"", 
+            ""Value"" : ""HttpMessageSigning"", 
+            ""ValueType"" : ""http://www.w3.org/2001/XMLSchema#string""
+        }
+    ]
+}";
+                var legacyDocument = BsonSerializer.Deserialize<BsonDocument>(legacyJson);
+                await collection.InsertOneAsync(legacyDocument);
+                
+                Client actual = null;
+                Func<Task> act = async () => actual = await _sut.Get(prohibitedId);
+                act.Should().NotThrow();
+                actual.Should().BeNull();
             }
             
             [Fact]
