@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations;
+using Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V0002;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 

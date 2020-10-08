@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
+namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V0002 {
     internal class AddEncryptionSupportToClientsMigrationStep : IClientStoreMigrationStep {
         private readonly MongoDbClientStoreSettings _mongoDbClientStoreSettings;
         private readonly Lazy<IMongoCollection<ClientDataRecordV2>> _lazyCollection;
