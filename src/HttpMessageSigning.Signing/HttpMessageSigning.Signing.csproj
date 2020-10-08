@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Signing</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Signing</RootNamespace>
         <DebugType>portable</DebugType>
@@ -47,6 +47,11 @@
     </ItemGroup>
     
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.2,)" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[3.1.2,)" />
+    </ItemGroup>
+    
+    <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.2,)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[3.1.2,)" />
     </ItemGroup>

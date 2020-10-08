@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.MongoDb</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification.MongoDb</RootNamespace>
         <DebugType>portable</DebugType>
@@ -49,6 +49,10 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
         <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.2,)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
