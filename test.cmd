@@ -13,4 +13,6 @@ dotnet test %SRCDIR%\%PRODUCT%.Verification.MongoDb.Tests\%PRODUCT%.Verification
 dotnet test %SRCDIR%\%PRODUCT%.SystemTests\%PRODUCT%.SystemTests.csproj
 dotnet test %SRCDIR%\Conformance.Tests\Conformance.Tests.csproj
 
+if "%1" == "nopause" goto end
 pause
+:end

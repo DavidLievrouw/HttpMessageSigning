@@ -120,4 +120,6 @@ if errorlevel 1 (
    exit /b %errorlevel%
 )
 
+if "%1" == "nopause" goto end
 pause
+:end

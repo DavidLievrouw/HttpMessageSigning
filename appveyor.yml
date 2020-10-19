@@ -20,23 +20,11 @@ build_script:
     
     Update-AppveyorBuild -Version $ProductVersion
     
-    dotnet restore ./src/$env:PRODUCT.sln
-    
-    dotnet build ./src/$env:PRODUCT/$env:PRODUCT.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="$env:DISTPATH\\" -p:ContinuousIntegrationBuild="true"
-    
-    dotnet build ./src/$env:PRODUCT.Signing/$env:PRODUCT.Signing.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="$env:DISTPATH\\" -p:ContinuousIntegrationBuild="true"
-    
-    dotnet build ./src/$env:PRODUCT.Verification/$env:PRODUCT.Verification.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="$env:DISTPATH\\" -p:ContinuousIntegrationBuild="true"
-    
-    dotnet build ./src/$env:PRODUCT.Verification.AspNetCore/$env:PRODUCT.Verification.AspNetCore.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="$env:DISTPATH\\" -p:ContinuousIntegrationBuild="true"
-    
-    dotnet build ./src/$env:PRODUCT.Verification.MongoDb/$env:PRODUCT.Verification.MongoDb.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="$env:DISTPATH\\" -p:ContinuousIntegrationBuild="true"
-    
-    dotnet build ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="$env:DISTPATH\\" -p:ContinuousIntegrationBuild="true"
+    & "./build.cmd" nopause
 
 test_script:
 - cmd: >-
-    & "./coverage.cmd"
+    & "./coverage.cmd" nopause
 
     dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
       
