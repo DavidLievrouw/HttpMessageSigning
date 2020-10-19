@@ -35,46 +35,10 @@ build_script:
     dotnet build ./src/$env:PRODUCT.Verification.Owin/$env:PRODUCT.Verification.Owin.csproj --no-restore --configuration $env:CONFIGURATION -p:BaseOutputPath="$env:DISTPATH\\" -p:ContinuousIntegrationBuild="true"
 
 test_script:
-- ps: >-
-    if (Test-Path ./src/coverage.xml -PathType Leaf) { DEL ./src/coverage.xml }
-
-    DEL ./src/coverage-*.json
-    
-    dotnet test ./src/$env:PRODUCT.Tests/$env:PRODUCT.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.$env:PRODUCT*]*" /p:Exclude="[*.Test]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage-core.json" /maxcpucount:1
-    
-    if (0 -ne $LastExitCode) { throw "One or more tests failed." }
-        
-    dotnet test ./src/$env:PRODUCT.Signing.Tests/$env:PRODUCT.Signing.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.$env:PRODUCT*]*" /p:Exclude="[*.Test]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage-signing.json" /p:MergeWith="../coverage-core.json" /maxcpucount:1
-    
-    if (0 -ne $LastExitCode) { throw "One or more tests failed." }
-    
-    dotnet test ./src/$env:PRODUCT.Verification.Tests/$env:PRODUCT.Verification.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.$env:PRODUCT*]*" /p:Exclude="[*.Test]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage-verification.json" /p:MergeWith="../coverage-signing.json" /maxcpucount:1
-    
-    if (0 -ne $LastExitCode) { throw "One or more tests failed." }
-        
-    dotnet test ./src/Conformance.Tests/Conformance.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.$env:PRODUCT*]*" /p:Exclude="[*.Tests]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage-conformance.json" /p:MergeWith="../coverage-verification.json" /maxcpucount:1
-    
-    if (0 -ne $LastExitCode) { throw "One or more tests failed." }
-    
-    dotnet test ./src/$env:PRODUCT.SystemTests/$env:PRODUCT.SystemTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.$env:PRODUCT*]*" /p:Exclude="[*.Test]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage-system.json" /p:MergeWith="../coverage-conformance.json" /maxcpucount:1
-    
-    if (0 -ne $LastExitCode) { throw "One or more tests failed." }
-    
-    dotnet test ./src/$env:PRODUCT.Verification.AspNetCore.Tests/$env:PRODUCT.Verification.AspNetCore.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.$env:PRODUCT*]*" /p:Exclude="[*.Test]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage-aspnetcore.json" /p:MergeWith="../coverage-system.json" /maxcpucount:1
-    
-    if (0 -ne $LastExitCode) { throw "One or more tests failed." }
-        
-    dotnet test ./src/$env:PRODUCT.Verification.MongoDb.Tests/$env:PRODUCT.Verification.MongoDb.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.$env:PRODUCT*]*" /p:Exclude="[*.Test]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage-mongodb.json" /p:MergeWith="../coverage-aspnetcore.json" /maxcpucount:1
-    
-    if (0 -ne $LastExitCode) { throw "One or more tests failed." }
-        
-    dotnet test ./src/$env:PRODUCT.Verification.Owin.Tests/$env:PRODUCT.Verification.Owin.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:UseSourceLink=true /p:Include="[Dalion.$env:PRODUCT.Verification.Owin*]*" /p:Exclude="[*.Test]*" /p:ExcludeByAttribute=\""""Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\"""" /p:CoverletOutput="../coverage.xml" /p:MergeWith="../coverage-mongodb.json" /maxcpucount:1
-    
-    if (0 -ne $LastExitCode) { throw "One or more tests failed." }
+- cmd: >-
+    & "./coverage.cmd"
 
     dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
-    
-    if (0 -ne $LastExitCode) { throw "One or more tests failed." }
       
     $coveralls = ".\tools\csmacnz.coveralls.exe"
     
