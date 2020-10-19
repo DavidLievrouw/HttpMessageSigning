@@ -24,19 +24,17 @@ build_script:
 
 test_script:
 - cmd: >-
+    @echo off
+    
     dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
       
     SET COVERALLS=.\tools\csmacnz.coveralls.exe
     
-    @echo off
-    
-    SET DIR=%~dp0%
+    SET DIR=.
     
     SET SRCDIR=%DIR%\src
     
     IF EXIST %SRCDIR%\coverage.xml DEL /F %SRCDIR%\coverage.xml
-    
-    DEL /F %SRCDIR%\coverage-*.json
     
     dotnet test %SRCDIR%\HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj --framework net472 --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude=\"[*Test*]*,[Dalion.HttpMessageSigning.TestUtils]*\" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-core.json" /maxcpucount:1
     
