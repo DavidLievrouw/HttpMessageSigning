@@ -5,6 +5,8 @@ SET SRCDIR=%DIR%\src
 SET DISTDIR=%DIR%\dist
 SET PRODUCT=HttpMessageSigning
 
+ECHO Starting build
+
 RD /S /Q %DISTDIR%
 
 dotnet restore %SRCDIR%\%PRODUCT%.sln
