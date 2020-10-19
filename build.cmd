@@ -5,9 +5,7 @@ SET SRCDIR=%DIR%\src
 SET DISTDIR=%DIR%\dist
 SET PRODUCT=HttpMessageSigning
 
-ECHO Starting build
-
-RD /S /Q %DISTDIR%
+IF EXIST %DISTDIR% RD /S /Q %DISTDIR%
 
 dotnet restore %SRCDIR%\%PRODUCT%.sln
 dotnet build %SRCDIR%\%PRODUCT%\%PRODUCT%.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"

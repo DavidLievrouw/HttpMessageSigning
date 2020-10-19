@@ -20,11 +20,11 @@ build_script:
     
     Update-AppveyorBuild -Version $ProductVersion
     
-    & "$env:APPVEYOR_BUILD_FOLDER/build.cmd" nopause
+    & "./build.cmd" nopause
 
 test_script:
 - cmd: >-
-    & "$env:APPVEYOR_BUILD_FOLDER/coverage.cmd" nopause
+    & "./coverage.cmd" nopause
 
     dotnet tool install coveralls.net --version 1.0.0 --tool-path tools
       

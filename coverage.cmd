@@ -3,7 +3,7 @@ cls
 SET DIR=%~dp0%
 SET SRCDIR=%DIR%\src
 
-if exist %SRCDIR%\coverage.xml DEL /F %SRCDIR%\coverage.xml
+IF EXIST %SRCDIR%\coverage.xml DEL /F %SRCDIR%\coverage.xml
 DEL /F %SRCDIR%\coverage-*.json
 
 dotnet test %SRCDIR%\HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj --framework net472 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude=\"[*Test*]*,[Dalion.HttpMessageSigning.TestUtils]*\" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-core.json" /maxcpucount:1
