@@ -20,7 +20,7 @@
             <InformationalVersion>$(ProductVersion)</InformationalVersion>
         </PropertyGroup>
     </Target>
-
+    
     <ItemGroup>
         <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
         <PackageReference Include="CompareNETObjects" Version="4.65.0" />
@@ -44,9 +44,6 @@
     <ItemGroup>
         <ProjectReference Include="..\HttpMessageSigning.Signing\HttpMessageSigning.Signing.csproj" />
         <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
-        <ProjectReference Include="..\HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj" />
-        <ProjectReference Include="..\HttpMessageSigning.Verification\HttpMessageSigning.Verification.csproj" />
-        <ProjectReference Include="..\HttpMessageSigning\HttpMessageSigning.csproj" />
     </ItemGroup>
 
     <ItemGroup>
