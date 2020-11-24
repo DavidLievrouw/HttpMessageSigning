@@ -53,20 +53,15 @@ namespace Dalion.HttpMessageSigning.ExtensionPoints {
 
         private void ConfigureServices(IServiceCollection services) {
             services
-                .AddHttpMessageSigning(
-                    new KeyId("e0e8dcd638334c409e1b88daf821d135"),
-                    provider => new SigningSettings {
-                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("yumACY64r%hm"),
-                        DigestHashAlgorithm = HashAlgorithmName.SHA256,
-                        Expires = TimeSpan.FromMinutes(1),
-                        EnableNonce = true,
-                        Headers = new[] {
-                            (HeaderName) "Dalion-App-Id"
-                        },
-                        Events = new RequestSigningEvents {
-                            OnRequestSigning = OnRequestSigning
-                        }
-                    })
+                .AddHttpMessageSigning()
+                .UseKeyId("e0e8dcd638334c409e1b88daf821d135")
+                .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("yumACY64r%hm"))
+                .UseDigestAlgorithm(HashAlgorithmName.SHA256)
+                .UseExpires(TimeSpan.FromMinutes(1))
+                .UseNonce()
+                .UseHeaders((HeaderName)"Dalion-App-Id")
+                .UseOnRequestSigningEvent(OnRequestSigning)
+                .Services
                 .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(

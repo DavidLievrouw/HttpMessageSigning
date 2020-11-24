@@ -95,7 +95,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// <summary>Configure a hook that are called during HTTP message signing.</summary>
         /// <param name="onSigningStringComposed">The hook that is called during HTTP message signing.</param>
         /// <returns>A reference to the <see cref="IHttpMessageSigningBuilder" /> that can be used to continue configuration.</returns>
-        IHttpMessageSigningBuilder UseOnSigningStringComposed(RequestSigningEvents.OnSigningStringComposedDelegate onSigningStringComposed);
+        IHttpMessageSigningBuilder UseOnSigningStringComposedEvent(RequestSigningEvents.OnSigningStringComposedDelegate onSigningStringComposed);
         
         /// <summary>Configure a hook that are called during HTTP message signing.</summary>
         /// <param name="onSignatureCreated">The hook that is called during HTTP message signing.</param>

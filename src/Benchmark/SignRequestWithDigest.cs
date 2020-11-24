@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Net.Mime;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,17 +24,12 @@ namespace Benchmark {
             var cert = new X509Certificate2(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
             
             var serviceProvider = new ServiceCollection()
-                .AddHttpMessageSigning(
-                    keyId,
-                    provider => new SigningSettings {
-                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("yumACY64r%hm"),
-                        DigestHashAlgorithm = HashAlgorithmName.SHA256,
-                        EnableNonce = true,
-                        Expires = TimeSpan.FromMinutes(1),
-                        Headers = new [] {
-                            (HeaderName)"Dalion-App-Id"
-                        }
-                    })
+                .AddHttpMessageSigning()
+                .UseKeyId(keyId)
+                .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("yumACY64r%hm"))
+                .UseExpires(TimeSpan.FromMinutes(1))
+                .UseHeaders((HeaderName)"Dalion-App-Id")
+                .Services
                 .BuildServiceProvider();
             var requestSignerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>();
             _requestSigner = requestSignerFactory.CreateFor(keyId);

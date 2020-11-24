@@ -161,20 +161,15 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
             var keyId = new KeyId("e0e8dcd638334c409e1b88daf821d135");
             
             services
-                .AddHttpMessageSigning(
-                    keyId,
-                    provider => new SigningSettings {
-                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("yumACY64r%hm"),
-                        DigestHashAlgorithm = HashAlgorithmName.SHA256,
-                        Expires = TimeSpan.FromMinutes(1),
-                        Headers = new[] {
-                            (HeaderName) "Dalion-App-Id"
-                        },
-                        Events = new RequestSigningEvents {
-                            OnRequestSigned = OnRequestSigned,
-                            OnSigningStringComposed = OnSignatureStringComposed
-                        }
-                    })
+                .AddHttpMessageSigning()
+                .UseKeyId(keyId)
+                .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("yumACY64r%hm"))
+                .UseDigestAlgorithm(HashAlgorithmName.SHA256)
+                .UseExpires(TimeSpan.FromMinutes(1))
+                .UseHeaders((HeaderName)"Dalion-App-Id")
+                .UseOnSigningStringComposedEvent(OnSigningStringComposed)
+                .UseOnRequestSignedEvent(OnRequestSigned)
+                .Services
                 .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
@@ -194,7 +189,7 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
                 .AddTransient<HttpRequestSigningHandler>();
         }
 
-        private Task OnSignatureStringComposed(HttpRequestMessage request, ref string signatureString) {
+        private Task OnSigningStringComposed(HttpRequestMessage request, ref string signatureString) {
             _signatureString = signatureString;
             return Task.CompletedTask;
         }

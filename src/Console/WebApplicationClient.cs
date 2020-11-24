@@ -34,12 +34,10 @@ namespace Console {
         public static void ConfigureServices(IServiceCollection services) {
             services
                 .AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
-                .AddHttpMessageSigning(
-                    new KeyId(KeyId),
-                    provider => new SigningSettings {
-                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning(Secret, HashAlgorithmName.SHA512),
-                        DigestHashAlgorithm = HashAlgorithmName.SHA256
-                    });
+                .AddHttpMessageSigning()
+                .UseKeyId(KeyId)
+                .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(Secret, HashAlgorithmName.SHA512))
+                .UseDigestAlgorithm(HashAlgorithmName.SHA256);
         }
 
         private static async Task SendGetRequest(IRequestSignerFactory requestSignerFactory, ILogger<WebApplicationClient> logger) {

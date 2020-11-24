@@ -34,11 +34,10 @@ namespace Console {
             
             services
                 .AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
-                .AddHttpMessageSigning(
-                    new KeyId("4d8f14b6c4184dc1b677c88a2b60bfd2"),
-                    provider => new SigningSettings {
-                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning(cert)
-                    })
+                .AddHttpMessageSigning()
+                .UseKeyId("4d8f14b6c4184dc1b677c88a2b60bfd2")
+                .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(cert))
+                .Services
                 .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(

@@ -241,11 +241,10 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
             var publicKey = rsa.ExportParameters(includePrivateParameters: false);
             
             services
-                .AddHttpMessageSigning(
-                    new KeyId("4d8f14b6c4184dc1b677c88a2b60bfd2"),
-                    provider => new SigningSettings {
-                        SignatureAlgorithm = SignatureAlgorithm.CreateForSigning(privateKey)
-                    })
+                .AddHttpMessageSigning()
+                .UseKeyId("4d8f14b6c4184dc1b677c88a2b60bfd2")
+                .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(privateKey))
+                .Services
                 .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(

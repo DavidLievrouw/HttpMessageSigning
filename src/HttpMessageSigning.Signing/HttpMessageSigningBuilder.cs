@@ -117,7 +117,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         }
 
         [ExcludeFromCodeCoverage]
-        public IHttpMessageSigningBuilder UseOnSigningStringComposed(RequestSigningEvents.OnSigningStringComposedDelegate onSigningStringComposed) {
+        public IHttpMessageSigningBuilder UseOnSigningStringComposedEvent(RequestSigningEvents.OnSigningStringComposedDelegate onSigningStringComposed) {
             if (_signingSettings.Events == null) _signingSettings.Events = new RequestSigningEvents();
             _signingSettings.Events.OnSigningStringComposed = onSigningStringComposed;
             return this;
