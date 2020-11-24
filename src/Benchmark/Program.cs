@@ -12,9 +12,9 @@ namespace Benchmark {
 
         internal static async Task Main(string[] args) {
             await new SignRequestWithoutDigest().SignABunchOfTimes();
-            //await new SignRequestWithDigest().SignABunchOfTimes();
-            //await new VerifyRequestWithoutDigest().VerifyABunchOfTimes();
-            //await new VerifyRequestWithDigest().VerifyABunchOfTimes();
+            await new SignRequestWithDigest().SignABunchOfTimes();
+            await new VerifyRequestWithoutDigest().VerifyABunchOfTimes();
+            await new VerifyRequestWithDigest().VerifyABunchOfTimes();
         }
     }
 }

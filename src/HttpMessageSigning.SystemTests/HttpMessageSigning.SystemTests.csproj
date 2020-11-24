@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;netcoreapp2.1;netcoreapp3.1</TargetFrameworks>
+        <TargetFrameworks>net472;netcoreapp2.1;netcoreapp3.1;net5</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.SystemTests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -29,6 +29,9 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP3_1</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net5'">
+        <DefineConstants>NETCORE;NETSTANDARD;NET5</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -60,6 +63,13 @@
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='net5'">
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
         <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
     </ItemGroup>
 
