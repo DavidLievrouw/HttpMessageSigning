@@ -16,7 +16,7 @@ namespace Conformance {
 
         public Signer() {
             var serviceProvider = new ServiceCollection()
-                .AddHttpMessageSigning()
+                .AddHttpMessageSigning().Services
                 .BuildServiceProvider();
             _requestSignerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>();
         }

@@ -13,7 +13,7 @@ namespace Conformance {
 
         public Canonicalizer() {
             var serviceProvider = new ServiceCollection()
-                .AddHttpMessageSigning()
+                .AddHttpMessageSigning().Services
                 .BuildServiceProvider();
             _requestSignerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>();
         }

@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning.Sign {
     public static class Signer {
         public static async Task<string> Run(SignOptions options) {
             var serviceProvider = new ServiceCollection()
-                .AddHttpMessageSigning()
+                .AddHttpMessageSigning().Services
                 .BuildServiceProvider();
             var requestSignerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>();
             

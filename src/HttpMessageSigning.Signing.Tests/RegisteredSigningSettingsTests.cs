@@ -19,12 +19,6 @@ namespace Dalion.HttpMessageSigning.Signing {
 
         public class Constructor : RegisteredSigningSettingsTests {
             [Fact]
-            public void DoesNotAcceptEmptyKeyIds() {
-                Action act = () => new RegisteredSigningSettings(KeyId.Empty, _signingSettings);
-                act.Should().Throw<ArgumentException>();
-            }
-            
-            [Fact]
             public void DoesNotAcceptNullSigningSettings() {
                 Action act = () => new RegisteredSigningSettings(_keyId, null);
                 act.Should().Throw<ArgumentNullException>();

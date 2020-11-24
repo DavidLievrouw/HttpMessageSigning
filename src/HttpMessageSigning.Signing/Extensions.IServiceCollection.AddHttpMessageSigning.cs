@@ -6,43 +6,25 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Signing {
     public static partial class Extensions {
-        /// <summary>
-        ///     Adds http message signing registrations to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
+        /// <summary>Adds http message signing registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
+        /// <returns>The <see cref="IHttpMessageSigningBuilder" /> that can be used to configure the signing settings.</returns>
         [ExcludeFromCodeCoverage]
-        public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services) {
+        public static IHttpMessageSigningBuilder AddHttpMessageSigning(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
-            return services.AddHttpMessageSigningPlumbing();
+            services = services.AddHttpMessageSigningPlumbing();
+            
+            return new HttpMessageSigningBuilder(services);
         }
         
-        /// <summary>
-        ///     Adds http message signing registrations to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="keyId">
-        ///     The <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client
-        ///     application.
-        /// </param>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
+        /// <summary>Adds http message signing registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="keyId">The <see cref="KeyId" /> that the server can use to identify the client application.</param>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="signingSettings">The signing settings.</param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
+        [Obsolete("Please use the overload without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, KeyId keyId, SigningSettings signingSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
@@ -50,24 +32,13 @@ namespace Dalion.HttpMessageSigning.Signing {
             return services.AddHttpMessageSigning(keyId, prov => signingSettings);
         }
 
-        /// <summary>
-        ///     Adds http message signing registrations to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="keyId">
-        ///     The <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client
-        ///     application.
-        /// </param>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
+        /// <summary>Adds http message signing registrations to the specified <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
+        /// <param name="keyId">The <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client application.</param>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
+        [Obsolete("Please use the overload without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, KeyId keyId, Action<SigningSettings> signingSettingsConfig) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
@@ -78,24 +49,13 @@ namespace Dalion.HttpMessageSigning.Signing {
             });
         }
 
-        /// <summary>
-        ///     Adds http message signing registrations to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
-        /// <param name="keyId">
-        ///     The <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client
-        ///     application.
-        /// </param>
+        /// <summary>Adds http message signing registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <param name="keyId">The <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client application.</param>
         /// <param name="signingSettingsFactory">The factory that creates the signing settings.</param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
+        [Obsolete("Please use the overload without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, KeyId keyId, Func<IServiceProvider, SigningSettings> signingSettingsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (signingSettingsFactory == null) throw new ArgumentNullException(nameof(signingSettingsFactory));
@@ -104,24 +64,13 @@ namespace Dalion.HttpMessageSigning.Signing {
             return services.AddHttpMessageSigning(prov => keyId, signingSettingsFactory);
         }
         
-        /// <summary>
-        ///     Adds http message signing registrations to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
-        /// <param name="keyIdFactory">
-        ///     The factory that creates the <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client
-        ///     application.
-        /// </param>
+        /// <summary>Adds http message signing registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <param name="keyIdFactory">The factory that creates the <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client application.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
+        [Obsolete("Please use the overload without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddHttpMessageSigning(
             this IServiceCollection services, 
             Func<IServiceProvider, KeyId> keyIdFactory, 
@@ -136,23 +85,12 @@ namespace Dalion.HttpMessageSigning.Signing {
             });
         }
         
-        /// <summary>
-        ///     Adds http message signing registrations to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
-        /// <param name="keyIdFactory">
-        ///     The factory that creates the <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client
-        ///     application.
-        /// </param>
+        /// <summary>Adds http message signing registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <param name="keyIdFactory">The factory that creates the <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client application.</param>
         /// <param name="signingSettingsFactory">The factory that creates the signing settings.</param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        [Obsolete("Please use the overload without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, Func<IServiceProvider, KeyId> keyIdFactory, Func<IServiceProvider, SigningSettings> signingSettingsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (keyIdFactory == null) throw new ArgumentNullException(nameof(keyIdFactory));

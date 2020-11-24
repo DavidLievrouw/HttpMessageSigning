@@ -9,7 +9,7 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
     public static class Canonicalizer {
         public static async Task<string> Run(CanonicalizeOptions options) {
             var serviceProvider = new ServiceCollection()
-                .AddHttpMessageSigning()
+                .AddHttpMessageSigning().Services
                 .BuildServiceProvider();
             var requestSignerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>();
 

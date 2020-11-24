@@ -198,7 +198,7 @@ namespace Dalion.HttpMessageSigning.ClockSkew {
         
         private static void ConfigureServices(IServiceCollection services) {
             services
-                .AddHttpMessageSigning()
+                .AddHttpMessageSigning().Services
                 .AddHttpMessageSignatureVerification(provider => {
                     var clientStore = new InMemoryClientStore();
                     clientStore.Register(new Client(
