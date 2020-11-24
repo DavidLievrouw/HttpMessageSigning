@@ -113,6 +113,8 @@ namespace Dalion.HttpMessageSigning {
             if (string.IsNullOrEmpty(AuthorizationScheme)) errors.Add(new ValidationError(nameof(AuthorizationScheme), $"The signing settings do not specify a valid value for {nameof(AuthorizationScheme)}."));
             if (Headers == null) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified (null)."));
             if (Headers != null && !Headers.Any()) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified empty."));
+            if (!Enum.IsDefined(typeof(RequestTargetEscaping), RequestTargetEscaping)) errors.Add(new ValidationError(nameof(RequestTargetEscaping), $"The specified {nameof(RequestTargetEscaping)} value is not supported."));
+                
             return errors;
         }
     }

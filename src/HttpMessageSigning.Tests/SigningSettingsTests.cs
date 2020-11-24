@@ -25,6 +25,7 @@ namespace Dalion.HttpMessageSigning {
                 AuthorizationScheme = "UnitTestAuth",
                 EnableNonce = false,
                 AutomaticallyAddRecommendedHeaders = false,
+                RequestTargetEscaping = RequestTargetEscaping.RFC2396,
                 Events = new RequestSigningEvents {
                     OnRequestSigned = (message, signature, settings) => Task.CompletedTask,
                     OnRequestSigning = (message, settings) => Task.CompletedTask,
@@ -106,6 +107,13 @@ namespace Dalion.HttpMessageSigning {
             [InlineData("ec25519-sha256")]
             public void GivenUnsupportedSignatureAlgorithm_ThrowsValidationException(string unsupportedAlgorithm) {
                 _sut.SignatureAlgorithm = new CustomSignatureAlgorithm(unsupportedAlgorithm);
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
+
+            [Fact]
+            public void GivenUndefinedRequestTargetEscaping_ThrowsValidationException() {
+                _sut.RequestTargetEscaping = (RequestTargetEscaping) (-99);
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }
@@ -192,6 +200,14 @@ namespace Dalion.HttpMessageSigning {
                 var actual = _sut.GetValidationErrors().ToList();
                 actual.Should().NotBeNullOrEmpty();
                 actual.Should().Contain(_ => _.PropertyName == nameof(_sut.SignatureAlgorithm));
+            }
+
+            [Fact]
+            public void GivenUndefinedRequestTargetEscaping_IsInvalid() {
+                _sut.RequestTargetEscaping = (RequestTargetEscaping) (-99);
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNullOrEmpty();
+                actual.Should().Contain(_ => _.PropertyName == nameof(_sut.RequestTargetEscaping));
             }
         }
         
