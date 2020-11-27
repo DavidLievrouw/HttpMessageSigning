@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         /// <param name="nonceStoreSettings">The settings for the Mongo connection.</param>
         /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
-        [Obsolete("Please use the " + nameof(UseMongoDbNonceStore) + " of the " + nameof(IHttpMessageSigningVerificationBuilder) + " instead.")]
+        [Obsolete("Please use the '" + nameof(UseMongoDbNonceStore) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         public static IServiceCollection AddMongoDbNonceStore(this IServiceCollection services, MongoDbNonceStoreSettings nonceStoreSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (nonceStoreSettings == null) throw new ArgumentNullException(nameof(nonceStoreSettings));
@@ -22,7 +22,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="nonceStoreSettingsFactory">The factory that creates the settings for the Mongo connection.</param>
         /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
-        [Obsolete("Please use the " + nameof(UseMongoDbNonceStore) + " of the " + nameof(IHttpMessageSigningVerificationBuilder) + " instead.")]
+        [Obsolete("Please use the '" + nameof(UseMongoDbNonceStore) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         public static IServiceCollection AddMongoDbNonceStore(
             this IServiceCollection services,
             Func<IServiceProvider, MongoDbNonceStoreSettings> nonceStoreSettingsFactory) {

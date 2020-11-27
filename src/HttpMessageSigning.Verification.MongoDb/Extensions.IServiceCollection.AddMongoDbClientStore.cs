@@ -12,7 +12,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStoreSettings">The settings for the Mongo connection.</param>
         /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
-        [Obsolete("Please use the " + nameof(UseMongoDbClientStore) + " of the " + nameof(IHttpMessageSigningVerificationBuilder) + " instead.")]
+        [Obsolete("Please use the '" + nameof(UseMongoDbClientStore) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services, MongoDbSettings clientStoreSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -25,7 +25,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStoreSettingsFactory">The factory that creates the settings for the Mongo connection.</param>
         /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
-        [Obsolete("Please use the " + nameof(UseMongoDbClientStore) + " of the " + nameof(IHttpMessageSigningVerificationBuilder) + " instead.")]
+        [Obsolete("Please use the '" + nameof(UseMongoDbClientStore) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddMongoDbClientStore(
             this IServiceCollection services,
@@ -40,7 +40,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStoreSettings">The settings for the Mongo connection.</param>
         /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
-        [Obsolete("Please use the " + nameof(UseMongoDbClientStore) + " of the " + nameof(IHttpMessageSigningVerificationBuilder) + " instead.")]
+        [Obsolete("Please use the '" + nameof(UseMongoDbClientStore) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services, MongoDbClientStoreSettings clientStoreSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -53,7 +53,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStoreSettingsFactory">The factory that creates the settings for the Mongo connection.</param>
         /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
-        [Obsolete("Please use the " + nameof(UseMongoDbClientStore) + " of the " + nameof(IHttpMessageSigningVerificationBuilder) + " instead.")]
+        [Obsolete("Please use the '" + nameof(UseMongoDbClientStore) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         public static IServiceCollection AddMongoDbClientStore(
             this IServiceCollection services,
             Func<IServiceProvider, MongoDbClientStoreSettings> clientStoreSettingsFactory) {
