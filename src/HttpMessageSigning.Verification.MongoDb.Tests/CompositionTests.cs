@@ -9,7 +9,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
         public CompositionTests() {
             _provider = new ServiceCollection()
-                .AddHttpMessageSignatureVerifier()
+                .AddHttpMessageSignatureVerification()
                 .UseMongoDbClientStore(new MongoDbClientStoreSettings {
                     CollectionName = "clients",
                     ConnectionString = "mongodb://localhost:27017/Auth",

@@ -31,25 +31,22 @@ namespace Console {
 
         public static void ConfigureServices(IServiceCollection services) {
             var cert = new X509Certificate2(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
-            
+
             services
                 .AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
                 .AddHttpMessageSigning()
                 .UseKeyId("4d8f14b6c4184dc1b677c88a2b60bfd2")
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(cert))
                 .Services
-                .AddHttpMessageSignatureVerification(provider => {
-                    var clientStore = new InMemoryClientStore();
-                    clientStore.Register(new Client(
-                        new KeyId("4d8f14b6c4184dc1b677c88a2b60bfd2"),
-                        "HttpMessageSigningSampleRSA",
-                        SignatureAlgorithm.CreateForVerification(cert),
-                        TimeSpan.FromMinutes(5),
-                        TimeSpan.FromMinutes(1),
-                        RequestTargetEscaping.RFC3986,
-                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
-                    return clientStore;
-                });
+                .AddHttpMessageSignatureVerification()
+                .UseClient(Client.Create(
+                    "4d8f14b6c4184dc1b677c88a2b60bfd2",
+                    "HttpMessageSigningSampleRSA",
+                    SignatureAlgorithm.CreateForVerification(cert),
+                    options => options.Claims = new[] {
+                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")
+                    }
+                ));
         }
 
         private static async Task<HttpRequestMessage> SampleSignRSA(IRequestSignerFactory requestSignerFactory) {

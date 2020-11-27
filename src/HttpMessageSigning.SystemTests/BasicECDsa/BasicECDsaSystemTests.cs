@@ -245,18 +245,16 @@ namespace Dalion.HttpMessageSigning.BasicECDsa {
                 .UseKeyId("4d8f14b6c4184dc1b677c88a2b60bfd2")
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(privateKey))
                 .Services
-                .AddHttpMessageSignatureVerification(provider => {
-                    var clientStore = new InMemoryClientStore();
-                    clientStore.Register(new Client(
-                        new KeyId("4d8f14b6c4184dc1b677c88a2b60bfd2"),
-                        "HttpMessageSigningSampleRSA",
-                        SignatureAlgorithm.CreateForVerification(publicKey),
-                        TimeSpan.FromMinutes(5),
-                        TimeSpan.FromMinutes(1),
-                        RequestTargetEscaping.RFC3986,
-                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
-                    return clientStore;
-                });
+                .AddHttpMessageSignatureVerification()
+                .UseAspNetCoreSignatureVerification()
+                .UseClient(Client.Create(
+                    "4d8f14b6c4184dc1b677c88a2b60bfd2",
+                    "HttpMessageSigningSampleRSA",
+                    SignatureAlgorithm.CreateForVerification(publicKey),
+                    options => options.Claims = new [] {
+                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")
+                    }
+                ));
         }
     }
 }

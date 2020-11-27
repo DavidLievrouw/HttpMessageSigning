@@ -46,17 +46,13 @@ namespace Conformance {
             }
 
             var serviceProvider = new ServiceCollection()
-                .AddHttpMessageSignatureVerification(provider => {
-                    var clientStore = new InMemoryClientStore();
-                    clientStore.Register(new Client(
-                        new KeyId("test"),
-                        "ConformanceClient",
-                        signatureAlgorithmForVerification,
-                        TimeSpan.FromSeconds(30),
-                        TimeSpan.FromMinutes(1),
-                        RequestTargetEscaping.RFC3986));
-                    return clientStore;
-                })
+                .AddHttpMessageSignatureVerification()
+                .UseClient(Client.Create(
+                    "test",
+                    "ConformanceClient",
+                    signatureAlgorithmForVerification
+                ))
+                .Services
                 .BuildServiceProvider();
             
             var verifier = serviceProvider.GetRequiredService<IRequestSignatureVerifier>();

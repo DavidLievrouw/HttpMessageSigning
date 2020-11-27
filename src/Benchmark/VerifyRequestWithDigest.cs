@@ -4,7 +4,6 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,18 +35,16 @@ namespace Benchmark {
                 .UseExpires(TimeSpan.FromMinutes(1))
                 .UseHeaders((HeaderName)"Dalion-App-Id")
                 .Services
-                .AddHttpMessageSignatureVerification(provider => {
-                    var clientStore = new InMemoryClientStore();
-                    clientStore.Register(new Client(
-                        new KeyId("e0e8dcd638334c409e1b88daf821d135"),
-                        "HttpMessageSigningSampleHMAC",
-                        SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
-                        TimeSpan.FromMilliseconds(1),
-                        TimeSpan.FromMinutes(1),
-                        RequestTargetEscaping.RFC3986,
-                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
-                    return clientStore;
-                })
+                .AddHttpMessageSignatureVerification()
+                .UseClient(Client.Create(
+                    "e0e8dcd638334c409e1b88daf821d135",
+                    "HttpMessageSigningSampleHMAC",
+                    SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
+                    options => options.Claims = new [] {
+                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")
+                    }
+                ))
+                .Services
                 .BuildServiceProvider();
             var requestSignerFactory = serviceProvider.GetRequiredService<IRequestSignerFactory>();
             var requestSigner = requestSignerFactory.CreateFor(keyId);

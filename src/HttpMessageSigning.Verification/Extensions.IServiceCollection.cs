@@ -13,7 +13,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// <summary>Adds <see cref="ISignatureVerifier"/> registrations to the specified <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
         /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to configure the verification settings.</returns>
-        public static IHttpMessageSigningVerificationBuilder AddHttpMessageSignatureVerifier(this IServiceCollection services) {
+        public static IHttpMessageSigningVerificationBuilder AddHttpMessageSignatureVerification(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             services = services

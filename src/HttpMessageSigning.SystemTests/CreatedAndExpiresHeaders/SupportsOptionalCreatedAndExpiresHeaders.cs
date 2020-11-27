@@ -161,17 +161,16 @@ namespace Dalion.HttpMessageSigning.CreatedAndExpiresHeaders {
                     HeaderName.PredefinedHeaderNames.Created,
                     HeaderName.PredefinedHeaderNames.Expires)
                 .Services
-                .AddHttpMessageSignatureVerification(
-                    new Client(
-                        new KeyId("e0e8dcd638334c409e1b88daf821d135"),
-                        "HttpMessageSigningSampleHMAC",
-                        SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
-                        TimeSpan.FromMinutes(5),
-                        TimeSpan.FromMinutes(1),
-                        RequestTargetEscaping.RFC3986,
+                .AddHttpMessageSignatureVerification()
+                .UseAspNetCoreSignatureVerification()
+                .UseClient(Client.Create(
+                    "e0e8dcd638334c409e1b88daf821d135",
+                    "HttpMessageSigningSampleHMAC",
+                    SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
+                    options => options.Claims = new [] {
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")
-                    )
-                );
+                    }
+                ));
         }
     }
 }

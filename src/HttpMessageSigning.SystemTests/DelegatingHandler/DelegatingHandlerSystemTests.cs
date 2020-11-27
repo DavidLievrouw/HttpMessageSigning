@@ -170,18 +170,17 @@ namespace Dalion.HttpMessageSigning.DelegatingHandler {
                 .UseOnSigningStringComposedEvent(OnSigningStringComposed)
                 .UseOnRequestSignedEvent(OnRequestSigned)
                 .Services
-                .AddHttpMessageSignatureVerification(provider => {
-                    var clientStore = new InMemoryClientStore();
-                    clientStore.Register(new Client(
-                        keyId,
-                        "HttpMessageSigningSampleHMAC",
-                        SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
-                        TimeSpan.FromMinutes(5),
-                        TimeSpan.FromMinutes(1),
-                        RequestTargetEscaping.RFC3986,
-                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
-                    return clientStore;
-                })
+                .AddHttpMessageSignatureVerification()
+                .UseAspNetCoreSignatureVerification()
+                .UseClient(Client.Create(
+                    keyId,
+                    "HttpMessageSigningSampleHMAC",
+                    SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
+                    options => options.Claims = new [] {
+                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")
+                    }
+                ))
+                .Services
                 .AddHttpClient<SenderService>(config => config.BaseAddress = new Uri("https://httpbin.org"))
                 .AddHttpMessageHandler(provider => new HttpRequestSigningHandler(provider.GetRequiredService<IRequestSignerFactory>().CreateFor(keyId)))
                 .AddHttpMessageHandler(() => new FakeDelegatingHandler(new HttpResponseMessage(HttpStatusCode.Created)))

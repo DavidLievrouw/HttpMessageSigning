@@ -14,7 +14,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             var services = new ServiceCollection();
             services
                 .AddHttpMessageSignatureVerification()
-                .AddSingleton<IClientStore, InMemoryClientStore>();
+                .UseAspNetCoreSignatureVerification()
+                .UseClientStore<InMemoryClientStore>();
             _provider = services.BuildServiceProvider();
         }
 

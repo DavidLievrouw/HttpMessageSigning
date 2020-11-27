@@ -105,18 +105,18 @@ namespace Dalion.HttpMessageSigning.RequestTargetEscapingSetting {
                 .UseHeaders((HeaderName)"Dalion-App-Id")
                 .UseRequestTargetEscaping(escapingForSigning)
                 .Services
-                .AddHttpMessageSignatureVerification(provider => {
-                    var clientStore = new InMemoryClientStore();
-                    clientStore.Register(new Client(
-                        new KeyId("e0e8dcd638334c409e1b88daf821d135"),
-                        "HttpMessageSigningSampleHMAC",
-                        SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
-                        TimeSpan.FromMinutes(5),
-                        TimeSpan.FromMinutes(1),
-                        escapingForVerification,
-                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
-                    return clientStore;
-                });
+                .AddHttpMessageSignatureVerification()
+                .UseAspNetCoreSignatureVerification()
+                .UseClient(Client.Create(
+                    "e0e8dcd638334c409e1b88daf821d135",
+                    "HttpMessageSigningSampleHMAC",
+                    SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
+                    options => {
+                        options.RequestTargetEscaping = escapingForVerification;
+                        options.Claims = new[] {
+                            new Claim(SignedHttpRequestClaimTypes.Role, "users.read")
+                        };
+                    }));
         }
     }
 }

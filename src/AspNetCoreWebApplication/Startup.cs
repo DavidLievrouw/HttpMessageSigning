@@ -32,20 +32,21 @@ namespace WebApplication {
                 }).Services
 
                 /* Sample for InMemoryClientStore */
-                .AddHttpMessageSignatureVerification(new InMemoryClientStore());
+                .AddHttpMessageSignatureVerification()
+                .UseAspNetCoreSignatureVerification()
 
                 /* Sample for MongoDbClientStore */
-                /*.AddHttpMessageSignatureVerification()
-                .AddMongoDbClientStore(provider => new MongoDbClientStoreSettings {
+                /*.UseMongoDbClientStore(provider => new MongoDbClientStoreSettings {
                     ConnectionString = "mongodb://localhost:27017/HttpMessageSigningDb",
                     CollectionName = "known_clients",
                     ClientCacheEntryExpiration = TimeSpan.FromMinutes(3),
                     SharedSecretEncryptionKey = "The_Big_S3cr37"
                 })
-                .AddMongoDbNonceStore(provider => new MongoDbNonceStoreSettings {
+                .UseMongoDbNonceStore(provider => new MongoDbNonceStoreSettings {
                     ConnectionString = "mongodb://localhost:27017/HttpMessageSigningDb",
                     CollectionName = "client_nonces"
-                });*/
+                })*/
+                ;
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

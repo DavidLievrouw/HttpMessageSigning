@@ -24,17 +24,14 @@ namespace Dalion.HttpMessageSigning.Verify {
             }
 
             var serviceProvider = new ServiceCollection()
-                .AddHttpMessageSignatureVerification(provider => {
-                    var clientStore = new InMemoryClientStore();
-                    clientStore.Register(new Client(
-                        new KeyId("test"),
-                        "ConformanceClient",
-                        signatureAlgorithm,
-                        TimeSpan.FromSeconds(30),
-                        TimeSpan.FromMinutes(1),
-                        RequestTargetEscaping.RFC3986));
-                    return clientStore;
-                })
+                .AddHttpMessageSignatureVerification()
+                .UseAspNetCoreSignatureVerification()
+                .UseClient(Client.Create(
+                    "test",
+                    "ConformanceClient",
+                    signatureAlgorithm
+                ))
+                .Services
                 .BuildServiceProvider();
 
             var verifier = serviceProvider.GetRequiredService<IRequestSignatureVerifier>();
