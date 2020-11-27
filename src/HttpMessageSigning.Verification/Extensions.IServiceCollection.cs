@@ -10,22 +10,13 @@ namespace Dalion.HttpMessageSigning.Verification {
     ///     Extension methods for this library.
     /// </summary>
     public static partial class Extensions {
-        /// <summary>
-        ///     Adds <see cref="ISignatureVerifier"/> registrations to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
-        public static IServiceCollection AddHttpMessageSignatureVerifier(this IServiceCollection services) {
+        /// <summary>Adds <see cref="ISignatureVerifier"/> registrations to the specified <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to configure the verification settings.</returns>
+        public static IHttpMessageSigningVerificationBuilder AddHttpMessageSignatureVerifier(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
-            return services
+            services = services
                 .AddMemoryCache()
                 .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<INonceStore, InMemoryNonceStore>()
@@ -68,6 +59,8 @@ namespace Dalion.HttpMessageSigning.Verification {
                         provider.GetRequiredService<ISigningStringCompositionRequestFactory>(),
                         provider.GetService<ILogger<MatchingSignatureStringVerificationTask>>())))
                 .AddSingleton<IRequestSignatureVerificationOrchestrator, RequestSignatureVerificationOrchestrator>();
+            
+            return new HttpMessageSigningVerificationBuilder(services); 
         }
     }
 }

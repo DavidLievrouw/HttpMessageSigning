@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             return services
-                .AddHttpMessageSignatureVerifier()
+                .AddHttpMessageSignatureVerifier().Services
                 .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
         }
@@ -118,7 +118,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             if (clientStoreFactory == null) throw new ArgumentNullException(nameof(clientStoreFactory));
 
             return services
-                .AddHttpMessageSignatureVerifier()
+                .AddHttpMessageSignatureVerifier().Services
                 .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))
                 .AddSingleton(clientStoreFactory)
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
