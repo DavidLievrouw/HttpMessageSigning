@@ -8,18 +8,18 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         private readonly ServiceProvider _provider;
 
         public CompositionTests() {
-            var services = new ServiceCollection();
-            services
-                .AddMongoDbClientStore(new MongoDbClientStoreSettings {
+            _provider = new ServiceCollection()
+                .AddHttpMessageSignatureVerifier()
+                .UseMongoDbClientStore(new MongoDbClientStoreSettings {
                     CollectionName = "clients",
                     ConnectionString = "mongodb://localhost:27017/Auth",
                     ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
                 })
-                .AddMongoDbNonceStore(new MongoDbNonceStoreSettings {
+                .UseMongoDbNonceStore(new MongoDbNonceStoreSettings {
                     CollectionName = "nonces",
                     ConnectionString = "mongodb://localhost:27017/Auth"
-                });
-            _provider = services.BuildServiceProvider();
+                })
+                .BuildServiceProvider();
         }
 
         public void Dispose() {
@@ -36,7 +36,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             actualInstance.Should().NotBeNull();
             actualInstance.Should().BeAssignableTo(requestedType);
         }
-        
+
         [Theory]
         [InlineData(typeof(IClientStore), typeof(CachingMongoDbClientStore))]
         [InlineData(typeof(INonceStore), typeof(CachingMongoDbNonceStore))]

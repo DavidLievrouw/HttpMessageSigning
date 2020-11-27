@@ -8,20 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public static partial class Extensions {
-        /// <summary>
-        ///     Adds http message signature verification registrations for MongoDb to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
+        /// <summary>Adds http message signature verification registrations for MongoDb to the specified <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStoreSettings">The settings for the Mongo connection.</param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
-        [Obsolete("Please use an overload that takes a " + nameof(MongoDbClientStoreSettings) + " parameter instead.")]
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        [Obsolete("Please use the " + nameof(UseMongoDbClientStore) + " of the " + nameof(IHttpMessageSigningVerificationBuilder) + " instead.")]
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services, MongoDbSettings clientStoreSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -29,43 +20,27 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             return services.AddMongoDbClientStore(prov => (MongoDbClientStoreSettings) clientStoreSettings);
         }
-        
-        /// <summary>
-        ///     Adds http message signature verification registrations for MongoDb to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
+
+        /// <summary>Adds http message signature verification registrations for MongoDb to the specified <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStoreSettingsFactory">The factory that creates the settings for the Mongo connection.</param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
-        [Obsolete("Please use an overload that takes a " + nameof(MongoDbClientStoreSettings) + " parameter instead.")]
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        [Obsolete("Please use the " + nameof(UseMongoDbClientStore) + " of the " + nameof(IHttpMessageSigningVerificationBuilder) + " instead.")]
         [ExcludeFromCodeCoverage]
-        public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services,
+        public static IServiceCollection AddMongoDbClientStore(
+            this IServiceCollection services,
             Func<IServiceProvider, MongoDbSettings> clientStoreSettingsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (clientStoreSettingsFactory == null) throw new ArgumentNullException(nameof(clientStoreSettingsFactory));
 
             return services.AddMongoDbClientStore(prov => (MongoDbClientStoreSettings) clientStoreSettingsFactory(prov));
         }
-    
-        /// <summary>
-        ///     Adds http message signature verification registrations for MongoDb to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
+
+        /// <summary>Adds http message signature verification registrations for MongoDb to the specified <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStoreSettings">The settings for the Mongo connection.</param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        [Obsolete("Please use the " + nameof(UseMongoDbClientStore) + " of the " + nameof(IHttpMessageSigningVerificationBuilder) + " instead.")]
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services, MongoDbClientStoreSettings clientStoreSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -74,20 +49,13 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             return services.AddMongoDbClientStore(prov => clientStoreSettings);
         }
 
-        /// <summary>
-        ///     Adds http message signature verification registrations for MongoDb to the specified
-        ///     <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.
-        /// </summary>
-        /// <param name="services">
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the
-        ///     registrations to.
-        /// </param>
+        /// <summary>Adds http message signature verification registrations for MongoDb to the specified <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStoreSettingsFactory">The factory that creates the settings for the Mongo connection.</param>
-        /// <returns>
-        ///     The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations
-        ///     were added.
-        /// </returns>
-        public static IServiceCollection AddMongoDbClientStore(this IServiceCollection services,
+        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        [Obsolete("Please use the " + nameof(UseMongoDbClientStore) + " of the " + nameof(IHttpMessageSigningVerificationBuilder) + " instead.")]
+        public static IServiceCollection AddMongoDbClientStore(
+            this IServiceCollection services,
             Func<IServiceProvider, MongoDbClientStoreSettings> clientStoreSettingsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (clientStoreSettingsFactory == null) throw new ArgumentNullException(nameof(clientStoreSettingsFactory));
@@ -108,7 +76,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     var mongoSettings = prov.GetRequiredService<MongoDbClientStoreSettings>();
                     return new MongoDatabaseClientProvider(mongoSettings.ConnectionString);
                 })
-                
+
                 // ClientStore Migrations
                 .AddSingleton<IClientStoreBaseliner, ClientStoreBaseliner>()
                 .AddSingleton<ISemaphoreFactory, SemaphoreFactory>()
@@ -120,7 +88,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                         prov.GetRequiredService<IClientStoreBaseliner>(),
                         prov.GetRequiredService<ISemaphoreFactory>()))
                 .AddSingleton<IClientStoreMigrationStep, AddEncryptionSupportToClientsMigrationStep>()
-                
+
                 // The actual store
                 .AddSingleton<IClientStore>(prov => {
                     var mongoSettings = prov.GetRequiredService<MongoDbClientStoreSettings>();
