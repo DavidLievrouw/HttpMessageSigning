@@ -5,10 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public static partial class Extensions {
-        /// <summary>Adds http message signature verification registrations for MongoDb to the specified<see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <summary>Adds http message signature verification registrations for MongoDb to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="nonceStoreSettings">The settings for the Mongo connection.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         [Obsolete("Please use the '" + nameof(UseMongoDbNonceStore) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         public static IServiceCollection AddMongoDbNonceStore(this IServiceCollection services, MongoDbNonceStoreSettings nonceStoreSettings) {
@@ -18,10 +18,10 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             return services.AddMongoDbNonceStore(prov => nonceStoreSettings);
         }
 
-        /// <summary>Adds http message signature verification registrations for MongoDb to the specified<see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <summary>Adds http message signature verification registrations for MongoDb to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="nonceStoreSettingsFactory">The factory that creates the settings for the Mongo connection.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [Obsolete("Please use the '" + nameof(UseMongoDbNonceStore) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         public static IServiceCollection AddMongoDbNonceStore(
             this IServiceCollection services,

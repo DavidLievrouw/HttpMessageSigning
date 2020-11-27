@@ -9,7 +9,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// <param name="keyId">The <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client application.</param>
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="hmacSecret">The HMAC symmetric key.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         [Obsolete("Please use the '" + nameof(AddHttpMessageSigning) + "' method without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddHMACHttpMessageSigning(this IServiceCollection services, KeyId keyId, string hmacSecret) {
@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="hmacSecret">The HMAC symmetric key.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         [Obsolete("Please use the '" + nameof(AddHttpMessageSigning) + "' method without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddHMACHttpMessageSigning(this IServiceCollection services, KeyId keyId, string hmacSecret, Action<SigningSettings> signingSettingsConfig) {
@@ -42,7 +42,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="hmacSecretFactory">The factory that creates the HMAC symmetric key.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         [Obsolete("Please use the '" + nameof(AddHttpMessageSigning) + "' method without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddHMACHttpMessageSigning(
@@ -65,7 +65,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="hmacSecretFactory">The factory that creates the HMAC symmetric key.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         [Obsolete("Please use the '" + nameof(AddHttpMessageSigning) + "' method without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddHMACHttpMessageSigning(

@@ -7,11 +7,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public static partial class Extensions {
-        /// <summary>Adds http message signature verification registrations to the specified<see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <summary>Adds http message signature verification and ASP.NET Core authentication scheme registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
+        /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to configure the verification settings.</returns>
+        [ExcludeFromCodeCoverage]
+        public static IHttpMessageSigningVerificationBuilder AddHttpMessageSignatureVerificationForAspNetCore(this IServiceCollection services) {
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
+            return services.AddHttpMessageSignatureVerification()
+                .UseAspNetCoreSignatureVerification();
+        }
+        
+        /// <summary>Adds http message signature verification registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="firstClient">The client that is allowed to authenticate.</param>
         /// <param name="additionalClients">The clients that are allowed to authenticate.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [Obsolete("Please use the '" + nameof(UseAspNetCoreSignatureVerification) + "' and '" + nameof(IHttpMessageSigningVerificationBuilder.UseClient) + "' methods of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, Client firstClient, params Client[] additionalClients) {
@@ -23,10 +34,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             return services.AddHttpMessageSignatureVerification(prov => allClients);
         }
 
-        /// <summary>Adds http message signature verification registrations to the specified<see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <summary>Adds http message signature verification registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="allowedClientsFactory">The factory that creates the clients that are allowed to authenticate.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [Obsolete("Please use the '" + nameof(UseAspNetCoreSignatureVerification) + "' and '" + nameof(IHttpMessageSigningVerificationBuilder.UseClient) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, Func<IServiceProvider, IEnumerable<Client>> allowedClientsFactory) {
@@ -44,10 +55,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             });
         }
 
-        /// <summary>Adds http message signature verification registrations to the specified<see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <summary>Adds http message signature verification registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStore">The store that contains the registered clients.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [Obsolete("Please use the '" + nameof(UseAspNetCoreSignatureVerification) + "' and '" + nameof(IHttpMessageSigningVerificationBuilder.UseClientStore) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, IClientStore clientStore) {
@@ -57,10 +68,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             return services.AddHttpMessageSignatureVerification(prov => clientStore);
         }
 
-        /// <summary>Adds http message signature verification registrations to the specified<see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <summary>Adds http message signature verification registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStoreFactory">The factory that creates the store that contains the registered clients.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [Obsolete("Please use the '" + nameof(UseAspNetCoreSignatureVerification) + "' and '" + nameof(IHttpMessageSigningVerificationBuilder.UseClientStore) + "' method of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, Func<IServiceProvider, IClientStore> clientStoreFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));

@@ -20,9 +20,9 @@ namespace Dalion.HttpMessageSigning.Signing {
         
         /// <summary>Adds http message signing registrations to the specified <see cref="IServiceCollection" />.</summary>
         /// <param name="keyId">The <see cref="KeyId" /> that the server can use to identify the client application.</param>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="signingSettings">The signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, KeyId keyId, SigningSettings signingSettings) {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -31,11 +31,11 @@ namespace Dalion.HttpMessageSigning.Signing {
             return services.AddHttpMessageSigning(keyId, prov => signingSettings);
         }
 
-        /// <summary>Adds http message signing registrations to the specified <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" />.</summary>
+        /// <summary>Adds http message signing registrations to the specified <see cref="IServiceCollection" />.</summary>
         /// <param name="keyId">The <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client application.</param>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, KeyId keyId, Action<SigningSettings> signingSettingsConfig) {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -48,10 +48,10 @@ namespace Dalion.HttpMessageSigning.Signing {
         }
 
         /// <summary>Adds http message signing registrations to the specified <see cref="IServiceCollection" />.</summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="keyId">The <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client application.</param>
         /// <param name="signingSettingsFactory">The factory that creates the signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, KeyId keyId, Func<IServiceProvider, SigningSettings> signingSettingsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -62,10 +62,10 @@ namespace Dalion.HttpMessageSigning.Signing {
         }
         
         /// <summary>Adds http message signing registrations to the specified <see cref="IServiceCollection" />.</summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="keyIdFactory">The factory that creates the <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client application.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSigning(
             this IServiceCollection services, 
@@ -82,10 +82,10 @@ namespace Dalion.HttpMessageSigning.Signing {
         }
         
         /// <summary>Adds http message signing registrations to the specified <see cref="IServiceCollection" />.</summary>
-        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the registrations to.</param>
+        /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="keyIdFactory">The factory that creates the <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client application.</param>
         /// <param name="signingSettingsFactory">The factory that creates the signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         public static IServiceCollection AddHttpMessageSigning(this IServiceCollection services, Func<IServiceProvider, KeyId> keyIdFactory, Func<IServiceProvider, SigningSettings> signingSettingsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (keyIdFactory == null) throw new ArgumentNullException(nameof(keyIdFactory));

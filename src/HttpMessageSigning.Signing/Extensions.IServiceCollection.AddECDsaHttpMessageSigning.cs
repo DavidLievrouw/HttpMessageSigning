@@ -9,7 +9,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// <param name="keyId">The <see cref="T:Dalion.HttpMessageSigning.KeyId" /> that the server can use to identify the client application.</param>
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="ecdsa">The ECDsa key pair.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         [Obsolete("Please use the '" + nameof(AddHttpMessageSigning) + "' method without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddECDsaHttpMessageSigning(this IServiceCollection services, KeyId keyId, ECDsa ecdsa) {
@@ -24,7 +24,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="ecdsa">The ECDsa key pair.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         [Obsolete("Please use the '" + nameof(AddHttpMessageSigning) + "' method without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddECDsaHttpMessageSigning(this IServiceCollection services, KeyId keyId, ECDsa ecdsa, Action<SigningSettings> signingSettingsConfig) {
@@ -43,7 +43,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="ecdsaFactory">The factory that creates the ECDsa key pair.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         [Obsolete("Please use the '" + nameof(AddHttpMessageSigning) + "' method without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddECDsaHttpMessageSigning(this IServiceCollection services, Func<IServiceProvider, KeyId> keyIdFactory, Func<IServiceProvider, ECDsa> ecdsaFactory, Action<SigningSettings> signingSettingsConfig) {
@@ -63,7 +63,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="ecdsaFactory">The factory that creates the ECDsa key pair.</param>
         /// <param name="signingSettingsConfig">The action that configures the signing settings.</param>
-        /// <returns>The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to which the registrations were added.</returns>
+        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
         [ExcludeFromCodeCoverage]
         [Obsolete("Please use the '" + nameof(AddHttpMessageSigning) + "' method without parameters, and use a " + nameof(IHttpMessageSigningBuilder) + " to continue configuration.")]
         public static IServiceCollection AddECDsaHttpMessageSigning(this IServiceCollection services, Func<IServiceProvider, KeyId> keyIdFactory, Func<IServiceProvider, ECDsa> ecdsaFactory, Action<IServiceProvider, SigningSettings> signingSettingsConfig) {
