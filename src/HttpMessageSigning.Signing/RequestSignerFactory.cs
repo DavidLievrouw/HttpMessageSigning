@@ -34,6 +34,8 @@ namespace Dalion.HttpMessageSigning.Signing {
 
             signingSettings.KeyId = keyId;
 
+            signingSettings.Validate();
+            
             return new RequestSigner(
                 _signingSettingsSanitizer,
                 _signatureCreator,
@@ -51,6 +53,8 @@ namespace Dalion.HttpMessageSigning.Signing {
             if (signingSettings == null) {
                 throw new InvalidOperationException($"No {nameof(IRequestSigner)} for {nameof(KeyId)} '{keyId}' has been registered.");
             }
+            
+            signingSettings.Validate();
             
             return Create(keyId, signingSettings);
         }

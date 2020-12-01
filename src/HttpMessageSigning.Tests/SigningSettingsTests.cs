@@ -58,14 +58,30 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void WhenHeadersIsNull_ThrowsValidationException() {
+            public void WhenHeadersIsNull_AndRecommendedHeadersAreAutomaticallyAdded_DoesNotThrow() {
+                _sut.Headers = null;
+                _sut.AutomaticallyAddRecommendedHeaders = true;
+                Action act = () => _sut.Validate();
+                act.Should().NotThrow();
+            }
+
+            [Fact]
+            public void WhenHeadersIsEmpty_AndRecommendedHeadersAreAutomaticallyAdded_DoesNotThrow() {
+                _sut.Headers = Array.Empty<HeaderName>();
+                _sut.AutomaticallyAddRecommendedHeaders = true;
+                Action act = () => _sut.Validate();
+                act.Should().NotThrow();
+            }
+
+            [Fact]
+            public void WhenHeadersIsNull_AndRecommendedHeadersAreNotAutomaticallyAdded_ThrowsValidationException() {
                 _sut.Headers = null;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }
 
             [Fact]
-            public void WhenHeadersIsEmpty_ThrowsValidationException() {
+            public void WhenHeadersIsEmpty_AndRecommendedHeadersAreNotAutomaticallyAdded_ThrowsValidationException() {
                 _sut.Headers = Array.Empty<HeaderName>();
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
@@ -143,7 +159,7 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void WhenHeadersIsNull_IsInvalid() {
+            public void WhenHeadersIsNull_AndRecommendedHeadersAreNotAutomaticallyAdded_IsInvalid() {
                 _sut.Headers = null;
                 var actual = _sut.GetValidationErrors().ToList();
                 actual.Should().NotBeNullOrEmpty();
@@ -151,11 +167,27 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void WhenHeadersIsEmpty_IsInvalid() {
+            public void WhenHeadersIsEmpty_AndRecommendedHeadersAreNotAutomaticallyAdded_IsInvalid() {
                 _sut.Headers = Array.Empty<HeaderName>();
                 var actual = _sut.GetValidationErrors().ToList();
                 actual.Should().NotBeNullOrEmpty();
                 actual.Should().Contain(_ => _.PropertyName == nameof(_sut.Headers));
+            }
+
+            [Fact]
+            public void WhenHeadersIsNull_AndRecommendedHeadersAreAutomaticallyAdded_IsValid() {
+                _sut.Headers = null;
+                _sut.AutomaticallyAddRecommendedHeaders = true;
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNull().And.BeEmpty();
+            }
+
+            [Fact]
+            public void WhenHeadersIsEmpty_AndRecommendedHeadersAreAutomaticallyAdded_IsValid() {
+                _sut.Headers = Array.Empty<HeaderName>();
+                _sut.AutomaticallyAddRecommendedHeaders = true;
+                var actual = _sut.GetValidationErrors().ToList();
+                actual.Should().NotBeNull().And.BeEmpty();
             }
 
             [Fact]

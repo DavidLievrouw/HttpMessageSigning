@@ -70,6 +70,13 @@ namespace Dalion.HttpMessageSigning.Signing {
                 var actual = _sut.Create(_keyId, _signingSettings);
                 actual.Should().NotBeNull().And.BeAssignableTo<RequestSigner>();
             }
+
+            [Fact]
+            public void GivenInvalidSettings_ThrowsValidationException() {
+                var invalidSettings = new SigningSettings();
+                Action act = () => _sut.Create(_keyId, invalidSettings);
+                act.Should().Throw<ValidationException>();
+            }
         }
 
         public class CreateFor : RequestSignerFactoryTests {
@@ -98,6 +105,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void CreatesNewInstanceOfExpectedType() {
                 var signingSettings = new SigningSettings {
+                    KeyId = _keyId,
                     Expires = TimeSpan.FromMinutes(5),
                     SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
                     Headers = new[] {
@@ -112,6 +120,17 @@ namespace Dalion.HttpMessageSigning.Signing {
                 var actual = _sut.CreateFor(_keyId);
 
                 actual.Should().NotBeNull().And.BeAssignableTo<RequestSigner>();
+            }
+
+            [Fact]
+            public void WhenInvalidSettingsAreRegistered_ThrowsValidationException() {
+                var invalidSettings = new SigningSettings();
+                A.CallTo(() => _registeredSignerSettingsStore.Get(_keyId))
+                    .Returns(invalidSettings);
+
+                Action act = () => _sut.CreateFor(_keyId);
+
+                act.Should().Throw<ValidationException>();
             }
         }
     }

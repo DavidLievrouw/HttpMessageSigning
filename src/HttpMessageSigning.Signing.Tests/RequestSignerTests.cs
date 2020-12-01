@@ -79,7 +79,10 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void WhenSanitizerMakesSettingsInvalid_ThrowsValidationException() {
                 A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(A<SigningSettings>._, _httpRequest))
-                    .Invokes(call => call.GetArgument<SigningSettings>(0).Headers = null);
+                    .Invokes(call => {
+                        call.GetArgument<SigningSettings>(0).Headers = null;
+                        call.GetArgument<SigningSettings>(0).AutomaticallyAddRecommendedHeaders = false;
+                    });
 
                 Func<Task> act = () => _sut.Sign(_httpRequest);
                 act.Should().Throw<ValidationException>();
@@ -248,7 +251,10 @@ namespace Dalion.HttpMessageSigning.Signing {
             [Fact]
             public void WhenSanitizerMakesSettingsInvalid_ThrowsValidationException() {
                 A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(A<SigningSettings>._, _httpRequest))
-                    .Invokes(call => call.GetArgument<SigningSettings>(0).Headers = null);
+                    .Invokes(call => {
+                        call.GetArgument<SigningSettings>(0).Headers = null;
+                        call.GetArgument<SigningSettings>(0).AutomaticallyAddRecommendedHeaders = false;
+                    });
 
                 Func<Task> act = () => _sut.Sign(_httpRequest, _timeOfSigning, _expires);
                 act.Should().Throw<ValidationException>();

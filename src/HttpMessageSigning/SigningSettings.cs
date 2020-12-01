@@ -111,8 +111,8 @@ namespace Dalion.HttpMessageSigning {
             if (SignatureAlgorithm != null && !SupportedSignatureAlgorithmNames.Contains(SignatureAlgorithm.Name, StringComparer.OrdinalIgnoreCase)) errors.Add(new ValidationError(nameof(SignatureAlgorithm), $"The specified signature algorithm ({SignatureAlgorithm.Name}) is not supported."));
             if (Expires <= TimeSpan.Zero) errors.Add(new ValidationError(nameof(Expires), $"The signing settings do not specify a valid value for {nameof(Expires)}."));
             if (string.IsNullOrEmpty(AuthorizationScheme)) errors.Add(new ValidationError(nameof(AuthorizationScheme), $"The signing settings do not specify a valid value for {nameof(AuthorizationScheme)}."));
-            if (Headers == null) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified (null)."));
-            if (Headers != null && !Headers.Any()) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified empty."));
+            if (Headers == null && !AutomaticallyAddRecommendedHeaders) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified (null)."));
+            if (Headers != null && !Headers.Any() && !AutomaticallyAddRecommendedHeaders) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified empty."));
             if (!Enum.IsDefined(typeof(RequestTargetEscaping), RequestTargetEscaping)) errors.Add(new ValidationError(nameof(RequestTargetEscaping), $"The specified {nameof(RequestTargetEscaping)} value is not supported."));
                 
             return errors;
