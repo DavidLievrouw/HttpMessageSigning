@@ -8,9 +8,10 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         private readonly ServiceProvider _serviceProvider;
 
         public CompositionTests() {
-            var services = new ServiceCollection()
-                .AddHttpMessageSignatureVerification(new InMemoryClientStore());
-            _serviceProvider = services.BuildServiceProvider();
+            _serviceProvider = new ServiceCollection()
+                .AddHttpMessageSignatureVerificationForOwin()
+                .Services
+                .BuildServiceProvider();
         }
 
         public void Dispose() {

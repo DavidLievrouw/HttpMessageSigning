@@ -1,40 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.Owin {
     public static partial class Extensions {
-        /// <summary>Adds http message signature verification registrations to the specified <see cref="IServiceCollection" />.</summary>
+        /// <summary>Adds http message signature verification and ASP.NET Core authentication middleware registrations to the specified <see cref="IServiceCollection" />.</summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
-        /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
-        /// <remarks>This overload assumes that you registered an <see cref="IClientStore" />.</remarks>
+        /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to configure the verification settings.</returns>
         [ExcludeFromCodeCoverage]
-        public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services) {
+        public static IHttpMessageSigningVerificationBuilder AddHttpMessageSignatureVerificationForOwin(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
-            return Verification.Extensions.AddHttpMessageSignatureVerification(services).Services
-                .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))
-                .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
+            return services
+                .AddHttpMessageSignatureVerification()
+                .UseOwinSignatureVerification();
         }
 
         /// <summary>Adds http message signature verification registrations to the specified <see cref="IServiceCollection" />.</summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
-        /// <param name="allowedClients">The clients that are allowed to authenticate.</param>
+        /// <param name="firstClient">The client that is allowed to authenticate.</param>
+        /// <param name="additionalClients">The clients that are allowed to authenticate.</param>
         /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
+        [Obsolete("Please use the '" + nameof(UseOwinSignatureVerification) + "' and '" + nameof(IHttpMessageSigningVerificationBuilder.UseClient) + "' methods of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         [ExcludeFromCodeCoverage]
-        public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, params Client[] allowedClients) {
+        public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, Client firstClient, params Client[] additionalClients) {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            if (allowedClients == null) allowedClients = Array.Empty<Client>();
-
-            return services.AddHttpMessageSignatureVerification(prov => allowedClients);
+            
+            var firstClientArray = firstClient == null ? Array.Empty<Client>() : new[] {firstClient};
+            var allClients = firstClientArray.Concat(additionalClients ?? Array.Empty<Client>());
+            
+            return services.AddHttpMessageSignatureVerification(prov => allClients);
         }
 
         /// <summary>Adds http message signature verification registrations to the specified <see cref="IServiceCollection" />.</summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="allowedClientsFactory">The factory that creates the clients that are allowed to authenticate.</param>
         /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
+        [Obsolete("Please use the '" + nameof(UseOwinSignatureVerification) + "' and '" + nameof(IHttpMessageSigningVerificationBuilder.UseClient) + "' methods of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, Func<IServiceProvider, IEnumerable<Client>> allowedClientsFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -55,6 +60,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStore">The store that contains the registered clients.</param>
         /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
+        [Obsolete("Please use the '" + nameof(UseOwinSignatureVerification) + "' and '" + nameof(IHttpMessageSigningVerificationBuilder.UseClient) + "' methods of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         [ExcludeFromCodeCoverage]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, IClientStore clientStore) {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -67,11 +73,13 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <param name="clientStoreFactory">The factory that creates the store that contains the registered clients.</param>
         /// <returns>The <see cref="IServiceCollection" /> to which the registrations were added.</returns>
+        [Obsolete("Please use the '" + nameof(UseOwinSignatureVerification) + "' and '" + nameof(IHttpMessageSigningVerificationBuilder.UseClient) + "' methods of the '" + nameof(IHttpMessageSigningVerificationBuilder) + "' instead.")]
         public static IServiceCollection AddHttpMessageSignatureVerification(this IServiceCollection services, Func<IServiceProvider, IClientStore> clientStoreFactory) {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (clientStoreFactory == null) throw new ArgumentNullException(nameof(clientStoreFactory));
 
-            return Verification.Extensions.AddHttpMessageSignatureVerification(services).Services
+            return services
+                .AddHttpMessageSignatureVerification().Services
                 .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))
                 .AddSingleton(clientStoreFactory)
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();

@@ -49,7 +49,7 @@ namespace Dalion.HttpMessageSigning.Owin {
                     {"Dalion-App-Id", "ringor"}
                 }
             };
-            
+
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
@@ -66,7 +66,7 @@ namespace Dalion.HttpMessageSigning.Owin {
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
         }
-        
+
         [Fact]
         public async Task SupportsRelativeUris() {
             var request = new HttpRequestMessage {
@@ -77,7 +77,7 @@ namespace Dalion.HttpMessageSigning.Owin {
                     {"Dalion-App-Id", "ringor"}
                 }
             };
-            
+
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
@@ -93,8 +93,8 @@ namespace Dalion.HttpMessageSigning.Owin {
                 _output.WriteLine("Request signature verification failed: {0}", failureResult.Failure);
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
-        }       
-        
+        }
+
         [Fact]
         public async Task SupportsRFC2396EscapedUris() {
             var request = new HttpRequestMessage {
@@ -105,7 +105,7 @@ namespace Dalion.HttpMessageSigning.Owin {
                     {"Dalion-App-Id", "ringor"}
                 }
             };
-            
+
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
@@ -122,7 +122,7 @@ namespace Dalion.HttpMessageSigning.Owin {
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
         }
-        
+
         [Fact]
         public async Task SupportsRFC3986EscapedUris() {
             var request = new HttpRequestMessage {
@@ -133,7 +133,7 @@ namespace Dalion.HttpMessageSigning.Owin {
                     {"Dalion-App-Id", "ringor"}
                 }
             };
-            
+
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
@@ -150,7 +150,7 @@ namespace Dalion.HttpMessageSigning.Owin {
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
         }
-        
+
         [Fact]
         public async Task SupportsPartiallyEscapedUris() {
             var request = new HttpRequestMessage {
@@ -161,7 +161,7 @@ namespace Dalion.HttpMessageSigning.Owin {
                     {"Dalion-App-Id", "ringor"}
                 }
             };
-            
+
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
@@ -178,7 +178,7 @@ namespace Dalion.HttpMessageSigning.Owin {
                 throw new SignatureVerificationException(failureResult.Failure.ToString());
             }
         }
-        
+
         [Fact]
         public async Task SupportsUnescapedUris() {
             var request = new HttpRequestMessage {
@@ -189,7 +189,7 @@ namespace Dalion.HttpMessageSigning.Owin {
                     {"Dalion-App-Id", "ringor"}
                 }
             };
-            
+
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
@@ -217,23 +217,23 @@ namespace Dalion.HttpMessageSigning.Owin {
                     {"Dalion-App-Id", "ringor"}
                 }
             };
-            
+
             var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
-            
+
             var signatureStringRegEx = new Regex("signature=\"(?<signature>[a-zA-Z0-9+/]+={0,2})\"", RegexOptions.Compiled);
             var match = signatureStringRegEx.Match(request.Headers.Authorization.Parameter);
             request.Headers.Authorization = new AuthenticationHeaderValue(
                 request.Headers.Authorization.Scheme,
                 request.Headers.Authorization.Parameter.Replace(match.Groups["signature"].Value, "a" + match.Groups["signature"].Value));
-            
+
             var receivedRequest = await request.ToServerSideOwinRequest();
 
             var verificationResult = await _verifier.VerifySignature(receivedRequest, _options);
             verificationResult.Should().BeAssignableTo<RequestSignatureVerificationResultFailure>();
             _output.WriteLine("Request signature verification failed: {0}", verificationResult.As<RequestSignatureVerificationResultFailure>().Failure);
         }
-        
+
         private static void ConfigureServices(IServiceCollection services) {
             services
                 .AddHttpMessageSigning()
@@ -241,20 +241,20 @@ namespace Dalion.HttpMessageSigning.Owin {
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("yumACY64r%hm"))
                 .UseDigestAlgorithm(HashAlgorithmName.SHA256)
                 .UseExpires(TimeSpan.FromMinutes(1))
-                .UseHeaders((HeaderName)"Dalion-App-Id")
+                .UseHeaders((HeaderName) "Dalion-App-Id")
                 .Services
-                .AddHttpMessageSignatureVerification(provider => {
-                    var clientStore = new InMemoryClientStore();
-                    clientStore.Register(new Client(
+                .AddHttpMessageSignatureVerification()
+                .UseOwinSignatureVerification()
+                .UseClient(
+                    new Client(
                         new KeyId("e0e8dcd638334c409e1b88daf821d135"),
                         "HttpMessageSigningSampleHMAC",
                         SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
-                        TimeSpan.FromMinutes(5),
-                        TimeSpan.FromMinutes(1),
-                        RequestTargetEscaping.RFC3986,
-                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")));
-                    return clientStore;
-                });
+                        new ClientOptions {
+                            Claims = new[] {
+                                new Claim(SignedHttpRequestClaimTypes.Role, "user.read")
+                            }
+                        }));
         }
     }
 }
