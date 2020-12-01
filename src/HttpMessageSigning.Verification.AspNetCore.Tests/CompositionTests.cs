@@ -11,11 +11,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
         public CompositionTests() {
             _rsa = new RSACryptoServiceProvider();
-            var services = new ServiceCollection();
-            services
+            _provider = new ServiceCollection()
                 .AddHttpMessageSignatureVerificationForAspNetCore()
-                .UseClientStore<InMemoryClientStore>();
-            _provider = services.BuildServiceProvider();
+                .Services
+                .BuildServiceProvider();
         }
 
         public void Dispose() {

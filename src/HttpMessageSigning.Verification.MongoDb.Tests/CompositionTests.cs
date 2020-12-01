@@ -1,24 +1,30 @@
 ﻿using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    public class CompositionTests : IDisposable {
+    public class CompositionTests : MongoIntegrationTest, IDisposable {
         private readonly ServiceProvider _provider;
+        private readonly string _connectionString;
 
-        public CompositionTests() {
+        public CompositionTests(MongoSetup mongoSetup)
+            : base(mongoSetup) {
+            _connectionString = mongoSetup.MongoServerConnectionString.TrimEnd('/') + '/' + mongoSetup.DatabaseName;
             _provider = new ServiceCollection()
                 .AddHttpMessageSignatureVerification()
                 .UseMongoDbClientStore(new MongoDbClientStoreSettings {
                     CollectionName = "clients",
-                    ConnectionString = "mongodb://localhost:27017/Auth",
+                    ConnectionString = _connectionString,
                     ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
                 })
                 .UseMongoDbNonceStore(new MongoDbNonceStoreSettings {
                     CollectionName = "nonces",
-                    ConnectionString = "mongodb://localhost:27017/Auth"
+                    ConnectionString = _connectionString
                 })
+                .Services
                 .BuildServiceProvider();
         }
 
@@ -46,6 +52,37 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             act.Should().NotThrow();
             actualInstance.Should().NotBeNull();
             actualInstance.Should().BeAssignableTo(expectedType);
+        }
+
+        [Fact]
+        public async Task RegistersClientsInMongo() {
+            using (var provider = new ServiceCollection()
+                .AddHttpMessageSignatureVerification()
+                .UseMongoDbClientStore(new MongoDbClientStoreSettings {
+                    CollectionName = "clients",
+                    ConnectionString = _connectionString,
+                    ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
+                })
+                .UseMongoDbNonceStore(new MongoDbNonceStoreSettings {
+                    CollectionName = "nonces",
+                    ConnectionString = _connectionString
+                })
+                .UseClient(Client.Create(
+                    "e0e8dcd638334c409e1b88daf821d135",
+                    "HttpMessageSigningSampleHMAC",
+                    SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
+                    options => options.Claims = new [] {
+                        new Claim(SignedHttpRequestClaimTypes.Role, "users.read")
+                    }
+                ))
+                .Services
+                .BuildServiceProvider()) {
+                var clientStore = provider.GetRequiredService<IClientStore>();
+                clientStore.Should().BeAssignableTo<CachingMongoDbClientStore>();
+                var registeredClient = await clientStore.Get("e0e8dcd638334c409e1b88daf821d135");
+                registeredClient.Should().NotBeNull();
+                registeredClient.Name.Should().Be("HttpMessageSigningSampleHMAC");
+            }
         }
     }
 }

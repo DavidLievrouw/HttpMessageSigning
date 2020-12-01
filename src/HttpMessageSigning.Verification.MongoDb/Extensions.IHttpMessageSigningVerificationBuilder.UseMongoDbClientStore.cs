@@ -57,10 +57,11 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                             prov.GetRequiredService<IClientStoreBaseliner>()),
                         prov.GetRequiredService<IClientStoreBaseliner>(),
                         prov.GetRequiredService<ISemaphoreFactory>()))
-                .AddSingleton<IClientStoreMigrationStep, AddEncryptionSupportToClientsMigrationStep>()
+                .AddSingleton<IClientStoreMigrationStep, AddEncryptionSupportToClientsMigrationStep>();
 
+            return builder
                 // The actual store
-                .AddSingleton<IClientStore>(prov => {
+                .UseClientStore(prov => {
                     var mongoSettings = prov.GetRequiredService<MongoDbClientStoreSettings>();
                     return new CachingMongoDbClientStore(
                         new MongoDbClientStore(
@@ -72,8 +73,6 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                         mongoSettings.ClientCacheEntryExpiration,
                         prov.GetRequiredService<IBackgroundTaskStarter>());
                 });
-
-            return builder;
         }
     }
 }

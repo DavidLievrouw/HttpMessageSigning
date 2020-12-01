@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 
         public ClientStoreBaselinerTests(MongoSetup mongoSetup)
             : base(mongoSetup) {
-            _collectionName = "clients";
+            _collectionName = "clients_" + Guid.NewGuid();
             _sut = new ClientStoreBaseliner(
                 new RealSystemClock(),
                 new MongoDatabaseClientProvider(Database),

@@ -15,6 +15,11 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// <param name="client">The <see cref="Client" /> to register.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
         IHttpMessageSigningVerificationBuilder UseClient(Client client);
+
+        /// <summary>Register a <see cref="Client"/> in the <see cref="IClientStore"/>.</summary>
+        /// <param name="clientFactory">The factory that creates the <see cref="Client" /> to register.</param>
+        /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
+        IHttpMessageSigningVerificationBuilder UseClient(Func<IServiceProvider, Client> clientFactory);
         
         /// <summary>Configures HTTP message signature verification to use the specified <see cref="IClientStore"/>.</summary>
         /// <typeparam name="TClientStore">The type of the <see cref="IClientStore" /> that is to be used.</typeparam>

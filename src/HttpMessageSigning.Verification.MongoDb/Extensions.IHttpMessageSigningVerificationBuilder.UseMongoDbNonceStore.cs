@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         /// <param name="nonceStoreSettings">The settings for the Mongo connection.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
         [ExcludeFromCodeCoverage]
-        public static IServiceCollection UseMongoDbNonceStore(this IHttpMessageSigningVerificationBuilder builder, MongoDbNonceStoreSettings nonceStoreSettings) {
+        public static IHttpMessageSigningVerificationBuilder UseMongoDbNonceStore(this IHttpMessageSigningVerificationBuilder builder, MongoDbNonceStoreSettings nonceStoreSettings) {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (nonceStoreSettings == null) throw new ArgumentNullException(nameof(nonceStoreSettings));
 
@@ -21,13 +21,13 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         /// <param name="builder">The <see cref="IHttpMessageSigningVerificationBuilder" /> that is used to configure verification.</param>
         /// <param name="nonceStoreSettingsFactory">The factory that creates the settings for the Mongo connection.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
-        public static IServiceCollection UseMongoDbNonceStore(
+        public static IHttpMessageSigningVerificationBuilder UseMongoDbNonceStore(
             this IHttpMessageSigningVerificationBuilder builder,
             Func<IServiceProvider, MongoDbNonceStoreSettings> nonceStoreSettingsFactory) {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (nonceStoreSettingsFactory == null) throw new ArgumentNullException(nameof(nonceStoreSettingsFactory));
 
-            return builder.Services
+            builder.Services
                 .AddMemoryCache()
                 .AddSingleton<INonceStore>(prov => {
                     var mongoSettings = nonceStoreSettingsFactory(prov);
@@ -38,6 +38,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                             mongoSettings.CollectionName),
                         prov.GetRequiredService<IMemoryCache>());
                 });
+
+            return builder;
         }
     }
 }

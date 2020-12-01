@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
         public MongoDbClientStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
             _migrator = A.Fake<IClientStoreMigrator>();
-            _collectionName = "clients";
+            _collectionName = "clients_" + Guid.NewGuid();
             _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
             _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey, _migrator);
         }
