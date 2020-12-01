@@ -14,7 +14,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         public static IHttpMessageSigningVerificationBuilder AddHttpMessageSignatureVerificationForAspNetCore(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
-            return services.AddHttpMessageSignatureVerification()
+            return services
+                .AddHttpMessageSignatureVerification()
                 .UseAspNetCoreSignatureVerification();
         }
         
@@ -77,7 +78,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (services == null) throw new ArgumentNullException(nameof(services));
             if (clientStoreFactory == null) throw new ArgumentNullException(nameof(clientStoreFactory));
 
-            return Verification.Extensions.AddHttpMessageSignatureVerification(services).Services
+            return services
+                .AddHttpMessageSignatureVerification().Services
                 .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))
                 .AddSingleton(clientStoreFactory)
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
