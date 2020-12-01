@@ -12,7 +12,8 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         public CompositionTests() {
             _rsa = new RSACryptoServiceProvider();
             _provider = new ServiceCollection()
-                .AddHttpMessageSignatureVerificationForAspNetCore()
+                .AddHttpMessageSignatureVerification()
+                .UseAspNetCoreSignatureVerification()
                 .Services
                 .BuildServiceProvider();
         }

@@ -10,6 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
         /// <summary>Adds http message signature verification and ASP.NET Core authentication middleware registrations to the specified <see cref="IServiceCollection" />.</summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to configure the verification settings.</returns>
+        [Obsolete("Please use the '" + nameof(Verification.Extensions.AddHttpMessageSignatureVerification) + "' and '" + nameof(UseOwinSignatureVerification) + "' methods instead.")]
         [ExcludeFromCodeCoverage]
         public static IHttpMessageSigningVerificationBuilder AddHttpMessageSignatureVerificationForOwin(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));

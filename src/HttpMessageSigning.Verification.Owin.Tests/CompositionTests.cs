@@ -9,7 +9,8 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
         public CompositionTests() {
             _serviceProvider = new ServiceCollection()
-                .AddHttpMessageSignatureVerificationForOwin()
+                .AddHttpMessageSignatureVerification()
+                .UseOwinSignatureVerification()
                 .Services
                 .BuildServiceProvider();
         }

@@ -62,7 +62,8 @@ namespace Dalion.HttpMessageSigning.ExtensionPoints {
                 .UseHeaders((HeaderName)"Dalion-App-Id")
                 .UseOnRequestSigningEvent(OnRequestSigning)
                 .Services
-                .AddHttpMessageSignatureVerificationForAspNetCore()
+                .AddHttpMessageSignatureVerification()
+                .UseAspNetCoreSignatureVerification()
                 .UseClient(Client.Create(
                     "e0e8dcd638334c409e1b88daf821d135",
                     "HttpMessageSigningSampleHMAC",

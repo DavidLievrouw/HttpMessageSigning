@@ -10,6 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         /// <summary>Adds http message signature verification and ASP.NET Core authentication scheme registrations to the specified <see cref="IServiceCollection" />.</summary>
         /// <param name="services">The <see cref="IServiceCollection" /> to add the registrations to.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to configure the verification settings.</returns>
+        [Obsolete("Please use the '" + nameof(Verification.Extensions.AddHttpMessageSignatureVerification) + "' and '" + nameof(UseAspNetCoreSignatureVerification) + "' methods instead.")]
         [ExcludeFromCodeCoverage]
         public static IHttpMessageSigningVerificationBuilder AddHttpMessageSignatureVerificationForAspNetCore(this IServiceCollection services) {
             if (services == null) throw new ArgumentNullException(nameof(services));
