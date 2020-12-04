@@ -63,6 +63,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.TestUtil
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{42720029-05B9-4218-AFEE-7AB1BFBBFF5B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperDuperHappySigner", "SuperDuperHappySigner\SuperDuperHappySigner.csproj", "{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,6 +151,10 @@ Global
 		{C7CB3E4C-0FC6-48C1-A6F3-D0C7E1266C39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7CB3E4C-0FC6-48C1-A6F3-D0C7E1266C39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7CB3E4C-0FC6-48C1-A6F3-D0C7E1266C39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,6 +174,7 @@ Global
 		{4433F591-0913-479E-841F-DFE488A3B9C0} = {42720029-05B9-4218-AFEE-7AB1BFBBFF5B}
 		{2CE6490A-22C1-45D9-B1A5-68EA5A6E8B3B} = {42720029-05B9-4218-AFEE-7AB1BFBBFF5B}
 		{4A777E51-F403-441B-97AD-163FDBC2606E} = {42720029-05B9-4218-AFEE-7AB1BFBBFF5B}
+		{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4} = {7F243637-0E5C-451F-9547-D0B75A47204F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63BB98B6-3033-441E-9DF6-007C8C6FE0C4}
