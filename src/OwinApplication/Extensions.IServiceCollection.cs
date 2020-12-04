@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Security.Cryptography;
 using Dalion.HttpMessageSigning;
 using Dalion.HttpMessageSigning.Verification;
@@ -8,10 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace OwinApplication {
-    public static class IocStartup {
-        public static IServiceProvider BuildServiceProvider() {
-            var services = new ServiceCollection();
-
+    public static class Extensions {
+        public static IServiceCollection ConfigureServices(this IServiceCollection services) {
             services
                 .AddLogging(builder => {
                     builder
@@ -32,7 +29,7 @@ namespace OwinApplication {
                         })
                 );
 
-            return services.BuildServiceProvider();
+            return services;
         }
     }
 }
