@@ -22,7 +22,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 .AddSingleton<INonceStore, InMemoryNonceStore>()
                 .AddSingleton<INonceAppender, NonceAppender>()
                 .AddSingleton<ISystemClock, RealSystemClock>()
-                .AddSingleton<IClaimsPrincipalFactory>(new ClaimsPrincipalFactory(typeof(ISignatureVerifier).Assembly.GetName().Version.ToString(2)))
+                .AddSingleton<IClaimsPrincipalFactory>(new DefaultClaimsPrincipalFactory())
                 .AddSingleton<IDefaultSignatureHeadersProvider, DefaultSignatureHeadersProvider>()
                 .AddSingleton<ISignatureSanitizer, SignatureSanitizer>()
                 .AddSingleton<IRequestTargetEscaper>(provider => new CompositeRequestTargetEscaper(

@@ -3,12 +3,11 @@ using System.Linq;
 using System.Security.Claims;
 
 namespace Dalion.HttpMessageSigning.Verification {
-    internal class ClaimsPrincipalFactory : IClaimsPrincipalFactory {
+    internal class DefaultClaimsPrincipalFactory : IClaimsPrincipalFactory {
         private readonly string _version;
 
-        public ClaimsPrincipalFactory(string version) {
-            if (string.IsNullOrEmpty(version)) throw new ArgumentException("Value cannot be null or empty.", nameof(version));
-            _version = version;
+        public DefaultClaimsPrincipalFactory() {
+            _version = typeof(ISignatureVerifier).Assembly.GetName().Version.ToString(2);
         }
 
         public ClaimsPrincipal CreateForClient(Client client) {
