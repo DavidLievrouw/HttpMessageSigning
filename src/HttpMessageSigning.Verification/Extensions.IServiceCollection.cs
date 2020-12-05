@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new OriginalStringRequestTargetEscaper()))
                 .AddSingleton<IHeaderAppenderFactory, HeaderAppenderFactory>()
                 .AddSingleton<ISigningStringComposer, SigningStringComposer>()
-                .AddSingleton<IVerificationResultCreatorFactory, VerificationResultCreatorFactory>()
+                .AddScoped<IVerificationResultCreatorFactory, VerificationResultCreatorFactory>()
                 .AddSingleton<ISigningStringCompositionRequestFactory, SigningStringCompositionRequestFactory>()
                 .AddSingleton<ISignatureVerifier>(provider => new SignatureVerifier(
                     provider.GetRequiredService<ISignatureSanitizer>(),
@@ -58,7 +58,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                         provider.GetRequiredService<IBase64Converter>(),
                         provider.GetRequiredService<ISigningStringCompositionRequestFactory>(),
                         provider.GetService<ILogger<MatchingSignatureStringVerificationTask>>())))
-                .AddSingleton<IRequestSignatureVerificationOrchestrator, RequestSignatureVerificationOrchestrator>();
+                .AddScoped<IRequestSignatureVerificationOrchestrator, RequestSignatureVerificationOrchestrator>();
             
             return new HttpMessageSigningVerificationBuilder(services); 
         }
