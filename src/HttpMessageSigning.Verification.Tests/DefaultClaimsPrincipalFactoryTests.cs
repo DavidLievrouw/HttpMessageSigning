@@ -5,27 +5,20 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification {
-    public class ClaimsPrincipalFactoryTests {
-        private readonly ClaimsPrincipalFactory _sut;
-        private readonly string _version;
+    public class DefaultClaimsPrincipalFactoryTests {
+        private readonly DefaultClaimsPrincipalFactory _sut;
 
-        public ClaimsPrincipalFactoryTests() {
-            _version = "2.0";
-            _sut = new ClaimsPrincipalFactory(_version);
-        }
-
-        public class Construction : ClaimsPrincipalFactoryTests {
-            [Theory]
-            [InlineData(null)]
-            [InlineData("")]
-            public void DoesNotAllowNullOrEmptyVersion(string nullOrEmpty) {
-                // ReSharper disable once ObjectCreationAsStatement
-                Action act = () => new ClaimsPrincipalFactory(nullOrEmpty);
-                act.Should().Throw<ArgumentException>();
-            }
+        public DefaultClaimsPrincipalFactoryTests() {
+            _sut = new DefaultClaimsPrincipalFactory();
         }
         
-        public class CreateForClient : ClaimsPrincipalFactoryTests {
+        public class CreateForClient : DefaultClaimsPrincipalFactoryTests {
+            private readonly string _version;
+
+            public CreateForClient() {
+                _version = typeof(ISignatureVerifier).Assembly.GetName().Version.ToString(2);
+            }
+
             [Fact]
             public void GivenNullClient_ThrowsArgumentNullException() {
                 Action act = () => _sut.CreateForClient(null);

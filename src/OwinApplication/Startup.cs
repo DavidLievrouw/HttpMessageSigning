@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Dalion.HttpMessageSigning.Verification.Owin;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -16,8 +17,9 @@ using Owin;
 namespace OwinApplication {
     public class Startup {
         public void Configuration(IAppBuilder app) {
+            var provider = new ServiceCollection().ConfigureServices();
             var config = new HttpConfiguration {
-                DependencyResolver = new DefaultDependencyResolver(IocStartup.BuildServiceProvider())
+                DependencyResolver = new DefaultDependencyResolver(provider.BuildServiceProvider())
             };
 
             config.Routes.MapHttpRoute(

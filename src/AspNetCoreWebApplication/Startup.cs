@@ -1,6 +1,5 @@
 using System;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning;
 using Dalion.HttpMessageSigning.Verification;
@@ -34,8 +33,15 @@ namespace WebApplication {
                 /* Sample for InMemoryClientStore */
                 .AddHttpMessageSignatureVerification()
                 .UseAspNetCoreSignatureVerification()
+                .UseClient(
+                    Client.Create(
+                        new KeyId("e0e8dcd638334c409e1b88daf821d135"),
+                        "Sample client",
+                        SignatureAlgorithm.CreateForVerification("G#6l$!D16E2UPoYKu&oL@AjAOj9vipKJTSII%*8iY*q6*MOis2R"),
+                        options => options.Claims = new[] {new Claim(SignedHttpRequestClaimTypes.Role, "user.read")})
+                )
 
-                /* Sample for MongoDbClientStore */
+                /* Sample for storing Clients and Nonces in MongoDB instead of in-memory */
                 /*.UseMongoDbClientStore(provider => new MongoDbClientStoreSettings {
                     ConnectionString = "mongodb://localhost:27017/HttpMessageSigningDb",
                     CollectionName = "known_clients",
@@ -53,20 +59,7 @@ namespace WebApplication {
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
-
-            // Register sample client
-            var clientStore = app.ApplicationServices.GetRequiredService<IClientStore>();
-            clientStore
-                .Register(new Client(
-                    new KeyId("e0e8dcd638334c409e1b88daf821d135"),
-                    "HttpMessageSigningSampleHMAC",
-                    SignatureAlgorithm.CreateForVerification("G#6l$!D16E2UPoYKu&oL@AjAOj9vipKJTSII%*8iY*q6*MOis2R", HashAlgorithmName.SHA512),
-                    TimeSpan.FromMinutes(5),
-                    TimeSpan.FromMinutes(1),
-                    RequestTargetEscaping.RFC3986,
-                    new Claim(SignedHttpRequestClaimTypes.Role, "user.read")))
-                .GetAwaiter().GetResult();
-
+            
             app
                 .UseRouting()
                 .UseAuthentication()
