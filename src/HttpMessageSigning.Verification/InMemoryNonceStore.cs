@@ -4,7 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
-    ///     Represents a <see cref="IClientStore" /> implementation that stores clients in memory.
+    ///     Represents a <see cref="INonceStore" /> implementation that stores clients in memory.
     /// </summary>
     public class InMemoryNonceStore : INonceStore {
         private readonly IMemoryCache _cache;
