@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
             builder.Services
                 .AddSingleton<ISignatureParser>(prov => new SignatureParser(prov.GetService<ILogger<SignatureParser>>()))
-                .AddScoped<IRequestSignatureVerifier, RequestSignatureVerifier>();
+                .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
 
             return builder;
         }
