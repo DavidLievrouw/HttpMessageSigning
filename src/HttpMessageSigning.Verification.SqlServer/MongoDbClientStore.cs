@@ -6,7 +6,7 @@ using MongoDB.Driver;
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     internal class MongoDbClientStore : IMongoDbClientStore {
         private readonly SharedSecretEncryptionKey _encryptionKey;
-        private readonly Lazy<IMongoCollection<ClientDataRecordV2>> _lazyCollection;
+        private readonly Lazy<IMongoCollection<ClientDataRecord>> _lazyCollection;
 
         public MongoDbClientStore(
             IMongoDatabaseClientProvider clientProvider, 
@@ -16,9 +16,9 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             if (string.IsNullOrEmpty(collectionName)) throw new ArgumentException("Value cannot be null or empty.", nameof(collectionName));
             _encryptionKey = encryptionKey;
 
-            _lazyCollection = new Lazy<IMongoCollection<ClientDataRecordV2>>(() => {
+            _lazyCollection = new Lazy<IMongoCollection<ClientDataRecord>>(() => {
                 var database = clientProvider.Provide();
-                return database.GetCollection<ClientDataRecordV2>(collectionName);
+                return database.GetCollection<ClientDataRecord>(collectionName);
             });
         }
 
@@ -31,7 +31,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             
             if (IsProhibitedId(client.Id)) throw new ArgumentException($"The id value of the specified {nameof(Client)} is prohibited ({client.Id}).", nameof(client));
             
-            var record = new ClientDataRecordV2 {
+            var record = new ClientDataRecord {
                 Id = client.Id,
                 Name = client.Name,
                 NonceLifetime = client.NonceLifetime.TotalSeconds,

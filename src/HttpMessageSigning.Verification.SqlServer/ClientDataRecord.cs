@@ -1,10 +1,9 @@
-﻿using System;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     [BsonIgnoreExtraElements]
-    internal class ClientDataRecordV2 {
+    internal class ClientDataRecord {
         [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
         public string Id { get; set; }
 
@@ -15,12 +14,9 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         public string RequestTargetEscaping { get; set; }
         public int? V { get; set; }
         public double? NonceLifetime { get; set; }
-
-        [Obsolete("Please use the " + nameof(NonceLifetime) + " property instead.")]
-        public double? NonceExpiration  { get; set; }
-
+        
         public int GetV() {
-            return 2;
+            return 1;
         }
     }
 }
