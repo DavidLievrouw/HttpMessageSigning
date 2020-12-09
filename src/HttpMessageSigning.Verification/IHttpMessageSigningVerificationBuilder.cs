@@ -35,5 +35,20 @@ namespace Dalion.HttpMessageSigning.Verification {
         /// <param name="clientStoreFactory">The factory that creates the <see cref="IClientStore" /> that is to be used.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
         IHttpMessageSigningVerificationBuilder UseClientStore(Func<IServiceProvider, IClientStore> clientStoreFactory);
+        
+        /// <summary>Configures HTTP message signature verification to use the specified <see cref="IClaimsPrincipalFactory"/>.</summary>
+        /// <typeparam name="TClaimsPrincipalFactory">The type of the <see cref="IClaimsPrincipalFactory" /> that is to be used.</typeparam>
+        /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
+        IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory<TClaimsPrincipalFactory>() where TClaimsPrincipalFactory : IClaimsPrincipalFactory;
+        
+        /// <summary>Configures HTTP message signature verification to use the specified <see cref="IClaimsPrincipalFactory"/>.</summary>
+        /// <param name="claimsPrincipalFactory">The <see cref="IClaimsPrincipalFactory" /> that is to be used.</param>
+        /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
+        IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory(IClaimsPrincipalFactory claimsPrincipalFactory);
+        
+        /// <summary>Configures HTTP message signature verification to use the specified <see cref="IClaimsPrincipalFactory"/>.</summary>
+        /// <param name="claimsPrincipalFactoryFactory">The factory that creates the <see cref="IClaimsPrincipalFactory" /> that is to be used.</param>
+        /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
+        IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory(Func<IServiceProvider, IClaimsPrincipalFactory> claimsPrincipalFactoryFactory);
     }
 }

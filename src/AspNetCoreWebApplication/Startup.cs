@@ -30,7 +30,7 @@ namespace WebApplication {
                     };
                 }).Services
 
-                /* Sample for InMemoryClientStore */
+                /* Sample for InMemoryClientStore and InMemoryNonceStore */
                 .AddHttpMessageSignatureVerification()
                 .UseAspNetCoreSignatureVerification()
                 .UseClient(
@@ -53,9 +53,9 @@ namespace WebApplication {
                     CollectionName = "client_nonces"
                 })*/
                 
-                .Services
-                .AddHttpContextAccessor()
-                .AddSingleton<IClaimsPrincipalFactory, CustomClaimsPrincipalFactory>();
+                .UseClaimsPrincipalFactory<CustomClaimsPrincipalFactory>().Services
+                .AddSingleton<CustomClaimsPrincipalFactory>()
+                .AddHttpContextAccessor();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

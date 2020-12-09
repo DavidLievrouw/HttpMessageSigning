@@ -28,8 +28,8 @@ namespace OwinApplication {
                             };
                         })
                 )
-                .Services
-                .AddSingleton<IClaimsPrincipalFactory, CustomClaimsPrincipalFactory>();
+                .UseClaimsPrincipalFactory<CustomClaimsPrincipalFactory>().Services
+                .AddSingleton<CustomClaimsPrincipalFactory>();
         }
     }
 }

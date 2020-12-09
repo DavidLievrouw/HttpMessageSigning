@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             Services = services ?? throw new ArgumentNullException(nameof(services));
 
             ClientFactories = new List<Func<IServiceProvider, Client>>();
-            
+
             _clientStore = new InMemoryClientStore();
             UseClientStore(prov => _clientStore);
         }
@@ -59,8 +59,27 @@ namespace Dalion.HttpMessageSigning.Verification {
                             .GetResult();
                     }
                 }
+
                 return _clientStore;
             });
+
+            return this;
+        }
+
+        public IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory<TClaimsPrincipalFactory>() where TClaimsPrincipalFactory : IClaimsPrincipalFactory {
+            return UseClaimsPrincipalFactory(provider => provider.GetRequiredService<TClaimsPrincipalFactory>());
+        }
+
+        public IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory(IClaimsPrincipalFactory claimsPrincipalFactory) {
+            if (claimsPrincipalFactory == null) throw new ArgumentNullException(nameof(claimsPrincipalFactory));
+
+            return UseClaimsPrincipalFactory(provider => claimsPrincipalFactory);
+        }
+
+        public IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory(Func<IServiceProvider, IClaimsPrincipalFactory> claimsPrincipalFactoryFactory) {
+            if (claimsPrincipalFactoryFactory == null) throw new ArgumentNullException(nameof(claimsPrincipalFactoryFactory));
+
+            Services.AddSingleton(claimsPrincipalFactoryFactory);
 
             return this;
         }
