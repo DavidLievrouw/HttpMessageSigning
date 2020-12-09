@@ -65,6 +65,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{42720029
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperDuperHappySigner", "SuperDuperHappySigner\SuperDuperHappySigner.csproj", "{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.SqlServer.Tests", "HttpMessageSigning.Verification.SqlServer.Tests\HttpMessageSigning.Verification.SqlServer.Tests.csproj", "{B8F4CCA1-DFA7-495B-91CB-771C79F3AABD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMessageSigning.Verification.SqlServer", "HttpMessageSigning.Verification.SqlServer\HttpMessageSigning.Verification.SqlServer.csproj", "{98D136EC-0849-4763-844D-43D25205AF99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,6 +159,14 @@ Global
 		{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8F4CCA1-DFA7-495B-91CB-771C79F3AABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8F4CCA1-DFA7-495B-91CB-771C79F3AABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8F4CCA1-DFA7-495B-91CB-771C79F3AABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8F4CCA1-DFA7-495B-91CB-771C79F3AABD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98D136EC-0849-4763-844D-43D25205AF99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98D136EC-0849-4763-844D-43D25205AF99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98D136EC-0849-4763-844D-43D25205AF99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98D136EC-0849-4763-844D-43D25205AF99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -175,6 +187,7 @@ Global
 		{2CE6490A-22C1-45D9-B1A5-68EA5A6E8B3B} = {42720029-05B9-4218-AFEE-7AB1BFBBFF5B}
 		{4A777E51-F403-441B-97AD-163FDBC2606E} = {42720029-05B9-4218-AFEE-7AB1BFBBFF5B}
 		{9302D4AD-9EE5-4142-AE05-EF2E0EA34FC4} = {7F243637-0E5C-451F-9547-D0B75A47204F}
+		{B8F4CCA1-DFA7-495B-91CB-771C79F3AABD} = {42720029-05B9-4218-AFEE-7AB1BFBBFF5B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63BB98B6-3033-441E-9DF6-007C8C6FE0C4}

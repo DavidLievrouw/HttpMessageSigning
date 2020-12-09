@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net472;netcoreapp2.1;netcoreapp3.1;net5</TargetFrameworks>
+        <AssemblyName>Dalion.HttpMessageSigning.Verification.SqlServer.Tests</AssemblyName>
+        <RootNamespace>Dalion.HttpMessageSigning.Verification.SqlServer</RootNamespace>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <Target Name="InitVersion" BeforeTargets="BeforeBuild">
+        <ReadLinesFromFile File="..\..\version.txt">
+            <Output TaskParameter="Lines" PropertyName="PackageVersion" />
+        </ReadLinesFromFile>
+        <PropertyGroup>
+            <BuildCounter Condition="'$(BuildCounter)'==''">0</BuildCounter>
+            <ProductVersion Condition="'$(ProductVersion)'=='' And $(PackageVersion.IndexOf('-')) &gt; -1">$(PackageVersion.Substring(0, $(PackageVersion.IndexOf('-')))).$(BuildCounter)</ProductVersion>
+            <ProductVersion Condition="'$(ProductVersion)'=='' And $(PackageVersion.IndexOf('-')) &lt; 0">$(PackageVersion).$(BuildCounter)</ProductVersion>
+            <Version>$(ProductVersion)</Version>
+            <InformationalVersion>$(ProductVersion)</InformationalVersion>
+        </PropertyGroup>
+    </Target>
+
+    <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
+        <DefineConstants>NETFULL;NETSTANDARD;NETFRAMEWORK;NET472</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+        <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP2_1</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+        <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP3_1</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net5'">
+        <DefineConstants>NETCORE;NETSTANDARD;NET5</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
+        <PackageReference Include="CompareNETObjects" Version="4.65.0" />
+        <PackageReference Include="coverlet.msbuild" Version="2.8.0" />
+        <PackageReference Include="FakeItEasy" Version="6.0.0" />
+        <PackageReference Include="FluentAssertions" Version="5.10.3" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+        <PackageReference Include="Mongo2Go" Version="2.2.12" />
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector" Version="1.2.0" />
+    </ItemGroup>
+    
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='net5'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\HttpMessageSigning.TestUtils\HttpMessageSigning.TestUtils.csproj" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification.SqlServer\HttpMessageSigning.Verification.SqlServer.csproj" />
+    </ItemGroup>
+
+</Project>
