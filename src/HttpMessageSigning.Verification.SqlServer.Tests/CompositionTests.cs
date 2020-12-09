@@ -6,13 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    public class CompositionTests : MongoIntegrationTest, IDisposable {
+    public class CompositionTests : IDisposable {
         private readonly ServiceProvider _provider;
         private readonly string _connectionString;
 
-        public CompositionTests(MongoSetup mongoSetup)
-            : base(mongoSetup) {
-            _connectionString = mongoSetup.MongoServerConnectionString.TrimEnd('/') + '/' + mongoSetup.DatabaseName;
+        public CompositionTests() {
+            _connectionString = "ToDo";
             _provider = new ServiceCollection()
                 .AddHttpMessageSignatureVerification()
                 .UseSqlServerClientStore(new SqlServerClientStoreSettings {
@@ -55,7 +54,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         }
 
         [Fact]
-        public async Task RegistersClientsInMongo() {
+        public async Task RegistersClientsInStore() {
             using (var provider = new ServiceCollection()
                 .AddHttpMessageSignatureVerification()
                 .UseSqlServerClientStore(new SqlServerClientStoreSettings {

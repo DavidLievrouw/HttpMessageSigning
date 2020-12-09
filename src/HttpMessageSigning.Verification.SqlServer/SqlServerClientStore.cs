@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     internal class SqlServerClientStore : ISqlServerClientStore {
         private readonly SharedSecretEncryptionKey _encryptionKey;
-        private readonly Lazy<IMongoCollection<ClientDataRecord>> _lazyCollection;
 
         public SqlServerClientStore(
-            IMongoDatabaseClientProvider clientProvider, 
             string collectionName, 
             SharedSecretEncryptionKey encryptionKey) {
-            if (clientProvider == null) throw new ArgumentNullException(nameof(clientProvider));
             if (string.IsNullOrEmpty(collectionName)) throw new ArgumentException("Value cannot be null or empty.", nameof(collectionName));
             _encryptionKey = encryptionKey;
-
-            _lazyCollection = new Lazy<IMongoCollection<ClientDataRecord>>(() => {
-                var database = clientProvider.Provide();
-                return database.GetCollection<ClientDataRecord>(collectionName);
-            });
         }
 
         public void Dispose() {
@@ -42,9 +33,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             };
             record.V = record.GetV();
 
-            var collection = _lazyCollection.Value;
-
-            await collection.ReplaceOneAsync(r => r.Id == record.Id, record, new ReplaceOptions {IsUpsert = true});
+            throw new NotImplementedException();
         }
 
         public async Task<Client> Get(KeyId clientId) {
@@ -52,7 +41,8 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             
             if (IsProhibitedId(clientId)) return null;
             
-            var collection = _lazyCollection.Value;
+            throw new NotImplementedException();
+            /*var collection = _lazyCollection.Value;
 
             var findResult = await collection.FindAsync(r => r.Id == clientId).ConfigureAwait(continueOnCapturedContext: false);
             var matches = await findResult.ToListAsync().ConfigureAwait(continueOnCapturedContext: false);
@@ -82,7 +72,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 nonceLifetime,
                 clockSkew,
                 requestTargetEscaping,
-                match.Claims?.Select(c => c.ToClaim())?.ToArray());
+                match.Claims?.Select(c => c.ToClaim())?.ToArray());*/
         }
         
         private static bool IsProhibitedId(KeyId id) {

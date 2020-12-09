@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    [BsonIgnoreExtraElements]
     internal class ClaimDataRecord {
         public string Issuer { get; set; }
         public string OriginalIssuer { get; set; }

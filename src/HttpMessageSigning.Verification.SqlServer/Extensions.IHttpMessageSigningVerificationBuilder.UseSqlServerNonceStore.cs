@@ -30,12 +30,10 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             builder.Services
                 .AddMemoryCache()
                 .AddSingleton<INonceStore>(prov => {
-                    var mongoSettings = nonceStoreSettingsFactory(prov);
-                    if (mongoSettings == null) throw new ValidationException($"Invalid {nameof(SqlServerNonceStoreSettings)} were specified.");
-                    mongoSettings.Validate();
-                    return new CachingSqlServerNonceStore(new SqlServerNonceStore(
-                            new MongoDatabaseClientProvider(mongoSettings.ConnectionString),
-                            mongoSettings.TableName),
+                    var sqlSettings = nonceStoreSettingsFactory(prov);
+                    if (sqlSettings == null) throw new ValidationException($"Invalid {nameof(SqlServerNonceStoreSettings)} were specified.");
+                    sqlSettings.Validate();
+                    return new CachingSqlServerNonceStore(new SqlServerNonceStore(sqlSettings.TableName),
                         prov.GetRequiredService<IMemoryCache>());
                 });
 

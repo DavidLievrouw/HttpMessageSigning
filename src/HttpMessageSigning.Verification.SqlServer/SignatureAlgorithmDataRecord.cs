@@ -2,10 +2,8 @@
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    [BsonIgnoreExtraElements]
     internal class SignatureAlgorithmDataRecord {
         public string Type { get; set; }
         public string Parameter { get; set; }

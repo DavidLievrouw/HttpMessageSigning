@@ -8,7 +8,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
         public SqlServerClientStoreSettingsTests() {
             _sut = new SqlServerClientStoreSettings {
-                ConnectionString = "mongodb://localhost:27017/DbForTests?connectTimeoutMS=60000",
+                ConnectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;",
                 TableName = "signatureclients",
                 ClientCacheEntryExpiration = TimeSpan.FromMinutes(3)
             };

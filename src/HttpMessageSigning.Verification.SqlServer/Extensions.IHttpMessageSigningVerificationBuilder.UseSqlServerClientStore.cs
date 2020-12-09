@@ -37,23 +37,18 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     if (settings == null) throw new ValidationException($"Invalid {nameof(SqlServerClientStoreSettings)} were specified.");
                     settings.Validate();
                     return settings;
-                })
-                .AddSingleton<IMongoDatabaseClientProvider>(prov => {
-                    var mongoSettings = prov.GetRequiredService<SqlServerClientStoreSettings>();
-                    return new MongoDatabaseClientProvider(mongoSettings.ConnectionString);
                 });
 
             return builder
                 // The actual store
                 .UseClientStore(prov => {
-                    var mongoSettings = prov.GetRequiredService<SqlServerClientStoreSettings>();
+                    var sqlSettings = prov.GetRequiredService<SqlServerClientStoreSettings>();
                     return new CachingSqlServerClientStore(
                         new SqlServerClientStore(
-                            prov.GetRequiredService<IMongoDatabaseClientProvider>(),
-                            mongoSettings.TableName,
-                            mongoSettings.SharedSecretEncryptionKey),
+                            sqlSettings.TableName,
+                            sqlSettings.SharedSecretEncryptionKey),
                         prov.GetRequiredService<IMemoryCache>(),
-                        mongoSettings.ClientCacheEntryExpiration,
+                        sqlSettings.ClientCacheEntryExpiration,
                         prov.GetRequiredService<IBackgroundTaskStarter>());
                 });
         }
