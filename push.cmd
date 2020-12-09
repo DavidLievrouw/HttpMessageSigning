@@ -28,6 +28,10 @@ ECHO Press [ENTER] to push the package Dalion.HttpMessageSigning.Verification.Mo
 PAUSE
 dotnet nuget push %PACKAGESDIR%Dalion.HttpMessageSigning.Verification.MongoDb.%VERSION%.nupkg -k %KEY% -s %SOURCE%
 
+ECHO Press [ENTER] to push the package Dalion.HttpMessageSigning.Verification.SqlServer v%VERSION% to nuget.org
+PAUSE
+dotnet nuget push %PACKAGESDIR%Dalion.HttpMessageSigning.Verification.SqlServer.%VERSION%.nupkg -k %KEY% -s %SOURCE%
+
 ECHO Press [ENTER] to push the package Dalion.HttpMessageSigning.Verification.Owin v%VERSION% to nuget.org
 PAUSE
 dotnet nuget push %PACKAGESDIR%Dalion.HttpMessageSigning.Verification.Owin.%VERSION%.nupkg -k %KEY% -s %SOURCE%

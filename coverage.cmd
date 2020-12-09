@@ -102,7 +102,31 @@ if errorlevel 1 (
    exit /b %errorlevel%
 )
 
-dotnet test %SRCDIR%\HttpMessageSigning.Verification.AspNetCore.Tests\HttpMessageSigning.Verification.AspNetCore.Tests.csproj --framework netcoreapp2.1 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:IncludeTestAssembly=true /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude=\"[*Test*]*,[Dalion.HttpMessageSigning.TestUtils]*\" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-aspnetcore.json" /p:MergeWith="../coverage-mongodb.net5.json" /maxcpucount:1
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.SqlServer.Tests\HttpMessageSigning.Verification.SqlServer.Tests.csproj --framework net472 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:IncludeTestAssembly=true /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude=\"[*Test*]*,[Dalion.HttpMessageSigning.TestUtils]*\" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-sqlserver.json" /p:MergeWith="../coverage-mongodb.net5.json" /maxcpucount:1
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.SqlServer.Tests\HttpMessageSigning.Verification.SqlServer.Tests.csproj --framework netcoreapp2.1 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:IncludeTestAssembly=true /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude=\"[*Test*]*,[Dalion.HttpMessageSigning.TestUtils]*\" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-sqlserver.json" /p:MergeWith="../coverage-sqlserver.net472.json" /maxcpucount:1
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.SqlServer.Tests\HttpMessageSigning.Verification.SqlServer.Tests.csproj --framework netcoreapp3.1 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:IncludeTestAssembly=true /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude=\"[*Test*]*,[Dalion.HttpMessageSigning.TestUtils]*\" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-sqlserver.json" /p:MergeWith="../coverage-sqlserver.netcoreapp2.1.json" /maxcpucount:1
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.SqlServer.Tests\HttpMessageSigning.Verification.SqlServer.Tests.csproj --framework net5 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:IncludeTestAssembly=true /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude=\"[*Test*]*,[Dalion.HttpMessageSigning.TestUtils]*\" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-sqlserver.json" /p:MergeWith="../coverage-sqlserver.netcoreapp3.1.json" /maxcpucount:1
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.AspNetCore.Tests\HttpMessageSigning.Verification.AspNetCore.Tests.csproj --framework netcoreapp2.1 /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:IncludeTestAssembly=true /p:UseSourceLink=true /p:Include="[Dalion.HttpMessageSigning*]*" /p:Exclude=\"[*Test*]*,[Dalion.HttpMessageSigning.TestUtils]*\" /p:ExcludeByAttribute=\"Obsolete,ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverage,ExcludeFromCodeCoverageAttribute\" /p:CoverletOutput="../coverage-aspnetcore.json" /p:MergeWith="../coverage-sqlserver.net5.json" /maxcpucount:1
 if errorlevel 1 (
    echo One or more tests failed.
    exit /b %errorlevel%
