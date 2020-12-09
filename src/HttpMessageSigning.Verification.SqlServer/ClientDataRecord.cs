@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
         public string Name { get; set; }
         public SignatureAlgorithmDataRecordV2 SignatureAlgorithm { get; set; }
-        public ClaimDataRecordV2[] Claims { get; set; }
+        public ClaimDataRecord[] Claims { get; set; }
         public double? ClockSkew { get; set; }
         public string RequestTargetEscaping { get; set; }
         public int? V { get; set; }

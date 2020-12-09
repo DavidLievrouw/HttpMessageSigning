@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     [BsonIgnoreExtraElements]
-    internal class ClaimDataRecordV2 {
+    internal class ClaimDataRecord {
         public string Issuer { get; set; }
         public string OriginalIssuer { get; set; }
         public string Type { get; set; }
@@ -15,10 +15,10 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             return new Claim(Type, Value, ValueType, Issuer, OriginalIssuer);
         }
 
-        public static ClaimDataRecordV2 FromClaim(Claim claim) {
+        public static ClaimDataRecord FromClaim(Claim claim) {
             if (claim == null) throw new ArgumentNullException(nameof(claim));
             
-            return new ClaimDataRecordV2 {
+            return new ClaimDataRecord {
                 Issuer = claim.Issuer,
                 Type = claim.Type,
                 Value = claim.Value,

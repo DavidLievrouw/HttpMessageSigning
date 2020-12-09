@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Dalion.HttpMessageSigning.Verification.SqlServer.ClientStoreMigrations;
-using Dalion.HttpMessageSigning.Verification.SqlServer.ClientStoreMigrations.V0002;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,7 +28,6 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             if (clientStoreSettingsFactory == null) throw new ArgumentNullException(nameof(clientStoreSettingsFactory));
 
             builder.Services
-                // Services
                 .AddMemoryCache()
                 .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<IDelayer, Delayer>()
@@ -45,19 +41,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 .AddSingleton<IMongoDatabaseClientProvider>(prov => {
                     var mongoSettings = prov.GetRequiredService<MongoDbClientStoreSettings>();
                     return new MongoDatabaseClientProvider(mongoSettings.ConnectionString);
-                })
-
-                // ClientStore Migrations
-                .AddSingleton<IClientStoreBaseliner, ClientStoreBaseliner>()
-                .AddSingleton<ISemaphoreFactory, SemaphoreFactory>()
-                .AddSingleton<IClientStoreMigrator>(prov =>
-                    new OnlyOnceClientStoreMigrator(
-                        new ClientStoreMigrator(
-                            prov.GetRequiredService<IEnumerable<IClientStoreMigrationStep>>(),
-                            prov.GetRequiredService<IClientStoreBaseliner>()),
-                        prov.GetRequiredService<IClientStoreBaseliner>(),
-                        prov.GetRequiredService<ISemaphoreFactory>()))
-                .AddSingleton<IClientStoreMigrationStep, AddEncryptionSupportToClientsMigrationStep>();
+                });
 
             return builder
                 // The actual store
@@ -67,8 +51,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                         new MongoDbClientStore(
                             prov.GetRequiredService<IMongoDatabaseClientProvider>(),
                             mongoSettings.CollectionName,
-                            mongoSettings.SharedSecretEncryptionKey,
-                            prov.GetRequiredService<IClientStoreMigrator>()),
+                            mongoSettings.SharedSecretEncryptionKey),
                         prov.GetRequiredService<IMemoryCache>(),
                         mongoSettings.ClientCacheEntryExpiration,
                         prov.GetRequiredService<IBackgroundTaskStarter>());

@@ -3,8 +3,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Verification.SqlServer.ClientStoreMigrations;
-using FakeItEasy;
 using FluentAssertions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -16,13 +14,11 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         private readonly MongoDbClientStore _sut;
         private readonly string _collectionName;
         private readonly SharedSecretEncryptionKey _encryptionKey;
-        private readonly IClientStoreMigrator _migrator;
 
         public MongoDbClientStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
-            _migrator = A.Fake<IClientStoreMigrator>();
             _collectionName = "clients_" + Guid.NewGuid();
             _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
-            _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey, _migrator);
+            _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey);
         }
 
         public void Dispose() {
@@ -36,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(null)]
             [InlineData("")]
             public void AllowsForNullOrEmptyEncryptionKey(string nullOrEmpty) {
-                Action act = () => new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty, _migrator);
+                Action act = () => new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty);
                 act.Should().NotThrow();
             }
         }
@@ -63,25 +59,6 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 act.Should().Throw<ArgumentException>();
             }
             
-            [Fact]
-            public async Task PerformsMigrations() {
-                var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
-                var client = new Client(
-                    "c1", 
-                    "app one", 
-                    hmac, 
-                    TimeSpan.FromMinutes(1), 
-                    TimeSpan.FromMinutes(2),
-                    RequestTargetEscaping.RFC2396,
-                    new Claim("company", "Dalion"),
-                    new Claim("scope", "HttpMessageSigning"));
-                
-                await _sut.Register(client);
-
-                A.CallTo(() => _migrator.Migrate())
-                    .MustHaveHappened();
-            }
-
             [Fact]
             public async Task CanRoundTripHMAC() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
@@ -233,7 +210,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(null)]
             [InlineData("")]
             public async Task WhenEncryptionKeyIsNullOrEmpty_DoesNotEncryptHMACSecretInDatabase(string nullOrEmpty) {
-                using (var sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty, _migrator)) {
+                using (var sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty)) {
                     var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                     var client = new Client(
                         "c1",
@@ -269,14 +246,6 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 act.Should().Throw<ArgumentException>();
             }
 
-            [Fact]
-            public async Task PerformsMigrations() {
-                await _sut.Get("c1");
-
-                A.CallTo(() => _migrator.Migrate())
-                    .MustHaveHappened();
-            }
-            
             [Theory]
             [InlineData("_version")]
             public async Task WhenProhibitedIdIsSpecified_ReturnsNull(string prohibitedId) {

@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Dalion.HttpMessageSigning.Verification.SqlServer.ClientStoreMigrations;
 using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     internal class MongoDbClientStore : IMongoDbClientStore {
         private readonly SharedSecretEncryptionKey _encryptionKey;
-        private readonly IClientStoreMigrator _migrator;
         private readonly Lazy<IMongoCollection<ClientDataRecordV2>> _lazyCollection;
 
         public MongoDbClientStore(
             IMongoDatabaseClientProvider clientProvider, 
             string collectionName, 
-            SharedSecretEncryptionKey encryptionKey,
-            IClientStoreMigrator migrator) {
+            SharedSecretEncryptionKey encryptionKey) {
             if (clientProvider == null) throw new ArgumentNullException(nameof(clientProvider));
             if (string.IsNullOrEmpty(collectionName)) throw new ArgumentException("Value cannot be null or empty.", nameof(collectionName));
             _encryptionKey = encryptionKey;
-            _migrator = migrator ?? throw new ArgumentNullException(nameof(migrator));
 
             _lazyCollection = new Lazy<IMongoCollection<ClientDataRecordV2>>(() => {
                 var database = clientProvider.Provide();
@@ -32,8 +28,6 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
         public async Task Register(Client client) {
             if (client == null) throw new ArgumentNullException(nameof(client));
-
-            await _migrator.Migrate();
             
             if (IsProhibitedId(client.Id)) throw new ArgumentException($"The id value of the specified {nameof(Client)} is prohibited ({client.Id}).", nameof(client));
             
@@ -42,7 +36,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 Name = client.Name,
                 NonceLifetime = client.NonceLifetime.TotalSeconds,
                 ClockSkew = client.ClockSkew.TotalSeconds,
-                Claims = client.Claims?.Select(ClaimDataRecordV2.FromClaim)?.ToArray(),
+                Claims = client.Claims?.Select(ClaimDataRecord.FromClaim)?.ToArray(),
                 SignatureAlgorithm = SignatureAlgorithmDataRecordV2.FromSignatureAlgorithm(client.SignatureAlgorithm, _encryptionKey),
                 RequestTargetEscaping = client.RequestTargetEscaping.ToString()
             };
@@ -56,8 +50,6 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         public async Task<Client> Get(KeyId clientId) {
             if (clientId == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(clientId));
             
-            await _migrator.Migrate();
-
             if (IsProhibitedId(clientId)) return null;
             
             var collection = _lazyCollection.Value;
