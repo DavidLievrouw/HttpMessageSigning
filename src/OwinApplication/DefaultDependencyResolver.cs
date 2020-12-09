@@ -20,7 +20,7 @@ namespace OwinApplication {
         }
 
         public IDependencyScope BeginScope() {
-            return this;
+            return new DefaultDependencyScope(_provider.CreateScope());
         }
 
         public void Dispose() { }

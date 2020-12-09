@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace OwinApplication {
     public static class Extensions {
         public static IServiceCollection ConfigureServices(this IServiceCollection services) {
-            services
+            return services
                 .AddLogging(builder => {
                     builder
                         .AddConsole()
@@ -27,9 +27,9 @@ namespace OwinApplication {
                                 new Claim(SignedHttpRequestClaimTypes.Role, "user.read")
                             };
                         })
-                );
-
-            return services;
+                )
+                .Services
+                .AddSingleton<IClaimsPrincipalFactory, CustomClaimsPrincipalFactory>();
         }
     }
 }

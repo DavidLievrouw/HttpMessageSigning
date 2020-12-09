@@ -52,7 +52,10 @@ namespace WebApplication {
                     ConnectionString = "mongodb://localhost:27017/HttpMessageSigningDb",
                     CollectionName = "client_nonces"
                 })*/
-                ;
+                
+                .Services
+                .AddHttpContextAccessor()
+                .AddSingleton<IClaimsPrincipalFactory, CustomClaimsPrincipalFactory>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
