@@ -5,16 +5,16 @@ using MongoDB.Driver;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    public class MongoDbNonceStoreTests : MongoIntegrationTest, IDisposable {
+    public class SqlServerNonceStoreTests : MongoIntegrationTest, IDisposable {
         private readonly string _collectionName;
-        private readonly MongoDbNonceStore _sut;
+        private readonly SqlServerNonceStore _sut;
         private readonly DateTimeOffset _now;
         private readonly MongoDatabaseClientProvider _mongoDatabaseClientProvider;
 
-        public MongoDbNonceStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
+        public SqlServerNonceStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
             _collectionName = "nonces_" + Guid.NewGuid();
             _mongoDatabaseClientProvider = new MongoDatabaseClientProvider(Database);
-            _sut = new MongoDbNonceStore(_mongoDatabaseClientProvider, _collectionName);
+            _sut = new SqlServerNonceStore(_mongoDatabaseClientProvider, _collectionName);
             
             _now = new DateTimeOffset(
                 DateTimeOffset.UtcNow.Year, 
@@ -31,7 +31,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             _sut?.Dispose();
         }
 
-        public class Register : MongoDbNonceStoreTests {
+        public class Register : SqlServerNonceStoreTests {
             public Register(MongoSetup mongoSetup) : base(mongoSetup) { }
 
             [Fact]
@@ -87,7 +87,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             }
         }
 
-        public class Get : MongoDbNonceStoreTests {
+        public class Get : SqlServerNonceStoreTests {
             public Get(MongoSetup mongoSetup) : base(mongoSetup) { }
 
             [Theory]

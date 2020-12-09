@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    internal class MongoDbNonceStore : IMongoDbNonceStore {
+    internal class SqlServerNonceStore : ISqlServerNonceStore {
         private readonly Lazy<IMongoCollection<NonceDataRecord>> _lazyCollection;
 
-        public MongoDbNonceStore(IMongoDatabaseClientProvider clientProvider, string collectionName) {
+        public SqlServerNonceStore(IMongoDatabaseClientProvider clientProvider, string collectionName) {
             if (clientProvider == null) throw new ArgumentNullException(nameof(clientProvider));
             if (string.IsNullOrEmpty(collectionName)) throw new ArgumentException("Value cannot be null or empty.", nameof(collectionName));
 

@@ -1,3 +1,3 @@
 ﻿namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    internal interface IMongoDbNonceStore : INonceStore { }
+    internal interface ISqlServerNonceStore : INonceStore { }
 }

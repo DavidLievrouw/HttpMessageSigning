@@ -4,16 +4,16 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    internal class CachingMongoDbClientStore : IMongoDbClientStore {
+    internal class CachingSqlServerClientStore : ISqlServerClientStore {
         private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
         private static readonly TimeSpan MaxLockWaitTime = TimeSpan.FromSeconds(10);
 
         private readonly IMemoryCache _cache;
-        private readonly IMongoDbClientStore _decorated;
+        private readonly ISqlServerClientStore _decorated;
         private readonly TimeSpan _expiration;
         private readonly IBackgroundTaskStarter _backgroundTaskStarter;
 
-        public CachingMongoDbClientStore(IMongoDbClientStore decorated, IMemoryCache cache, TimeSpan expiration, IBackgroundTaskStarter backgroundTaskStarter) {
+        public CachingSqlServerClientStore(ISqlServerClientStore decorated, IMemoryCache cache, TimeSpan expiration, IBackgroundTaskStarter backgroundTaskStarter) {
             _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             _expiration = expiration;

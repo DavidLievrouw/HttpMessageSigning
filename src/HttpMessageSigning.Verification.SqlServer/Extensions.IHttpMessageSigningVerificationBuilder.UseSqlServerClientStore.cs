@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         /// <param name="clientStoreSettings">The settings for the SQL Server connection.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
         [ExcludeFromCodeCoverage]
-        public static IHttpMessageSigningVerificationBuilder UseSqlServerClientStore(this IHttpMessageSigningVerificationBuilder builder, MongoDbClientStoreSettings clientStoreSettings) {
+        public static IHttpMessageSigningVerificationBuilder UseSqlServerClientStore(this IHttpMessageSigningVerificationBuilder builder, SqlServerClientStoreSettings clientStoreSettings) {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (clientStoreSettings == null) throw new ArgumentNullException(nameof(clientStoreSettings));
 
@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
         public static IHttpMessageSigningVerificationBuilder UseSqlServerClientStore(
             this IHttpMessageSigningVerificationBuilder builder,
-            Func<IServiceProvider, MongoDbClientStoreSettings> clientStoreSettingsFactory) {
+            Func<IServiceProvider, SqlServerClientStoreSettings> clientStoreSettingsFactory) {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (clientStoreSettingsFactory == null) throw new ArgumentNullException(nameof(clientStoreSettingsFactory));
 
@@ -34,23 +34,23 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 .AddSingleton<IBackgroundTaskStarter, BackgroundTaskStarter>()
                 .AddSingleton(prov => {
                     var settings = clientStoreSettingsFactory(prov);
-                    if (settings == null) throw new ValidationException($"Invalid {nameof(MongoDbClientStoreSettings)} were specified.");
+                    if (settings == null) throw new ValidationException($"Invalid {nameof(SqlServerClientStoreSettings)} were specified.");
                     settings.Validate();
                     return settings;
                 })
                 .AddSingleton<IMongoDatabaseClientProvider>(prov => {
-                    var mongoSettings = prov.GetRequiredService<MongoDbClientStoreSettings>();
+                    var mongoSettings = prov.GetRequiredService<SqlServerClientStoreSettings>();
                     return new MongoDatabaseClientProvider(mongoSettings.ConnectionString);
                 });
 
             return builder
                 // The actual store
                 .UseClientStore(prov => {
-                    var mongoSettings = prov.GetRequiredService<MongoDbClientStoreSettings>();
-                    return new CachingMongoDbClientStore(
-                        new MongoDbClientStore(
+                    var mongoSettings = prov.GetRequiredService<SqlServerClientStoreSettings>();
+                    return new CachingSqlServerClientStore(
+                        new SqlServerClientStore(
                             prov.GetRequiredService<IMongoDatabaseClientProvider>(),
-                            mongoSettings.CollectionName,
+                            mongoSettings.TableName,
                             mongoSettings.SharedSecretEncryptionKey),
                         prov.GetRequiredService<IMemoryCache>(),
                         mongoSettings.ClientCacheEntryExpiration,

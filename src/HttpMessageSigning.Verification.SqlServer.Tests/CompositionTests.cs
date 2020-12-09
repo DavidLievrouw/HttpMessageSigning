@@ -15,13 +15,13 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             _connectionString = mongoSetup.MongoServerConnectionString.TrimEnd('/') + '/' + mongoSetup.DatabaseName;
             _provider = new ServiceCollection()
                 .AddHttpMessageSignatureVerification()
-                .UseSqlServerClientStore(new MongoDbClientStoreSettings {
-                    CollectionName = "clients",
+                .UseSqlServerClientStore(new SqlServerClientStoreSettings {
+                    TableName = "clients",
                     ConnectionString = _connectionString,
                     ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
                 })
-                .UseSqlServerNonceStore(new MongoDbNonceStoreSettings {
-                    CollectionName = "nonces",
+                .UseSqlServerNonceStore(new SqlServerNonceStoreSettings {
+                    TableName = "nonces",
                     ConnectionString = _connectionString
                 })
                 .Services
@@ -44,8 +44,8 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         }
 
         [Theory]
-        [InlineData(typeof(IClientStore), typeof(CachingMongoDbClientStore))]
-        [InlineData(typeof(INonceStore), typeof(CachingMongoDbNonceStore))]
+        [InlineData(typeof(IClientStore), typeof(CachingSqlServerClientStore))]
+        [InlineData(typeof(INonceStore), typeof(CachingSqlServerNonceStore))]
         public void CanResolveExactType(Type requestedType, Type expectedType) {
             object actualInstance = null;
             Action act = () => actualInstance = _provider.GetRequiredService(requestedType);
@@ -58,13 +58,13 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         public async Task RegistersClientsInMongo() {
             using (var provider = new ServiceCollection()
                 .AddHttpMessageSignatureVerification()
-                .UseSqlServerClientStore(new MongoDbClientStoreSettings {
-                    CollectionName = "clients",
+                .UseSqlServerClientStore(new SqlServerClientStoreSettings {
+                    TableName = "clients",
                     ConnectionString = _connectionString,
                     ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
                 })
-                .UseSqlServerNonceStore(new MongoDbNonceStoreSettings {
-                    CollectionName = "nonces",
+                .UseSqlServerNonceStore(new SqlServerNonceStoreSettings {
+                    TableName = "nonces",
                     ConnectionString = _connectionString
                 })
                 .UseClient(Client.Create(
@@ -78,7 +78,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 .Services
                 .BuildServiceProvider()) {
                 var clientStore = provider.GetRequiredService<IClientStore>();
-                clientStore.Should().BeAssignableTo<CachingMongoDbClientStore>();
+                clientStore.Should().BeAssignableTo<CachingSqlServerClientStore>();
                 var registeredClient = await clientStore.Get("e0e8dcd638334c409e1b88daf821d135");
                 registeredClient.Should().NotBeNull();
                 registeredClient.Name.Should().Be("HttpMessageSigningSampleHMAC");

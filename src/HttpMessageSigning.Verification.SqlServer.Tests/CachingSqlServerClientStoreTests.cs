@@ -7,18 +7,18 @@ using Microsoft.Extensions.Caching.Memory;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    public class CachingMongoDbClientStoreTests : IDisposable {
+    public class CachingSqlServerClientStoreTests : IDisposable {
         private readonly FakeMemoryCache _cache;
-        private readonly IMongoDbClientStore _decorated;
+        private readonly ISqlServerClientStore _decorated;
         private readonly TimeSpan _expiration;
         private readonly IBackgroundTaskStarter _backgroundTaskStarter;
-        private readonly CachingMongoDbClientStore _sut;
+        private readonly CachingSqlServerClientStore _sut;
 
-        public CachingMongoDbClientStoreTests() {
+        public CachingSqlServerClientStoreTests() {
             FakeFactory.Create(out _decorated, out _backgroundTaskStarter);
             _cache = new FakeMemoryCache();
             _expiration = TimeSpan.FromSeconds(30);
-            _sut = new CachingMongoDbClientStore(_decorated, _cache, _expiration, _backgroundTaskStarter);
+            _sut = new CachingSqlServerClientStore(_decorated, _cache, _expiration, _backgroundTaskStarter);
         }
 
         public void Dispose() {
@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             _sut?.Dispose();
         }
 
-        public class Register : CachingMongoDbClientStoreTests {
+        public class Register : CachingSqlServerClientStoreTests {
             private readonly string _cacheKey;
             private readonly Client _cachedClient;
             private readonly Client _newClient;
@@ -100,7 +100,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             }
         }
 
-        public class Get : CachingMongoDbClientStoreTests {
+        public class Get : CachingSqlServerClientStoreTests {
             private readonly KeyId _keyId;
             private readonly string _cacheKey;
             private readonly Client _cachedClient;
@@ -132,7 +132,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(-1)]
             [InlineData(-99)]
             public async Task WhenExpirationIsZeroOrNegative_DoesNotUseCache_AndDelegatesToDecoratedInstance(int expirationSeconds) {
-                var sut = new CachingMongoDbClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds), _backgroundTaskStarter);
+                var sut = new CachingSqlServerClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds), _backgroundTaskStarter);
 
                 await sut.Get(_keyId);
 
@@ -206,7 +206,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             }
         }
 
-        public class DisposableSupport : CachingMongoDbClientStoreTests {
+        public class DisposableSupport : CachingSqlServerClientStoreTests {
             [Fact]
             public void DisposesOfDecoratedInstance() {
                 _sut.Dispose();

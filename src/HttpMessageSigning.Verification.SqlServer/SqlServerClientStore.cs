@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    internal class MongoDbClientStore : IMongoDbClientStore {
+    internal class SqlServerClientStore : ISqlServerClientStore {
         private readonly SharedSecretEncryptionKey _encryptionKey;
         private readonly Lazy<IMongoCollection<ClientDataRecord>> _lazyCollection;
 
-        public MongoDbClientStore(
+        public SqlServerClientStore(
             IMongoDatabaseClientProvider clientProvider, 
             string collectionName, 
             SharedSecretEncryptionKey encryptionKey) {
@@ -37,7 +37,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 NonceLifetime = client.NonceLifetime.TotalSeconds,
                 ClockSkew = client.ClockSkew.TotalSeconds,
                 Claims = client.Claims?.Select(ClaimDataRecord.FromClaim)?.ToArray(),
-                SignatureAlgorithm = SignatureAlgorithmDataRecordV2.FromSignatureAlgorithm(client.SignatureAlgorithm, _encryptionKey),
+                SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm, _encryptionKey),
                 RequestTargetEscaping = client.RequestTargetEscaping.ToString()
             };
             record.V = record.GetV();

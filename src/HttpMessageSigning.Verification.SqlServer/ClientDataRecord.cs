@@ -8,7 +8,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         public string Id { get; set; }
 
         public string Name { get; set; }
-        public SignatureAlgorithmDataRecordV2 SignatureAlgorithm { get; set; }
+        public SignatureAlgorithmDataRecord SignatureAlgorithm { get; set; }
         public ClaimDataRecord[] Claims { get; set; }
         public double? ClockSkew { get; set; }
         public string RequestTargetEscaping { get; set; }

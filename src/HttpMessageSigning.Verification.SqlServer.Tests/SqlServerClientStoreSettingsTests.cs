@@ -3,18 +3,18 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    public class MongoDbClientStoreSettingsTests {
-        private readonly MongoDbClientStoreSettings _sut;
+    public class SqlServerClientStoreSettingsTests {
+        private readonly SqlServerClientStoreSettings _sut;
 
-        public MongoDbClientStoreSettingsTests() {
-            _sut = new MongoDbClientStoreSettings {
+        public SqlServerClientStoreSettingsTests() {
+            _sut = new SqlServerClientStoreSettings {
                 ConnectionString = "mongodb://localhost:27017/DbForTests?connectTimeoutMS=60000",
-                CollectionName = "signatureclients",
+                TableName = "signatureclients",
                 ClientCacheEntryExpiration = TimeSpan.FromMinutes(3)
             };
         }
 
-        public class Validate : MongoDbClientStoreSettingsTests {
+        public class Validate : SqlServerClientStoreSettingsTests {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
@@ -28,7 +28,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(null)]
             [InlineData("")]
             public void GivenNullOrEmptyCollectionName_ThrowsValidationException(string nullOrEmpty) {
-                _sut.CollectionName = nullOrEmpty;
+                _sut.TableName = nullOrEmpty;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }

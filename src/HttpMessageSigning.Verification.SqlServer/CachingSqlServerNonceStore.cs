@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    internal class CachingMongoDbNonceStore : IMongoDbNonceStore {
+    internal class CachingSqlServerNonceStore : ISqlServerNonceStore {
         private readonly INonceStore _decorated;
         private readonly IMemoryCache _cache;
 
-        public CachingMongoDbNonceStore(INonceStore decorated, IMemoryCache cache) {
+        public CachingSqlServerNonceStore(INonceStore decorated, IMemoryCache cache) {
             _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }

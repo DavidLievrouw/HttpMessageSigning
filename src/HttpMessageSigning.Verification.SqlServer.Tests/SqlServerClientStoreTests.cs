@@ -10,34 +10,34 @@ using MongoDB.Driver;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    public class MongoDbClientStoreTests : MongoIntegrationTest, IDisposable {
-        private readonly MongoDbClientStore _sut;
+    public class SqlServerClientStoreTests : MongoIntegrationTest, IDisposable {
+        private readonly SqlServerClientStore _sut;
         private readonly string _collectionName;
         private readonly SharedSecretEncryptionKey _encryptionKey;
 
-        public MongoDbClientStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
+        public SqlServerClientStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
             _collectionName = "clients_" + Guid.NewGuid();
             _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
-            _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey);
+            _sut = new SqlServerClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey);
         }
 
         public void Dispose() {
             _sut?.Dispose();
         }
 
-        public class Construction : MongoDbClientStoreTests {
+        public class Construction : SqlServerClientStoreTests {
             public Construction(MongoSetup mongoSetup) : base(mongoSetup) { }
             
             [Theory]
             [InlineData(null)]
             [InlineData("")]
             public void AllowsForNullOrEmptyEncryptionKey(string nullOrEmpty) {
-                Action act = () => new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty);
+                Action act = () => new SqlServerClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty);
                 act.Should().NotThrow();
             }
         }
         
-        public class Register : MongoDbClientStoreTests {
+        public class Register : SqlServerClientStoreTests {
             public Register(MongoSetup mongoSetup) : base(mongoSetup) { }
 
             [Fact]
@@ -210,7 +210,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(null)]
             [InlineData("")]
             public async Task WhenEncryptionKeyIsNullOrEmpty_DoesNotEncryptHMACSecretInDatabase(string nullOrEmpty) {
-                using (var sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty)) {
+                using (var sut = new SqlServerClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty)) {
                     var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                     var client = new Client(
                         "c1",
@@ -235,7 +235,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             }
         }
 
-        public class Get : MongoDbClientStoreTests {
+        public class Get : SqlServerClientStoreTests {
             public Get(MongoSetup mongoSetup) : base(mongoSetup) { }
 
             [Theory]

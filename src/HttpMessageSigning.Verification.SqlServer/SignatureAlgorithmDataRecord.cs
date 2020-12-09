@@ -6,32 +6,32 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     [BsonIgnoreExtraElements]
-    internal class SignatureAlgorithmDataRecordV2 {
+    internal class SignatureAlgorithmDataRecord {
         public string Type { get; set; }
         public string Parameter { get; set; }
         public string HashAlgorithm { get; set; }
         public bool IsParameterEncrypted { get; set; }
 
-        public static SignatureAlgorithmDataRecordV2 FromSignatureAlgorithm(ISignatureAlgorithm signatureAlgorithm, SharedSecretEncryptionKey encryptionKey) {
+        public static SignatureAlgorithmDataRecord FromSignatureAlgorithm(ISignatureAlgorithm signatureAlgorithm, SharedSecretEncryptionKey encryptionKey) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
 
             switch (signatureAlgorithm) {
                 case RSASignatureAlgorithm rsa:
-                    return new SignatureAlgorithmDataRecordV2 {
+                    return new SignatureAlgorithmDataRecord {
                         Type = rsa.Name,
                         HashAlgorithm = rsa.HashAlgorithm.Name,
                         Parameter = rsa.GetPublicKey().ToXml(),
                         IsParameterEncrypted = false
                     };
                 case ECDsaSignatureAlgorithm ecdsa:
-                    return new SignatureAlgorithmDataRecordV2 {
+                    return new SignatureAlgorithmDataRecord {
                         Type = ecdsa.Name,
                         HashAlgorithm = ecdsa.HashAlgorithm.Name,
                         Parameter = ecdsa.GetPublicKey().ToXml(),
                         IsParameterEncrypted = false
                     };
                 case HMACSignatureAlgorithm hmac:
-                    return new SignatureAlgorithmDataRecordV2 {
+                    return new SignatureAlgorithmDataRecord {
                         Type = hmac.Name,
                         HashAlgorithm = hmac.HashAlgorithm.Name,
                         Parameter = GetParameterWithEncryption(hmac, encryptionKey, out var isEncrypted),
@@ -78,7 +78,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             return protector.Protect(unencrypted);
         }
 
-        private static string GetUnencryptedParameter(SignatureAlgorithmDataRecordV2 dataRecord, SharedSecretEncryptionKey encryptionKey, int? recordVersion) {
+        private static string GetUnencryptedParameter(SignatureAlgorithmDataRecord dataRecord, SharedSecretEncryptionKey encryptionKey, int? recordVersion) {
             if (encryptionKey == SharedSecretEncryptionKey.Empty) return dataRecord.Parameter;
             if (!recordVersion.HasValue || recordVersion.Value < 2) return dataRecord.Parameter; // Encryption not yet supported
             

@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         /// <param name="nonceStoreSettings">The settings for the SQL Server connection.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
         [ExcludeFromCodeCoverage]
-        public static IHttpMessageSigningVerificationBuilder UseSqlServerNonceStore(this IHttpMessageSigningVerificationBuilder builder, MongoDbNonceStoreSettings nonceStoreSettings) {
+        public static IHttpMessageSigningVerificationBuilder UseSqlServerNonceStore(this IHttpMessageSigningVerificationBuilder builder, SqlServerNonceStoreSettings nonceStoreSettings) {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (nonceStoreSettings == null) throw new ArgumentNullException(nameof(nonceStoreSettings));
 
@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
         public static IHttpMessageSigningVerificationBuilder UseSqlServerNonceStore(
             this IHttpMessageSigningVerificationBuilder builder,
-            Func<IServiceProvider, MongoDbNonceStoreSettings> nonceStoreSettingsFactory) {
+            Func<IServiceProvider, SqlServerNonceStoreSettings> nonceStoreSettingsFactory) {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (nonceStoreSettingsFactory == null) throw new ArgumentNullException(nameof(nonceStoreSettingsFactory));
 
@@ -31,11 +31,11 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 .AddMemoryCache()
                 .AddSingleton<INonceStore>(prov => {
                     var mongoSettings = nonceStoreSettingsFactory(prov);
-                    if (mongoSettings == null) throw new ValidationException($"Invalid {nameof(MongoDbNonceStoreSettings)} were specified.");
+                    if (mongoSettings == null) throw new ValidationException($"Invalid {nameof(SqlServerNonceStoreSettings)} were specified.");
                     mongoSettings.Validate();
-                    return new CachingMongoDbNonceStore(new MongoDbNonceStore(
+                    return new CachingSqlServerNonceStore(new SqlServerNonceStore(
                             new MongoDatabaseClientProvider(mongoSettings.ConnectionString),
-                            mongoSettings.CollectionName),
+                            mongoSettings.TableName),
                         prov.GetRequiredService<IMemoryCache>());
                 });
 
