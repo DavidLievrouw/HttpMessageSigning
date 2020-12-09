@@ -2,16 +2,60 @@
 cls
 SET DIR=%~dp0%
 SET SRCDIR=%DIR%\src
-SET PRODUCT=HttpMessageSigning
 
-dotnet test %SRCDIR%\%PRODUCT%.Tests\%PRODUCT%.Tests.csproj
-dotnet test %SRCDIR%\%PRODUCT%.Signing.Tests\%PRODUCT%.Signing.Tests.csproj
-dotnet test %SRCDIR%\%PRODUCT%.Verification.Tests\%PRODUCT%.Verification.Tests.csproj
-dotnet test %SRCDIR%\%PRODUCT%.Verification.AspNetCore.Tests\%PRODUCT%.Verification.AspNetCore.Tests.csproj
-dotnet test %SRCDIR%\%PRODUCT%.Verification.Owin.Tests\%PRODUCT%.Verification.Owin.Tests.csproj
-dotnet test %SRCDIR%\%PRODUCT%.Verification.MongoDb.Tests\%PRODUCT%.Verification.MongoDb.Tests.csproj
-dotnet test %SRCDIR%\%PRODUCT%.SystemTests\%PRODUCT%.SystemTests.csproj
+dotnet test %SRCDIR%\HttpMessageSigning.Tests\HttpMessageSigning.Tests.csproj
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.Signing.Tests\HttpMessageSigning.Signing.Tests.csproj
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.Tests\HttpMessageSigning.Verification.Tests.csproj
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.AspNetCore.Tests\HttpMessageSigning.Verification.AspNetCore.Tests.csproj
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.Owin.Tests\HttpMessageSigning.Verification.Owin.Tests.csproj
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.MongoDb.Tests\HttpMessageSigning.Verification.MongoDb.Tests.csproj
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.SqlServer.Tests\HttpMessageSigning.Verification.SqlServer.Tests.csproj
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
+dotnet test %SRCDIR%\HttpMessageSigning.SystemTests\HttpMessageSigning.SystemTests.csproj
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
 dotnet test %SRCDIR%\Conformance.Tests\Conformance.Tests.csproj
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
 
 if "%1" == "nopause" goto end
 pause
