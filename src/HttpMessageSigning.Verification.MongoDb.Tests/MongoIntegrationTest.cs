@@ -2,7 +2,7 @@
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    [Collection("MongoDbCollection")]
+    [Collection(nameof(MongoDbCollection))]
     public class MongoIntegrationTest {
         protected readonly IMongoDatabase Database;
 
