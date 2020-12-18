@@ -42,6 +42,7 @@
         <PackageReference Include="FluentAssertions" Version="5.10.3" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="161.44091.28" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
             <PrivateAssets>all</PrivateAssets>
@@ -52,6 +53,9 @@
     
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.1" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
@@ -64,11 +68,28 @@
 
     <ItemGroup Condition="'$(TargetFramework)'=='net472'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.2" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.2" />
+        <Reference Include="System.Transactions" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\HttpMessageSigning.TestUtils\HttpMessageSigning.TestUtils.csproj" />
         <ProjectReference Include="..\HttpMessageSigning.Verification.SqlServer\HttpMessageSigning.Verification.SqlServer.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Infrastructure\Setup\GenericScripts\CreateEmptyDatabase.sql" />
+      <EmbeddedResource Include="Infrastructure\Setup\GenericScripts\CreateEmptyDatabase.sql" />
+      <None Remove="Infrastructure\Setup\GenericScripts\DeleteDatabase.sql" />
+      <EmbeddedResource Include="Infrastructure\Setup\GenericScripts\DeleteDatabase.sql" />
+      <None Update="Infrastructure\Setup\Scripts\Security\CreateDefaultUser.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Infrastructure\Setup\Scripts\Tables\Game.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
