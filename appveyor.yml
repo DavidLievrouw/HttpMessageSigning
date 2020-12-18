@@ -9,9 +9,9 @@ environment:
   PRODUCT: HttpMessageSigning
   DISTPATH: ../../dist
   CONFIGURATION: Release
-  SQLSERVER__USERID: sa
-  SQLSERVER__PASSWORD: Password12!
-  SQLSERVER__SERVERNAME: (local)\\SQL2017
+  SQLSERVER:USERID: sa
+  SQLSERVER:PASSWORD: Password12!
+  SQLSERVER:SERVERNAME: (local)\SQL2017
   COVERALLS_REPO_TOKEN:  
     secure: f9pWLoYMRSqoOcUvnz1PXF23eFoHQtEXohEcLf2PkhXVZk8Qj+J/0mh0ByXVwxbb
 nuget:
