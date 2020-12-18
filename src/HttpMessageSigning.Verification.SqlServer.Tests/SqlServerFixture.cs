@@ -33,7 +33,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     genericScriptsReader),
                 new DatabaseSchemaApplier(
                     SqlServerConfig.GetConnectionStringForTestDatabase(),
-                    new DatabaseScriptsReader(@"Infrastructure\Setup\Scripts")),
+                    new DatabaseScriptsReader()),
                 databaseDeleterFactory.CreateForDb(SqlServerConfig.GetUniqueDatabaseName()));
         }
 

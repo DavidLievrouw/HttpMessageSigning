@@ -80,16 +80,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <EmbeddedResource Include="Infrastructure\Setup\Schema\Security\CreateDefaultUser.sql" />
+      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\Game.sql" />
       <None Remove="Infrastructure\Setup\GenericScripts\CreateEmptyDatabase.sql" />
       <EmbeddedResource Include="Infrastructure\Setup\GenericScripts\CreateEmptyDatabase.sql" />
       <None Remove="Infrastructure\Setup\GenericScripts\DeleteDatabase.sql" />
       <EmbeddedResource Include="Infrastructure\Setup\GenericScripts\DeleteDatabase.sql" />
-      <None Update="Infrastructure\Setup\Scripts\Security\CreateDefaultUser.sql">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Infrastructure\Setup\Scripts\Tables\Game.sql">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+      <None Remove="Infrastructure\Setup\Scripts\Security\CreateDefaultUser.sql" />
+      <None Remove="Infrastructure\Setup\Scripts\Tables\Game.sql" />
     </ItemGroup>
 
 </Project>

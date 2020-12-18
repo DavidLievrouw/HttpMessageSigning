@@ -17,13 +17,6 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer.Infrastructure.Setup.
             ".viw"
         };
 
-        private readonly DirectoryInfo _scriptsDirectory;
-
-        public DatabaseScriptsReader(string relativeScriptsFolder) {
-            var workingDirectory = Path.GetDirectoryName(GetType().Assembly.Location);
-            _scriptsDirectory = new DirectoryInfo(Path.GetFullPath(Path.Combine(workingDirectory, relativeScriptsFolder)));
-        }
-
         public IEnumerable<string> ReadAllDatabaseScriptsInOrder() {
             return from folderPattern in FolderPatterns
                 from sql in ReadAllSqlFiles(folderPattern)
@@ -31,11 +24,22 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer.Infrastructure.Setup.
         }
 
         private IEnumerable<string> ReadAllSqlFiles(string folderPattern) {
-            var matchedDirectories = _scriptsDirectory.GetDirectories(folderPattern, SearchOption.AllDirectories);
-            var sqlFiles = matchedDirectories
-                .SelectMany(d => d.EnumerateFiles())
-                .Where(f => SqlExtensions.Contains(f.Extension));
-            return sqlFiles.Select(f => File.ReadAllText(f.FullName));
+            var thisNamespace = GetType().Namespace;
+            var folderNamespace = $"{thisNamespace}.{folderPattern}";
+            
+            var sqlFiles = GetType().Assembly
+                .GetManifestResourceNames()
+                .Where(name => name.StartsWith(folderNamespace) && SqlExtensions.Contains(new FileInfo(name).Extension))
+                .Select(name => GetType().Assembly.GetManifestResourceStream(name))
+                .Select(stream => {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    using (var streamReader = new StreamReader(stream)) {
+                        return streamReader.ReadToEnd();
+                    }
+                })
+                .ToList();
+
+            return sqlFiles;
         }
     }
 }
