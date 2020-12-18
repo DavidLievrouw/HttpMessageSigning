@@ -51,27 +51,46 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
+        <PackageReference Include="Dapper" Version="[2.0.78,)" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.2,)" />
+        <PackageReference Include="System.Data.SqlClient" Version="[4.8.2,)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+        <PackageReference Include="Dapper" Version="[2.0.78,)" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.2,)" />
+        <PackageReference Include="System.Data.SqlClient" Version="[4.8.2,)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+        <PackageReference Include="Dapper" Version="[2.0.78,)" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[2.1.1,2.2.0)" />
+        <PackageReference Include="System.Data.SqlClient" Version="[4.8.2,)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+        <PackageReference Include="Dapper" Version="[2.0.78,)" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.2,)" />
+        <PackageReference Include="System.Data.SqlClient" Version="[4.8.2,)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='net5'">
+        <PackageReference Include="Dapper" Version="[2.0.78,)" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[5.0.0,)" />
+        <PackageReference Include="System.Data.SqlClient" Version="[4.8.2,)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+        <PackageReference Include="Dapper" Version="[2.0.78,)" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.2,)" />
+        <Reference Include="System.Data.SqlClient" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Scripts\MergeNonce.sql" />
+      <EmbeddedResource Include="Scripts\DeleteExpiredNonces.sql" />
+      <EmbeddedResource Include="Scripts\GetNonce.sql" />
+      <EmbeddedResource Include="Scripts\MergeNonce.sql" />
     </ItemGroup>
     
     <Target Name="InitVersion" BeforeTargets="BeforeBuild">

@@ -81,7 +81,7 @@
 
     <ItemGroup>
       <EmbeddedResource Include="Infrastructure\Setup\Schema\Security\CreateDefaultUser.sql" />
-      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\Game.sql" />
+      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\Nonces.sql" />
       <None Remove="Infrastructure\Setup\GenericScripts\CreateEmptyDatabase.sql" />
       <EmbeddedResource Include="Infrastructure\Setup\GenericScripts\CreateEmptyDatabase.sql" />
       <None Remove="Infrastructure\Setup\GenericScripts\DeleteDatabase.sql" />

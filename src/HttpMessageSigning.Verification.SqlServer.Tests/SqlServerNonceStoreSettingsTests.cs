@@ -9,7 +9,8 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         public SqlServerNonceStoreSettingsTests() {
             _sut = new SqlServerNonceStoreSettings {
                 ConnectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;",
-                TableName = "signaturenonces"
+                TableName = "signaturenonces",
+                ExpiredNoncesCleanUpInterval = TimeSpan.FromMinutes(1)
             };
         }
 
@@ -31,9 +32,19 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }
+
+            [Theory]
+            [InlineData(0)]
+            [InlineData(-1)]
+            [InlineData(-99)]
+            public void GivenZeroOrNegativeExpiredNoncesCleanUpInterval_ThrowsValidationException(int seconds) {
+                _sut.ExpiredNoncesCleanUpInterval = TimeSpan.FromSeconds(seconds);
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
             
             [Fact]
-            public void GivenValidOptions_DoesNotThrow() {
+            public void GivenValidSettings_DoesNotThrow() {
                 Action act = () => _sut.Validate();
                 act.Should().NotThrow();
             }

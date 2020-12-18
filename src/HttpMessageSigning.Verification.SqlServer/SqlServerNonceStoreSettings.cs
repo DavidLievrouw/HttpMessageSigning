@@ -1,4 +1,6 @@
-﻿namespace Dalion.HttpMessageSigning.Verification.SqlServer {
+﻿using System;
+
+namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     /// <summary>
     ///     Represents settings for SQL Server storage of registered <see cref="Nonce" /> instances.
     /// </summary>
@@ -13,8 +15,19 @@
         /// </summary>
         public string TableName { get; set; } = "nonces";
 
+        /// <summary>
+        ///     Gets or sets the minimum interval between expired <see cref="Nonce" /> clean-up background task executions.
+        /// </summary>
+        public TimeSpan ExpiredNoncesCleanUpInterval { get; set; } = TimeSpan.FromMinutes(1);
+
         internal void Validate() {
-            if (string.IsNullOrEmpty(ConnectionString)) throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(ConnectionString)}.");
+            if (string.IsNullOrEmpty(ConnectionString)) {
+                throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(ConnectionString)}.");
+            }
+            if (ExpiredNoncesCleanUpInterval <= TimeSpan.Zero) {
+                throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(ExpiredNoncesCleanUpInterval)}.");
+            }
+
             if (string.IsNullOrEmpty(TableName)) throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(TableName)}.");
         }
     }

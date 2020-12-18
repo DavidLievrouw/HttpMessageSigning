@@ -8,9 +8,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     public class SqlServerFixture : IDisposable {
-        private static readonly IDatabaseSynchronizer DbSynchronizer;
-
-        static SqlServerFixture() {
+        private readonly IDatabaseSynchronizer _dbSynchronizer;
+        
+        public SqlServerFixture() {
             var config = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .Build();
@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             var databaseDeleterFactory = new DatabaseDeleterFactory(SqlServerConfig.GetConnectionStringForMasterDatabase(), genericScriptsReader);
             var systemClock = new RealSystemClock();
 
-            DbSynchronizer = new DatabaseSynchronizer(
+            _dbSynchronizer = new DatabaseSynchronizer(
                 new OutdatedDatabaseCleaner(
                     new OutdatedDatabaseFinder(
                         SqlServerConfig.GetConnectionStringForMasterDatabase(),
@@ -35,24 +35,22 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     SqlServerConfig.GetConnectionStringForTestDatabase(),
                     new DatabaseScriptsReader()),
                 databaseDeleterFactory.CreateForDb(SqlServerConfig.GetUniqueDatabaseName()));
-        }
-
-        public SqlServerFixture() {
+            
             try {
-                DbSynchronizer.CleanOutdatedDatabases();
-                DbSynchronizer.DeleteTestDatabase();
-                DbSynchronizer.CreateDatabaseForTests();
+                _dbSynchronizer.CleanOutdatedDatabases();
+                _dbSynchronizer.DeleteTestDatabase();
+                _dbSynchronizer.CreateDatabaseForTests();
             }
             catch (Exception) {
-                Dispose();
+                _dbSynchronizer.DeleteTestDatabase();
                 throw;
             }
         }
 
-        internal static SqlServerConfig SqlServerConfig { get; }
+        internal SqlServerConfig SqlServerConfig { get; }
 
-        public void Dispose() {
-            DbSynchronizer.DeleteTestDatabase();
+        public virtual void Dispose() {
+            _dbSynchronizer.DeleteTestDatabase();
         }
     }
 }
