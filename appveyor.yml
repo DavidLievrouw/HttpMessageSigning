@@ -1,5 +1,7 @@
 version: 1.0.0.{build}
 image: Visual Studio 2019
+services:
+  - mssql2017
 branches:
   except:
     - /dev_.*/
@@ -7,6 +9,9 @@ environment:
   PRODUCT: HttpMessageSigning
   DISTPATH: ../../dist
   CONFIGURATION: Release
+  SQLSERVER__USERID: sa
+  SQLSERVER__PASSWORD: Password12!
+  SQLSERVER__SERVERNAME: (local)\\SQL2017
   COVERALLS_REPO_TOKEN:  
     secure: f9pWLoYMRSqoOcUvnz1PXF23eFoHQtEXohEcLf2PkhXVZk8Qj+J/0mh0ByXVwxbb
 nuget:
