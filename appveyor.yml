@@ -1,5 +1,8 @@
 version: 1.0.0.{build}
 image: Visual Studio 2019
+branches:
+  except:
+    - /dev_.*/
 environment:
   PRODUCT: HttpMessageSigning
   DISTPATH: ../../dist
