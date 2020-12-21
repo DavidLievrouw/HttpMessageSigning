@@ -15,12 +15,12 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             _provider = new ServiceCollection()
                 .AddHttpMessageSignatureVerification()
                 .UseSqlServerClientStore(new SqlServerClientStoreSettings {
-                    TableName = "clients",
+                    ClientsTableName = "clients",
                     ConnectionString = _connectionString,
                     ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
                 })
                 .UseSqlServerNonceStore(new SqlServerNonceStoreSettings {
-                    TableName = "nonces",
+                    NonceTableName = "nonces",
                     ConnectionString = _connectionString
                 })
                 .Services
@@ -58,12 +58,12 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             using (var provider = new ServiceCollection()
                 .AddHttpMessageSignatureVerification()
                 .UseSqlServerClientStore(new SqlServerClientStoreSettings {
-                    TableName = "clients",
+                    ClientsTableName = "clients",
                     ConnectionString = _connectionString,
                     ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
                 })
                 .UseSqlServerNonceStore(new SqlServerNonceStoreSettings {
-                    TableName = "nonces",
+                    NonceTableName = "nonces",
                     ConnectionString = _connectionString
                 })
                 .UseClient(Client.Create(

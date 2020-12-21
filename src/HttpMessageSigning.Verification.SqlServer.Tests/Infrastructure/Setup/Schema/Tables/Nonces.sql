@@ -9,6 +9,7 @@ CREATE TABLE [dbo].[Nonces] (
     [ClientId] [nvarchar](100) NOT NULL,
     [Value] [nvarchar](36) NOT NULL,
     [Expiration] [datetimeoffset](3) NOT NULL,
+    [V] [tinyint] NOT NULL,
     CONSTRAINT [PK_Nonces] PRIMARY KEY CLUSTERED([Id] ASC) ON [PRIMARY]
 ) 
 GO

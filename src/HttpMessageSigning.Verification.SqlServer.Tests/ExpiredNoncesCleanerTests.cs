@@ -12,20 +12,19 @@ using Xunit;
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     public class ExpiredNoncesCleanerTests : SqlServerIntegrationTest {
         private readonly ImmediateBackgroundTaskStarter _backgroundTaskStarter;
-        private readonly TimeSpan _cleanUpInterval;
-        private readonly string _connectionString;
         private readonly ExpiredNoncesCleaner _sut;
         private readonly ISystemClock _systemClock;
-        private readonly string _tableName;
+        private readonly SqlServerNonceStoreSettings _settings;
 
         public ExpiredNoncesCleanerTests(SqlServerFixture fixture)
             : base(fixture) {
             _systemClock = A.Fake<ISystemClock>();
             _backgroundTaskStarter = new ImmediateBackgroundTaskStarter();
-            _cleanUpInterval = TimeSpan.FromMinutes(1);
-            _tableName = "Nonces";
-            _connectionString = fixture.SqlServerConfig.GetConnectionStringForTestDatabase();
-            _sut = new ExpiredNoncesCleaner(_connectionString, _tableName, _backgroundTaskStarter, _systemClock, _cleanUpInterval);
+            _settings = new SqlServerNonceStoreSettings {
+                ExpiredNoncesCleanUpInterval = TimeSpan.FromMinutes(1),
+                ConnectionString = fixture.SqlServerConfig.GetConnectionStringForTestDatabase()
+            };
+            _sut = new ExpiredNoncesCleaner(_settings, _backgroundTaskStarter, _systemClock);
         }
 
         public override void Dispose() {
@@ -66,16 +65,16 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [Fact]
             public async Task DeletesExpiredNonces() {
                 var noncesToInsert = new[] {
-                    new Nonce(new KeyId("c1"), "abc001", _now.AddSeconds(_cleanUpInterval.TotalSeconds / 2 * -1)),
+                    new Nonce(new KeyId("c1"), "abc001", _now.AddSeconds(_settings.ExpiredNoncesCleanUpInterval.TotalSeconds / 2 * -1)),
                     new Nonce(new KeyId("c1"), "abc002", _now),
                     new Nonce(new KeyId("c1"), "abc003", _now.AddSeconds(30)),
                     new Nonce(new KeyId("c1"), "abc004", _now.AddMinutes(30)),
-                    new Nonce(new KeyId("c1"), "abc005", _now.AddSeconds(_cleanUpInterval.TotalSeconds * -1)),
-                    new Nonce(new KeyId("c1"), "abc006", _now.AddSeconds(_cleanUpInterval.TotalSeconds * -2))
+                    new Nonce(new KeyId("c1"), "abc005", _now.AddSeconds(_settings.ExpiredNoncesCleanUpInterval.TotalSeconds * -1)),
+                    new Nonce(new KeyId("c1"), "abc006", _now.AddSeconds(_settings.ExpiredNoncesCleanUpInterval.TotalSeconds * -2))
                 };
                 
                 var noopExpiredNonceCleaner = A.Fake<IExpiredNoncesCleaner>();
-                using (var nonceStore = new SqlServerNonceStore(_connectionString, _tableName, noopExpiredNonceCleaner)) {
+                using (var nonceStore = new SqlServerNonceStore(_settings, noopExpiredNonceCleaner)) {
                     foreach (var nonce in noncesToInsert) {
                         await nonceStore.Register(nonce);
                     }
@@ -95,9 +94,9 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             }
 
             private async Task<IEnumerable<Nonce>> GetAllNonces() {
-                var sql = @"SELECT [ClientId], [Value], [Expiration] FROM " + _tableName;
+                var sql = @"SELECT [ClientId], [Value], [Expiration] FROM " + _settings.NonceTableName;
                 
-                using (var connection = new SqlConnection(_connectionString)) {
+                using (var connection = new SqlConnection(_settings.ConnectionString)) {
                     var nonces = await connection.QueryAsync<NonceDataRecord>(sql);
                     return nonces.Select(nonce => new Nonce(new KeyId(nonce.ClientId), nonce.Value, nonce.Expiration));
                 }

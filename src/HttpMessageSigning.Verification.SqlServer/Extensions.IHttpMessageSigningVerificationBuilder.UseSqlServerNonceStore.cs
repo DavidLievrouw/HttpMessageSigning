@@ -35,24 +35,15 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     sqlSettings.Validate();
                     return sqlSettings;
                 })
-                .AddSingleton<IExpiredNoncesCleaner>(prov => {
-                    var sqlSettings = prov.GetRequiredService<SqlServerNonceStoreSettings>();
-                    return new ExpiredNoncesCleaner(
-                        sqlSettings.ConnectionString,
-                        sqlSettings.TableName,
-                        prov.GetRequiredService<IBackgroundTaskStarter>(),
-                        prov.GetRequiredService<ISystemClock>(),
-                        sqlSettings.ExpiredNoncesCleanUpInterval);
-                })
-                .AddSingleton<INonceStore>(prov => {
-                    var sqlSettings = prov.GetRequiredService<SqlServerNonceStoreSettings>();
-                    return new CachingSqlServerNonceStore(
-                        new SqlServerNonceStore(
-                            sqlSettings.ConnectionString,
-                            sqlSettings.TableName,
-                            prov.GetRequiredService<IExpiredNoncesCleaner>()),
-                        prov.GetRequiredService<IMemoryCache>());
-                });
+                .AddSingleton<IExpiredNoncesCleaner>(prov => new ExpiredNoncesCleaner(
+                    prov.GetRequiredService<SqlServerNonceStoreSettings>(),
+                    prov.GetRequiredService<IBackgroundTaskStarter>(),
+                    prov.GetRequiredService<ISystemClock>()))
+                .AddSingleton<INonceStore>(prov => new CachingSqlServerNonceStore(
+                    new SqlServerNonceStore(
+                        prov.GetRequiredService<SqlServerNonceStoreSettings>(), 
+                        prov.GetRequiredService<IExpiredNoncesCleaner>()),
+                    prov.GetRequiredService<IMemoryCache>()));
 
             return builder;
         }

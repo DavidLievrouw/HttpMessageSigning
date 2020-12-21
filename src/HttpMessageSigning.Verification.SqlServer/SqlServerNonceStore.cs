@@ -7,17 +7,14 @@ using Dapper;
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     internal class SqlServerNonceStore : ISqlServerNonceStore {
         private const string TableNameToken = "{TableName}";
-        private readonly string _connectionString;
+        private readonly SqlServerNonceStoreSettings _settings;
         private readonly IExpiredNoncesCleaner _expiredNoncesCleaner;
         private readonly Lazy<string> _getSql;
 
         private readonly Lazy<string> _mergeSql;
 
-        public SqlServerNonceStore(string connectionString, string tableName, IExpiredNoncesCleaner expiredNoncesCleaner) {
-            if (string.IsNullOrEmpty(tableName)) throw new ArgumentException("Value cannot be null or empty.", nameof(tableName));
-            if (string.IsNullOrEmpty(connectionString)) throw new ArgumentException("Value cannot be null or empty.", nameof(connectionString));
-            
-            _connectionString = connectionString;
+        public SqlServerNonceStore(SqlServerNonceStoreSettings settings, IExpiredNoncesCleaner expiredNoncesCleaner) {
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _expiredNoncesCleaner = expiredNoncesCleaner ?? throw new ArgumentNullException(nameof(expiredNoncesCleaner));
             
             _mergeSql = new Lazy<string>(() => {
@@ -26,7 +23,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     // ReSharper disable once AssignNullToNotNullAttribute
                     using (var streamReader = new StreamReader(stream)) {
                         var template = streamReader.ReadToEnd();
-                        return template.Replace(TableNameToken, tableName);
+                        return template.Replace(TableNameToken, _settings.NonceTableName);
                     }
                 }
             });
@@ -36,7 +33,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     // ReSharper disable once AssignNullToNotNullAttribute
                     using (var streamReader = new StreamReader(stream)) {
                         var template = streamReader.ReadToEnd();
-                        return template.Replace(TableNameToken, tableName);
+                        return template.Replace(TableNameToken, _settings.NonceTableName);
                     }
                 }
             });
@@ -50,12 +47,13 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             if (nonce == null) throw new ArgumentNullException(nameof(nonce));
 
             var sql = _mergeSql.Value;
-            using (var connection = new SqlConnection(_connectionString)) {
+            using (var connection = new SqlConnection(_settings.ConnectionString)) {
                 var record = new NonceDataRecord {
                     ClientId = nonce.ClientId,
                     Value = nonce.Value,
                     Expiration = nonce.Expiration
                 };
+                record.V = record.GetV();
 
                 // Do not return Task here. Await it.
                 // Otherwise, the SqlConnection is disposed too early.
@@ -75,7 +73,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             if (string.IsNullOrEmpty(nonceValue)) throw new ArgumentException("Value cannot be null or empty.", nameof(nonceValue));
 
             var sql = _getSql.Value;
-            using (var connection = new SqlConnection(_connectionString)) {
+            using (var connection = new SqlConnection(_settings.ConnectionString)) {
                 var nonce = await connection.QuerySingleOrDefaultAsync<NonceDataRecord>(sql, new {ClientId = clientId.Value, Value = nonceValue});
                 return nonce == null
                     ? null

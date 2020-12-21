@@ -13,15 +13,19 @@ using Xunit;
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     [DisableTransactionScope]
     public class SqlServerNonceStoreTests : SqlServerIntegrationTest {
-        private const string TableName = "Nonces";
         private readonly IExpiredNoncesCleaner _expiredNoncesCleaner;
         private readonly DateTimeOffset _now;
         private readonly SqlServerNonceStore _sut;
+        private readonly SqlServerNonceStoreSettings _settings;
 
         public SqlServerNonceStoreTests(SqlServerFixture fixture)
             : base(fixture) {
             FakeFactory.Create(out _expiredNoncesCleaner);
-            _sut = new SqlServerNonceStore(fixture.SqlServerConfig.GetConnectionStringForTestDatabase(), TableName, _expiredNoncesCleaner);
+            _settings = new SqlServerNonceStoreSettings {
+                ExpiredNoncesCleanUpInterval = TimeSpan.FromMinutes(1),
+                ConnectionString = fixture.SqlServerConfig.GetConnectionStringForTestDatabase()
+            };
+            _sut = new SqlServerNonceStore(_settings, _expiredNoncesCleaner);
 
             _now = new DateTimeOffset(
                 DateTimeOffset.UtcNow.Year,
@@ -40,11 +44,8 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         }
 
         public class Register : SqlServerNonceStoreTests {
-            private readonly string _connectionString;
-
             public Register(SqlServerFixture fixture)
                 : base(fixture) {
-                _connectionString = fixture.SqlServerConfig.GetConnectionStringForTestDatabase();
             }
 
             [Fact]
@@ -105,9 +106,9 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             }
             
             private async Task<IEnumerable<Nonce>> GetAllNonces() {
-                var sql = @"SELECT [ClientId], [Value], [Expiration] FROM " + TableName;
+                var sql = @"SELECT [ClientId], [Value], [Expiration] FROM " + _settings.NonceTableName;
                 
-                using (var connection = new SqlConnection(_connectionString)) {
+                using (var connection = new SqlConnection(_settings.ConnectionString)) {
                     var nonces = await connection.QueryAsync<NonceDataRecord>(sql);
                     return nonces.Select(nonce => new Nonce(new KeyId(nonce.ClientId), nonce.Value, nonce.Expiration));
                 }

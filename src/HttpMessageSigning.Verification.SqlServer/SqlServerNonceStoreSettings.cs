@@ -13,8 +13,15 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         /// <summary>
         ///     Gets or sets the name of the SQL Server table that will contain nonces.
         /// </summary>
-        public string TableName { get; set; } = "nonces";
+        /// <remarks>When the table is not in the default schema, you can prepend the schema name to this value.</remarks>
+        public string NonceTableName { get; set; } = "Nonces";
 
+        /// <summary>
+        ///     Gets or sets the name of the SQL Server table that will contain the schema version info.
+        /// </summary>
+        /// <remarks>When the table is not in the default schema, you can prepend the schema name to this value.</remarks>
+        public string VersionTableName { get; set; } = "ClientVersions";
+        
         /// <summary>
         ///     Gets or sets the minimum interval between expired <see cref="Nonce" /> clean-up background task executions.
         /// </summary>
@@ -27,8 +34,14 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             if (ExpiredNoncesCleanUpInterval <= TimeSpan.Zero) {
                 throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(ExpiredNoncesCleanUpInterval)}.");
             }
+            if (string.IsNullOrEmpty(NonceTableName)) {
+                throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(NonceTableName)}.");
+            }
+            if (string.IsNullOrEmpty(VersionTableName)) {
+                throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(VersionTableName)}.");
+            }
 
-            if (string.IsNullOrEmpty(TableName)) throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(TableName)}.");
+            if (string.IsNullOrEmpty(NonceTableName)) throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(NonceTableName)}.");
         }
     }
 }
