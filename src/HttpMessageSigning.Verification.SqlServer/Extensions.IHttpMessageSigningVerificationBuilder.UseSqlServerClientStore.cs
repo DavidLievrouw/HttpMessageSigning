@@ -44,9 +44,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 .UseClientStore(prov => {
                     var sqlSettings = prov.GetRequiredService<SqlServerClientStoreSettings>();
                     return new CachingSqlServerClientStore(
-                        new SqlServerClientStore(
-                            sqlSettings.TableName,
-                            sqlSettings.SharedSecretEncryptionKey),
+                        new SqlServerClientStore(sqlSettings),
                         prov.GetRequiredService<IMemoryCache>(),
                         sqlSettings.ClientCacheEntryExpiration,
                         prov.GetRequiredService<IBackgroundTaskStarter>());

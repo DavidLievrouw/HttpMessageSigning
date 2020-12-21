@@ -9,7 +9,9 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         public SqlServerClientStoreSettingsTests() {
             _sut = new SqlServerClientStoreSettings {
                 ConnectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;",
-                TableName = "signatureclients",
+                ClientsTableName = "signatureclients",
+                ClientClaimsTableName = "signatureclientclaims",
+                VersionTableName = "clientversions",
                 ClientCacheEntryExpiration = TimeSpan.FromMinutes(3)
             };
         }
@@ -27,8 +29,26 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
-            public void GivenNullOrEmptyCollectionName_ThrowsValidationException(string nullOrEmpty) {
-                _sut.TableName = nullOrEmpty;
+            public void GivenNullOrEmptyClientsTableName_ThrowsValidationException(string nullOrEmpty) {
+                _sut.ClientsTableName = nullOrEmpty;
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void GivenNullOrEmptyClientClaimsTableName_ThrowsValidationException(string nullOrEmpty) {
+                _sut.ClientClaimsTableName = nullOrEmpty;
+                Action act = () => _sut.Validate();
+                act.Should().Throw<ValidationException>();
+            }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void GivenNullOrEmptyVersionTableName_ThrowsValidationException(string nullOrEmpty) {
+                _sut.VersionTableName = nullOrEmpty;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }

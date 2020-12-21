@@ -13,7 +13,20 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         /// <summary>
         ///     Gets or sets the name of the SQL Server table that will contain registered clients.
         /// </summary>
-        public string TableName { get; set; } = "clients";
+        /// <remarks>When the table is not in the default schema, you can prepend the schema name to this value.</remarks>
+        public string ClientsTableName { get; set; } = "Clients";
+        
+        /// <summary>
+        ///     Gets or sets the name of the SQL Server table that will contain the assigned claims for the registered clients.
+        /// </summary>
+        /// <remarks>When the table is not in the default schema, you can prepend the schema name to this value.</remarks>
+        public string ClientClaimsTableName { get; set; } = "ClientClaims";
+        
+        /// <summary>
+        ///     Gets or sets the name of the SQL Server table that will contain the schema version info.
+        /// </summary>
+        /// <remarks>When the table is not in the default schema, you can prepend the schema name to this value.</remarks>
+        public string VersionTableName { get; set; } = "ClientVersions";
 
         /// <summary>
         ///     Gets or sets the encryption key for the shared secrets.
@@ -29,7 +42,9 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
         internal void Validate() {
             if (string.IsNullOrEmpty(ConnectionString)) throw new ValidationException($"The {nameof(SqlServerClientStoreSettings)} do not specify a valid {nameof(ConnectionString)}.");
-            if (string.IsNullOrEmpty(TableName)) throw new ValidationException($"The {nameof(SqlServerClientStoreSettings)} do not specify a valid {nameof(TableName)}.");
+            if (string.IsNullOrEmpty(ClientsTableName)) throw new ValidationException($"The {nameof(SqlServerClientStoreSettings)} do not specify a valid {nameof(ClientsTableName)}.");
+            if (string.IsNullOrEmpty(ClientClaimsTableName)) throw new ValidationException($"The {nameof(SqlServerClientStoreSettings)} do not specify a valid {nameof(ClientClaimsTableName)}.");
+            if (string.IsNullOrEmpty(VersionTableName)) throw new ValidationException($"The {nameof(SqlServerClientStoreSettings)} do not specify a valid {nameof(VersionTableName)}.");
         }
     }
 }

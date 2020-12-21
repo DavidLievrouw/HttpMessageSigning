@@ -4,13 +4,10 @@ using System.Threading.Tasks;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     internal class SqlServerClientStore : ISqlServerClientStore {
-        private readonly SharedSecretEncryptionKey _encryptionKey;
+        private readonly SqlServerClientStoreSettings _settings;
 
-        public SqlServerClientStore(
-            string collectionName, 
-            SharedSecretEncryptionKey encryptionKey) {
-            if (string.IsNullOrEmpty(collectionName)) throw new ArgumentException("Value cannot be null or empty.", nameof(collectionName));
-            _encryptionKey = encryptionKey;
+        public SqlServerClientStore(SqlServerClientStoreSettings settings) {
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         public void Dispose() {
@@ -28,7 +25,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 NonceLifetime = client.NonceLifetime.TotalSeconds,
                 ClockSkew = client.ClockSkew.TotalSeconds,
                 Claims = client.Claims?.Select(ClaimDataRecord.FromClaim)?.ToArray(),
-                SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm, _encryptionKey),
+                SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm, _settings.SharedSecretEncryptionKey),
                 RequestTargetEscaping = client.RequestTargetEscaping.ToString()
             };
             record.V = record.GetV();
