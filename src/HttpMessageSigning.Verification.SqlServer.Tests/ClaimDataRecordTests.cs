@@ -60,21 +60,36 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         }
 
         public class FromClaim : ClaimDataRecordTests {
+            private readonly string _clientId;
+            private readonly Claim _claim;
+
+            public FromClaim() {
+                _clientId = "c001";
+                _claim = new Claim("t1", "v1", "vt", "i", "oi");
+            }
+
             [Fact]
             public void GivenNullClaim_ThrowsArgumentNullException() {
-                Action act = () => ClaimDataRecord.FromClaim(null);
+                Action act = () => ClaimDataRecord.FromClaim(_clientId, null);
                 act.Should().Throw<ArgumentNullException>();
+            }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void GivenNullOrEmptyClientId_ThrowsArgumentNullException(string nullOrEmpty) {
+                Action act = () => ClaimDataRecord.FromClaim(nullOrEmpty, _claim);
+                act.Should().Throw<ArgumentException>();
             }
 
             [Fact]
             public void CopiesAllValues() {
-                var minimalClaim = new Claim("t1", "v1", "vt", "i", "oi");
-
                 ClaimDataRecord actual = null;
-                Action act = () => actual = ClaimDataRecord.FromClaim(minimalClaim);
+                Action act = () => actual = ClaimDataRecord.FromClaim(_clientId, _claim);
                 act.Should().NotThrow();
 
                 var expected = new ClaimDataRecord {
+                    ClientId = "c001",
                     Type = "t1",
                     Value = "v1",
                     OriginalIssuer = "oi",
@@ -89,10 +104,11 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 var minimalClaim = new Claim("t1", "v1");
 
                 ClaimDataRecord actual = null;
-                Action act = () => actual = ClaimDataRecord.FromClaim(minimalClaim);
+                Action act = () => actual = ClaimDataRecord.FromClaim(_clientId, minimalClaim);
                 act.Should().NotThrow();
 
                 var expected = new ClaimDataRecord {
+                    ClientId = "c001",
                     Type = "t1",
                     Value = "v1",
                     OriginalIssuer = "LOCAL AUTHORITY",

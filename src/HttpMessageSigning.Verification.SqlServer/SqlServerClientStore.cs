@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             if (IsProhibitedId(client.Id)) throw new ArgumentException($"The id value of the specified {nameof(Client)} is prohibited ({client.Id}).", nameof(client));
 
             var signatureAlgorithmRecord = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm, _settings.SharedSecretEncryptionKey);
-            var record = new ClientDataRecord {
+            var clientRecord = new ClientDataRecord {
                 Id = client.Id,
                 Name = client.Name,
                 NonceLifetime = client.NonceLifetime.TotalSeconds,
@@ -29,11 +29,12 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 SigParameter = signatureAlgorithmRecord.Parameter,
                 SigHashAlgorithm = signatureAlgorithmRecord.HashAlgorithm,
                 IsSigParameterEncrypted = signatureAlgorithmRecord.IsParameterEncrypted,
-                Claims = client.Claims?.Select(ClaimDataRecord.FromClaim)?.ToArray(),
                 RequestTargetEscaping = client.RequestTargetEscaping.ToString()
             };
-            record.V = record.GetV();
+            clientRecord.V = clientRecord.GetV();
 
+            var claimRecords = client.Claims?.Select(c => ClaimDataRecord.FromClaim(client.Id, c))?.ToList();
+            
             throw new NotImplementedException();
         }
 

@@ -10,7 +10,6 @@
         public string RequestTargetEscaping { get; set; }
         public double? NonceLifetime { get; set; }
         public int? V { get; set; }
-        public ClaimDataRecord[] Claims { get; set; }
         
         public int GetV() {
             return 1;
