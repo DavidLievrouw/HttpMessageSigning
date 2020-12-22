@@ -1,0 +1,1 @@
+﻿DELETE FROM {TableName} WHERE [ClientId] = @ClientId;

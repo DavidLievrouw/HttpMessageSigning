@@ -18,14 +18,18 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             if (client == null) throw new ArgumentNullException(nameof(client));
             
             if (IsProhibitedId(client.Id)) throw new ArgumentException($"The id value of the specified {nameof(Client)} is prohibited ({client.Id}).", nameof(client));
-            
+
+            var signatureAlgorithmRecord = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm, _settings.SharedSecretEncryptionKey);
             var record = new ClientDataRecord {
                 Id = client.Id,
                 Name = client.Name,
                 NonceLifetime = client.NonceLifetime.TotalSeconds,
                 ClockSkew = client.ClockSkew.TotalSeconds,
+                SigType = signatureAlgorithmRecord.Type,
+                SigParameter = signatureAlgorithmRecord.Parameter,
+                SigHashAlgorithm = signatureAlgorithmRecord.HashAlgorithm,
+                IsSigParameterEncrypted = signatureAlgorithmRecord.IsParameterEncrypted,
                 Claims = client.Claims?.Select(ClaimDataRecord.FromClaim)?.ToArray(),
-                SignatureAlgorithm = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm, _settings.SharedSecretEncryptionKey),
                 RequestTargetEscaping = client.RequestTargetEscaping.ToString()
             };
             record.V = record.GetV();
@@ -37,6 +41,8 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             if (clientId == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(clientId));
             
             if (IsProhibitedId(clientId)) return null;
+            
+            // https://stackoverflow.com/a/46792487
             
             throw new NotImplementedException();
             /*var collection = _lazyCollection.Value;

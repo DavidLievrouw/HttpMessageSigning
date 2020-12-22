@@ -1,0 +1,18 @@
+﻿SELECT {ClientsTableName}.[Id]
+       ,{ClientsTableName}.[Name]
+       ,{ClientsTableName}.[NonceLifetime]
+       ,{ClientsTableName}.[ClockSkew]
+       ,{ClientsTableName}.[SigType]
+       ,{ClientsTableName}.[SigParameter]
+       ,{ClientsTableName}.[SigHashAlgorithm]
+       ,{ClientsTableName}.[IsSigParameterEncrypted]
+       ,{ClientsTableName}.[RequestTargetEscaping]
+       ,{ClientsTableName}.[V]
+       ,{ClientClaimsTableName}.[Type]
+       ,{ClientClaimsTableName}.[Value]
+       ,{ClientClaimsTableName}.[Issuer]
+       ,{ClientClaimsTableName}.[OriginalIssuer]
+       ,{ClientClaimsTableName}.[ValueType]
+FROM {ClientsTableName}
+INNER JOIN {ClientClaimsTableName} ON {ClientClaimsTableName}.[ClientId] = {ClientsTableName}.[Id]
+WHERE {ClientsTableName}.[Id] = @ClientId

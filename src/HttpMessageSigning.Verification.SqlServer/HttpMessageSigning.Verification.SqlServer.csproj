@@ -87,9 +87,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Scripts\MergeNonce.sql" />
+      <EmbeddedResource Include="Scripts\DeleteClientClaims.sql" />
       <EmbeddedResource Include="Scripts\DeleteExpiredNonces.sql" />
+      <EmbeddedResource Include="Scripts\GetClient.sql" />
       <EmbeddedResource Include="Scripts\GetNonce.sql" />
+      <EmbeddedResource Include="Scripts\InsertClientClaim.sql" />
+      <EmbeddedResource Include="Scripts\MergeClient.sql" />
       <EmbeddedResource Include="Scripts\MergeNonce.sql" />
     </ItemGroup>
     

@@ -10,7 +10,7 @@ CREATE TABLE [dbo].[Nonces] (
     [Value] [nvarchar](36) NOT NULL,
     [Expiration] [datetimeoffset](3) NOT NULL,
     [V] [tinyint] NOT NULL,
-    CONSTRAINT [PK_Nonces] PRIMARY KEY CLUSTERED([Id] ASC) ON [PRIMARY]
+    CONSTRAINT [PK_Nonces] PRIMARY KEY CLUSTERED([Id] ASC)
 ) 
 GO
 
