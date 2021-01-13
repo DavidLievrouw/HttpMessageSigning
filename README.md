@@ -23,12 +23,12 @@ This repository is a C# implementation of that specification.
 
 | Package | NuGet status | Description |
 | --- | --- | --- |
-| <sub>`Dalion.HttpMessageSigning`</sub> | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/) | <sub>Shared components for signing and verification packages</sub> |
-| <sub>`Dalion.HttpMessageSigning.Signing`</sub> | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) | <sub>Components to sign request messages</sub> |
-| <sub>`Dalion.HttpMessageSigning.Verification`</sub> | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) | <sub>Components to verify request signatures, and support for in-memory client and nonce stores</sub> |
-| <sub>`Dalion.HttpMessageSigning.Verification.AspNetCore`</sub> | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) | <sub>ASP.NET Core authentication scheme for request signatures</sub> |
-| <sub>`Dalion.HttpMessageSigning.Verification.Owin`</sub> | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) | <sub>Owin authentication middleware for request signatures</sub> |
-| <sub>`Dalion.HttpMessageSigning.Verification.MongoDb`</sub> | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) | <sub>MongoDB-backed client and nonce store</sub> |
+| `Dalion.HttpMessageSigning` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/) | <sub>Shared components for signing and verification packages</sub> |
+| `Dalion.HttpMessageSigning.Signing` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) | <sub>Sign request messages</sub> |
+| `Dalion.HttpMessageSigning.Verification` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) | <sub>Verify request signatures, and support for in-memory client and nonce stores</sub> |
+| `Dalion.HttpMessageSigning.Verification.AspNetCore` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) | <sub>ASP.NET Core authentication scheme for request signatures</sub> |
+| `Dalion.HttpMessageSigning.Verification.Owin` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) | <sub>Owin authentication middleware for request signatures</sub> |
+| `Dalion.HttpMessageSigning.Verification.MongoDb` | [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) | <sub>MongoDB-backed client and nonce store</sub> |
   
 ## Basics
 When signing a request message, an _Authorization_ header is set in a http request. Using this header, the server can verify that it is sent by the known client, and that the content has not been tampered with.
