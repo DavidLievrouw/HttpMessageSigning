@@ -2,7 +2,7 @@
 
 A C# implementation of the "Authorization" scheme of the IETF Internet-Draft [Signing HTTP Messages](https://tools.ietf.org/html/draft-ietf-httpbis-message-signatures-00).
 
-[![Build status](https://ci.appveyor.com/api/projects/status/d8fdl40nfj62ed1v?svg=true)](https://ci.appveyor.com/project/DavidLievrouw/httpmessagesigning) [![Coverage Status](https://coveralls.io/repos/github/DavidLievrouw/HttpMessageSigning/badge.svg?branch=master)](https://coveralls.io/github/DavidLievrouw/HttpMessageSigning?branch=master) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build status](https://ci.appveyor.com/api/projects/status/d8fdl40nfj62ed1v?svg=true)](https://ci.appveyor.com/project/DavidLievrouw/httpmessagesigning) [![Coverage Status](https://coveralls.io/repos/github/DavidLievrouw/HttpMessageSigning/badge.svg?branch=master)](https://coveralls.io/github/DavidLievrouw/HttpMessageSigning?branch=master) ![AppVeyor tests](http://canllp.ca/appveyor/tests/DavidLievrouw/httpmessagesigning) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 
 It contains:
   - HTTP request signing services.
@@ -23,33 +23,39 @@ This repository is a C# implementation of that specification.
 
 #### Common
 
-[![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/) `Dalion.HttpMessageSigning`
+`Dalion.HttpMessageSigning`<br/>
+![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning) ![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning) 
 <br/><sub>Shared components for signing and verification packages.</sub>
 <br/><br/>
 
 #### Signing
 
-[![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) `Dalion.HttpMessageSigning.Signing`
+`Dalion.HttpMessageSigning.Signing`<br/>
+![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Signing) ![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Signing) 
 <br/><sub>Components for signing HTTP messages.</sub>
 <br/><br/>
 
 #### Verification
 
-[![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) `Dalion.HttpMessageSigning.Verification`
+`Dalion.HttpMessageSigning.Verification`<br/>
+![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification) ![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification) 
 <br/><sub>Verify request signatures, including support for in-memory client and nonce stores.</sub>
 <br/><br/><br/>
 
-[![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) `Dalion.HttpMessageSigning.Verification.AspNetCore`
+`Dalion.HttpMessageSigning.Verification.AspNetCore`<br/>
+![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification.AspNetCore) ![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.AspNetCore) 
 <br/><sub>ASP.NET Core authentication scheme to verify signatures on signed HTTP messages.</sub>
 <br/><br/><br/>
 
-[![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) `Dalion.HttpMessageSigning.Verification.Owin`
+`Dalion.HttpMessageSigning.Verification.Owin`<br/>
+![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification.Owin) ![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.Owin) 
 <br/><sub>Owin authentication middleware to verify signatures on signed HTTP messages.</sub>
 <br/><br/>
 
 #### Storage
 
-[![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) `Dalion.HttpMessageSigning.Verification.MongoDb`
+`Dalion.HttpMessageSigning.Verification.MongoDb`<br/>
+![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification.MongoDb) ![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.MongoDb) 
 <br/><sub>MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory implementations.</sub>
 <br/><br/>
 
