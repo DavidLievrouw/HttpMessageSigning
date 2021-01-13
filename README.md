@@ -21,26 +21,31 @@ This repository is a C# implementation of that specification.
 
 ## NuGet
 
-#### Core package
+#### Common
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/) `Dalion.HttpMessageSigning`
 <br/><sub>Shared components for signing and verification packages</sub>
+<br/>
 
 #### Signing
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) `Dalion.HttpMessageSigning.Signing`
 <br/><sub>Components for signing HTTP messages</sub>
+<br/>
 
 #### Verification
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) `Dalion.HttpMessageSigning.Verification`
 <br/><sub>Verify request signatures, including support for in-memory client and nonce stores</sub>
+<br/>
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) `Dalion.HttpMessageSigning.Verification.AspNetCore`
 <br/><sub>ASP.NET Core authentication scheme to verify signatures on signed HTTP messages</sub>
-  
+<br/>
+
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) `Dalion.HttpMessageSigning.Verification.Owin`
 <br/><sub>Owin authentication middleware to verify signatures on signed HTTP messages</sub>
+<br/>
 
 #### Storage
 
@@ -48,6 +53,7 @@ This repository is a C# implementation of that specification.
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) `Dalion.HttpMessageSigning.Verification.MongoDb`
 <br/><sub>MongoDB-backed client and nonce store implementations</sub>
+<br/>
 
 ## Basics
 When signing a request message, an _Authorization_ header is set in a http request. Using this header, the server can verify that it is sent by the known client, and that the content has not been tampered with.
