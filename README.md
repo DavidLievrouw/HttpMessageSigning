@@ -23,7 +23,7 @@ This repository is a C# implementation of that specification.
 
 #### Core package
 
-- `Dalion.HttpMessageSigning` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/)
+- `Dalion.HttpMessageSigning` &nbsp; [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/)
   - Shared components for signing and verification packages
 
 #### Signing
