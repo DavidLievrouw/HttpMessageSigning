@@ -24,36 +24,34 @@ This repository is a C# implementation of that specification.
 #### Common
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/) `Dalion.HttpMessageSigning`
-<br/><sub>Shared components for signing and verification packages</sub>
-<br/>
+<br/><sub>Shared components for signing and verification packages.</sub>
+<br/><br/>
 
 #### Signing
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) `Dalion.HttpMessageSigning.Signing`
-<br/><sub>Components for signing HTTP messages</sub>
-<br/>
+<br/><sub>Components for signing HTTP messages.</sub>
+<br/><br/>
 
 #### Verification
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) `Dalion.HttpMessageSigning.Verification`
-<br/><sub>Verify request signatures, including support for in-memory client and nonce stores</sub>
-<br/>
+<br/><sub>Verify request signatures, including support for in-memory client and nonce stores.</sub>
+<br/><br/>
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) `Dalion.HttpMessageSigning.Verification.AspNetCore`
-<br/><sub>ASP.NET Core authentication scheme to verify signatures on signed HTTP messages</sub>
-<br/>
+<br/><sub>ASP.NET Core authentication scheme to verify signatures on signed HTTP messages.</sub>
+<br/><br/>
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) `Dalion.HttpMessageSigning.Verification.Owin`
-<br/><sub>Owin authentication middleware to verify signatures on signed HTTP messages</sub>
-<br/>
+<br/><sub>Owin authentication middleware to verify signatures on signed HTTP messages.</sub>
+<br/><br/>
 
 #### Storage
 
-<sub>The base `Dalion.HttpMessageSigning.Verification` package contains support for in-memory storage of `Client` and `Nonce` data. The following packages provide alternatives.</sub>
-
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) `Dalion.HttpMessageSigning.Verification.MongoDb`
-<br/><sub>MongoDB-backed client and nonce store implementations</sub>
-<br/>
+<br/><sub>MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory implementations.</sub>
+<br/><br/>
 
 ## Basics
 When signing a request message, an _Authorization_ header is set in a http request. Using this header, the server can verify that it is sent by the known client, and that the content has not been tampered with.
