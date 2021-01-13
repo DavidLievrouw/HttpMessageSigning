@@ -44,8 +44,6 @@ This repository is a C# implementation of that specification.
 
 #### Storage
 
-- `Dalion.HttpMessageSigning.Verification.MongoDb`<br/>
-
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/)
   - MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory implementations.
 
