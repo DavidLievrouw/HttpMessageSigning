@@ -23,7 +23,7 @@ This repository is a C# implementation of that specification.
 
 #### Common
 
-`Dalion.HttpMessageSigning`
+- `Dalion.HttpMessageSigning`
 
 Shared components for signing and verification packages.
 
@@ -32,7 +32,7 @@ Shared components for signing and verification packages.
 
 #### Signing
 
-`Dalion.HttpMessageSigning.Signing`
+- `Dalion.HttpMessageSigning.Signing`
 
 Components for signing HTTP messages.
   
@@ -41,21 +41,21 @@ Components for signing HTTP messages.
 
 #### Verification
 
-`Dalion.HttpMessageSigning.Verification`<br/>
+- `Dalion.HttpMessageSigning.Verification`<br/>
 
 Verify request signatures, including support for in-memory client and nonce stores.
 
 ![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification) ![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification) 
 <br/><br/><br/>
 
-`Dalion.HttpMessageSigning.Verification.AspNetCore`<br/>
+- `Dalion.HttpMessageSigning.Verification.AspNetCore`<br/>
 
 ASP.NET Core authentication scheme to verify signatures on signed HTTP messages.
 
 ![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning.Verification.AspNetCore) ![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.AspNetCore) 
 <br/><br/><br/>
 
-`Dalion.HttpMessageSigning.Verification.Owin`<br/>
+- `Dalion.HttpMessageSigning.Verification.Owin`<br/>
 
 Owin authentication middleware to verify signatures on signed HTTP messages.
 
@@ -64,7 +64,7 @@ Owin authentication middleware to verify signatures on signed HTTP messages.
 
 #### Storage
 
-`Dalion.HttpMessageSigning.Verification.MongoDb`<br/>
+- `Dalion.HttpMessageSigning.Verification.MongoDb`<br/>
 
 MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory implementations.
 
