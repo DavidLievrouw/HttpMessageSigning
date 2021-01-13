@@ -24,7 +24,8 @@ This repository is a C# implementation of that specification.
 #### Common
 
 `Dalion.HttpMessageSigning`<br/>
-<sub>Shared components for signing and verification packages.</sub><br/>
+Shared components for signing and verification packages.
+
 ![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning) ![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning) 
 <br/><br/>
 
