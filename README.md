@@ -29,12 +29,12 @@ This repository is a C# implementation of that specification.
 #### Signing
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/)
-<br/><sub>Components for signing HTTP messages.</sub>
+<br/><sub>Signing HTTP messages, client-side.</sub>
 
 #### Verification
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/)
-<br/><sub>Verify request signatures, including support for in-memory client and nonce stores.</sub>
+<br/><sub>Verify request signatures, server-side, including support for in-memory client and nonce stores.</sub>
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/)
 <br/><sub>ASP.NET Core authentication scheme to verify signatures on signed HTTP messages.</sub>
@@ -45,7 +45,7 @@ This repository is a C# implementation of that specification.
 #### Storage
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/)
-<br/><sub>MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory implementations.
+<br/><sub>MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory ones.
 
 ## Basics
 When signing a request message, an _Authorization_ header is set in a http request. Using this header, the server can verify that it is sent by the known client, and that the content has not been tampered with.
