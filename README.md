@@ -37,11 +37,11 @@ This repository is a C# implementation of that specification.
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) `Dalion.HttpMessageSigning.Verification`
 <br/><sub>Verify request signatures, including support for in-memory client and nonce stores.</sub>
-<br/><br/>
+<br/><br/><br/>
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) `Dalion.HttpMessageSigning.Verification.AspNetCore`
 <br/><sub>ASP.NET Core authentication scheme to verify signatures on signed HTTP messages.</sub>
-<br/><br/>
+<br/><br/><br/>
 
 [![NuGet Status](https://buildstats.info/nuget/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) `Dalion.HttpMessageSigning.Verification.Owin`
 <br/><sub>Owin authentication middleware to verify signatures on signed HTTP messages.</sub>
