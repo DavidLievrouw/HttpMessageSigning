@@ -24,28 +24,28 @@ This repository is a C# implementation of that specification.
 #### Common
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/)
-  - Shared components for signing and verification packages.
+<br/><sub>Shared components for signing and verification packages.</sub>
 
 #### Signing
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/)
-  - Components for signing HTTP messages.
+<br/><sub>Components for signing HTTP messages.</sub>
 
 #### Verification
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/)
-  - Verify request signatures, including support for in-memory client and nonce stores.
+<br/><sub>Verify request signatures, including support for in-memory client and nonce stores.</sub>
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/)
-  - ASP.NET Core authentication scheme to verify signatures on signed HTTP messages.
+<br/><sub>ASP.NET Core authentication scheme to verify signatures on signed HTTP messages.</sub>
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/)
-  - Owin authentication middleware to verify signatures on signed HTTP messages.
+<br/><sub>Owin authentication middleware to verify signatures on signed HTTP messages.</sub>
 
 #### Storage
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/)
-  - MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory implementations.
+<br/><sub>MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory implementations.
 
 ## Basics
 When signing a request message, an _Authorization_ header is set in a http request. Using this header, the server can verify that it is sent by the known client, and that the content has not been tampered with.
