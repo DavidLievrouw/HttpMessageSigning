@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         ///     Gets or sets the name of the SQL Server table that will contain the schema version info.
         /// </summary>
         /// <remarks>When the table is not in the default schema, you can prepend the schema name to this value.</remarks>
-        public string VersionTableName { get; set; } = "ClientVersions";
+        public string VersionsTableName { get; set; } = "NonceVersions";
         
         /// <summary>
         ///     Gets or sets the minimum interval between expired <see cref="Nonce" /> clean-up background task executions.
@@ -37,8 +37,8 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             if (string.IsNullOrEmpty(NonceTableName)) {
                 throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(NonceTableName)}.");
             }
-            if (string.IsNullOrEmpty(VersionTableName)) {
-                throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(VersionTableName)}.");
+            if (string.IsNullOrEmpty(VersionsTableName)) {
+                throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(VersionsTableName)}.");
             }
 
             if (string.IsNullOrEmpty(NonceTableName)) throw new ValidationException($"The {nameof(SqlServerNonceStoreSettings)} do not specify a valid {nameof(NonceTableName)}.");

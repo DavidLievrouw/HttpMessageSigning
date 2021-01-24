@@ -90,10 +90,10 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 try {
                     using (var transaction = connection.BeginTransaction()) {
                         await connection.ExecuteAsync(_mergeClientSql.Value, clientRecord, transaction).ConfigureAwait(continueOnCapturedContext: false);
-                        await connection.ExecuteAsync(_deleteClientClaimsSql.Value, new {ClientId = client.Id.Value}).ConfigureAwait(continueOnCapturedContext: false);
+                        await connection.ExecuteAsync(_deleteClientClaimsSql.Value, new {ClientId = client.Id.Value}, transaction).ConfigureAwait(continueOnCapturedContext: false);
                         if (clientRecord.Claims.Count > 0) {
                             foreach (var claim in clientRecord.Claims) {
-                                await connection.ExecuteAsync(_insertClientClaimSql.Value, claim).ConfigureAwait(continueOnCapturedContext: false);
+                                await connection.ExecuteAsync(_insertClientClaimSql.Value, claim, transaction).ConfigureAwait(continueOnCapturedContext: false);
                             }
                         }
                         transaction.Commit();

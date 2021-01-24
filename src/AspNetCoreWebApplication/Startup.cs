@@ -5,6 +5,7 @@ using Dalion.HttpMessageSigning;
 using Dalion.HttpMessageSigning.Verification;
 using Dalion.HttpMessageSigning.Verification.AspNetCore;
 using Dalion.HttpMessageSigning.Verification.MongoDb;
+using Dalion.HttpMessageSigning.Verification.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +53,20 @@ namespace WebApplication {
                     ConnectionString = "mongodb://localhost:27017/HttpMessageSigningDb",
                     CollectionName = "client_nonces"
                 })*/
+                
+                /* Sample for storing Clients and Nonces in SqlServer instead of in-memory */
+                .UseSqlServerClientStore(provider => new SqlServerClientStoreSettings {
+                    ConnectionString = "Server=.;Database=HttpMessageSigning;User Id=dalion;Password=Dalion123;",
+                    SharedSecretEncryptionKey = "The_Big_S3cr37",
+                    ClientsTableName = "dbo.Clients",
+                    ClientClaimsTableName = "dbo.ClientClaims",
+                    VersionsTableName = "dbo.ClientVersions"
+                })
+                .UseSqlServerNonceStore(provider => new SqlServerNonceStoreSettings {
+                    ConnectionString = "Server=.;Database=HttpMessageSigning;User Id=dalion;Password=Dalion123;",
+                    NonceTableName = "dbo.Nonces",
+                    VersionsTableName = "dbo.NonceVersions"
+                })
                 
                 .UseClaimsPrincipalFactory<CustomClaimsPrincipalFactory>().Services
                 .AddSingleton<CustomClaimsPrincipalFactory>()

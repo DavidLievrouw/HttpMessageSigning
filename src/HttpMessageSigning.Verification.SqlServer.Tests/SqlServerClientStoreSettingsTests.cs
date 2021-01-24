@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 ConnectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;",
                 ClientsTableName = "signatureclients",
                 ClientClaimsTableName = "signatureclientclaims",
-                VersionTableName = "clientversions",
+                VersionsTableName = "clientversions",
                 ClientCacheEntryExpiration = TimeSpan.FromMinutes(3)
             };
         }
@@ -48,7 +48,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(null)]
             [InlineData("")]
             public void GivenNullOrEmptyVersionTableName_ThrowsValidationException(string nullOrEmpty) {
-                _sut.VersionTableName = nullOrEmpty;
+                _sut.VersionsTableName = nullOrEmpty;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }

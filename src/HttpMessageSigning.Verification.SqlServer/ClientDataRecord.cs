@@ -87,7 +87,6 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
         private static string GetUnencryptedParameter(ClientDataRecord dataRecord, SharedSecretEncryptionKey encryptionKey, int? recordVersion) {
             if (encryptionKey == SharedSecretEncryptionKey.Empty) return dataRecord.SigParameter;
-            if (!recordVersion.HasValue || recordVersion.Value < 2) return dataRecord.SigParameter; // Encryption not yet supported
 
             if (!dataRecord.IsSigParameterEncrypted) return dataRecord.SigParameter; // The value in the data store is not encrypted
 
