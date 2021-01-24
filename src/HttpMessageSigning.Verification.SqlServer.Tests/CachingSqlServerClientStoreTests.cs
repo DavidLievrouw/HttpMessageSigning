@@ -98,6 +98,20 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
                 ((CustomSignatureAlgorithm) _newClient.SignatureAlgorithm).IsDisposed().Should().BeTrue();
             }
+            
+            [Theory]
+            [InlineData(0)]
+            [InlineData(-1)]
+            [InlineData(-99)]
+            public async Task WhenExpirationIsZeroOrNegative_DoesNotUseCache_AndDelegatesToDecoratedInstance(int expirationSeconds) {
+                var sut = new CachingSqlServerClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds), _backgroundTaskStarter);
+
+                await sut.Register(_newClient);
+
+                A.CallTo(() => _decorated.Register(_newClient))
+                    .MustHaveHappened();
+                _cache.InternalData.Should().BeEmpty();
+            }
         }
 
         public class Get : CachingSqlServerClientStoreTests {

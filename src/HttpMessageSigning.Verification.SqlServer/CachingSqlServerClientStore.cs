@@ -23,9 +23,11 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         public async Task Register(Client client) {
             await _decorated.Register(client).ConfigureAwait(continueOnCapturedContext: false);
 
-            var cacheKey = $"CacheEntry_Client_{client.Id}";
-            var options = BuildEntryOptions();
-            _cache.Set(cacheKey, client, options);
+            if (_expiration > TimeSpan.Zero) {
+                var cacheKey = $"CacheEntry_Client_{client.Id}";
+                var options = BuildEntryOptions();
+                _cache.Set(cacheKey, client, options);
+            }
         }
 
         public async Task<Client> Get(KeyId clientId) {
