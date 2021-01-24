@@ -81,13 +81,13 @@
 
     <ItemGroup>
       <EmbeddedResource Include="Infrastructure\Setup\Schema\Security\CreateDefaultUser.sql" />
-      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\Nonces.sql" />
-      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\NonceMigrations.sql" />
+      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\004_Nonces.sql" />
+      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\005_NonceMigrations.sql" />
       <EmbeddedResource Include="Infrastructure\Setup\GenericScripts\CreateEmptyDatabase.sql" />
       <EmbeddedResource Include="Infrastructure\Setup\GenericScripts\DeleteDatabase.sql" />
-      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\ClientClaims.sql" />
-      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\ClientMigrations.sql" />
-      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\Clients.sql" />
+      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\002_ClientClaims.sql" />
+      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\003_ClientMigrations.sql" />
+      <EmbeddedResource Include="Infrastructure\Setup\Schema\Tables\001_Clients.sql" />
     </ItemGroup>
 
 </Project>

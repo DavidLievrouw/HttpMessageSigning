@@ -1,13 +1,70 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     internal class SqlServerClientStore : ISqlServerClientStore {
+        private const string ClientsTableNameToken = "{ClientsTableName}";
+        private const string ClientClaimsTableNameToken = "{ClientClaimsTableName}";
+
+        private readonly Lazy<string> _getSql;
+        private readonly Lazy<string> _deleteClientClaimsSql;
+        private readonly Lazy<string> _insertClientClaimSql;
+        private readonly Lazy<string> _mergeClientSql;
         private readonly SqlServerClientStoreSettings _settings;
 
         public SqlServerClientStore(SqlServerClientStoreSettings settings) {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+
+            _getSql = new Lazy<string>(() => {
+                var thisNamespace = typeof(SqlServerNonceStore).Namespace;
+                using (var stream = typeof(SqlServerNonceStore).Assembly.GetManifestResourceStream($"{thisNamespace}.Scripts.GetClient.sql")) {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    using (var streamReader = new StreamReader(stream)) {
+                        var template = streamReader.ReadToEnd();
+                        return template
+                            .Replace(ClientsTableNameToken, _settings.ClientsTableName)
+                            .Replace(ClientClaimsTableNameToken, _settings.ClientClaimsTableName);
+                    }
+                }
+            });
+            _mergeClientSql = new Lazy<string>(() => {
+                var thisNamespace = typeof(SqlServerNonceStore).Namespace;
+                using (var stream = typeof(SqlServerNonceStore).Assembly.GetManifestResourceStream($"{thisNamespace}.Scripts.MergeClient.sql")) {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    using (var streamReader = new StreamReader(stream)) {
+                        var template = streamReader.ReadToEnd();
+                        return template
+                            .Replace(ClientsTableNameToken, _settings.ClientsTableName);
+                    }
+                }
+            });
+            _deleteClientClaimsSql = new Lazy<string>(() => {
+                var thisNamespace = typeof(SqlServerNonceStore).Namespace;
+                using (var stream = typeof(SqlServerNonceStore).Assembly.GetManifestResourceStream($"{thisNamespace}.Scripts.DeleteClientClaims.sql")) {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    using (var streamReader = new StreamReader(stream)) {
+                        var template = streamReader.ReadToEnd();
+                        return template
+                            .Replace(ClientClaimsTableNameToken, _settings.ClientClaimsTableName);
+                    }
+                }
+            });
+            _insertClientClaimSql = new Lazy<string>(() => {
+                var thisNamespace = typeof(SqlServerNonceStore).Namespace;
+                using (var stream = typeof(SqlServerNonceStore).Assembly.GetManifestResourceStream($"{thisNamespace}.Scripts.InsertClientClaim.sql")) {
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    using (var streamReader = new StreamReader(stream)) {
+                        var template = streamReader.ReadToEnd();
+                        return template
+                            .Replace(ClientClaimsTableNameToken, _settings.ClientClaimsTableName);
+                    }
+                }
+            });
         }
 
         public void Dispose() {
@@ -16,44 +73,68 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
         public async Task Register(Client client) {
             if (client == null) throw new ArgumentNullException(nameof(client));
-            
-            if (IsProhibitedId(client.Id)) throw new ArgumentException($"The id value of the specified {nameof(Client)} is prohibited ({client.Id}).", nameof(client));
 
-            var signatureAlgorithmRecord = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(client.SignatureAlgorithm, _settings.SharedSecretEncryptionKey);
             var clientRecord = new ClientDataRecord {
                 Id = client.Id,
                 Name = client.Name,
                 NonceLifetime = client.NonceLifetime.TotalSeconds,
                 ClockSkew = client.ClockSkew.TotalSeconds,
-                SigType = signatureAlgorithmRecord.Type,
-                SigParameter = signatureAlgorithmRecord.Parameter,
-                SigHashAlgorithm = signatureAlgorithmRecord.HashAlgorithm,
-                IsSigParameterEncrypted = signatureAlgorithmRecord.IsParameterEncrypted,
-                RequestTargetEscaping = client.RequestTargetEscaping.ToString()
+                RequestTargetEscaping = client.RequestTargetEscaping.ToString(),
+                Claims = client.Claims?.Select(c => ClaimDataRecord.FromClaim(client.Id, c))?.ToList() ?? new List<ClaimDataRecord>()
             };
             clientRecord.V = clientRecord.GetV();
+            clientRecord.SetSignatureAlgorithm(client.SignatureAlgorithm, _settings.SharedSecretEncryptionKey);
 
-            var claimRecords = client.Claims?.Select(c => ClaimDataRecord.FromClaim(client.Id, c))?.ToList();
-            
-            throw new NotImplementedException();
+            using (var connection = new SqlConnection(_settings.ConnectionString)) {
+                await connection.OpenAsync();
+                try {
+                    using (var transaction = connection.BeginTransaction()) {
+                        await connection.ExecuteAsync(_mergeClientSql.Value, clientRecord, transaction).ConfigureAwait(continueOnCapturedContext: false);
+                        await connection.ExecuteAsync(_deleteClientClaimsSql.Value, new {ClientId = client.Id.Value}).ConfigureAwait(continueOnCapturedContext: false);
+                        if (clientRecord.Claims.Count > 0) {
+                            foreach (var claim in clientRecord.Claims) {
+                                await connection.ExecuteAsync(_insertClientClaimSql.Value, claim).ConfigureAwait(continueOnCapturedContext: false);
+                            }
+                        }
+                        transaction.Commit();
+                    }
+                }
+                finally {
+                    connection.Close();
+                }
+            }
         }
 
         public async Task<Client> Get(KeyId clientId) {
             if (clientId == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(clientId));
-            
-            if (IsProhibitedId(clientId)) return null;
-            
-            // https://stackoverflow.com/a/46792487
-            
-            throw new NotImplementedException();
-            /*var collection = _lazyCollection.Value;
 
-            var findResult = await collection.FindAsync(r => r.Id == clientId).ConfigureAwait(continueOnCapturedContext: false);
-            var matches = await findResult.ToListAsync().ConfigureAwait(continueOnCapturedContext: false);
+            IList<ClientDataRecord> matches; 
+            using (var connection = new SqlConnection(_settings.ConnectionString)) {
+                var results = await connection.QueryAsync<ClientDataRecord, ClaimDataRecord, ClientDataRecord>(
+                    _getSql.Value,
+                    (client, claim) => {
+                        // ReSharper disable once ConvertToNullCoalescingCompoundAssignment
+                        client.Claims = client.Claims ?? new List<ClaimDataRecord>();
+                        client.Claims.Add(claim);
+                        return client;
+                    },
+                    new {ClientId = clientId.Value},
+                    splitOn: nameof(ClaimDataRecord.ClientId))
+                    .ConfigureAwait(continueOnCapturedContext: false);
+                matches = results
+                    .GroupBy(clientDataRecord => clientDataRecord.Id)
+                    .Select(_ => {
+                        var client = _.First();
+                        client.Claims = _.SelectMany(c => c.Claims).ToList();
+                        return client;
+                    })
+                    .ToList();
+            }
+
             if (!matches.Any()) return null;
-
+            
             var match = matches.Single();
-
+            
             var nonceLifetime = !match.NonceLifetime.HasValue || match.NonceLifetime.Value <= 0.0
                 ? ClientOptions.Default.NonceLifetime
                 : TimeSpan.FromSeconds(match.NonceLifetime.Value);
@@ -72,20 +153,11 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             return new Client(
                 match.Id,
                 match.Name,
-                match.SignatureAlgorithm.ToSignatureAlgorithm(_encryptionKey, match.V),
+                match.GetSignatureAlgorithm(_settings.SharedSecretEncryptionKey, match.V),
                 nonceLifetime,
                 clockSkew,
                 requestTargetEscaping,
-                match.Claims?.Select(c => c.ToClaim())?.ToArray());*/
+                match.Claims?.Select(c => c.ToClaim())?.ToArray());
         }
-        
-        private static bool IsProhibitedId(KeyId id) {
-            return ProhibitedIds.Contains(id);
-        }
-
-        private static readonly KeyId[] ProhibitedIds = {
-            KeyId.Empty,
-            "_version"
-        };
     }
 }

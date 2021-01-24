@@ -1,4 +1,4 @@
-﻿INSERT INTO {TableName} (
+﻿INSERT INTO {ClientClaimsTableName} (
     [ClientId],
     [Type],
     [Value],

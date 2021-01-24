@@ -43,12 +43,12 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         }
 
         private async Task RunCleanUp() {
-            await _semaphore.WaitAsync();
+            await _semaphore.WaitAsync().ConfigureAwait(continueOnCapturedContext: false);
             
             try {
                 var sql = _deleteExpiredSql.Value;
                 using (var connection = new SqlConnection(_settings.ConnectionString)) {
-                    await connection.ExecuteAsync(sql, new { Now = _systemClock.UtcNow });
+                    await connection.ExecuteAsync(sql, new { Now = _systemClock.UtcNow }).ConfigureAwait(continueOnCapturedContext: false);
                 }
 
                 _lastCleanUp = _systemClock.UtcNow;

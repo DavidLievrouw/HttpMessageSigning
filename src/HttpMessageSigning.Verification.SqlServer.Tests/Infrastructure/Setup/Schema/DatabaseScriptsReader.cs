@@ -30,6 +30,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer.Infrastructure.Setup.
             var sqlFiles = GetType().Assembly
                 .GetManifestResourceNames()
                 .Where(name => name.StartsWith(folderNamespace) && SqlExtensions.Contains(new FileInfo(name).Extension))
+                .OrderBy(name => name)
                 .Select(name => GetType().Assembly.GetManifestResourceStream(name))
                 .Select(stream => {
                     // ReSharper disable once AssignNullToNotNullAttribute

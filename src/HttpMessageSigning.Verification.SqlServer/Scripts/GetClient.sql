@@ -8,6 +8,7 @@
        ,{ClientsTableName}.[IsSigParameterEncrypted]
        ,{ClientsTableName}.[RequestTargetEscaping]
        ,{ClientsTableName}.[V]
+       ,{ClientClaimsTableName}.[ClientId]
        ,{ClientClaimsTableName}.[Type]
        ,{ClientClaimsTableName}.[Value]
        ,{ClientClaimsTableName}.[Issuer]

@@ -21,8 +21,8 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 #pragma warning disable 4014
             // Fire-and-forget
             Task.Factory.StartNew(async () => {
-                await _delayer.Delay(delay).ConfigureAwait(false);
-                await task().ConfigureAwait(false);
+                await _delayer.Delay(delay).ConfigureAwait(continueOnCapturedContext: false);
+                await task().ConfigureAwait(continueOnCapturedContext: false);
             });
 #pragma warning restore 4014
         }

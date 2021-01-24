@@ -6,26 +6,32 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    public class SignatureAlgorithmDataRecordTests {
+    public class ClientDataRecordTests {
         private readonly SharedSecretEncryptionKey _encryptionKey;
         private readonly string _unencryptedKey;
 
-        public SignatureAlgorithmDataRecordTests() {
+        public ClientDataRecordTests() {
             _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
             _unencryptedKey = "s3cr3t";
         }
 
-        public class FromSignatureAlgorithm : SignatureAlgorithmDataRecordTests {
+        public class SetSignatureAlgorithm : ClientDataRecordTests {
+            private readonly ClientDataRecord _sut;
+
+            public SetSignatureAlgorithm() {
+                _sut = new ClientDataRecord();
+            }
+
             [Fact]
             public void GivenNullSignatureAlgorithm_ThrowsArgumentNullException() {
-                Action act = () => SignatureAlgorithmDataRecord.FromSignatureAlgorithm(null, _encryptionKey);
+                Action act = () => _sut.SetSignatureAlgorithm(signatureAlgorithm: null, _encryptionKey);
                 act.Should().Throw<ArgumentNullException>();
             }
 
             [Fact]
             public void GivenUnsupportedAlgorithmType_ThrowsNotSupportedException() {
                 var unsupported = new CustomSignatureAlgorithm("CUSTOM");
-                Action act = () => SignatureAlgorithmDataRecord.FromSignatureAlgorithm(unsupported, _encryptionKey);
+                Action act = () => _sut.SetSignatureAlgorithm(unsupported, _encryptionKey);
                 act.Should().Throw<NotSupportedException>();
             }
 
@@ -34,22 +40,20 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotThrow(string nullOrEmpty) {
                 using (var hmac = SignatureAlgorithm.CreateForVerification(_unencryptedKey, HashAlgorithmName.SHA384)) {
-                    Action act = () => SignatureAlgorithmDataRecord.FromSignatureAlgorithm(hmac, nullOrEmpty);
+                    Action act = () => _sut.SetSignatureAlgorithm(hmac, nullOrEmpty);
                     act.Should().NotThrow();
                 }
             }
-            
+
             [Fact]
-            public void GivenHMACAlgorithm_ReturnsExpectedDataRecord() {
+            public void GivenHMACAlgorithm_SetsExpectedProperties() {
                 using (var hmac = SignatureAlgorithm.CreateForVerification(_unencryptedKey, HashAlgorithmName.SHA384)) {
-                    var actual = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(hmac, _encryptionKey);
-                    var expected = new SignatureAlgorithmDataRecord {
-                        Type = "HMAC",
-                        HashAlgorithm = HashAlgorithmName.SHA384.Name,
-                        IsParameterEncrypted = true
-                    };
-                    actual.Should().BeEquivalentTo(expected, opts => opts.Excluding(_ => _.Parameter));
-                    actual.Parameter.Should().NotBe(_unencryptedKey);
+                    _sut.SetSignatureAlgorithm(hmac, _encryptionKey);
+
+                    _sut.SigType.Should().Be("HMAC");
+                    _sut.SigHashAlgorithm.Should().Be(HashAlgorithmName.SHA384.Name);
+                    _sut.IsSigParameterEncrypted.Should().Be(true);
+                    _sut.SigParameter.Should().NotBe(_unencryptedKey);
                 }
             }
 
@@ -58,24 +62,23 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotEncryptParameter(string nullOrEmpty) {
                 using (var hmac = SignatureAlgorithm.CreateForVerification(_unencryptedKey, HashAlgorithmName.SHA384)) {
-                    var actual = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(hmac, nullOrEmpty);
-                    actual.Parameter.Should().Be(_unencryptedKey);
-                    actual.IsParameterEncrypted.Should().BeFalse();
+                    _sut.SetSignatureAlgorithm(hmac, nullOrEmpty);
+
+                    _sut.SigParameter.Should().Be(_unencryptedKey);
+                    _sut.IsSigParameterEncrypted.Should().BeFalse();
                 }
             }
-            
+
             [Fact]
             public void GivenRSAAlgorithm_ReturnsExpectedDataRecord() {
                 using (var rsa = new RSACryptoServiceProvider()) {
                     using (var rsaAlg = SignatureAlgorithm.CreateForVerification(rsa, HashAlgorithmName.SHA384)) {
-                        var actual = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(rsaAlg, _encryptionKey);
-                        var expected = new SignatureAlgorithmDataRecord {
-                            Type = "RSA",
-                            Parameter = rsa.ExportParameters(false).ToXml(),
-                            HashAlgorithm = HashAlgorithmName.SHA384.Name,
-                            IsParameterEncrypted = false
-                        };
-                        actual.Should().BeEquivalentTo(expected);
+                        _sut.SetSignatureAlgorithm(rsaAlg, _encryptionKey);
+
+                        _sut.SigType.Should().Be("RSA");
+                        _sut.SigParameter.Should().Be(rsa.ExportParameters(false).ToXml());
+                        _sut.SigHashAlgorithm.Should().Be(HashAlgorithmName.SHA384.Name);
+                        _sut.IsSigParameterEncrypted.Should().Be(false);
                     }
                 }
             }
@@ -84,46 +87,44 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             public void GivenECDsaAlgorithm_ReturnsExpectedDataRecord() {
                 using (var ecdsa = ECDsa.Create()) {
                     using (var ecdsaAlg = SignatureAlgorithm.CreateForVerification(ecdsa, HashAlgorithmName.SHA384)) {
-                        var actual = SignatureAlgorithmDataRecord.FromSignatureAlgorithm(ecdsaAlg, _encryptionKey);
-                        var expected = new SignatureAlgorithmDataRecord {
-                            Type = "ECDsa",
-                            Parameter = ecdsa.ExportParameters(false).ToXml(),
-                            HashAlgorithm = HashAlgorithmName.SHA384.Name,
-                            IsParameterEncrypted = false
-                        };
-                        actual.Should().BeEquivalentTo(expected);
+                        _sut.SetSignatureAlgorithm(ecdsaAlg, _encryptionKey);
+
+                        _sut.SigType.Should().Be("ECDsa");
+                        _sut.SigParameter.Should().Be(ecdsa.ExportParameters(false).ToXml());
+                        _sut.SigHashAlgorithm.Should().Be(HashAlgorithmName.SHA384.Name);
+                        _sut.IsSigParameterEncrypted.Should().Be(false);
                     }
                 }
             }
         }
 
-        public class ToSignatureAlgorithm : SignatureAlgorithmDataRecordTests {
-            private readonly SignatureAlgorithmDataRecord _sut;
+        public class GetSignatureAlgorithm : ClientDataRecordTests {
+            private readonly ClientDataRecord _sut;
             private readonly string _encryptedKey;
             private readonly int? _recordVersion;
 
-            public ToSignatureAlgorithm() {
+            public GetSignatureAlgorithm() {
                 _encryptedKey = "VbB9IMM3ID9bc4l3gJnzlsZuYFWNqI6WUfRufiP1JHiwNcGRZWSn5Q82Imkn5luw";
                 _recordVersion = 2;
-                _sut = new SignatureAlgorithmDataRecord {
-                    Type = "HMAC",
-                    Parameter = _encryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name,
-                    IsParameterEncrypted = true
+                _sut = new ClientDataRecord {
+                    SigType = "HMAC",
+                    SigParameter = _encryptedKey,
+                    SigHashAlgorithm = HashAlgorithmName.MD5.Name,
+                    IsSigParameterEncrypted = true
                 };
             }
 
             [Fact]
             public void WhenTypeIsNull_ThrowsNotSupportedException() {
-                _sut.Type = null;
-                Action act = () => _sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion);
+                _sut.SigType = null;
+                Action act = () => _sut.GetSignatureAlgorithm(_encryptionKey, _recordVersion);
                 act.Should().Throw<NotSupportedException>();
             }
 
             [Fact]
             public void WhenTypeIsUnknown_ThrowsNotSupportedException() {
-                _sut.Type = "custom_unsupported";
-                Action act = () => _sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion);
+                _sut.SigType = "custom_unsupported";
+                Action act = () => _sut.GetSignatureAlgorithm(_encryptionKey, _recordVersion);
                 act.Should().Throw<NotSupportedException>();
             }
 
@@ -131,7 +132,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(null)]
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotThrow(string nullOrEmpty) {
-                Action act = () => _sut.ToSignatureAlgorithm(nullOrEmpty, _recordVersion);
+                Action act = () => _sut.GetSignatureAlgorithm(nullOrEmpty, _recordVersion);
                 act.Should().NotThrow();
             }
 
@@ -139,76 +140,57 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData("invalid_encryption_key")]
             [InlineData("the_big_secret")]
             public void GivenInvalidEncryptionKey_ThrowsSecurityException(string invalidKey) {
-                Action act = () => _sut.ToSignatureAlgorithm(invalidKey, _recordVersion);
+                Action act = () => _sut.GetSignatureAlgorithm(invalidKey, _recordVersion);
                 act.Should().Throw<SecurityException>();
             }
-            
+
             [Theory]
             [InlineData(null)]
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotDecryptParameter(string nullOrEmpty) {
-                var sut = new SignatureAlgorithmDataRecord {
-                    Type = "HMAC",
-                    Parameter = _unencryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name
+                var sut = new ClientDataRecord {
+                    SigType = "HMAC",
+                    SigParameter = _unencryptedKey,
+                    SigHashAlgorithm = HashAlgorithmName.MD5.Name
                 };
-                
-                var actual = sut.ToSignatureAlgorithm(nullOrEmpty, _recordVersion);
+
+                var actual = sut.GetSignatureAlgorithm(nullOrEmpty, _recordVersion);
 
                 actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
                 var actualKeyBytes = actual.As<HMACSignatureAlgorithm>().Key;
                 var actualKey = Encoding.UTF8.GetString(actualKeyBytes);
                 actualKey.Should().Be(_unencryptedKey);
             }
-            
+
             [Fact]
             public void WhenParameterIsNotEncrypted_DoesNotDecryptParameter() {
-                var sut = new SignatureAlgorithmDataRecord {
-                    Type = "HMAC",
-                    Parameter = _unencryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name,
-                    IsParameterEncrypted = false
+                var sut = new ClientDataRecord {
+                    SigType = "HMAC",
+                    SigParameter = _unencryptedKey,
+                    SigHashAlgorithm = HashAlgorithmName.MD5.Name,
+                    IsSigParameterEncrypted = false
                 };
-                
-                var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion);
+
+                var actual = sut.GetSignatureAlgorithm(_encryptionKey, _recordVersion);
 
                 actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
                 var actualKeyBytes = actual.As<HMACSignatureAlgorithm>().Key;
                 var actualKey = Encoding.UTF8.GetString(actualKeyBytes);
                 actualKey.Should().Be(_unencryptedKey);
             }
-            
-            [Theory]
-            [InlineData(null)]
-            [InlineData(0)]
-            [InlineData(1)]
-            public void GivenLegacyRecordVersion_DoesNotDecryptParameter(int? legacyVersion) {
-                var sut = new SignatureAlgorithmDataRecord {
-                    Type = "HMAC",
-                    Parameter = _unencryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name
-                };
-                
-                var actual = sut.ToSignatureAlgorithm(_encryptionKey, legacyVersion);
 
-                actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
-                var actualKeyBytes = actual.As<HMACSignatureAlgorithm>().Key;
-                var actualKey = Encoding.UTF8.GetString(actualKeyBytes);
-                actualKey.Should().Be(_unencryptedKey);
-            }
-            
             [Fact]
             public void GivenRSADataRecord_ReturnsRSAAlgorithm() {
                 using (var rsa = new RSACryptoServiceProvider()) {
                     var publicParameters = rsa.ExportParameters(false);
-                    var sut = new SignatureAlgorithmDataRecord {
-                        Type = "RSA",
-                        Parameter = publicParameters.ToXml(),
-                        HashAlgorithm = HashAlgorithmName.MD5.Name,
-                        IsParameterEncrypted = false
+                    var sut = new ClientDataRecord {
+                        SigType = "RSA",
+                        SigParameter = publicParameters.ToXml(),
+                        SigHashAlgorithm = HashAlgorithmName.MD5.Name,
+                        IsSigParameterEncrypted = false
                     };
 
-                    using (var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion)) {
+                    using (var actual = sut.GetSignatureAlgorithm(_encryptionKey, _recordVersion)) {
                         var expected = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.MD5, publicParameters);
                         actual.Should().BeAssignableTo<RSASignatureAlgorithm>();
                         actual.As<RSASignatureAlgorithm>().Should().BeEquivalentTo(expected);
@@ -221,14 +203,14 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             public void GivenECDsaDataRecord_ReturnsECDsaAlgorithm() {
                 using (var ecdsa = ECDsa.Create()) {
                     var publicParameters = ecdsa.ExportParameters(false);
-                    var sut = new SignatureAlgorithmDataRecord {
-                        Type = "ECDsa",
-                        Parameter = publicParameters.ToXml(),
-                        HashAlgorithm = HashAlgorithmName.MD5.Name,
-                        IsParameterEncrypted = false
+                    var sut = new ClientDataRecord {
+                        SigType = "ECDsa",
+                        SigParameter = publicParameters.ToXml(),
+                        SigHashAlgorithm = HashAlgorithmName.MD5.Name,
+                        IsSigParameterEncrypted = false
                     };
 
-                    using (var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion)) {
+                    using (var actual = sut.GetSignatureAlgorithm(_encryptionKey, _recordVersion)) {
                         var expected = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.MD5, publicParameters);
                         actual.Should().BeAssignableTo<ECDsaSignatureAlgorithm>();
                         actual.As<ECDsaSignatureAlgorithm>().Should().BeEquivalentTo(expected);
@@ -238,15 +220,15 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             }
 
             [Fact]
-            public void GivenHMACDataRecord_ReturnsHMACDataRecord() {
-                var sut = new SignatureAlgorithmDataRecord {
-                    Type = "HMAC",
-                    Parameter = _encryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name,
-                    IsParameterEncrypted = true
+            public void GivenHMACDataRecord_ReturnsHMACHashAlgorithm() {
+                var sut = new ClientDataRecord {
+                    SigType = "HMAC",
+                    SigParameter = _encryptedKey,
+                    SigHashAlgorithm = HashAlgorithmName.MD5.Name,
+                    IsSigParameterEncrypted = true
                 };
 
-                using (var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion)) {
+                using (var actual = sut.GetSignatureAlgorithm(_encryptionKey, _recordVersion)) {
                     var expected = new HMACSignatureAlgorithm(_unencryptedKey, HashAlgorithmName.MD5);
                     actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
                     actual.As<HMACSignatureAlgorithm>().Should().BeEquivalentTo(expected);

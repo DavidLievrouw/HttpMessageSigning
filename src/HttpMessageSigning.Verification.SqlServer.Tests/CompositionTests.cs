@@ -1,34 +1,37 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Verification.SqlServer.Infrastructure;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    public class CompositionTests : IDisposable {
+    public class CompositionTests : SqlServerIntegrationTest {
         private readonly ServiceProvider _provider;
         private readonly string _connectionString;
 
-        public CompositionTests() {
-            _connectionString = "ToDo";
+        public CompositionTests(SqlServerFixture fixture)
+            : base(fixture) {
+            _connectionString = fixture.SqlServerConfig.GetConnectionStringForTestDatabase();
             _provider = new ServiceCollection()
                 .AddHttpMessageSignatureVerification()
                 .UseSqlServerClientStore(new SqlServerClientStoreSettings {
-                    ClientsTableName = "clients",
+                    ClientsTableName = "dbo.Clients",
                     ConnectionString = _connectionString,
                     ClientCacheEntryExpiration = TimeSpan.FromMinutes(1)
                 })
                 .UseSqlServerNonceStore(new SqlServerNonceStoreSettings {
-                    NonceTableName = "nonces",
+                    NonceTableName = "dbo.Nonces",
                     ConnectionString = _connectionString
                 })
                 .Services
                 .BuildServiceProvider();
         }
 
-        public void Dispose() {
+        public override void Dispose() {
             _provider?.Dispose();
+            base.Dispose();
         }
 
         [Theory]

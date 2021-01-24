@@ -58,14 +58,14 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 // Do not return Task here. Await it.
                 // Otherwise, the SqlConnection is disposed too early.
                 // See https://stackoverflow.com/questions/39279094/why-is-taskcanceledexception-thrown-when-using-dapper-queryasynct-without-asyn.
-                var recordsAffected = await connection.ExecuteAsync(sql, new[] {record});
+                var recordsAffected = await connection.ExecuteAsync(sql, new[] {record}).ConfigureAwait(continueOnCapturedContext: false);
 
                 if (recordsAffected < 1) {
                     throw new HttpMessageSigningException($"The specified nonce for client '{nonce.ClientId}' was not stored in the database.");
                 }
             }
 
-            await _expiredNoncesCleaner.CleanUpNonces();
+            await _expiredNoncesCleaner.CleanUpNonces().ConfigureAwait(continueOnCapturedContext: false);
         }
 
         public async Task<Nonce> Get(KeyId clientId, string nonceValue) {
@@ -74,7 +74,9 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
             var sql = _getSql.Value;
             using (var connection = new SqlConnection(_settings.ConnectionString)) {
-                var nonce = await connection.QuerySingleOrDefaultAsync<NonceDataRecord>(sql, new {ClientId = clientId.Value, Value = nonceValue});
+                var nonce = await connection
+                    .QuerySingleOrDefaultAsync<NonceDataRecord>(sql, new {ClientId = clientId.Value, Value = nonceValue})
+                    .ConfigureAwait(continueOnCapturedContext: false);
                 return nonce == null
                     ? null
                     : new Nonce(new KeyId(nonce.ClientId), nonce.Value, nonce.Expiration);
