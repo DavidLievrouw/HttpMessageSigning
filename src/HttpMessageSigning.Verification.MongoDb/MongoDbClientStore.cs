@@ -33,7 +33,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         public async Task Register(Client client) {
             if (client == null) throw new ArgumentNullException(nameof(client));
 
-            await _migrator.Migrate();
+            await _migrator.Migrate().ConfigureAwait(continueOnCapturedContext: false);
             
             if (IsProhibitedId(client.Id)) throw new ArgumentException($"The id value of the specified {nameof(Client)} is prohibited ({client.Id}).", nameof(client));
             
@@ -50,13 +50,15 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             var collection = _lazyCollection.Value;
 
-            await collection.ReplaceOneAsync(r => r.Id == record.Id, record, new ReplaceOptions {IsUpsert = true});
+            await collection
+                .ReplaceOneAsync(r => r.Id == record.Id, record, new ReplaceOptions {IsUpsert = true})
+                .ConfigureAwait(continueOnCapturedContext: false);
         }
 
         public async Task<Client> Get(KeyId clientId) {
             if (clientId == KeyId.Empty) throw new ArgumentException("Value cannot be null or empty.", nameof(clientId));
             
-            await _migrator.Migrate();
+            await _migrator.Migrate().ConfigureAwait(continueOnCapturedContext: false);
 
             if (IsProhibitedId(clientId)) return null;
             

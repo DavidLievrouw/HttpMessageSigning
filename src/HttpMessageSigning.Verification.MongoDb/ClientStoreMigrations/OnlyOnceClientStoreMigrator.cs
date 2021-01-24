@@ -24,12 +24,12 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
         public async Task<int> Migrate() {
             if (_runResult.HasValue) return _runResult.Value; // Already run once, don't do it again
             
-            if (_semaphore.CurrentCount < 1) return await _lazyBaseline.Value ?? 0; // Currently running, don't start it again
+            if (_semaphore.CurrentCount < 1) return await _lazyBaseline.Value.ConfigureAwait(continueOnCapturedContext: false) ?? 0; // Currently running, don't start it again
 
-            await _semaphore.WaitAsync(MaxLockWaitTime, CancellationToken.None);
+            await _semaphore.WaitAsync(MaxLockWaitTime, CancellationToken.None).ConfigureAwait(continueOnCapturedContext: false);
 
             try {
-                _runResult = await _decorated.Migrate();
+                _runResult = await _decorated.Migrate().ConfigureAwait(continueOnCapturedContext: false);
                 return _runResult.Value;
             }
             finally {

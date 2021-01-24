@@ -22,8 +22,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V
         public async Task Run() {
             var collection = _lazyCollection.Value;
             
-            var allClients = await collection.FindAsync(FilterDefinition<ClientDataRecordV2>.Empty);
-            var clientsToMigrate = (await allClients.ToListAsync())
+            var allClients = await collection.FindAsync(FilterDefinition<ClientDataRecordV2>.Empty).ConfigureAwait(continueOnCapturedContext: false);
+            var clientsToMigrate = (await allClients.ToListAsync().ConfigureAwait(continueOnCapturedContext: false))
                 .Where(c => !c.V.HasValue || c.V.Value < 2)
                 .ToList();
 
@@ -56,7 +56,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V
                 clientToMigrate.V = clientToMigrate.GetV();
 
                 // Store migrated client
-                await collection.ReplaceOneAsync(_ => _.Id == clientToMigrate.Id, clientToMigrate, new ReplaceOptions { IsUpsert = false });
+                await collection
+                    .ReplaceOneAsync(_ => _.Id == clientToMigrate.Id, clientToMigrate, new ReplaceOptions { IsUpsert = false })
+                    .ConfigureAwait(continueOnCapturedContext: false);
             }
         }
 

@@ -27,13 +27,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
                 StepName = step.GetType().Name
             };
 
-            var currentBaseline = await GetBaseline();
+            var currentBaseline = await GetBaseline().ConfigureAwait(continueOnCapturedContext: false);
             if (currentBaseline > step.Version) throw new InvalidOperationException($"Cannot set the baseline to '{step.Version}'. There already is a newer version deployed ({currentBaseline}).");
             
             var result = await _lazyCollection.Value.ReplaceOneAsync(
                 filter: new JsonFilterDefinition<ClientStoreVersionDocument>("{'_id': '" + ClientStoreVersionDocument.VersionDocumentId + "'}"),
                 options: new ReplaceOptions {IsUpsert = true},
-                replacement: versionDoc);
+                replacement: versionDoc)
+                .ConfigureAwait(continueOnCapturedContext: false);
 
             if (!result.IsAcknowledged) throw new InvalidOperationException("Could not set the new baseline in MongoDb. The operation was not acknowledged.");
         }
@@ -43,7 +44,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
                 .Find(new JsonFilterDefinition<ClientStoreVersionDocument>("{'_id': '" + ClientStoreVersionDocument.VersionDocumentId + "'}"))
                 .Sort(new JsonSortDefinition<ClientStoreVersionDocument>("{'version':-1}"))
                 .Limit(1)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(continueOnCapturedContext: false);
 
             return latestVersion?.Version;
         }

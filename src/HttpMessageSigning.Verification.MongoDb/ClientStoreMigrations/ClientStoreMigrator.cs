@@ -16,11 +16,11 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
         public async Task<int> Migrate() {
             var lastVersion = await _baseliner.GetBaseline() ?? 0;
 
-            var stepsToExecute = await GetStepsToExecute();
+            var stepsToExecute = await GetStepsToExecute().ConfigureAwait(continueOnCapturedContext: false);
 
             foreach (var migrationStep in stepsToExecute) {
-                await migrationStep.Run();
-                await _baseliner.SetBaseline(migrationStep);
+                await migrationStep.Run().ConfigureAwait(continueOnCapturedContext: false);
+                await _baseliner.SetBaseline(migrationStep).ConfigureAwait(continueOnCapturedContext: false);
                 lastVersion = migrationStep.Version;
             }
 
@@ -28,7 +28,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
         }
 
         private async Task<IEnumerable<IClientStoreMigrationStep>> GetStepsToExecute() {
-            var baseline = await _baseliner.GetBaseline();
+            var baseline = await _baseliner.GetBaseline().ConfigureAwait(continueOnCapturedContext: false);
             return _migrationSteps
                 .OrderBy(_ => _.Version)
                 .Where(_ => !baseline.HasValue || _.Version > baseline.Value);
