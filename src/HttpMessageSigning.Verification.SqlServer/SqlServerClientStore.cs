@@ -16,9 +16,11 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         private readonly Lazy<string> _insertClientClaimSql;
         private readonly Lazy<string> _mergeClientSql;
         private readonly SqlServerClientStoreSettings _settings;
+        private readonly ISignatureAlgorithmConverter _signatureAlgorithmConverter;
 
-        public SqlServerClientStore(SqlServerClientStoreSettings settings) {
+        public SqlServerClientStore(SqlServerClientStoreSettings settings, ISignatureAlgorithmConverter signatureAlgorithmConverter) {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            _signatureAlgorithmConverter = signatureAlgorithmConverter ?? throw new ArgumentNullException(nameof(signatureAlgorithmConverter));
 
             _getSql = new Lazy<string>(() => {
                 var thisNamespace = typeof(SqlServerNonceStore).Namespace;
@@ -80,10 +82,10 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 NonceLifetime = client.NonceLifetime.TotalSeconds,
                 ClockSkew = client.ClockSkew.TotalSeconds,
                 RequestTargetEscaping = client.RequestTargetEscaping.ToString(),
-                Claims = client.Claims?.Select(c => ClaimDataRecord.FromClaim(client.Id, c))?.ToList() ?? new List<ClaimDataRecord>()
+                Claims = client.Claims?.Select(c => ClaimDataRecord.FromClaim(client.Id, c))?.ToList() ?? new List<ClaimDataRecord>(),
+                V = ClientDataRecord.GetV()
             };
-            clientRecord.V = clientRecord.GetV();
-            clientRecord.SetSignatureAlgorithm(client.SignatureAlgorithm, _settings.SharedSecretEncryptionKey);
+            _signatureAlgorithmConverter.SetSignatureAlgorithm(clientRecord, client.SignatureAlgorithm, _settings.SharedSecretEncryptionKey);
 
             using (var connection = new SqlConnection(_settings.ConnectionString)) {
                 await connection.OpenAsync();
@@ -149,11 +151,13 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     requestTargetEscaping = parsed;
                 }
             }
+
+            var signatureAlgorithm = _signatureAlgorithmConverter.ToSignatureAlgorithm(match, _settings.SharedSecretEncryptionKey);
             
             return new Client(
                 match.Id,
                 match.Name,
-                match.GetSignatureAlgorithm(_settings.SharedSecretEncryptionKey, match.V),
+                signatureAlgorithm,
                 nonceLifetime,
                 clockSkew,
                 requestTargetEscaping,

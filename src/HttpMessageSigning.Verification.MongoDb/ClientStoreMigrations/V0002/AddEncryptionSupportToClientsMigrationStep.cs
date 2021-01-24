@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Utils;
 using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V0002 {
     internal class AddEncryptionSupportToClientsMigrationStep : IClientStoreMigrationStep {
         private readonly MongoDbClientStoreSettings _mongoDbClientStoreSettings;
+        private readonly IStringProtectorFactory _stringProtectorFactory;
         private readonly Lazy<IMongoCollection<ClientDataRecordV2>> _lazyCollection;
 
-        public AddEncryptionSupportToClientsMigrationStep(IMongoDatabaseClientProvider clientProvider, MongoDbClientStoreSettings mongoDbClientStoreSettings) {
+        public AddEncryptionSupportToClientsMigrationStep(
+            IMongoDatabaseClientProvider clientProvider, 
+            MongoDbClientStoreSettings mongoDbClientStoreSettings,
+            IStringProtectorFactory stringProtectorFactory) {
             if (clientProvider == null) throw new ArgumentNullException(nameof(clientProvider));
             
             _mongoDbClientStoreSettings = mongoDbClientStoreSettings ?? throw new ArgumentNullException(nameof(mongoDbClientStoreSettings));
+            _stringProtectorFactory = stringProtectorFactory ?? throw new ArgumentNullException(nameof(stringProtectorFactory));
 
             _lazyCollection = new Lazy<IMongoCollection<ClientDataRecordV2>>(() => {
                 var database = clientProvider.Provide();
@@ -35,7 +41,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V
                 if (_mongoDbClientStoreSettings.SharedSecretEncryptionKey != SharedSecretEncryptionKey.Empty &&
                     clientToMigrate.SignatureAlgorithm.Type.Equals("hmac", StringComparison.OrdinalIgnoreCase) &&
                     !clientToMigrate.SignatureAlgorithm.IsParameterEncrypted) {
-                    var protector = new SymmetricStringProtector(_mongoDbClientStoreSettings.SharedSecretEncryptionKey);
+                    var protector = _stringProtectorFactory.CreateSymmetric(_mongoDbClientStoreSettings.SharedSecretEncryptionKey);
                     clientToMigrate.SignatureAlgorithm.Parameter = protector.Protect(clientToMigrate.SignatureAlgorithm.Parameter);
                     clientToMigrate.SignatureAlgorithm.IsParameterEncrypted = true;
                 } 
@@ -53,7 +59,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V
 #pragma warning restore 618
                 
                 // Update version
-                clientToMigrate.V = clientToMigrate.GetV();
+                clientToMigrate.V = ClientDataRecordV2.GetV();
 
                 // Store migrated client
                 await collection

@@ -17,12 +17,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         private readonly string _collectionName;
         private readonly SharedSecretEncryptionKey _encryptionKey;
         private readonly IClientStoreMigrator _migrator;
-
+        private readonly ISignatureAlgorithmDataRecordConverter _signatureAlgorithmDataRecordConverter;
+        
         public MongoDbClientStoreTests(MongoSetup mongoSetup) : base(mongoSetup) {
             _migrator = A.Fake<IClientStoreMigrator>();
             _collectionName = "clients_" + Guid.NewGuid();
             _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
-            _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey, _migrator);
+            _signatureAlgorithmDataRecordConverter = new SignatureAlgorithmDataRecordConverter(new FakeStringProtectorFactory());
+            _sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, _encryptionKey, _migrator, _signatureAlgorithmDataRecordConverter);
         }
 
         public void Dispose() {
@@ -36,7 +38,12 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(null)]
             [InlineData("")]
             public void AllowsForNullOrEmptyEncryptionKey(string nullOrEmpty) {
-                Action act = () => new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty, _migrator);
+                Action act = () => new MongoDbClientStore(
+                    new MongoDatabaseClientProvider(Database), 
+                    _collectionName, 
+                    nullOrEmpty, 
+                    _migrator, 
+                    _signatureAlgorithmDataRecordConverter);
                 act.Should().NotThrow();
             }
         }
@@ -203,7 +210,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
                 loaded.SignatureAlgorithm.Parameter.Should().NotBeNullOrEmpty();
                 var unencryptedKey = Encoding.UTF8.GetString(hmac.Key);
-                loaded.SignatureAlgorithm.Parameter.Should().NotBe(unencryptedKey);
+                var encryptedKey = new FakeStringProtector().Protect(unencryptedKey);
+                loaded.SignatureAlgorithm.Parameter.Should().Be(encryptedKey);
                 loaded.SignatureAlgorithm.IsParameterEncrypted.Should().BeTrue();
             }
 
@@ -233,7 +241,12 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(null)]
             [InlineData("")]
             public async Task WhenEncryptionKeyIsNullOrEmpty_DoesNotEncryptHMACSecretInDatabase(string nullOrEmpty) {
-                using (var sut = new MongoDbClientStore(new MongoDatabaseClientProvider(Database), _collectionName, nullOrEmpty, _migrator)) {
+                using (var sut = new MongoDbClientStore(
+                    new MongoDatabaseClientProvider(Database), 
+                    _collectionName, 
+                    nullOrEmpty, 
+                    _migrator, 
+                    _signatureAlgorithmDataRecordConverter)) {
                     var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                     var client = new Client(
                         "c1",

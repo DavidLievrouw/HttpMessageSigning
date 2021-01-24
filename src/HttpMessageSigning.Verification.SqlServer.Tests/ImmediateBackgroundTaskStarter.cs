@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Utils;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
     public class ImmediateBackgroundTaskStarter : IBackgroundTaskStarter {

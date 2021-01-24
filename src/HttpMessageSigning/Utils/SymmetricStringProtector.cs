@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Dalion.HttpMessageSigning.Verification.SqlServer {
+namespace Dalion.HttpMessageSigning.Utils {
     internal class SymmetricStringProtector : IStringProtector {
         private const int KeySize = 128;
         private const int DerivationIterations = 1000;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Dalion.HttpMessageSigning.Utils;
 using Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations;
 using Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V0002;
 using Microsoft.Extensions.Caching.Memory;
@@ -64,8 +65,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 // Services
                 .AddMemoryCache()
                 .AddSingleton<ISystemClock, RealSystemClock>()
-                .AddSingleton<IDelayer, Delayer>()
-                .AddSingleton<IBackgroundTaskStarter, BackgroundTaskStarter>()
+                .AddSingleton<ISignatureAlgorithmDataRecordConverter, SignatureAlgorithmDataRecordConverter>()
                 .AddSingleton(prov => {
                     var settings = clientStoreSettingsFactory(prov);
                     if (settings == null) throw new ValidationException($"Invalid {nameof(MongoDbClientStoreSettings)} were specified.");
@@ -97,7 +97,8 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                             prov.GetRequiredService<IMongoDatabaseClientProvider>(),
                             mongoSettings.CollectionName,
                             mongoSettings.SharedSecretEncryptionKey,
-                            prov.GetRequiredService<IClientStoreMigrator>()),
+                            prov.GetRequiredService<IClientStoreMigrator>(),
+                            prov.GetRequiredService<ISignatureAlgorithmDataRecordConverter>()),
                         prov.GetRequiredService<IMemoryCache>(),
                         mongoSettings.ClientCacheEntryExpiration,
                         prov.GetRequiredService<IBackgroundTaskStarter>());

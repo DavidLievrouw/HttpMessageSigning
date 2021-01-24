@@ -6,7 +6,7 @@ using Xunit;
 using System.Security.Cryptography;
 #endif
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb {
+namespace Dalion.HttpMessageSigning.Utils {
     public class SymmetricStringProtectorTests {
         private readonly SymmetricStringProtector _sut;
 

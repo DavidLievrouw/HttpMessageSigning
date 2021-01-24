@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Utils;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {

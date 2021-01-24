@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb {
+namespace Dalion.HttpMessageSigning.Utils {
     internal class BackgroundTaskStarter : IBackgroundTaskStarter {
         private readonly IDelayer _delayer;
         

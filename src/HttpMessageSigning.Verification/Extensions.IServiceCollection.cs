@@ -1,6 +1,7 @@
 ﻿using System;
 using Dalion.HttpMessageSigning.SigningString;
 using Dalion.HttpMessageSigning.SigningString.RequestTarget;
+using Dalion.HttpMessageSigning.Utils;
 using Dalion.HttpMessageSigning.Verification.VerificationTasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,9 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             services = services
                 .AddMemoryCache()
+                .AddSingleton<IDelayer, Delayer>()
+                .AddSingleton<IBackgroundTaskStarter, BackgroundTaskStarter>()
+                .AddSingleton<IStringProtectorFactory, StringProtectorFactory>()
                 .AddSingleton<IBase64Converter, Base64Converter>()
                 .AddSingleton<INonceStore, InMemoryNonceStore>()
                 .AddSingleton<INonceAppender, NonceAppender>()

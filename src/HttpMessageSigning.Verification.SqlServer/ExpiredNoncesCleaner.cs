@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Utils;
 using Dapper;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {

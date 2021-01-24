@@ -19,9 +19,11 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
         public SqlServerClientStoreTests(SqlServerFixture fixture)
             : base(fixture) {
-            _sut = new SqlServerClientStore(new SqlServerClientStoreSettings {
-                ConnectionString = fixture.SqlServerConfig.GetConnectionStringForTestDatabase()
-            });
+            _sut = new SqlServerClientStore(
+                new SqlServerClientStoreSettings {
+                    ConnectionString = fixture.SqlServerConfig.GetConnectionStringForTestDatabase()
+                },
+                new SignatureAlgorithmConverter(new FakeStringProtectorFactory()));
             _connectionString = fixture.SqlServerConfig.GetConnectionStringForTestDatabase();
         }
 
@@ -196,10 +198,12 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
             [Fact]
             public async Task EncryptsHMACSecretInDatabase() {
-                using (var sut = new SqlServerClientStore(new SqlServerClientStoreSettings {
-                    ConnectionString = _connectionString,
-                    SharedSecretEncryptionKey = new SharedSecretEncryptionKey("The_Big_Secret")
-                })) {
+                using (var sut = new SqlServerClientStore(
+                    new SqlServerClientStoreSettings {
+                        ConnectionString = _connectionString,
+                        SharedSecretEncryptionKey = new SharedSecretEncryptionKey("The_Big_Secret")
+                    },
+                    new SignatureAlgorithmConverter(new FakeStringProtectorFactory()))) {
                     var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                     var client = new Client(
                         "c1",
@@ -216,7 +220,8 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
                     loaded.SigParameter.Should().NotBeNullOrEmpty();
                     var unencryptedKey = Encoding.UTF8.GetString(hmac.Key);
-                    loaded.SigParameter.Should().NotBe(unencryptedKey);
+                    var encryptedKey = new FakeStringProtector().Protect(unencryptedKey);
+                    loaded.SigParameter.Should().Be(encryptedKey);
                     loaded.IsSigParameterEncrypted.Should().BeTrue();
                 }
             }
@@ -246,9 +251,10 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData("")]
             public async Task WhenEncryptionKeyIsNullOrEmpty_DoesNotEncryptHMACSecretInDatabase(string nullOrEmpty) {
                 using (var sut = new SqlServerClientStore(new SqlServerClientStoreSettings {
-                    ConnectionString = _connectionString,
-                    SharedSecretEncryptionKey = nullOrEmpty
-                })) {
+                        ConnectionString = _connectionString,
+                        SharedSecretEncryptionKey = nullOrEmpty
+                    },
+                    new SignatureAlgorithmConverter(new FakeStringProtectorFactory()))) {
                     var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                     var client = new Client(
                         "c1",

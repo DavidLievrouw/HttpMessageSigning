@@ -19,7 +19,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         [Obsolete("Please use the " + nameof(NonceLifetime) + " property instead.")]
         public double? NonceExpiration  { get; set; }
 
-        public int GetV() {
+        public static int GetV() {
             return 2;
         }
     }

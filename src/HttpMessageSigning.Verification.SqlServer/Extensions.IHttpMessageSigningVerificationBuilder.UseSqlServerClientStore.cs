@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Dalion.HttpMessageSigning.Utils;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,8 +31,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             builder.Services
                 .AddMemoryCache()
                 .AddSingleton<ISystemClock, RealSystemClock>()
-                .AddSingleton<IDelayer, Delayer>()
-                .AddSingleton<IBackgroundTaskStarter, BackgroundTaskStarter>()
+                .AddSingleton<ISignatureAlgorithmConverter, SignatureAlgorithmConverter>()
                 .AddSingleton(prov => {
                     var settings = clientStoreSettingsFactory(prov);
                     if (settings == null) throw new ValidationException($"Invalid {nameof(SqlServerClientStoreSettings)} were specified.");
@@ -44,7 +44,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 .UseClientStore(prov => {
                     var sqlSettings = prov.GetRequiredService<SqlServerClientStoreSettings>();
                     return new CachingSqlServerClientStore(
-                        new SqlServerClientStore(sqlSettings),
+                        new SqlServerClientStore(sqlSettings, prov.GetRequiredService<ISignatureAlgorithmConverter>()),
                         prov.GetRequiredService<IMemoryCache>(),
                         sqlSettings.ClientCacheEntryExpiration,
                         prov.GetRequiredService<IBackgroundTaskStarter>());

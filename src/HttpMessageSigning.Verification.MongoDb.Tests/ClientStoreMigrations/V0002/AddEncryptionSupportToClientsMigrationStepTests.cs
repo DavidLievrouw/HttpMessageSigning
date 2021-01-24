@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.TestUtils;
+using Dalion.HttpMessageSigning.Utils;
+using FakeItEasy;
 using FluentAssertions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -11,16 +14,24 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V
     public class AddEncryptionSupportToClientsMigrationStepTests : MongoIntegrationTest {
         private readonly MongoDbClientStoreSettings _settings;
         private readonly AddEncryptionSupportToClientsMigrationStep _sut;
+        private readonly IStringProtectorFactory _stringProtectorFactory;
 
         public AddEncryptionSupportToClientsMigrationStepTests(MongoSetup mongoSetup)
             : base(mongoSetup) {
+            FakeFactory.Create(out _stringProtectorFactory);
+            A.CallTo(() => _stringProtectorFactory.CreateSymmetric(A<string>._))
+                .Returns(new FakeStringProtector());
+            
             _settings = new MongoDbClientStoreSettings {
                 CollectionName = "clients",
                 SharedSecretEncryptionKey = new SharedSecretEncryptionKey("The_Big_Secret"),
                 ConnectionString = "dummy",
                 ClientCacheEntryExpiration = TimeSpan.Zero
             };
-            _sut = new AddEncryptionSupportToClientsMigrationStep(new MongoDatabaseClientProvider(Database), _settings);
+            _sut = new AddEncryptionSupportToClientsMigrationStep(
+                new MongoDatabaseClientProvider(Database),
+                _settings,
+                _stringProtectorFactory);
         }
 
         public class Run : AddEncryptionSupportToClientsMigrationStepTests {

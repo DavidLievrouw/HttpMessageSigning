@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Dalion.HttpMessageSigning.Verification.SqlServer {
+namespace Dalion.HttpMessageSigning.Utils {
     internal interface IDelayer {
         Task Delay(TimeSpan delay);
     }

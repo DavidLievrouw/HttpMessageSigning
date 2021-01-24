@@ -2,30 +2,46 @@
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using Dalion.HttpMessageSigning.TestUtils;
+using Dalion.HttpMessageSigning.Utils;
+using FakeItEasy;
 using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    public class SignatureAlgorithmDataRecordTests {
-        private readonly SharedSecretEncryptionKey _encryptionKey;
-        private readonly string _unencryptedKey;
+    public class SignatureAlgorithmDataRecordConverterTests {
+        private readonly IStringProtectorFactory _stringProtectorFactory;
+        private readonly SignatureAlgorithmDataRecordConverter _sut;
+        private readonly FakeStringProtector _stringProtector;
 
-        public SignatureAlgorithmDataRecordTests() {
-            _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
-            _unencryptedKey = "s3cr3t";
+        public SignatureAlgorithmDataRecordConverterTests() {
+            FakeFactory.Create(out _stringProtectorFactory); 
+            _sut = new SignatureAlgorithmDataRecordConverter(_stringProtectorFactory);
+
+            _stringProtector = new FakeStringProtector();
+            A.CallTo(() => _stringProtectorFactory.CreateSymmetric(A<string>._))
+                .Returns(_stringProtector);
         }
 
-        public class FromSignatureAlgorithm : SignatureAlgorithmDataRecordTests {
+        public class FromSignatureAlgorithm : SignatureAlgorithmDataRecordConverterTests {
+            private readonly SharedSecretEncryptionKey _encryptionKey;
+            private readonly string _unencryptedKey;
+            
+            public FromSignatureAlgorithm() {
+                _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
+                _unencryptedKey = "s3cr3t";
+            }
+
             [Fact]
             public void GivenNullSignatureAlgorithm_ThrowsArgumentNullException() {
-                Action act = () => SignatureAlgorithmDataRecordV2.FromSignatureAlgorithm(null, _encryptionKey);
+                Action act = () => _sut.FromSignatureAlgorithm(null, _encryptionKey);
                 act.Should().Throw<ArgumentNullException>();
             }
 
             [Fact]
             public void GivenUnsupportedAlgorithmType_ThrowsNotSupportedException() {
                 var unsupported = new CustomSignatureAlgorithm("CUSTOM");
-                Action act = () => SignatureAlgorithmDataRecordV2.FromSignatureAlgorithm(unsupported, _encryptionKey);
+                Action act = () => _sut.FromSignatureAlgorithm(unsupported, _encryptionKey);
                 act.Should().Throw<NotSupportedException>();
             }
 
@@ -34,7 +50,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotThrow(string nullOrEmpty) {
                 using (var hmac = SignatureAlgorithm.CreateForVerification(_unencryptedKey, HashAlgorithmName.SHA384)) {
-                    Action act = () => SignatureAlgorithmDataRecordV2.FromSignatureAlgorithm(hmac, nullOrEmpty);
+                    Action act = () => _sut.FromSignatureAlgorithm(hmac, nullOrEmpty);
                     act.Should().NotThrow();
                 }
             }
@@ -42,7 +58,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [Fact]
             public void GivenHMACAlgorithm_ReturnsExpectedDataRecord() {
                 using (var hmac = SignatureAlgorithm.CreateForVerification(_unencryptedKey, HashAlgorithmName.SHA384)) {
-                    var actual = SignatureAlgorithmDataRecordV2.FromSignatureAlgorithm(hmac, _encryptionKey);
+                    var actual = _sut.FromSignatureAlgorithm(hmac, _encryptionKey);
                     var expected = new SignatureAlgorithmDataRecordV2 {
                         Type = "HMAC",
                         HashAlgorithm = HashAlgorithmName.SHA384.Name,
@@ -58,7 +74,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotEncryptParameter(string nullOrEmpty) {
                 using (var hmac = SignatureAlgorithm.CreateForVerification(_unencryptedKey, HashAlgorithmName.SHA384)) {
-                    var actual = SignatureAlgorithmDataRecordV2.FromSignatureAlgorithm(hmac, nullOrEmpty);
+                    var actual = _sut.FromSignatureAlgorithm(hmac, nullOrEmpty);
                     actual.Parameter.Should().Be(_unencryptedKey);
                     actual.IsParameterEncrypted.Should().BeFalse();
                 }
@@ -68,7 +84,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public void GivenRSAAlgorithm_ReturnsExpectedDataRecord() {
                 using (var rsa = new RSACryptoServiceProvider()) {
                     using (var rsaAlg = SignatureAlgorithm.CreateForVerification(rsa, HashAlgorithmName.SHA384)) {
-                        var actual = SignatureAlgorithmDataRecordV2.FromSignatureAlgorithm(rsaAlg, _encryptionKey);
+                        var actual = _sut.FromSignatureAlgorithm(rsaAlg, _encryptionKey);
                         var expected = new SignatureAlgorithmDataRecordV2 {
                             Type = "RSA",
                             Parameter = rsa.ExportParameters(false).ToXml(),
@@ -84,7 +100,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public void GivenECDsaAlgorithm_ReturnsExpectedDataRecord() {
                 using (var ecdsa = ECDsa.Create()) {
                     using (var ecdsaAlg = SignatureAlgorithm.CreateForVerification(ecdsa, HashAlgorithmName.SHA384)) {
-                        var actual = SignatureAlgorithmDataRecordV2.FromSignatureAlgorithm(ecdsaAlg, _encryptionKey);
+                        var actual = _sut.FromSignatureAlgorithm(ecdsaAlg, _encryptionKey);
                         var expected = new SignatureAlgorithmDataRecordV2 {
                             Type = "ECDsa",
                             Parameter = ecdsa.ExportParameters(false).ToXml(),
@@ -97,33 +113,41 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             }
         }
 
-        public class ToSignatureAlgorithm : SignatureAlgorithmDataRecordTests {
-            private readonly SignatureAlgorithmDataRecordV2 _sut;
-            private readonly string _encryptedKey;
+        public class ToSignatureAlgorithm : SignatureAlgorithmDataRecordConverterTests {
+            private readonly SignatureAlgorithmDataRecordV2 _dataRecord;
             private readonly int? _recordVersion;
-
+            private readonly SharedSecretEncryptionKey _encryptionKey;
+            private readonly string _unencryptedKey;
+            
             public ToSignatureAlgorithm() {
-                _encryptedKey = "VbB9IMM3ID9bc4l3gJnzlsZuYFWNqI6WUfRufiP1JHiwNcGRZWSn5Q82Imkn5luw";
+                _encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
+                _unencryptedKey = "s3cr3t";
                 _recordVersion = 2;
-                _sut = new SignatureAlgorithmDataRecordV2 {
+                _dataRecord = new SignatureAlgorithmDataRecordV2 {
                     Type = "HMAC",
-                    Parameter = _encryptedKey,
+                    Parameter = new FakeStringProtector().Protect(_unencryptedKey),
                     HashAlgorithm = HashAlgorithmName.MD5.Name,
                     IsParameterEncrypted = true
                 };
             }
 
             [Fact]
+            public void WhenDataRecordIsNull_ThrowsArgumentNullException() {
+                Action act = () => _sut.ToSignatureAlgorithm(dataRecord: null, _encryptionKey, _recordVersion);
+                act.Should().Throw<ArgumentNullException>();
+            }
+
+            [Fact]
             public void WhenTypeIsNull_ThrowsNotSupportedException() {
-                _sut.Type = null;
-                Action act = () => _sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion);
+                _dataRecord.Type = null;
+                Action act = () => _sut.ToSignatureAlgorithm(_dataRecord, _encryptionKey, _recordVersion);
                 act.Should().Throw<NotSupportedException>();
             }
 
             [Fact]
             public void WhenTypeIsUnknown_ThrowsNotSupportedException() {
-                _sut.Type = "custom_unsupported";
-                Action act = () => _sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion);
+                _dataRecord.Type = "custom_unsupported";
+                Action act = () => _sut.ToSignatureAlgorithm(_dataRecord, _encryptionKey, _recordVersion);
                 act.Should().Throw<NotSupportedException>();
             }
 
@@ -131,7 +155,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(null)]
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotThrow(string nullOrEmpty) {
-                Action act = () => _sut.ToSignatureAlgorithm(nullOrEmpty, _recordVersion);
+                Action act = () => _sut.ToSignatureAlgorithm(_dataRecord, nullOrEmpty, _recordVersion);
                 act.Should().NotThrow();
             }
 
@@ -139,7 +163,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData("invalid_encryption_key")]
             [InlineData("the_big_secret")]
             public void GivenInvalidEncryptionKey_ThrowsSecurityException(string invalidKey) {
-                Action act = () => _sut.ToSignatureAlgorithm(invalidKey, _recordVersion);
+                _stringProtector.Throw(new FormatException("Invalid cypher."));
+                
+                Action act = () => _sut.ToSignatureAlgorithm(_dataRecord, invalidKey, _recordVersion);
                 act.Should().Throw<SecurityException>();
             }
             
@@ -147,13 +173,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(null)]
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotDecryptParameter(string nullOrEmpty) {
-                var sut = new SignatureAlgorithmDataRecordV2 {
-                    Type = "HMAC",
-                    Parameter = _unencryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name
-                };
+                _dataRecord.Parameter = _unencryptedKey;
                 
-                var actual = sut.ToSignatureAlgorithm(nullOrEmpty, _recordVersion);
+                var actual = _sut.ToSignatureAlgorithm(_dataRecord, nullOrEmpty, _recordVersion);
 
                 actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
                 var actualKeyBytes = actual.As<HMACSignatureAlgorithm>().Key;
@@ -163,14 +185,10 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             
             [Fact]
             public void WhenParameterIsNotEncrypted_DoesNotDecryptParameter() {
-                var sut = new SignatureAlgorithmDataRecordV2 {
-                    Type = "HMAC",
-                    Parameter = _unencryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name,
-                    IsParameterEncrypted = false
-                };
+                _dataRecord.Parameter = _unencryptedKey;
+                _dataRecord.IsParameterEncrypted = false;
                 
-                var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion);
+                var actual = _sut.ToSignatureAlgorithm(_dataRecord, _encryptionKey, _recordVersion);
 
                 actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
                 var actualKeyBytes = actual.As<HMACSignatureAlgorithm>().Key;
@@ -183,13 +201,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(0)]
             [InlineData(1)]
             public void GivenLegacyRecordVersion_DoesNotDecryptParameter(int? legacyVersion) {
-                var sut = new SignatureAlgorithmDataRecordV2 {
-                    Type = "HMAC",
-                    Parameter = _unencryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name
-                };
+                _dataRecord.Parameter = _unencryptedKey;
                 
-                var actual = sut.ToSignatureAlgorithm(_encryptionKey, legacyVersion);
+                var actual = _sut.ToSignatureAlgorithm(_dataRecord, _encryptionKey, legacyVersion);
 
                 actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
                 var actualKeyBytes = actual.As<HMACSignatureAlgorithm>().Key;
@@ -200,15 +214,13 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [Fact]
             public void GivenRSADataRecord_ReturnsRSAAlgorithm() {
                 using (var rsa = new RSACryptoServiceProvider()) {
-                    var publicParameters = rsa.ExportParameters(false);
-                    var sut = new SignatureAlgorithmDataRecordV2 {
-                        Type = "RSA",
-                        Parameter = publicParameters.ToXml(),
-                        HashAlgorithm = HashAlgorithmName.MD5.Name,
-                        IsParameterEncrypted = false
-                    };
-
-                    using (var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion)) {
+                    var publicParameters = rsa.ExportParameters(includePrivateParameters: false);
+                    _dataRecord.Type = "RSA";
+                    _dataRecord.Parameter = publicParameters.ToXml();
+                    _dataRecord.HashAlgorithm = HashAlgorithmName.MD5.Name;
+                    _dataRecord.IsParameterEncrypted = false;
+                    
+                    using (var actual = _sut.ToSignatureAlgorithm(_dataRecord, _encryptionKey, _recordVersion)) {
                         var expected = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.MD5, publicParameters);
                         actual.Should().BeAssignableTo<RSASignatureAlgorithm>();
                         actual.As<RSASignatureAlgorithm>().Should().BeEquivalentTo(expected);
@@ -220,15 +232,13 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [Fact]
             public void GivenECDsaDataRecord_ReturnsECDsaAlgorithm() {
                 using (var ecdsa = ECDsa.Create()) {
-                    var publicParameters = ecdsa.ExportParameters(false);
-                    var sut = new SignatureAlgorithmDataRecordV2 {
-                        Type = "ECDsa",
-                        Parameter = publicParameters.ToXml(),
-                        HashAlgorithm = HashAlgorithmName.MD5.Name,
-                        IsParameterEncrypted = false
-                    };
-
-                    using (var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion)) {
+                    var publicParameters = ecdsa.ExportParameters(includePrivateParameters: false);
+                    _dataRecord.Type = "ECDsa";
+                    _dataRecord.Parameter = publicParameters.ToXml();
+                    _dataRecord.HashAlgorithm = HashAlgorithmName.MD5.Name;
+                    _dataRecord.IsParameterEncrypted = false;
+                    
+                    using (var actual = _sut.ToSignatureAlgorithm(_dataRecord, _encryptionKey, _recordVersion)) {
                         var expected = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.MD5, publicParameters);
                         actual.Should().BeAssignableTo<ECDsaSignatureAlgorithm>();
                         actual.As<ECDsaSignatureAlgorithm>().Should().BeEquivalentTo(expected);
@@ -239,14 +249,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
             [Fact]
             public void GivenHMACDataRecord_ReturnsHMACDataRecord() {
-                var sut = new SignatureAlgorithmDataRecordV2 {
-                    Type = "HMAC",
-                    Parameter = _encryptedKey,
-                    HashAlgorithm = HashAlgorithmName.MD5.Name,
-                    IsParameterEncrypted = true
-                };
-
-                using (var actual = sut.ToSignatureAlgorithm(_encryptionKey, _recordVersion)) {
+                using (var actual = _sut.ToSignatureAlgorithm(_dataRecord, _encryptionKey, _recordVersion)) {
                     var expected = new HMACSignatureAlgorithm(_unencryptedKey, HashAlgorithmName.MD5);
                     actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
                     actual.As<HMACSignatureAlgorithm>().Should().BeEquivalentTo(expected);
