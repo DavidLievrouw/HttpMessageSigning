@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             _sut = new SqlServerNonceStoreSettings {
                 ConnectionString = "Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;",
                 NonceTableName = "signaturenonces",
-                VersionsTableName = "nonceversions",
+                MigrationsTableName = "noncemigrations",
                 ExpiredNoncesCleanUpInterval = TimeSpan.FromMinutes(1)
             };
         }
@@ -38,7 +38,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(null)]
             [InlineData("")]
             public void GivenNullOrEmptyVersionTableName_ThrowsValidationException(string nullOrEmpty) {
-                _sut.VersionsTableName = nullOrEmpty;
+                _sut.MigrationsTableName = nullOrEmpty;
                 Action act = () => _sut.Validate();
                 act.Should().Throw<ValidationException>();
             }

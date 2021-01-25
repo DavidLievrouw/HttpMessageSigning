@@ -60,12 +60,13 @@ namespace WebApplication {
                     SharedSecretEncryptionKey = "The_Big_S3cr37",
                     ClientsTableName = "dbo.Clients",
                     ClientClaimsTableName = "dbo.ClientClaims",
-                    VersionsTableName = "dbo.ClientVersions"
+                    MigrationsTableName = "dbo.ClientVersions",
+                    ClientCacheEntryExpiration = TimeSpan.FromMinutes(3)
                 })
                 .UseSqlServerNonceStore(provider => new SqlServerNonceStoreSettings {
                     ConnectionString = "Server=.;Database=HttpMessageSigning;User Id=dalion;Password=Dalion123;",
                     NonceTableName = "dbo.Nonces",
-                    VersionsTableName = "dbo.NonceVersions"
+                    MigrationsTableName = "dbo.NonceVersions"
                 })
                 
                 .UseClaimsPrincipalFactory<CustomClaimsPrincipalFactory>().Services

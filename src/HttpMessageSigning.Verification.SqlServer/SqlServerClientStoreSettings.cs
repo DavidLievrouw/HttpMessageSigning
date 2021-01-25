@@ -26,7 +26,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
         ///     Gets or sets the name of the SQL Server table that will contain the schema version info.
         /// </summary>
         /// <remarks>When the table is not in the default schema, you can prepend the schema name to this value.</remarks>
-        public string VersionsTableName { get; set; } = "ClientVersions";
+        public string MigrationsTableName { get; set; } = "ClientMigrations";
 
         /// <summary>
         ///     Gets or sets the encryption key for the shared secrets.
@@ -44,7 +44,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             if (string.IsNullOrEmpty(ConnectionString)) throw new ValidationException($"The {nameof(SqlServerClientStoreSettings)} do not specify a valid {nameof(ConnectionString)}.");
             if (string.IsNullOrEmpty(ClientsTableName)) throw new ValidationException($"The {nameof(SqlServerClientStoreSettings)} do not specify a valid {nameof(ClientsTableName)}.");
             if (string.IsNullOrEmpty(ClientClaimsTableName)) throw new ValidationException($"The {nameof(SqlServerClientStoreSettings)} do not specify a valid {nameof(ClientClaimsTableName)}.");
-            if (string.IsNullOrEmpty(VersionsTableName)) throw new ValidationException($"The {nameof(SqlServerClientStoreSettings)} do not specify a valid {nameof(VersionsTableName)}.");
+            if (string.IsNullOrEmpty(MigrationsTableName)) throw new ValidationException($"The {nameof(SqlServerClientStoreSettings)} do not specify a valid {nameof(MigrationsTableName)}.");
         }
     }
 }
