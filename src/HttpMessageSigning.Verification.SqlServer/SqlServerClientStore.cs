@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Dapper;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    internal class SqlServerClientStore : ISqlServerClientStore {
+    internal class SqlServerClientStore : IClientStore {
         private const string ClientsTableNameToken = "{ClientsTableName}";
         private const string ClientClaimsTableNameToken = "{ClientClaimsTableName}";
 

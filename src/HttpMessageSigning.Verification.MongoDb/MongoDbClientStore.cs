@@ -5,7 +5,7 @@ using Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations;
 using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    internal class MongoDbClientStore : IMongoDbClientStore {
+    internal class MongoDbClientStore : IClientStore {
         private readonly SharedSecretEncryptionKey _encryptionKey;
         private readonly IClientStoreMigrator _migrator;
         private readonly ISignatureAlgorithmDataRecordConverter _signatureAlgorithmDataRecordConverter;

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    internal class SqlServerNonceStore : ISqlServerNonceStore {
+    internal class SqlServerNonceStore : INonceStore {
         private const string TableNameToken = "{TableName}";
         private readonly SqlServerNonceStoreSettings _settings;
         private readonly IExpiredNoncesCleaner _expiredNoncesCleaner;
