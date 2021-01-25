@@ -56,59 +56,10 @@ The signing will result in a request header that will look like:
 Authorization: Signature keyId="e0e8dcd638334c409e1b88daf821d135",algorithm="hs2019",created=1584806516,expires=1584806576,headers="(request-target) dalion-app-id date digest",nonce="38brRy8BLUajMbUqWumXPg",signature="DUKQVjiirGMMaMOy9qIwKMro46R3BlLsvUQkw1/8sKQ="
 ```
 
-When configured, a _RequestSignerFactory_ is registered in your composition root. Example usage:
-
-```cs
-public class SignRequestService {
-    private readonly IHttpClient<SignRequestService> _httpClient;
-    private readonly IRequestSignerFactory _requestSignerFactory;
-
-...
-
-    public async Task<HttpResponseMessage> SendSignedRequest(HttpRequestMessage request, CancellationToken cancellationToken) {
-        var requestSigner = _requestSignerFactory.CreateFor(keyId: "f1ed1eff7ca4429abe1abbbe9ae6419a");
-        await requestSigner.Sign(request);
-        return await _httpClient.SendAsync(request, cancellationToken);
-    }
-}
-```
-
-And verification can be done server-side:
-
-```cs
-public class HttpRequestSignatureParser {
-    private readonly IRequestSignatureVerifier _requestSignatureVerifier;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<HttpRequestSignatureParser> _logger;
-    
-...
-
-    public async Task Verify(HttpRequest request) {
-        var options = new SignedRequestAuthenticationOptions {
-            Realm = "Sample application",
-            OnSignatureParsed = (httpRequest, signature) => {
-                _logger.LogDebug("Parsed signature for client with key '{0}'.", signature.KeyId);
-                return Task.CompletedTask;
-            }
-        };
-        var verificationResult = await _requestSignatureVerifier.VerifySignature(request, options);
-
-        var httpContext = _httpContextAccessor.HttpContext;
-        if (verificationResult is RequestSignatureVerificationResultFailure failure) {
-            _logger.LogWarning(failure.SignatureVerificationException, "Request signature verification failed. See exception for details.");
-            httpContext.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-        }
-        else if (verificationResult is RequestSignatureVerificationResultSuccess success) {
-            _logger.LogInformation("Successfully verified signature for identity {0}.", success.Principal.Identity.Name);
-            httpContext.User = success.Principal;
-        }
-    }
-}
-```
+See the [Super Duper Happy Paths](https://github.com/DavidLievrouw/HttpMessageSigning/wiki/Super-duper-happy-paths) for basic usage.
 
 There is OWIN and ASP.NET Core middleware available too, for easy integration.
-
-For more details and options, see the [Wiki](https://github.com/DavidLievrouw/HttpMessageSigning/wiki).
+By default, verification settings are stored in-memory. There are also extension packages to store data in Sql Server, MongoDB, ... instead.
 
 ## Documentation
 
