@@ -2,12 +2,12 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    internal class CachingSqlServerNonceStore : ISqlServerNonceStore {
+namespace Dalion.HttpMessageSigning.Verification {
+    internal class CachingNonceStore : INonceStore {
         private readonly INonceStore _decorated;
         private readonly IMemoryCache _cache;
 
-        public CachingSqlServerNonceStore(INonceStore decorated, IMemoryCache cache) {
+        public CachingNonceStore(INonceStore decorated, IMemoryCache cache) {
             _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }

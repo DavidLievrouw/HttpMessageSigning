@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Dalion.HttpMessageSigning.Utils;
 using Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations;
 using Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V0002;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
@@ -63,16 +61,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 // The actual store
                 .UseClientStore(prov => {
                     var mongoSettings = prov.GetRequiredService<MongoDbClientStoreSettings>();
-                    return new CachingMongoDbClientStore(
-                        new MongoDbClientStore(
-                            prov.GetRequiredService<IMongoDatabaseClientProvider>(),
-                            mongoSettings.CollectionName,
-                            mongoSettings.SharedSecretEncryptionKey,
-                            prov.GetRequiredService<IClientStoreMigrator>(),
-                            prov.GetRequiredService<ISignatureAlgorithmDataRecordConverter>()),
-                        prov.GetRequiredService<IMemoryCache>(),
-                        mongoSettings.ClientCacheEntryExpiration,
-                        prov.GetRequiredService<IBackgroundTaskStarter>());
+                    var decorator = prov.GetRequiredService<ICachingClientStoreDecorator>();
+                    var store = new MongoDbClientStore(
+                        prov.GetRequiredService<IMongoDatabaseClientProvider>(),
+                        mongoSettings.CollectionName,
+                        mongoSettings.SharedSecretEncryptionKey,
+                        prov.GetRequiredService<IClientStoreMigrator>(),
+                        prov.GetRequiredService<ISignatureAlgorithmDataRecordConverter>());
+                    return decorator.DecorateWithCaching(store, mongoSettings.ClientCacheEntryExpiration);
                 });
         }
     }

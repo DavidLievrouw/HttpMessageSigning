@@ -62,7 +62,9 @@ namespace Dalion.HttpMessageSigning.Verification {
                         provider.GetRequiredService<IBase64Converter>(),
                         provider.GetRequiredService<ISigningStringCompositionRequestFactory>(),
                         provider.GetService<ILogger<MatchingSignatureStringVerificationTask>>())))
-                .AddSingleton<IRequestSignatureVerificationOrchestrator, RequestSignatureVerificationOrchestrator>();
+                .AddSingleton<IRequestSignatureVerificationOrchestrator, RequestSignatureVerificationOrchestrator>()
+                .AddSingleton<ICachingClientStoreDecorator, CachingClientStoreDecorator>()
+                .AddSingleton<ICachingNonceStoreDecorator, CachingNonceStoreDecorator>();
             
             return new HttpMessageSigningVerificationBuilder(services); 
         }

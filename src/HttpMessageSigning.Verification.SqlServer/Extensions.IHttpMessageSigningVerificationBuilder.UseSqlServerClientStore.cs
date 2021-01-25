@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Dalion.HttpMessageSigning.Utils;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
@@ -43,11 +41,9 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 // The actual store
                 .UseClientStore(prov => {
                     var sqlSettings = prov.GetRequiredService<SqlServerClientStoreSettings>();
-                    return new CachingSqlServerClientStore(
-                        new SqlServerClientStore(sqlSettings, prov.GetRequiredService<ISignatureAlgorithmConverter>()),
-                        prov.GetRequiredService<IMemoryCache>(),
-                        sqlSettings.ClientCacheEntryExpiration,
-                        prov.GetRequiredService<IBackgroundTaskStarter>());
+                    var decorator = prov.GetRequiredService<ICachingClientStoreDecorator>();
+                    var store = new SqlServerClientStore(sqlSettings, prov.GetRequiredService<ISignatureAlgorithmConverter>());
+                    return decorator.DecorateWithCaching(store, sqlSettings.ClientCacheEntryExpiration);
                 });
         }
     }

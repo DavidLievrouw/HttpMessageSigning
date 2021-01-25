@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.Utils;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    internal class CachingMongoDbClientStore : IMongoDbClientStore {
-        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1, 1);
+namespace Dalion.HttpMessageSigning.Verification {
+    internal class CachingClientStore : IClientStore {
+        private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(initialCount: 1, maxCount: 1);
         private static readonly TimeSpan MaxLockWaitTime = TimeSpan.FromSeconds(10);
 
         private readonly IMemoryCache _cache;
-        private readonly IMongoDbClientStore _decorated;
+        private readonly IClientStore _decorated;
         private readonly TimeSpan _expiration;
         private readonly IBackgroundTaskStarter _backgroundTaskStarter;
 
-        public CachingMongoDbClientStore(IMongoDbClientStore decorated, IMemoryCache cache, TimeSpan expiration, IBackgroundTaskStarter backgroundTaskStarter) {
+        public CachingClientStore(IClientStore decorated, IMemoryCache cache, TimeSpan expiration, IBackgroundTaskStarter backgroundTaskStarter) {
             _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             _expiration = expiration;

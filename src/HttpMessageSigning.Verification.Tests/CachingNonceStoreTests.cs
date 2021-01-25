@@ -6,17 +6,17 @@ using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    public class CachingSqlServerNonceStoreTests : IDisposable {
+namespace Dalion.HttpMessageSigning.Verification {
+    public class CachingNonceStoreTests : IDisposable {
         private readonly FakeMemoryCache _cache;
-        private readonly ISqlServerNonceStore _decorated;
+        private readonly INonceStore _decorated;
         private readonly DateTimeOffset _now;
-        private readonly CachingSqlServerNonceStore _sut;
+        private readonly CachingNonceStore _sut;
 
-        public CachingSqlServerNonceStoreTests() {
+        public CachingNonceStoreTests() {
             FakeFactory.Create(out _decorated);
             _cache = new FakeMemoryCache();
-            _sut = new CachingSqlServerNonceStore(_decorated, _cache);
+            _sut = new CachingNonceStore(_decorated, _cache);
 
             _now = new DateTimeOffset(
                 DateTimeOffset.UtcNow.Year,
@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             _sut?.Dispose();
         }
 
-        public class Get : CachingSqlServerNonceStoreTests {
+        public class Get : CachingNonceStoreTests {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
@@ -186,7 +186,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             }
         }
 
-        public class Register : CachingSqlServerNonceStoreTests {
+        public class Register : CachingNonceStoreTests {
             [Fact]
             public async Task DelegatesToDecoratedInstance() {
                 var nonce = new Nonce(new KeyId("c1"), "abc123", _now.AddSeconds(30));
@@ -212,7 +212,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             }
         }
 
-        public class DisposableSupport : CachingSqlServerNonceStoreTests {
+        public class DisposableSupport : CachingNonceStoreTests {
             [Fact]
             public void DisposesOfDecoratedInstance() {
                 _sut.Dispose();

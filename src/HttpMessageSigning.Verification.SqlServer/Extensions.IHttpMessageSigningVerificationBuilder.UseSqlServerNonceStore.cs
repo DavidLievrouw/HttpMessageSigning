@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using Dalion.HttpMessageSigning.Utils;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
@@ -40,11 +39,13 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     prov.GetRequiredService<SqlServerNonceStoreSettings>(),
                     prov.GetRequiredService<IBackgroundTaskStarter>(),
                     prov.GetRequiredService<ISystemClock>()))
-                .AddSingleton<INonceStore>(prov => new CachingSqlServerNonceStore(
-                    new SqlServerNonceStore(
-                        prov.GetRequiredService<SqlServerNonceStoreSettings>(), 
-                        prov.GetRequiredService<IExpiredNoncesCleaner>()),
-                    prov.GetRequiredService<IMemoryCache>()));
+                .AddSingleton(prov => {
+                    var decorator = prov.GetRequiredService<ICachingNonceStoreDecorator>();
+                    var store = new SqlServerNonceStore(
+                        prov.GetRequiredService<SqlServerNonceStoreSettings>(),
+                        prov.GetRequiredService<IExpiredNoncesCleaner>());
+                    return decorator.DecorateWithCaching(store);
+                });
 
             return builder;
         }

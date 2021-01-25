@@ -7,19 +7,19 @@ using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Xunit;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    public class CachingMongoDbClientStoreTests : IDisposable {
+namespace Dalion.HttpMessageSigning.Verification {
+    public class CachingClientStoreTests : IDisposable {
         private readonly FakeMemoryCache _cache;
-        private readonly IMongoDbClientStore _decorated;
+        private readonly IClientStore _decorated;
         private readonly TimeSpan _expiration;
         private readonly IBackgroundTaskStarter _backgroundTaskStarter;
-        private readonly CachingMongoDbClientStore _sut;
+        private readonly CachingClientStore _sut;
 
-        public CachingMongoDbClientStoreTests() {
+        public CachingClientStoreTests() {
             FakeFactory.Create(out _decorated, out _backgroundTaskStarter);
             _cache = new FakeMemoryCache();
             _expiration = TimeSpan.FromSeconds(30);
-            _sut = new CachingMongoDbClientStore(_decorated, _cache, _expiration, _backgroundTaskStarter);
+            _sut = new CachingClientStore(_decorated, _cache, _expiration, _backgroundTaskStarter);
         }
 
         public void Dispose() {
@@ -28,7 +28,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             _sut?.Dispose();
         }
 
-        public class Register : CachingMongoDbClientStoreTests {
+        public class Register : CachingClientStoreTests {
             private readonly string _cacheKey;
             private readonly Client _cachedClient;
             private readonly Client _newClient;
@@ -105,7 +105,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(-1)]
             [InlineData(-99)]
             public async Task WhenExpirationIsZeroOrNegative_DoesNotUseCache_AndDelegatesToDecoratedInstance(int expirationSeconds) {
-                var sut = new CachingMongoDbClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds), _backgroundTaskStarter);
+                var sut = new CachingClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds), _backgroundTaskStarter);
 
                 await sut.Register(_newClient);
 
@@ -115,7 +115,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             }
         }
 
-        public class Get : CachingMongoDbClientStoreTests {
+        public class Get : CachingClientStoreTests {
             private readonly KeyId _keyId;
             private readonly string _cacheKey;
             private readonly Client _cachedClient;
@@ -147,7 +147,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(-1)]
             [InlineData(-99)]
             public async Task WhenExpirationIsZeroOrNegative_DoesNotUseCache_AndDelegatesToDecoratedInstance(int expirationSeconds) {
-                var sut = new CachingMongoDbClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds), _backgroundTaskStarter);
+                var sut = new CachingClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds), _backgroundTaskStarter);
 
                 await sut.Get(_keyId);
 
@@ -221,7 +221,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             }
         }
 
-        public class DisposableSupport : CachingMongoDbClientStoreTests {
+        public class DisposableSupport : CachingClientStoreTests {
             [Fact]
             public void DisposesOfDecoratedInstance() {
                 _sut.Dispose();

@@ -44,14 +44,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
 
         [Theory]
-        [InlineData(typeof(IClientStore), typeof(CachingMongoDbClientStore))]
-        [InlineData(typeof(INonceStore), typeof(CachingMongoDbNonceStore))]
-        public void CanResolveExactType(Type requestedType, Type expectedType) {
+        [InlineData(typeof(IClientStore), "CachingClientStore")]
+        [InlineData(typeof(INonceStore), "CachingNonceStore")]
+        public void CanResolveExactType(Type requestedType, string expectedType) {
             object actualInstance = null;
             Action act = () => actualInstance = _provider.GetRequiredService(requestedType);
             act.Should().NotThrow();
             actualInstance.Should().NotBeNull();
-            actualInstance.Should().BeAssignableTo(expectedType);
+            actualInstance.GetType().Name.Should().Be(expectedType);
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 .Services
                 .BuildServiceProvider()) {
                 var clientStore = provider.GetRequiredService<IClientStore>();
-                clientStore.Should().BeAssignableTo<CachingMongoDbClientStore>();
+                clientStore.GetType().Name.Should().Be("CachingClientStore");
                 var registeredClient = await clientStore.Get("e0e8dcd638334c409e1b88daf821d135");
                 registeredClient.Should().NotBeNull();
                 registeredClient.Name.Should().Be("HttpMessageSigningSampleHMAC");
