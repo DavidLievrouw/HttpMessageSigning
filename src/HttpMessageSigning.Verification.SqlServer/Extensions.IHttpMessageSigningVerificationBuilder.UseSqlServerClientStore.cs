@@ -31,7 +31,6 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
             builder.Services
                 .AddMemoryCache()
-                .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<ISignatureAlgorithmConverter, SignatureAlgorithmConverter>()
                 .AddSingleton(prov => {
                     var settings = clientStoreSettingsFactory(prov);

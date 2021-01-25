@@ -1,7 +1,8 @@
 ﻿using System;
+using Dalion.HttpMessageSigning.Utils;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
-    internal class RealSystemClock : ISystemClock {
+    public class RealSystemClock : ISystemClock {
         public DateTimeOffset UtcNow => DateTimeOffset.UtcNow;
     }
 }

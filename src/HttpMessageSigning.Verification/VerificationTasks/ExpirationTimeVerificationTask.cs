@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Dalion.HttpMessageSigning.Utils;
 
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class ExpirationTimeVerificationTask : VerificationTask {

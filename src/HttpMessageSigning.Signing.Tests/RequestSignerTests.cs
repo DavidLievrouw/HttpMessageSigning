@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.TestUtils;
+using Dalion.HttpMessageSigning.Utils;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;

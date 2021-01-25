@@ -35,7 +35,6 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             builder.Services
                 // Services
                 .AddMemoryCache()
-                .AddSingleton<ISystemClock, RealSystemClock>()
                 .AddSingleton<ISignatureAlgorithmDataRecordConverter, SignatureAlgorithmDataRecordConverter>()
                 .AddSingleton(prov => {
                     var settings = clientStoreSettingsFactory(prov);

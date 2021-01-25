@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Utils;
 using MongoDB.Driver;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {

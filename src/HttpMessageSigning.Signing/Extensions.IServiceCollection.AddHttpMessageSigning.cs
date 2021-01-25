@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Dalion.HttpMessageSigning.SigningString;
 using Dalion.HttpMessageSigning.SigningString.RequestTarget;
+using Dalion.HttpMessageSigning.Utils;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Signing {

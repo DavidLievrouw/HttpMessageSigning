@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Utils;
 using Dalion.HttpMessageSigning.Verification.SqlServer.Infrastructure;
 using Dapper;
 using FakeItEasy;

@@ -1,6 +1,7 @@
 using System;
 using System.Security.Cryptography;
 using Dalion.HttpMessageSigning.TestUtils;
+using Dalion.HttpMessageSigning.Utils;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;

@@ -1,4 +1,5 @@
 using System;
+using Dalion.HttpMessageSigning.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {

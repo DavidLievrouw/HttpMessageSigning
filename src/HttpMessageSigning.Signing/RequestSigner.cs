@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Dalion.HttpMessageSigning.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Signing {

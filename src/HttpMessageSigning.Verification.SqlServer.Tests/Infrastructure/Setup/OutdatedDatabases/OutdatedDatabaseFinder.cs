@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Linq;
+using Dalion.HttpMessageSigning.Utils;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 
