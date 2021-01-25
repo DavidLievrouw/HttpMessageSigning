@@ -47,7 +47,7 @@ This repository is a C# implementation of that specification.
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/)
 <br/><sub>MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory ones.</sub>
   
-- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/)
+- ![New](new32.png) [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/)
 <br/><sub>Sql Server-backed client and nonce store implementations, as an alternative to the default in-memory ones.</sub>
 
 ## Basics
