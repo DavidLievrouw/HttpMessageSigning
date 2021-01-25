@@ -12,9 +12,10 @@ dotnet build %SRCDIR%\%PRODUCT%\%PRODUCT%.csproj --no-restore --configuration Re
 dotnet build %SRCDIR%\%PRODUCT%.Signing\%PRODUCT%.Signing.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
 dotnet build %SRCDIR%\%PRODUCT%.Verification\%PRODUCT%.Verification.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
 dotnet build %SRCDIR%\%PRODUCT%.Verification.AspNetCore\%PRODUCT%.Verification.AspNetCore.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
+dotnet build %SRCDIR%\%PRODUCT%.Verification.Owin\%PRODUCT%.Verification.Owin.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
 dotnet build %SRCDIR%\%PRODUCT%.Verification.MongoDb\%PRODUCT%.Verification.MongoDb.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
 dotnet build %SRCDIR%\%PRODUCT%.Verification.SqlServer\%PRODUCT%.Verification.SqlServer.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
-dotnet build %SRCDIR%\%PRODUCT%.Verification.Owin\%PRODUCT%.Verification.Owin.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
+dotnet build %SRCDIR%\%PRODUCT%.Verification.FileSystem\%PRODUCT%.Verification.FileSystem.csproj --no-restore --configuration Release -p:BaseOutputPath="%DISTDIR%\\" -p:ContinuousIntegrationBuild="true"
 
 if "%1" == "nopause" goto end
 pause
