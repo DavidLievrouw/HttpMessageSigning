@@ -45,7 +45,10 @@ This repository is a C# implementation of that specification.
 #### Storage
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/)
-<br/><sub>MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory ones.
+<br/><sub>MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory ones.</sub>
+  
+- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/)
+<br/><sub>Sql Server-backed client and nonce store implementations, as an alternative to the default in-memory ones.</sub>
 
 ## Basics
 When signing a request message, an _Authorization_ header is set in a http request. Using this header, the server can verify that it is sent by the known client, and that the content has not been tampered with.
