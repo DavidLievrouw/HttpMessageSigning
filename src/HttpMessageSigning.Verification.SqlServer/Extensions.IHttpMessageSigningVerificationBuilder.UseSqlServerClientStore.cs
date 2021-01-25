@@ -3,6 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer {
+    /// <summary>
+    ///     Extension methods for this library.
+    /// </summary>
     public static partial class Extensions {
         /// <summary>Configures HTTP message signature verification to use a SQL Server <see cref="IClientStore"/>.</summary>
         /// <param name="builder">The <see cref="IHttpMessageSigningVerificationBuilder" /> that is used to configure verification.</param>

@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace Dalion.HttpMessageSigning.Verification.MongoDb {
+namespace Dalion.HttpMessageSigning.Verification {
     public static partial class Extensions {
-        internal static string ToXml(this RSAParameters parameters) {
+        /// <summary>
+        ///     Serialize the specified <see cref="RSAParameters" /> to an XML string.
+        /// </summary>
+        /// <param name="parameters">The <see cref="RSAParameters" /> to serialize.</param>
+        /// <returns>An XML string that represents the specified <see cref="RSAParameters" />.</returns>
+        public static string ToXml(this RSAParameters parameters) {
             // ReSharper disable once UseStringInterpolation
             return string.Format(
                 "<RSAKeyValue><Modulus>{0}</Modulus><Exponent>{1}</Exponent><P>{2}</P><Q>{3}</Q><DP>{4}</DP><DQ>{5}</DQ><InverseQ>{6}</InverseQ><D>{7}</D></RSAKeyValue>",

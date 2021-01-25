@@ -3,14 +3,16 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Xml;
 
-namespace Dalion.HttpMessageSigning.Verification.SqlServer {
-    /// <summary>
-    ///     Extension methods for this library.
-    /// </summary>
+namespace Dalion.HttpMessageSigning.Verification {
     public static partial class Extensions {
-        internal static void FromXml(this ECDsa ecdsa, string xmlString) {
+        /// <summary>
+        ///     Load the public key parameters in the specified <see cref="ECDsa" />, defined by the specified XML string.
+        /// </summary>
+        /// <param name="ecdsa">The <see cref="ECDsa" /> to load the parameters in.</param>
+        /// <param name="xmlString">The XML string that describes the public key parameters.</param>
+        public static void FromXml(this ECDsa ecdsa, string xmlString) {
             if (string.IsNullOrEmpty(xmlString)) throw new ArgumentException("Value cannot be null or empty.", nameof(xmlString));
-            
+
             var parameters = new ECParameters {
                 Q = new ECPoint()
             };
