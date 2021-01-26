@@ -277,6 +277,28 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             }
         }
 
+        public class Construction : SqlServerClientStoreTests {
+            private readonly SqlServerFixture _fixture;
+
+            public Construction(SqlServerFixture fixture)
+                : base(fixture) {
+                _fixture = fixture;
+            }
+            
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            public void AllowsForNullOrEmptyEncryptionKey(string nullOrEmpty) {
+                Action act = () => new SqlServerClientStore(
+                    new SqlServerClientStoreSettings {
+                        ConnectionString = _fixture.SqlServerConfig.GetConnectionStringForTestDatabase(),
+                        SharedSecretEncryptionKey = nullOrEmpty
+                    },
+                    new SignatureAlgorithmConverter(new FakeStringProtectorFactory()));
+                act.Should().NotThrow();
+            }
+        }
+        
         public class Get : SqlServerClientStoreTests {
             public Get(SqlServerFixture fixture)
                 : base(fixture) { }

@@ -59,13 +59,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public void GivenHMACAlgorithm_ReturnsExpectedDataRecord() {
                 using (var hmac = SignatureAlgorithm.CreateForVerification(_unencryptedKey, HashAlgorithmName.SHA384)) {
                     var actual = _sut.FromSignatureAlgorithm(hmac, _encryptionKey);
+                    var encryptedKey = new FakeStringProtector().Protect(_unencryptedKey);
                     var expected = new SignatureAlgorithmDataRecordV2 {
                         Type = "HMAC",
                         HashAlgorithm = HashAlgorithmName.SHA384.Name,
-                        IsParameterEncrypted = true
+                        IsParameterEncrypted = true,
+                        Parameter = encryptedKey
                     };
-                    actual.Should().BeEquivalentTo(expected, opts => opts.Excluding(_ => _.Parameter));
-                    actual.Parameter.Should().NotBe(_unencryptedKey);
+                    actual.Should().BeEquivalentTo(expected);
                 }
             }
 
