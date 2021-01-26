@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Dalion.HttpMessageSigning.TestUtils;
@@ -10,28 +9,18 @@ using FluentAssertions;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
-    public class NoncesFileManagerTests : IDisposable {
+    public class NoncesFileManagerTests {
         private readonly INonceDataRecordSerializer _dataRecordSerializer;
         private readonly string _filePath;
         private readonly IFileReader _fileReader;
         private readonly IFileWriter _fileWriter;
         private readonly string _path;
-        private readonly SemaphoreSlim _semaphore;
-        private readonly ISemaphoreFactory _semaphoreFactory;
         private readonly NoncesFileManager _sut;
 
         public NoncesFileManagerTests() {
-            FakeFactory.Create(out _fileReader, out _fileWriter, out _semaphoreFactory, out _dataRecordSerializer);
-            _semaphore = new SemaphoreSlim(1, 1);
-            A.CallTo(() => _semaphoreFactory.CreateLock())
-                .Returns(_semaphore);
+            FakeFactory.Create(out _fileReader, out _fileWriter, out _dataRecordSerializer);
             _filePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xml");
-            _sut = new NoncesFileManager(_fileReader, _fileWriter, _filePath, _semaphoreFactory, _dataRecordSerializer);
-        }
-
-        public void Dispose() {
-            _sut?.Dispose();
-            _semaphore?.Dispose();
+            _sut = new NoncesFileManager(_fileReader, _fileWriter, _filePath, _dataRecordSerializer);
         }
 
         public class Write : NoncesFileManagerTests {
