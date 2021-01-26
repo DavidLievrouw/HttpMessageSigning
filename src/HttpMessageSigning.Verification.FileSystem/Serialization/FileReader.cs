@@ -6,9 +6,9 @@ using System.Xml.Linq;
 
 namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
     internal class FileReader : IFileReader {
-        private static readonly Lazy<XDocument> EmptyDocument = new Lazy<XDocument>(() => {
-            var xmlRoot = new XElement(XName.Get("root", "https://dalion.eu/httpmessagesigning"));
-            xmlRoot.SetAttributeValue("xmlns", "https://dalion.eu/httpmessagesigning");
+        internal static readonly Lazy<XDocument> EmptyDocument = new Lazy<XDocument>(() => {
+            var xmlRoot = new XElement(XName.Get(Constants.XmlNames.Root, Constants.XmlNames.Ns));
+            xmlRoot.SetAttributeValue("xmlns", Constants.XmlNames.Ns);
             var xmlDocument = new XDocument(xmlRoot);
             return xmlDocument;
         });
@@ -23,7 +23,6 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
                     var doc = XDocument.Load(fileStream, LoadOptions.None);
                     return await Task.FromResult(doc);
 #else
-
                     return await XDocument.LoadAsync(fileStream, LoadOptions.None, CancellationToken.None);
 #endif
                 }
@@ -37,6 +36,8 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
         }
 
         public bool FileExists(string filePath) {
+            if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
+            
             try {
                 return File.Exists(filePath);
             }
