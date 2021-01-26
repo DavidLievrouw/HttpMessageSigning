@@ -1,24 +1,38 @@
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
     internal class FileReader : IFileReader {
-        public string Read(string filePath) {
+        private static readonly Lazy<XDocument> EmptyDocument = new Lazy<XDocument>(() => {
+            var xmlRoot = new XElement(XName.Get("root", "https://dalion.eu/httpmessagesigning"));
+            xmlRoot.SetAttributeValue("xmlns", "https://dalion.eu/httpmessagesigning");
+            var xmlDocument = new XDocument(xmlRoot);
+            return xmlDocument;
+        });
+
+        public async Task<XDocument> Read(string filePath) {
             if (string.IsNullOrEmpty(filePath)) throw new ArgumentException("Value cannot be null or empty.", nameof(filePath));
-            if (!FileExists(filePath)) return string.Empty;
+            if (!FileExists(filePath)) return EmptyDocument.Value;
 
             try {
                 using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
-                    using (var reader = new StreamReader(fileStream)) {
-                        return reader.ReadToEnd();
-                    }
+#if NET472 || NETSTANDARD2_0
+                    var doc = XDocument.Load(fileStream, LoadOptions.None);
+                    return await Task.FromResult(doc);
+#else
+
+                    return await XDocument.LoadAsync(fileStream, LoadOptions.None, CancellationToken.None);
+#endif
                 }
             }
             catch (FileNotFoundException) {
-                return string.Empty;
+                return EmptyDocument.Value;
             }
             catch (DirectoryNotFoundException) {
-                return string.Empty;
+                return EmptyDocument.Value;
             }
         }
 

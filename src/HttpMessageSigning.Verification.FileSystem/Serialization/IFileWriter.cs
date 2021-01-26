@@ -1,5 +1,8 @@
-﻿namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
+﻿using System.Threading.Tasks;
+using System.Xml.Linq;
+
+namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
     internal interface IFileWriter {
-        void Write(string filePath, string textToBeWritten);
+        Task Write(string filePath, XDocument xml);
     }
 }

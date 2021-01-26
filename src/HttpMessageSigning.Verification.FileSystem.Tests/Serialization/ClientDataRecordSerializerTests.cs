@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 using System.Xml.Linq;
 using FluentAssertions;
 using Xunit;
@@ -50,6 +51,41 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
             var deserialized = _sut.Deserialize(xContainer);
             
             deserialized.Should().BeEquivalentTo(dataRecord);
+        }
+
+        [Fact]
+        public void FillsInValidDefaultsInMinimalObject() {
+            var dataRecord = new ClientDataRecord {
+                Id = "client001",
+                SigAlg = new SignatureAlgorithmDataRecord {
+                    Type = "HMAC",
+                    Param = "<Secret>s3cr3t</Secret>",
+                    Hash = HashAlgorithmName.MD5.Name,
+                    Encrypted = false
+                }
+            };
+
+            var xml = _sut.Serialize(dataRecord).ToString();
+
+            var xContainer = XElement.Parse(xml);
+            var deserialized = _sut.Deserialize(xContainer);
+            
+            var expected = new ClientDataRecord {
+                Id = "client001",
+                Name = "",
+                V = 1,
+                Claims = Array.Empty<ClaimDataRecord>(),
+                ClockSkew = 60,
+                NonceLifetime = 300,
+                Escaping = "RFC3986",
+                SigAlg = new SignatureAlgorithmDataRecord {
+                    Type = "HMAC",
+                    Param = "<Secret>s3cr3t</Secret>",
+                    Hash = HashAlgorithmName.MD5.Name,
+                    Encrypted = false
+                }
+            };
+            deserialized.Should().BeEquivalentTo(expected);
         }
     }
 }

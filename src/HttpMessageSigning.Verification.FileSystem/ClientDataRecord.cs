@@ -24,23 +24,37 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                 new XElement(nameof(ClockSkew), ClockSkew),
                 new XElement(nameof(NonceLifetime), NonceLifetime),
                 new XElement(nameof(Escaping), Escaping),
-                new XElement(nameof(V), V),
+                new XElement(nameof(V), V ?? GetV()),
                 SigAlg.ToXml(),
-                new XElement(nameof(Claims), Claims.Select(c => c.ToXml()))
+                new XElement(nameof(Claims), Claims?.Select(c => c.ToXml()) ?? Enumerable.Empty<XElement>())
             );
         }
 
         public static ClientDataRecord FromXml(XContainer xml) {
             if (xml == null) throw new ArgumentNullException(nameof(xml));
 
+            var clockSkew = double.TryParse(xml.Element(nameof(ClockSkew))?.Value, out var c) ? c : 0;
+            if (clockSkew <= 0) clockSkew = ClientOptions.Default.ClockSkew.TotalSeconds;
+            
+            var nonceLifetime = double.TryParse(xml.Element(nameof(NonceLifetime))?.Value, out var n) ? n : 0;
+            if (nonceLifetime <= 0) nonceLifetime = ClientOptions.Default.NonceLifetime.TotalSeconds;
+            
+            var version = int.TryParse(xml.Element(nameof(V))?.Value, out var v) ? v : GetV();
+            if (version <= 0) version = GetV();
+
+            var escaping = xml.Element(nameof(Escaping))?.Value;
+            if (string.IsNullOrEmpty(escaping) || !Enum.IsDefined(typeof(RequestTargetEscaping), escaping)) {
+                escaping = ClientOptions.Default.RequestTargetEscaping.ToString();
+            }
+            
             return new ClientDataRecord {
                 Id = xml.Element(nameof(Id))?.Value,
                 Name = xml.Element(nameof(Name))?.Value,
-                ClockSkew = double.TryParse(xml.Element(nameof(ClockSkew))?.Value, out var c) ? c : 0,
-                NonceLifetime = double.TryParse(xml.Element(nameof(NonceLifetime))?.Value, out var n) ? n : 0,
-                Escaping = xml.Element(nameof(Escaping))?.Value,
-                V = int.TryParse(xml.Element(nameof(V))?.Value, out var v) ? v : 0,
-                Claims = xml.Element(nameof(Claims))?.Elements()?.Select(cEl => ClaimDataRecord.FromXml(cEl))?.ToArray(),
+                ClockSkew = clockSkew,
+                NonceLifetime = nonceLifetime,
+                Escaping = escaping,
+                V = version,
+                Claims = xml.Element(nameof(Claims))?.Elements()?.Select(ClaimDataRecord.FromXml)?.ToArray() ?? Array.Empty<ClaimDataRecord>(),
                 SigAlg = SignatureAlgorithmDataRecord.FromXml(xml.Element(nameof(SigAlg)))
             };
         }
