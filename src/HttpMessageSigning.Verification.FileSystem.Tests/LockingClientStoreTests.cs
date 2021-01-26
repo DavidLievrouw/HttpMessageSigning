@@ -28,6 +28,16 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             _sut?.Dispose();
         }
 
+        public class DisposableSupport : LockingClientStoreTests {
+            [Fact]
+            public void DisposesDecoratedService() {
+                _sut.Dispose();
+
+                A.CallTo(() => _decorated.Dispose())
+                    .MustHaveHappened();
+            }
+        }
+        
         public class Register : LockingClientStoreTests {
             [Fact]
             public async Task CallsDecoratedService() {

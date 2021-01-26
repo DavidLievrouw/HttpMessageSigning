@@ -43,7 +43,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                 act.Should().NotThrow();
             }
         }
-
+        
         public class Register : FileSystemClientStoreTests {
             [Fact]
             public void GivenNullClient_ThrowsArgumentNullException() {

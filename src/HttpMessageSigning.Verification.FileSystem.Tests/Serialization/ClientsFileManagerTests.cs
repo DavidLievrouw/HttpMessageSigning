@@ -14,7 +14,6 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
         private readonly string _filePath;
         private readonly IFileReader _fileReader;
         private readonly IFileWriter _fileWriter;
-        private readonly string _path;
         private readonly ClientsFileManager _sut;
 
         public ClientsFileManagerTests() {
