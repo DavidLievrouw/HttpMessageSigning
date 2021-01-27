@@ -1,44 +1,31 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 
 namespace Dalion.HttpMessageSigning.Verification.FileSystem {
     internal class LockingClientStore : IClientStore {
-        private static readonly TimeSpan MaxLockWaitTime = TimeSpan.FromSeconds(1);
-
         private readonly IClientStore _decorated;
-        private readonly SemaphoreSlim _semaphore;
+        private readonly AsyncReaderWriterLock _lock;
 
-        public LockingClientStore(IClientStore decorated, ISemaphoreFactory semaphoreFactory) {
-            if (semaphoreFactory == null) throw new ArgumentNullException(nameof(semaphoreFactory));
+        public LockingClientStore(IClientStore decorated, ILockFactory lockFactory) {
+            if (lockFactory == null) throw new ArgumentNullException(nameof(lockFactory));
             _decorated = decorated ?? throw new ArgumentNullException(nameof(decorated));
-            _semaphore = semaphoreFactory.CreateLock();
+            _lock = lockFactory.CreateLock();
         }
 
         public void Dispose() {
-            _semaphore?.Dispose();
             _decorated?.Dispose();
         }
 
         public async Task Register(Client client) {
-            await _semaphore.WaitAsync(MaxLockWaitTime, CancellationToken.None).ConfigureAwait(continueOnCapturedContext: false);
-
-            try {
+            using (await _lock.WriterLockAsync()) {
                 await _decorated.Register(client);
-            }
-            finally {
-                _semaphore.Release();
             }
         }
 
         public async Task<Client> Get(KeyId clientId) {
-            await _semaphore.WaitAsync(MaxLockWaitTime, CancellationToken.None).ConfigureAwait(continueOnCapturedContext: false);
-
-            try {
+            using (await _lock.ReaderLockAsync()) {
                 return await _decorated.Get(clientId);
-            }
-            finally {
-                _semaphore.Release();
             }
         }
     }

@@ -17,13 +17,11 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
 
         public FileSystemClientStoreTests() {
             var tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xml");
-            _fileManager = new LockingFileManager<ClientDataRecord>(
-                new ClientsFileManager(
-                    new FileReader(),
-                    new FileWriter(),
-                    tempFilePath,
-                    new ClientDataRecordSerializer()),
-                new SemaphoreFactory());
+            _fileManager = new ClientsFileManager(
+                new FileReader(),
+                new FileWriter(),
+                tempFilePath,
+                new ClientDataRecordSerializer());
             var encryptionKey = new SharedSecretEncryptionKey("The_Big_Secret");
             _signatureAlgorithmDataRecordConverter = new SignatureAlgorithmDataRecordConverter(new FakeStringProtectorFactory());
             _sut = new FileSystemClientStore(_fileManager, _signatureAlgorithmDataRecordConverter, encryptionKey);
@@ -43,7 +41,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                 act.Should().NotThrow();
             }
         }
-        
+
         public class Register : FileSystemClientStoreTests {
             [Fact]
             public void GivenNullClient_ThrowsArgumentNullException() {

@@ -11,7 +11,9 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
         /// <param name="nonceStoreSettings">The settings for the file.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
         [ExcludeFromCodeCoverage]
-        public static IHttpMessageSigningVerificationBuilder UseFileSystemNonceStore(this IHttpMessageSigningVerificationBuilder builder, FileSystemNonceStoreSettings nonceStoreSettings) {
+        public static IHttpMessageSigningVerificationBuilder UseFileSystemNonceStore(
+            this IHttpMessageSigningVerificationBuilder builder,
+            FileSystemNonceStoreSettings nonceStoreSettings) {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (nonceStoreSettings == null) throw new ArgumentNullException(nameof(nonceStoreSettings));
 
@@ -33,7 +35,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                 .AddSingleton<IFileReader, FileReader>()
                 .AddSingleton<IFileWriter, FileWriter>()
                 .AddSingleton<INonceDataRecordSerializer, NonceDataRecordSerializer>()
-                .AddSingleton<ISemaphoreFactory, SemaphoreFactory>()
+                .AddSingleton<ILockFactory, LockFactory>()
                 .AddSingleton(prov => {
                     var settings = nonceStoreSettingsFactory(prov);
                     if (settings == null) throw new ValidationException($"Invalid {nameof(FileSystemNonceStoreSettings)} were specified.");
@@ -45,15 +47,13 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                     var decorator = prov.GetRequiredService<ICachingNonceStoreDecorator>();
                     var store = new LockingNonceStore(
                         new FileSystemNonceStore(
-                            new LockingFileManager<NonceDataRecord>(
-                                new NoncesFileManager(
-                                    prov.GetRequiredService<IFileReader>(),
-                                    prov.GetRequiredService<IFileWriter>(),
-                                    settings.FilePath,
-                                    prov.GetRequiredService<INonceDataRecordSerializer>()),
-                                prov.GetRequiredService<ISemaphoreFactory>()),
+                            new NoncesFileManager(
+                                prov.GetRequiredService<IFileReader>(),
+                                prov.GetRequiredService<IFileWriter>(),
+                                settings.FilePath,
+                                prov.GetRequiredService<INonceDataRecordSerializer>()),
                             prov.GetRequiredService<ISystemClock>()),
-                        prov.GetRequiredService<ISemaphoreFactory>());
+                        prov.GetRequiredService<ILockFactory>());
                     return decorator.DecorateWithCaching(store);
                 });
 

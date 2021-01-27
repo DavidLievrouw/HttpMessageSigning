@@ -13,7 +13,9 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
         /// <param name="clientStoreSettings">The settings for the file.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
         [ExcludeFromCodeCoverage]
-        public static IHttpMessageSigningVerificationBuilder UseFileSystemClientStore(this IHttpMessageSigningVerificationBuilder builder, FileSystemClientStoreSettings clientStoreSettings) {
+        public static IHttpMessageSigningVerificationBuilder UseFileSystemClientStore(
+            this IHttpMessageSigningVerificationBuilder builder,
+            FileSystemClientStoreSettings clientStoreSettings) {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (clientStoreSettings == null) throw new ArgumentNullException(nameof(clientStoreSettings));
 
@@ -35,7 +37,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                 .AddSingleton<IFileReader, FileReader>()
                 .AddSingleton<IFileWriter, FileWriter>()
                 .AddSingleton<IClientDataRecordSerializer, ClientDataRecordSerializer>()
-                .AddSingleton<ISemaphoreFactory, SemaphoreFactory>()
+                .AddSingleton<ILockFactory, LockFactory>()
                 .AddSingleton<ISignatureAlgorithmDataRecordConverter, SignatureAlgorithmDataRecordConverter>()
                 .AddSingleton(prov => {
                     var settings = clientStoreSettingsFactory(prov);
@@ -51,16 +53,14 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                     var decorator = prov.GetRequiredService<ICachingClientStoreDecorator>();
                     var store = new LockingClientStore(
                         new FileSystemClientStore(
-                            new LockingFileManager<ClientDataRecord>(
-                                new ClientsFileManager(
-                                    prov.GetRequiredService<IFileReader>(),
-                                    prov.GetRequiredService<IFileWriter>(),
-                                    settings.FilePath,
-                                    prov.GetRequiredService<IClientDataRecordSerializer>()),
-                                prov.GetRequiredService<ISemaphoreFactory>()),
+                            new ClientsFileManager(
+                                prov.GetRequiredService<IFileReader>(),
+                                prov.GetRequiredService<IFileWriter>(),
+                                settings.FilePath,
+                                prov.GetRequiredService<IClientDataRecordSerializer>()),
                             prov.GetRequiredService<ISignatureAlgorithmDataRecordConverter>(),
                             settings.SharedSecretEncryptionKey),
-                        prov.GetRequiredService<ISemaphoreFactory>());
+                        prov.GetRequiredService<ILockFactory>());
                     return decorator.DecorateWithCaching(store, settings.ClientCacheEntryExpiration);
                 });
         }

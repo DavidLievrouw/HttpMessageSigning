@@ -30,13 +30,11 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                 .Returns(_now);
 
             var tempFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xml");
-            _fileManager = new LockingFileManager<NonceDataRecord>(
-                new NoncesFileManager(
-                    new FileReader(),
-                    new FileWriter(),
-                    tempFilePath,
-                    new NonceDataRecordSerializer()),
-                new SemaphoreFactory());
+            _fileManager = new NoncesFileManager(
+                new FileReader(),
+                new FileWriter(),
+                tempFilePath,
+                new NonceDataRecordSerializer());
 
             _sut = new FileSystemNonceStore(_fileManager, _systemClock);
         }

@@ -1,28 +1,27 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.TestUtils;
 using FakeItEasy;
 using FluentAssertions;
+using Nito.AsyncEx;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.FileSystem {
     public class LockingNonceStoreTests : IDisposable {
         private readonly INonceStore _decorated;
-        private readonly SemaphoreSlim _semaphore;
-        private readonly ISemaphoreFactory _semaphoreFactory;
+        private readonly AsyncReaderWriterLock _lock;
+        private readonly ILockFactory _lockFactory;
         private readonly LockingNonceStore _sut;
 
         public LockingNonceStoreTests() {
-            FakeFactory.Create(out _decorated, out _semaphoreFactory);
-            _semaphore = new SemaphoreSlim(1, 1);
-            A.CallTo(() => _semaphoreFactory.CreateLock())
-                .Returns(_semaphore);
-            _sut = new LockingNonceStore(_decorated, _semaphoreFactory);
+            FakeFactory.Create(out _decorated, out _lockFactory);
+            _lock = new AsyncReaderWriterLock();
+            A.CallTo(() => _lockFactory.CreateLock())
+                .Returns(_lock);
+            _sut = new LockingNonceStore(_decorated, _lockFactory);
         }
 
         public void Dispose() {
-            _semaphore?.Dispose();
             _sut?.Dispose();
         }
 

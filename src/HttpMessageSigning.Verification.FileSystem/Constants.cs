@@ -1,4 +1,4 @@
-﻿namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
+﻿namespace Dalion.HttpMessageSigning.Verification.FileSystem {
     internal static class Constants {
         public class XmlNames {
             public const string Root = "Dalion";
