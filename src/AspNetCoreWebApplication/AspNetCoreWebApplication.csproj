@@ -7,6 +7,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
+      <ProjectReference Include="..\HttpMessageSigning.Verification.FileSystem\HttpMessageSigning.Verification.FileSystem.csproj" />
       <ProjectReference Include="..\HttpMessageSigning.Verification.MongoDb\HttpMessageSigning.Verification.MongoDb.csproj" />
       <ProjectReference Include="..\HttpMessageSigning.Verification.SqlServer\HttpMessageSigning.Verification.SqlServer.csproj" />
     </ItemGroup>
