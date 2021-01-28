@@ -24,31 +24,37 @@ This repository is a C# implementation of that specification.
 #### Common
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/)
-<br/><sub>Shared components for signing and verification packages.</sub>
+<br/><sub>This package contains the shared components for signing and verification packages. It serves as a base-package only.</sub>
 
 #### Signing
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/)
-<br/><sub>Signing HTTP messages, client-side.</sub>
+<br/><sub>This package contains the client-side services to enable Signing HTTP messages. In most cases, this is the only package that client applications will reference.</sub>
 
 #### Verification
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/)
-<br/><sub>Verify request signatures, server-side, including support for in-memory client and nonce stores.</sub>
+<br/><sub>This package contains the server-side services to enable verifying HTTP message signatures. 
+It also contains the default in-memory _client_ and _nonce_ stores.</sub>
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/)
-<br/><sub>ASP.NET Core authentication scheme to verify signatures on signed HTTP messages.</sub>
+<br/><sub>This package contains the ASP.NET Core authentication scheme to verify signatures on signed HTTP messages.</sub>
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/)
-<br/><sub>Owin authentication middleware to verify signatures on signed HTTP messages.</sub>
+<br/><sub>This package contains the Owin authentication middleware to verify signatures on signed HTTP messages.</sub>
 
 #### Storage
 
 - [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/)
-<br/><sub>MongoDB-backed client and nonce store implementations, as an alternative to the default in-memory ones.</sub>
+<br/><sub>For persisted clients and nonces, you can use these alternative MongoDB-backed client and nonce store implementations.</sub>
   
 - ![New](new32.png) [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/)
-<br/><sub>Sql Server-backed client and nonce store implementations, as an alternative to the default in-memory ones.</sub>
+<br/><sub>For persisted clients and nonces, you can use these alternative Sql Server-backed client and nonce store implementations.</sub>
+
+- ![New](new32.png) [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.FileSystem)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.FileSystem/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.FileSystem)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.FileSystem/)
+<br/><sub>For persisted clients and nonces, you can use these alternative filesystem-backed client and nonce store implementations.</sub>
+
+See [wiki](https://github.com/DavidLievrouw/HttpMessageSigning/wiki) for further details.
 
 ## Basics
 When signing a request message, an _Authorization_ header is set in a http request. Using this header, the server can verify that it is sent by the known client, and that the content has not been tampered with.
