@@ -1,6 +1,6 @@
 ﻿namespace Dalion.HttpMessageSigning.Verification.FileSystem {
     /// <summary>
-    ///     Represents settings for MongoDb storage of registered <see cref="Nonce" /> instances.
+    ///     Represents settings for FileSystem storage of registered <see cref="Nonce" /> instances.
     /// </summary>
     public class FileSystemNonceStoreSettings {
         /// <summary>
