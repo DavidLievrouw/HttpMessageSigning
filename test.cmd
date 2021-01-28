@@ -45,6 +45,12 @@ if errorlevel 1 (
    exit /b %errorlevel%
 )
 
+dotnet test %SRCDIR%\HttpMessageSigning.Verification.FileSystem.Tests\HttpMessageSigning.Verification.FileSystem.Tests.csproj
+if errorlevel 1 (
+   echo One or more tests failed.
+   exit /b %errorlevel%
+)
+
 dotnet test %SRCDIR%\HttpMessageSigning.SystemTests\HttpMessageSigning.SystemTests.csproj
 if errorlevel 1 (
    echo One or more tests failed.
