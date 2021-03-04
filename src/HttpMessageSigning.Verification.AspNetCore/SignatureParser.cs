@@ -4,43 +4,38 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
-    internal class SignatureParser : ISignatureParser {
+    
+    /// <summary>
+    /// Parses signatures from a request.
+    /// </summary>
+    public class SignatureParser : ISignatureParser {
         private readonly ILogger<SignatureParser> _logger;
         
         private const string AuthorizationHeaderName = "Authorization";
 
+        /// <summary>
+        /// Constructs a new Signature parser.
+        /// </summary>
+        /// <param name="logger">An optional logger to use for tracing</param>
         public SignatureParser(ILogger<SignatureParser> logger = null) {
             _logger = logger;
         }
 
+        /// <summary>
+        /// Parses a signature from an HTTP Request.
+        /// </summary>
+        /// <param name="request">The request to be parsed</param>
+        /// <param name="options">The options of the middleware</param>
+        /// <returns>The result of the parsing, containing the parsed signature if successful, or the reason of failure</returns>
+        /// <exception cref="ArgumentNullException">If any parameter is missing</exception>
         public SignatureParsingResult Parse(HttpRequest request, SignedRequestAuthenticationOptions options) {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (options == null) throw new ArgumentNullException(nameof(options));
 
-            var authHeader = request.Headers[AuthorizationHeaderName];
-            if (authHeader == Microsoft.Extensions.Primitives.StringValues.Empty)
-                return new SignatureParsingFailure($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
+            var signatureParsingFailure = ExtractSignaturePartsFromRequest(request, options, out var authParamParts);
+            if (signatureParsingFailure != null) 
+                return signatureParsingFailure;
 
-            var rawAuthHeader = (string) authHeader;
-            var separatorIndex = rawAuthHeader.IndexOf(' ');
-            if (separatorIndex < 0) {
-                return new SignatureParsingFailure(
-                    $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
-            }
-            var authScheme = rawAuthHeader.Substring(0, separatorIndex);
-            if (authScheme != options.Scheme && authScheme != options.Scheme)
-                return new SignatureParsingFailure(
-                    $"The specified request does not specify the expected {options.Scheme} scheme in the {AuthorizationHeaderName} header.");
-
-            if (separatorIndex >= rawAuthHeader.Length - 1)
-                return new SignatureParsingFailure(
-                    $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
-            var authParam = rawAuthHeader.Substring(separatorIndex + 1);
-
-            _logger?.LogDebug("Parsing authorization header parameter for verification: {0}.", authParam);
-
-            var authParamParts = authParam.Split(',');
-            
             var keyId = KeyId.Empty;
             var algorithm = string.Empty;
             var createdString = string.Empty;
@@ -139,6 +134,53 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             }
 
             return new SignatureParsingSuccess(parsedSignature);
+        }
+
+        /// <summary>
+        /// Extracts the individual components of a signature from the request.
+        /// </summary>
+        /// <param name="request">The request to parse the signature from</param>
+        /// <param name="options">The options that have been passed to the middleware</param>
+        /// <param name="authParamParts">A list of headers that have been extracted from the request</param>
+        /// <returns>A parsing failure object if a failure happened, or null if no error occurred</returns>
+        protected virtual SignatureParsingFailure ExtractSignaturePartsFromRequest(
+            HttpRequest request,
+            SignedRequestAuthenticationOptions options,
+            out string[] authParamParts) {
+            
+            var authHeader = request.Headers[AuthorizationHeaderName];
+            if (authHeader == Microsoft.Extensions.Primitives.StringValues.Empty) {
+                authParamParts = new string[0];
+                return new SignatureParsingFailure($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
+            }
+
+            var rawAuthHeader = (string) authHeader;
+            var separatorIndex = rawAuthHeader.IndexOf(' ');
+            if (separatorIndex < 0) {
+                authParamParts = new string[0];
+                return new SignatureParsingFailure(
+                    $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
+            }
+
+            var authScheme = rawAuthHeader.Substring(0, separatorIndex);
+            if (authScheme != options.Scheme && authScheme != options.Scheme) {
+                authParamParts = new string[0];
+                return new SignatureParsingFailure(
+                    $"The specified request does not specify the expected {options.Scheme} scheme in the {AuthorizationHeaderName} header.");
+            }
+
+            if (separatorIndex >= rawAuthHeader.Length - 1) {
+                authParamParts = new string[0];
+                return new SignatureParsingFailure(
+                    $"The specified request does not specify a valid authentication parameter in the {AuthorizationHeaderName} header.");
+            }
+
+            var authParam = rawAuthHeader.Substring(separatorIndex + 1);
+
+            _logger?.LogDebug("Parsing authorization header parameter for verification: {0}.", authParam);
+
+            authParamParts = authParam.Split(',');
+            return null;
         }
     }
 }
