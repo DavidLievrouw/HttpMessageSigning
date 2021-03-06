@@ -50,8 +50,6 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             var signature = string.Empty;
             
             foreach (var authParamPart in authParamParts) {
-                if (authParamPart == null) continue;
-                
                 var keyIdSelector = "keyId=";
                 if (authParamPart.StartsWith(keyIdSelector, StringComparison.Ordinal)) {
                     if (keyId != KeyId.Empty) return new SignatureParsingFailure($"Duplicate '{keyIdSelector}' found in signature.");
