@@ -13,7 +13,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
 
             builder.Services
-                .AddSingleton<ISignatureParser>(prov => new DefaultSignatureParser(prov.GetService<ILogger<DefaultSignatureParser>>()))
+                .AddSingleton<IAuthorizationHeaderExtractor, DefaultAuthorizationHeaderExtractor>()
+                .AddSingleton<ISignatureParser>(prov => new DefaultSignatureParser(
+                    prov.GetRequiredService<IAuthorizationHeaderExtractor>(),
+                    prov.GetService<ILogger<DefaultSignatureParser>>()))
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
 
             return builder;

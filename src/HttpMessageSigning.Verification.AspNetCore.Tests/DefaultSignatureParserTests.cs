@@ -9,11 +9,13 @@ using Xunit;
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public class DefaultSignatureParserTests {
         private readonly ILogger<DefaultSignatureParser> _logger;
+        private readonly IAuthorizationHeaderExtractor _authorizationHeaderExtractor;
         private readonly DefaultSignatureParser _sut;
 
         public DefaultSignatureParserTests() {
             FakeFactory.Create(out _logger);
-            _sut = new DefaultSignatureParser(_logger);
+            _authorizationHeaderExtractor = new DefaultAuthorizationHeaderExtractor();
+            _sut = new DefaultSignatureParser(_authorizationHeaderExtractor, _logger);
         }
 
         public class Parse : DefaultSignatureParserTests {
@@ -60,15 +62,12 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             }
 
             [Fact]
-            public void WhenRequestHasAnInvalidAuthorizationHeader_ReturnsFailure() {
+            public void WhenRequestHasAnInvalidAuthorizationHeader_ThrowsFormatException() {
                 _request.Headers["Authorization"] = "{nonsense}";
 
-                SignatureParsingResult actual = null;
-                Action act = () => actual = _sut.Parse(_request, _options);
+                Action act = () => _sut.Parse(_request, _options);
 
-                act.Should().NotThrow();
-                actual.Should().BeAssignableTo<SignatureParsingFailure>();
-                actual.IsSuccess.Should().BeFalse();
+                act.Should().Throw<FormatException>();
             }
 
             [Fact]

@@ -81,7 +81,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
             return services
                 .AddHttpMessageSignatureVerification().Services
-                .AddSingleton<ISignatureParser>(prov => new DefaultSignatureParser(prov.GetService<ILogger<DefaultSignatureParser>>()))
+                .AddSingleton<IAuthorizationHeaderExtractor, DefaultAuthorizationHeaderExtractor>()
+                .AddSingleton<ISignatureParser>(prov => new DefaultSignatureParser(
+                    prov.GetRequiredService<IAuthorizationHeaderExtractor>(),
+                    prov.GetService<ILogger<DefaultSignatureParser>>()))
                 .AddSingleton(clientStoreFactory)
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
         }
