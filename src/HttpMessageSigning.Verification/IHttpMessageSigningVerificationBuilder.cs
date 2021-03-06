@@ -47,8 +47,8 @@ namespace Dalion.HttpMessageSigning.Verification {
         IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory(IClaimsPrincipalFactory claimsPrincipalFactory);
         
         /// <summary>Configures HTTP message signature verification to use the specified <see cref="IClaimsPrincipalFactory"/>.</summary>
-        /// <param name="claimsPrincipalFactoryFactory">The factory that creates the <see cref="IClaimsPrincipalFactory" /> that is to be used.</param>
+        /// <param name="claimsPrincipalFactory">The factory that creates the <see cref="IClaimsPrincipalFactory" /> that is to be used.</param>
         /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
-        IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory(Func<IServiceProvider, IClaimsPrincipalFactory> claimsPrincipalFactoryFactory);
+        IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory(Func<IServiceProvider, IClaimsPrincipalFactory> claimsPrincipalFactory);
     }
 }

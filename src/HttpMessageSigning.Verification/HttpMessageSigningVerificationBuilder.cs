@@ -76,10 +76,10 @@ namespace Dalion.HttpMessageSigning.Verification {
             return UseClaimsPrincipalFactory(provider => claimsPrincipalFactory);
         }
 
-        public IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory(Func<IServiceProvider, IClaimsPrincipalFactory> claimsPrincipalFactoryFactory) {
-            if (claimsPrincipalFactoryFactory == null) throw new ArgumentNullException(nameof(claimsPrincipalFactoryFactory));
+        public IHttpMessageSigningVerificationBuilder UseClaimsPrincipalFactory(Func<IServiceProvider, IClaimsPrincipalFactory> claimsPrincipalFactory) {
+            if (claimsPrincipalFactory == null) throw new ArgumentNullException(nameof(claimsPrincipalFactory));
 
-            Services.AddSingleton(claimsPrincipalFactoryFactory);
+            Services.AddSingleton(claimsPrincipalFactory);
 
             return this;
         }
