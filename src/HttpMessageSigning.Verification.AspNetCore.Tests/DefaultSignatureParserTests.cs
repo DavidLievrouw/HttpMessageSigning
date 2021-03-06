@@ -7,16 +7,16 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
-    public class SignatureParserTests {
-        private readonly ILogger<SignatureParser> _logger;
-        private readonly SignatureParser _sut;
+    public class DefaultSignatureParserTests {
+        private readonly ILogger<DefaultSignatureParser> _logger;
+        private readonly DefaultSignatureParser _sut;
 
-        public SignatureParserTests() {
+        public DefaultSignatureParserTests() {
             FakeFactory.Create(out _logger);
-            _sut = new SignatureParser(_logger);
+            _sut = new DefaultSignatureParser(_logger);
         }
 
-        public class Parse : SignatureParserTests {
+        public class Parse : DefaultSignatureParserTests {
             private readonly HttpRequest _request;
             private readonly long _nowEpoch;
             private readonly long _expiresEpoch;

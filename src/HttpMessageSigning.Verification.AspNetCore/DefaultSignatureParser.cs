@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
-    internal class SignatureParser : ISignatureParser {
-        private readonly ILogger<SignatureParser> _logger;
+    internal class DefaultSignatureParser : ISignatureParser {
+        private readonly ILogger<DefaultSignatureParser> _logger;
         
         private const string AuthorizationHeaderName = "Authorization";
 
-        public SignatureParser(ILogger<SignatureParser> logger = null) {
+        public DefaultSignatureParser(ILogger<DefaultSignatureParser> logger = null) {
             _logger = logger;
         }
 
