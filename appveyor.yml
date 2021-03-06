@@ -35,7 +35,9 @@ test_script:
     $mainRepo = "DavidLievrouw/HttpMessageSigning"
     
     Add-AppveyorMessage -Message "Current repository: $env:APPVEYOR_REPO_NAME"
+    
     Add-AppveyorMessage -Message "PR: $env:APPVEYOR_PULL_REQUEST_NUMBER"
+    
     Add-AppveyorMessage -Message "PR head repository: $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME"
     
     if ($mainRepo -eq $env:APPVEYOR_REPO_NAME) {
