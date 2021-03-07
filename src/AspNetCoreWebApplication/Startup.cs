@@ -72,17 +72,20 @@ namespace WebApplication {
                 })*/
                 
                 /* Sample for storing Clients and Nonces on FileSystem instead of in-memory */
-                .UseFileSystemClientStore(provider => new FileSystemClientStoreSettings {
+                /*.UseFileSystemClientStore(provider => new FileSystemClientStoreSettings {
                     FilePath = Path.Combine(Path.GetTempPath(), "Clients.xml"),
                     SharedSecretEncryptionKey = "The_Big_S3cr37",
                     ClientCacheEntryExpiration = TimeSpan.FromMinutes(3)
                 })
                 .UseFileSystemNonceStore(provider => new FileSystemNonceStoreSettings {
                     FilePath = Path.Combine(Path.GetTempPath(), "Nonces.xml")
-                })
+                })*/
                 
-                .UseClaimsPrincipalFactory<CustomClaimsPrincipalFactory>().Services
+                .UseClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
+                .UseAuthenticationHeaderExtractor<CustomHeaderSupportingAuthenticationHeaderExtractor>()
+                .Services
                 .AddSingleton<CustomClaimsPrincipalFactory>()
+                .AddSingleton<CustomHeaderSupportingAuthenticationHeaderExtractor>()
                 .AddHttpContextAccessor();
         }
 
