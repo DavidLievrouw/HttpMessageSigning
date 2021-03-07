@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
-    public class DefaultAuthorizationHeaderExtractorTests {
-        private readonly DefaultAuthorizationHeaderExtractor _sut;
+    public class DefaultAuthenticationHeaderExtractorTests {
+        private readonly DefaultAuthenticationHeaderExtractor _sut;
 
-        public DefaultAuthorizationHeaderExtractorTests() {
-            _sut = new DefaultAuthorizationHeaderExtractor();
+        public DefaultAuthenticationHeaderExtractorTests() {
+            _sut = new DefaultAuthenticationHeaderExtractor();
         }
 
-        public class Extract : DefaultAuthorizationHeaderExtractorTests {
+        public class Extract : DefaultAuthenticationHeaderExtractorTests {
             private readonly HttpRequest _request;
 
             public Extract() {

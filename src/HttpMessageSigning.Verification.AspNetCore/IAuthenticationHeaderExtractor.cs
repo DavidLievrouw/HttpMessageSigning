@@ -5,7 +5,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     /// <summary>
     ///     Extracts the values of the header that contains the signature.
     /// </summary>
-    public interface IAuthorizationHeaderExtractor {
+    public interface IAuthenticationHeaderExtractor {
         /// <summary>
         ///     Extract the values of the header that contains the signature.
         /// </summary>

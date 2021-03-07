@@ -13,9 +13,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
 
             builder.Services
-                .AddSingleton<IAuthorizationHeaderExtractor, DefaultAuthorizationHeaderExtractor>()
+                .AddSingleton<IAuthenticationHeaderExtractor, DefaultAuthenticationHeaderExtractor>()
                 .AddSingleton<ISignatureParser>(prov => new DefaultSignatureParser(
-                    prov.GetRequiredService<IAuthorizationHeaderExtractor>(),
+                    prov.GetRequiredService<IAuthenticationHeaderExtractor>(),
                     prov.GetService<ILogger<DefaultSignatureParser>>()))
                 .AddSingleton<IRequestSignatureVerifier, RequestSignatureVerifier>();
 
@@ -54,6 +54,44 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (signatureParserFactory == null) throw new ArgumentNullException(nameof(signatureParserFactory));
 
             builder.Services.AddSingleton(signatureParserFactory);
+
+            return builder;
+        }
+
+        /// <summary>Configures HTTP message signature verification to use the specified <see cref="IAuthenticationHeaderExtractor" />.</summary>
+        /// <param name="builder">The <see cref="IHttpMessageSigningVerificationBuilder" /> that is used to configure verification.</param>
+        /// <typeparam name="TAuthenticationHeaderExtractor">The type of the <see cref="IAuthenticationHeaderExtractor" /> that is to be used.</typeparam>
+        /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
+        [ExcludeFromCodeCoverage]
+        public static IHttpMessageSigningVerificationBuilder UseAuthenticationHeaderExtractor<TAuthenticationHeaderExtractor>(this IHttpMessageSigningVerificationBuilder builder)
+            where TAuthenticationHeaderExtractor : IAuthenticationHeaderExtractor {
+            return builder.UseAuthenticationHeaderExtractor(provider => provider.GetRequiredService<TAuthenticationHeaderExtractor>());
+        }
+
+        /// <summary>Configures HTTP message signature verification to use the specified <see cref="IAuthenticationHeaderExtractor" />.</summary>
+        /// <param name="builder">The <see cref="IHttpMessageSigningVerificationBuilder" /> that is used to configure verification.</param>
+        /// <param name="authenticationHeaderExtractor">The <see cref="IAuthenticationHeaderExtractor" /> that is to be used.</param>
+        /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
+        [ExcludeFromCodeCoverage]
+        public static IHttpMessageSigningVerificationBuilder UseAuthenticationHeaderExtractor(
+            this IHttpMessageSigningVerificationBuilder builder,
+            IAuthenticationHeaderExtractor authenticationHeaderExtractor) {
+            if (authenticationHeaderExtractor == null) throw new ArgumentNullException(nameof(authenticationHeaderExtractor));
+
+            return builder.UseAuthenticationHeaderExtractor(provider => authenticationHeaderExtractor);
+        }
+
+        /// <summary>Configures HTTP message signature verification to use the specified <see cref="IAuthenticationHeaderExtractor" />.</summary>
+        /// <param name="builder">The <see cref="IHttpMessageSigningVerificationBuilder" /> that is used to configure verification.</param>
+        /// <param name="authenticationHeaderExtractorFactory">The factory that creates the <see cref="IAuthenticationHeaderExtractor" /> that is to be used.</param>
+        /// <returns>The <see cref="IHttpMessageSigningVerificationBuilder" /> that can be used to continue configuring the verification settings.</returns>
+        [ExcludeFromCodeCoverage]
+        public static IHttpMessageSigningVerificationBuilder UseAuthenticationHeaderExtractor(
+            this IHttpMessageSigningVerificationBuilder builder,
+            Func<IServiceProvider, IAuthenticationHeaderExtractor> authenticationHeaderExtractorFactory) {
+            if (authenticationHeaderExtractorFactory == null) throw new ArgumentNullException(nameof(authenticationHeaderExtractorFactory));
+
+            builder.Services.AddSingleton(authenticationHeaderExtractorFactory);
 
             return builder;
         }

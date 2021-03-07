@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
-    internal class DefaultAuthorizationHeaderExtractor : IAuthorizationHeaderExtractor {
+    internal class DefaultAuthenticationHeaderExtractor : IAuthenticationHeaderExtractor {
         private const string AuthorizationHeaderName = "Authorization";
 
         public AuthenticationHeaderValue Extract(HttpRequest request) {

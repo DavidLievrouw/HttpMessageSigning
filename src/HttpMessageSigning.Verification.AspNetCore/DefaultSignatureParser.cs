@@ -5,13 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     internal class DefaultSignatureParser : ISignatureParser {
-        private readonly IAuthorizationHeaderExtractor _authorizationHeaderExtractor;
+        private readonly IAuthenticationHeaderExtractor _authenticationHeaderExtractor;
         private readonly ILogger<DefaultSignatureParser> _logger;
 
         private const string AuthorizationHeaderName = "Authorization";
 
-        public DefaultSignatureParser(IAuthorizationHeaderExtractor authorizationHeaderExtractor, ILogger<DefaultSignatureParser> logger = null) {
-            _authorizationHeaderExtractor = authorizationHeaderExtractor ?? throw new ArgumentNullException(nameof(authorizationHeaderExtractor));
+        public DefaultSignatureParser(IAuthenticationHeaderExtractor authenticationHeaderExtractor, ILogger<DefaultSignatureParser> logger = null) {
+            _authenticationHeaderExtractor = authenticationHeaderExtractor ?? throw new ArgumentNullException(nameof(authenticationHeaderExtractor));
             _logger = logger;
         }
 
@@ -19,7 +19,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (options == null) throw new ArgumentNullException(nameof(options));
 
-            var authHeader = _authorizationHeaderExtractor.Extract(request);
+            var authHeader = _authenticationHeaderExtractor.Extract(request);
             if (authHeader == null) {
                 return new SignatureParsingFailure($"The specified request does not specify a value for the {AuthorizationHeaderName} header.");
             }

@@ -9,13 +9,13 @@ using Xunit;
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public class DefaultSignatureParserTests {
         private readonly ILogger<DefaultSignatureParser> _logger;
-        private readonly IAuthorizationHeaderExtractor _authorizationHeaderExtractor;
+        private readonly IAuthenticationHeaderExtractor _authenticationHeaderExtractor;
         private readonly DefaultSignatureParser _sut;
 
         public DefaultSignatureParserTests() {
             FakeFactory.Create(out _logger);
-            _authorizationHeaderExtractor = new DefaultAuthorizationHeaderExtractor();
-            _sut = new DefaultSignatureParser(_authorizationHeaderExtractor, _logger);
+            _authenticationHeaderExtractor = new DefaultAuthenticationHeaderExtractor();
+            _sut = new DefaultSignatureParser(_authenticationHeaderExtractor, _logger);
         }
 
         public class Parse : DefaultSignatureParserTests {
