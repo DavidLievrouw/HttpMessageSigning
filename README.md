@@ -3,6 +3,7 @@
 A C# implementation of the "Authorization" scheme of the IETF Internet-Draft [Signing HTTP Messages](https://tools.ietf.org/html/draft-ietf-httpbis-message-signatures-00).
 
 [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/) 
+[![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/)
 [![Build status](https://ci.appveyor.com/api/projects/status/d8fdl40nfj62ed1v?svg=true)](https://ci.appveyor.com/project/DavidLievrouw/httpmessagesigning) 
 [![Coverage Status](https://coveralls.io/repos/github/DavidLievrouw/HttpMessageSigning/badge.svg?branch=master)](https://coveralls.io/github/DavidLievrouw/HttpMessageSigning?branch=master)
 [![Tests status](https://img.shields.io/appveyor/tests/DavidLievrouw/httpmessagesigning/master?compact_message)](https://ci.appveyor.com/project/DavidLievrouw/httpmessagesigning)
@@ -27,35 +28,35 @@ This repository is a C# implementation of that specification.
 
 #### Common
 
-- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/)
+- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning)](https://www.nuget.org/packages/Dalion.HttpMessageSigning/)
 <br/><sub>This package contains the shared components for signing and verification packages. It serves as a base-package only.</sub>
 
 #### Signing
 
-- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/)
+- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Signing)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Signing/) 
 <br/><sub>This package contains the client-side services to enable Signing HTTP messages. In most cases, this is the only package that client applications will reference.</sub>
 
 #### Verification
 
-- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/)
+- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification/) 
 <br/><sub>This package contains the server-side services to enable verifying HTTP message signatures. 
 It also contains the default in-memory _client_ and _nonce_ stores.</sub>
 
-- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/)
+- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.AspNetCore)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.AspNetCore/) 
 <br/><sub>This package contains the ASP.NET Core authentication scheme to verify signatures on signed HTTP messages.</sub>
 
-- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/)
+- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.Owin)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.Owin/) 
 <br/><sub>This package contains the Owin authentication middleware to verify signatures on signed HTTP messages.</sub>
 
 #### Storage
 
-- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/)
+- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.MongoDb)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.MongoDb/) 
 <br/><sub>For persisted clients and nonces, you can use these alternative MongoDB-backed client and nonce store implementations.</sub>
   
-- ![New](new32.png) [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/)
+- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.SqlServer)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.SqlServer/) 
 <br/><sub>For persisted clients and nonces, you can use these alternative Sql Server-backed client and nonce store implementations.</sub>
 
-- ![New](new32.png) [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.FileSystem)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.FileSystem/) [![Nuget](https://img.shields.io/nuget/dt/Dalion.HttpMessageSigning.Verification.FileSystem)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.FileSystem/)
+- [![Nuget](https://img.shields.io/nuget/v/Dalion.HttpMessageSigning?label=Dalion.HttpMessageSigning.Verification.FileSystem)](https://www.nuget.org/packages/Dalion.HttpMessageSigning.Verification.FileSystem/) 
 <br/><sub>For persisted clients and nonces, you can use these alternative filesystem-backed client and nonce store implementations.</sub>
 
 See [wiki](https://github.com/DavidLievrouw/HttpMessageSigning/wiki) for further details.
