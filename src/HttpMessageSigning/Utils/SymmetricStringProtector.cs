@@ -22,9 +22,7 @@ namespace Dalion.HttpMessageSigning.Utils {
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
             using (var password = new Rfc2898DeriveBytes(_secret, saltStringBytes, DerivationIterations)) {
                 var keyBytes = password.GetBytes(KeySize / 8);
-#pragma warning disable SYSLIB0022
-                using (var symmetricKey = Rijndael.Create()) {
-#pragma warning restore SYSLIB0022
+                using (var symmetricKey = Aes.Create()) {
                     symmetricKey.BlockSize = 128;
                     symmetricKey.Mode = CipherMode.CBC;
                     symmetricKey.Padding = PaddingMode.PKCS7;
@@ -36,8 +34,6 @@ namespace Dalion.HttpMessageSigning.Utils {
                                 var cipherTextBytes = saltStringBytes;
                                 cipherTextBytes = cipherTextBytes.Concat(ivStringBytes).ToArray();
                                 cipherTextBytes = cipherTextBytes.Concat(memoryStream.ToArray()).ToArray();
-                                memoryStream.Close();
-                                cryptoStream.Close();
                                 return Convert.ToBase64String(cipherTextBytes);
                             }
                         }
@@ -53,20 +49,16 @@ namespace Dalion.HttpMessageSigning.Utils {
             var cipherTextBytes = cipherTextBytesWithSaltAndIv.Skip(KeySize / 8 * 2).Take(cipherTextBytesWithSaltAndIv.Length - KeySize / 8 * 2).ToArray();
             using (var password = new Rfc2898DeriveBytes(_secret, saltStringBytes, DerivationIterations)) {
                 var keyBytes = password.GetBytes(KeySize / 8);
-#pragma warning disable SYSLIB0022
-                using (var symmetricKey = Rijndael.Create()) {
-#pragma warning restore SYSLIB0022
+                using (var symmetricKey = Aes.Create()) {
                     symmetricKey.BlockSize = 128;
                     symmetricKey.Mode = CipherMode.CBC;
                     symmetricKey.Padding = PaddingMode.PKCS7;
                     using (var decryptor = symmetricKey.CreateDecryptor(keyBytes, ivStringBytes)) {
                         using (var memoryStream = new MemoryStream(cipherTextBytes)) {
                             using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read)) {
-                                var plainTextBytes = new byte[cipherTextBytes.Length];
-                                var decryptedByteCount = cryptoStream.Read(plainTextBytes, 0, plainTextBytes.Length);
-                                memoryStream.Close();
-                                cryptoStream.Close();
-                                return Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount);
+                                using (var plainTextReader = new StreamReader(cryptoStream)) {
+                                    return plainTextReader.ReadToEnd();
+                                }  
                             }
                         }
                     }
