@@ -22,7 +22,9 @@ namespace Dalion.HttpMessageSigning.Utils {
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
             using (var password = new Rfc2898DeriveBytes(_secret, saltStringBytes, DerivationIterations)) {
                 var keyBytes = password.GetBytes(KeySize / 8);
-                using (var symmetricKey = new RijndaelManaged()) {
+#pragma warning disable SYSLIB0022
+                using (var symmetricKey = Rijndael.Create()) {
+#pragma warning restore SYSLIB0022
                     symmetricKey.BlockSize = 128;
                     symmetricKey.Mode = CipherMode.CBC;
                     symmetricKey.Padding = PaddingMode.PKCS7;
@@ -51,7 +53,9 @@ namespace Dalion.HttpMessageSigning.Utils {
             var cipherTextBytes = cipherTextBytesWithSaltAndIv.Skip(KeySize / 8 * 2).Take(cipherTextBytesWithSaltAndIv.Length - KeySize / 8 * 2).ToArray();
             using (var password = new Rfc2898DeriveBytes(_secret, saltStringBytes, DerivationIterations)) {
                 var keyBytes = password.GetBytes(KeySize / 8);
-                using (var symmetricKey = new RijndaelManaged()) {
+#pragma warning disable SYSLIB0022
+                using (var symmetricKey = Rijndael.Create()) {
+#pragma warning restore SYSLIB0022
                     symmetricKey.BlockSize = 128;
                     symmetricKey.Mode = CipherMode.CBC;
                     symmetricKey.Padding = PaddingMode.PKCS7;
@@ -72,7 +76,7 @@ namespace Dalion.HttpMessageSigning.Utils {
 
         private static byte[] Generate128BitsOfRandomEntropy() {
             var randomBytes = new byte[16];
-            using (var rngCsp = new RNGCryptoServiceProvider()) {
+            using (var rngCsp = RandomNumberGenerator.Create()) {
                 rngCsp.GetBytes(randomBytes);
             }
 
