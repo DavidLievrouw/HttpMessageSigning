@@ -47,8 +47,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-        <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="[1.1.1,)" PrivateAssets="All" />
+        <PackageReference Include="MongoDB.Driver" Version="[2.17.1,)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
@@ -68,7 +68,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='net472'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.0,)" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[6.0.0,)" />
     </ItemGroup>
     
     <Target Name="InitVersion" BeforeTargets="BeforeBuild">
