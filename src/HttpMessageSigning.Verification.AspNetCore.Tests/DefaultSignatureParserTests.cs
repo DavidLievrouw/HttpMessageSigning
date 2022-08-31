@@ -62,12 +62,15 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             }
 
             [Fact]
-            public void WhenRequestHasAnInvalidAuthorizationHeader_ThrowsFormatException() {
+            public void WhenRequestHasAnInvalidAuthorizationHeader_ReturnsFailure() {
                 _request.Headers["Authorization"] = "{nonsense}";
 
-                Action act = () => _sut.Parse(_request, _options);
+                SignatureParsingResult actual = null;
+                Action act = () => actual = _sut.Parse(_request, _options);
 
-                act.Should().Throw<FormatException>();
+                act.Should().NotThrow();
+                actual.Should().BeAssignableTo<SignatureParsingFailure>();
+                actual.IsSuccess.Should().BeFalse();
             }
 
             [Fact]

@@ -9,20 +9,24 @@ using Microsoft.Extensions.Options;
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     internal class SignedRequestAuthenticationHandler : AuthenticationHandler<SignedRequestAuthenticationOptions> {
         private readonly IRequestSignatureVerifier _requestSignatureVerifier;
+        private readonly IAuthenticationHeaderExtractor _authenticationHeaderExtractor;
 
         public SignedRequestAuthenticationHandler(
             IOptionsMonitor<SignedRequestAuthenticationOptions> options,
             UrlEncoder encoder,
             ISystemClock clock,
             IRequestSignatureVerifier requestSignatureVerifier,
+            IAuthenticationHeaderExtractor authenticationHeaderExtractor,
             ILoggerFactory loggerFactory = null) : base(options, loggerFactory, encoder, clock) {
             _requestSignatureVerifier = requestSignatureVerifier ?? throw new ArgumentNullException(nameof(requestSignatureVerifier));
+            _authenticationHeaderExtractor = authenticationHeaderExtractor ?? throw new ArgumentNullException(nameof(authenticationHeaderExtractor));
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
-            if (!Request.Headers.ContainsKey("Authorization")) return AuthenticateResult.NoResult();
-            if (!AuthenticationHeaderValue.TryParse(Request.Headers["Authorization"], out var headerValue)) return AuthenticateResult.NoResult();
-            if (!Scheme.Name.Equals(headerValue.Scheme, StringComparison.OrdinalIgnoreCase)) return AuthenticateResult.NoResult();
+            var authHeader = _authenticationHeaderExtractor.Extract(Request);
+            if (authHeader == null) return AuthenticateResult.NoResult();
+            if (!Scheme.Name.Equals(authHeader.Scheme, StringComparison.OrdinalIgnoreCase)) return AuthenticateResult.NoResult();
+            if (string.IsNullOrEmpty(authHeader.Scheme) || string.IsNullOrEmpty(authHeader.Parameter)) return AuthenticateResult.NoResult();
 
             var verificationResult = await _requestSignatureVerifier.VerifySignature(Request, Options).ConfigureAwait(continueOnCapturedContext: false);
 

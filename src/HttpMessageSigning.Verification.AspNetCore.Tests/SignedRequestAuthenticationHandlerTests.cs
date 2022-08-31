@@ -20,17 +20,19 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         private readonly ILoggerFactory _logger;
         private readonly SignedRequestAuthenticationOptions _options;
         private readonly IRequestSignatureVerifier _requestSignatureVerifier;
+        private readonly IAuthenticationHeaderExtractor _authenticationHeaderExtractor;
         private readonly string _schemeName;
         private readonly SignedRequestAuthenticationHandlerForTests _sut;
 
         public SignedRequestAuthenticationHandlerTests() {
             FakeFactory.Create(out _logger, out _clock, out _requestSignatureVerifier);
             _encoder = new UrlTestEncoder();
+            _authenticationHeaderExtractor = new DefaultAuthenticationHeaderExtractor();
             _schemeName = "tests-scheme";
             _options = new SignedRequestAuthenticationOptions {Realm = "test-app"};
             var optionsMonitor = A.Fake<IOptionsMonitor<SignedRequestAuthenticationOptions>>();
             A.CallTo(() => optionsMonitor.Get(_schemeName)).Returns(_options);
-            _sut = new SignedRequestAuthenticationHandlerForTests(optionsMonitor, _encoder, _clock, _requestSignatureVerifier, _logger);
+            _sut = new SignedRequestAuthenticationHandlerForTests(optionsMonitor, _encoder, _clock, _requestSignatureVerifier, _authenticationHeaderExtractor, _logger);
             _httpRequest = new DefaultHttpContext().Request;
             _sut.InitializeAsync(
                 new AuthenticationScheme(
@@ -243,8 +245,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
         private class SignedRequestAuthenticationHandlerForTests : SignedRequestAuthenticationHandler {
             public SignedRequestAuthenticationHandlerForTests(IOptionsMonitor<SignedRequestAuthenticationOptions> options, UrlEncoder encoder,
-                ISystemClock clock, IRequestSignatureVerifier requestSignatureVerifier, ILoggerFactory logger = null) : base(options, encoder,
-                clock, requestSignatureVerifier, logger) { }
+                ISystemClock clock, IRequestSignatureVerifier requestSignatureVerifier, IAuthenticationHeaderExtractor authenticationHeaderExtractor, ILoggerFactory logger = null)
+                : base(options, encoder,
+                clock, requestSignatureVerifier, authenticationHeaderExtractor, logger) { }
 
             internal Task DoChallenge() {
                 return HandleChallengeAsync(new AuthenticationProperties());
