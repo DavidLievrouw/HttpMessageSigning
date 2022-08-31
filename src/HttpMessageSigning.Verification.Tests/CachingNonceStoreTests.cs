@@ -39,17 +39,17 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
-            public void GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
+            public async Task GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
                 Func<Task> act = () => _sut.Get(nullOrEmpty, "abc123");
-                act.Should().Throw<ArgumentException>();
+                await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Theory]
             [InlineData(null)]
             [InlineData("")]
-            public void GivenNullOrEmptyNonceValue_ThrowsArgumentException(string nullOrEmpty) {
+            public async Task GivenNullOrEmptyNonceValue_ThrowsArgumentException(string nullOrEmpty) {
                 Func<Task> act = () => _sut.Get(new KeyId("c1"), nullOrEmpty);
-                act.Should().Throw<ArgumentException>();
+                await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]

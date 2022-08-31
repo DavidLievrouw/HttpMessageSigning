@@ -65,7 +65,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
             var subsequentBaseline2 = 2;
             var subsequentStep2 = new FakeClientStoreMigrationStep(subsequentBaseline2);
             Func<Task> act = () => _sut.SetBaseline(subsequentStep2);
-            act.Should().NotThrow();
+            await act.Should().NotThrowAsync();
         }
 
         [Fact]
@@ -105,7 +105,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
             var lowerBaseline = 2;
             var lowerStep = new FakeClientStoreMigrationStep(lowerBaseline);
             Func<Task> act = () => _sut.SetBaseline(lowerStep);
-            act.Should().Throw<InvalidOperationException>();
+            await act.Should().ThrowAsync<InvalidOperationException>();
         }
     }
 }

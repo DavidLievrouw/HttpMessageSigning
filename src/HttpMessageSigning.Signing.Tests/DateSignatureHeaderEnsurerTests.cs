@@ -40,15 +40,15 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void GivenNullRequest_ThrowsArgumentNullException() {
+            public async Task GivenNullRequest_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.EnsureHeader(null, _settings, _timeOfSigning);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
-            public void GivenNullSettings_ThrowsArgumentNullException() {
+            public async Task GivenNullSettings_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.EnsureHeader(_httpRequest, null, _timeOfSigning);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]

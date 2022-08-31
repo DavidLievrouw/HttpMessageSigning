@@ -87,7 +87,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
             }
 
             [Fact]
-            public void WhenAVersionStepFails_Throws_AndDoesNotTryOtherSteps() {
+            public async Task WhenAVersionStepFails_Throws_AndDoesNotTryOtherSteps() {
                 A.CallTo(() => _baseliner.GetBaseline())
                     .Returns(1);
 
@@ -97,7 +97,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 
                 Func<Task> action = () => _sut.Migrate();
 
-                action.Should().Throw<MongoException>().Where(_ => _ == failure);
+                await action.Should().ThrowAsync<MongoException>().Where(_ => _ == failure);
 
                 var expectedUnexecutedSteps = _migrationSteps.Where(_ => _.Version > 3);
                 foreach (var migrationStep in expectedUnexecutedSteps) {
@@ -108,7 +108,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
             }
 
             [Fact]
-            public void WhenAVersionStepFails_UpdatesBaselineToLastSucceededStep() {
+            public async Task WhenAVersionStepFails_UpdatesBaselineToLastSucceededStep() {
                 A.CallTo(() => _baseliner.GetBaseline())
                     .Returns(1);
 
@@ -118,7 +118,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
 
                 Func<Task> action = () => _sut.Migrate();
 
-                action.Should().Throw<MongoException>();
+                await action.Should().ThrowAsync<MongoException>();
 
                 var expectedExecutedStep = _migrationSteps.Single(_ => _.Version == 2);
                 A.CallTo(() => _baseliner.SetBaseline(expectedExecutedStep))

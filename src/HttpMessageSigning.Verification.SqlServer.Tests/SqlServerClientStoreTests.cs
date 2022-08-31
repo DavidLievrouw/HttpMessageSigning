@@ -67,9 +67,9 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 : base(fixture) { }
 
             [Fact]
-            public void GivenNullClient_ThrowsArgumentNullException() {
+            public async Task GivenNullClient_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.Register(null);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
@@ -306,16 +306,16 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
-            public void GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
+            public async Task GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
                 Func<Task> act = () => _sut.Get(nullOrEmpty);
-                act.Should().Throw<ArgumentException>();
+                await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]
-            public void WhenClientIsNotFound_ReturnsNull() {
+            public async Task WhenClientIsNotFound_ReturnsNull() {
                 Client actual = null;
                 Func<Task> act = async () => actual = await _sut.Get("IDontExist");
-                act.Should().NotThrow();
+                await act.Should().NotThrowAsync();
                 actual.Should().BeNull();
             }
 

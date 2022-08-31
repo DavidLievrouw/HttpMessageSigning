@@ -77,25 +77,25 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
         }
 
         [Fact]
-        public void WhenAHeaderIsSpecifiedInTheHeadersParameter_ButIsMissingFromTheMessage_ProducesError() {
+        public async Task WhenAHeaderIsSpecifiedInTheHeadersParameter_ButIsMissingFromTheMessage_ProducesError() {
             var options = new CanonicalizeOptions {
                 Message = HttpMessages.HttpMessageGenerator.GenerateMessage("basic-request", _now),
                 Headers = "not-in-request"
             };
 
             Func<Task> act = () => Canonicalizer.Run(options);
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Fact]
-        public void WhenAMalformedHeaderIsSpecifiedInTheHeadersParameter_ProducesError() {
+        public async Task WhenAMalformedHeaderIsSpecifiedInTheHeadersParameter_ProducesError() {
             var options = new CanonicalizeOptions {
                 Message = HttpMessages.HttpMessageGenerator.GenerateMessage("default-request", _now),
                 Headers = "digest=="
             };
 
             Func<Task> act = () => Canonicalizer.Run(options);
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Fact]
@@ -138,32 +138,32 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
         }
 
         [Fact]
-        public void WhenTheHeadersParameterIsEmpty_ProducesError() {
+        public async Task WhenTheHeadersParameterIsEmpty_ProducesError() {
             var options = new CanonicalizeOptions {
                 Message = HttpMessages.HttpMessageGenerator.GenerateMessage("default-request", _now),
                 Headers = ""
             };
 
             Func<Task> act = () => Canonicalizer.Run(options);
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Fact]
-        public void WhenTheHeadersParameterIsNull_ProducesError() {
+        public async Task WhenTheHeadersParameterIsNull_ProducesError() {
             var options = new CanonicalizeOptions {
                 Message = HttpMessages.HttpMessageGenerator.GenerateMessage("default-request", _now),
                 Headers = null
             };
 
             Func<Task> act = () => Canonicalizer.Run(options);
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Theory]
         [InlineData("rsa-sha1", "rsa")]
         [InlineData("hmac-sha256", "hmac")]
         [InlineData("ecdsa-sha512", "ecdsa")]
-        public void ForCertainAlgorithms_CreatedHeaderIsNotAllowedToBePartOfTheSignatureString(string algorithm, string type) {
+        public async Task ForCertainAlgorithms_CreatedHeaderIsNotAllowedToBePartOfTheSignatureString(string algorithm, string type) {
             var options = new CanonicalizeOptions {
                 Message = HttpMessages.HttpMessageGenerator.GenerateMessage("created-" + type, _now),
                 Headers = "(created)",
@@ -171,14 +171,14 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
             };
 
             Func<Task> act = () => Canonicalizer.Run(options);
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Theory]
         [InlineData("rsa-sha1", "rsa")]
         [InlineData("hmac-sha256", "hmac")]
         [InlineData("ecdsa-sha512", "ecdsa")]
-        public void ForCertainAlgorithms_ExpiresHeaderIsNotAllowedToBePartOfTheSignatureString(string algorithm, string type) {
+        public async Task ForCertainAlgorithms_ExpiresHeaderIsNotAllowedToBePartOfTheSignatureString(string algorithm, string type) {
             var options = new CanonicalizeOptions {
                 Message = HttpMessages.HttpMessageGenerator.GenerateMessage("created-" + type, _now),
                 Headers = "(expires)",
@@ -186,11 +186,11 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
             };
 
             Func<Task> act = () => Canonicalizer.Run(options);
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Fact]
-        public void GivenACreationValueThatIsNotAUnixTime_ProducesError() {
+        public async Task GivenACreationValueThatIsNotAUnixTime_ProducesError() {
             var options = new CanonicalizeOptions {
                 Message = HttpMessages.HttpMessageGenerator.GenerateMessage("basic-request", _now),
                 Headers = "(created)",
@@ -199,11 +199,11 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
             };
 
             Func<Task> act = () => Canonicalizer.Run(options);
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Fact]
-        public void GivenAnExpirationValueThatIsNotAUnixTime_ProducesError() {
+        public async Task GivenAnExpirationValueThatIsNotAUnixTime_ProducesError() {
             var options = new CanonicalizeOptions {
                 Message = HttpMessages.HttpMessageGenerator.GenerateMessage("basic-request", _now),
                 Headers = "(created)",
@@ -212,7 +212,7 @@ namespace Dalion.HttpMessageSigning.Canonicalize {
             };
 
             Func<Task> act = () => Canonicalizer.Run(options);
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Fact]

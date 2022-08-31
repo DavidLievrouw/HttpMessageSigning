@@ -52,14 +52,14 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public Register(MongoSetup mongoSetup) : base(mongoSetup) { }
 
             [Fact]
-            public void GivenNullClient_ThrowsArgumentNullException() {
+            public async Task GivenNullClient_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.Register(null);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Theory]
             [InlineData("_version")]
-            public void DoesNotAcceptProhibitedIds(string prohibitedId) {
+            public async Task DoesNotAcceptProhibitedIds(string prohibitedId) {
                 var client = new Client(
                     (KeyId) prohibitedId, "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
@@ -67,7 +67,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
                 Func<Task> act = () => _sut.Register(client);
                 
-                act.Should().Throw<ArgumentException>();
+                await act.Should().ThrowAsync<ArgumentException>();
             }
             
             [Fact]
@@ -277,9 +277,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
-            public void GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
+            public async Task GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
                 Func<Task> act = () => _sut.Get(nullOrEmpty);
-                act.Should().Throw<ArgumentException>();
+                await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]
@@ -324,15 +324,15 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 
                 Client actual = null;
                 Func<Task> act = async () => actual = await _sut.Get(prohibitedId);
-                act.Should().NotThrow();
+                await act.Should().NotThrowAsync();
                 actual.Should().BeNull();
             }
             
             [Fact]
-            public void WhenClientIsNotFound_ReturnsNull() {
+            public async Task WhenClientIsNotFound_ReturnsNull() {
                 Client actual = null;
                 Func<Task> act = async () => actual = await _sut.Get("IDontExist");
-                act.Should().NotThrow();
+                await act.Should().NotThrowAsync();
                 actual.Should().BeNull();
             }
 

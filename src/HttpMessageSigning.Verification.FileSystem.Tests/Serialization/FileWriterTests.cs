@@ -29,19 +29,19 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
-            public void GivenNullOrEmptyFilePath_ThrowsArgumentException(string nullOrEmpty) {
+            public async Task GivenNullOrEmptyFilePath_ThrowsArgumentException(string nullOrEmpty) {
                 Func<Task> act = () => _sut.Write(nullOrEmpty, _data);
 
-                act.Should().Throw<ArgumentException>();
+                await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]
-            public void GivenInvalidPath_ThrowsArgumentException() {
+            public async Task GivenInvalidPath_ThrowsArgumentException() {
                 var invalidPath = ":something_invalid:";
 
                 Func<Task> act = () => _sut.Write(invalidPath, _data);
 
-                act.Should().Throw<ArgumentException>();
+                await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]

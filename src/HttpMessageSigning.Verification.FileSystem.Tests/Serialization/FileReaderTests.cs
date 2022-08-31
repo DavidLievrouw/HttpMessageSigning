@@ -25,10 +25,10 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
             [Theory]
             [InlineData(null)]
             [InlineData("")]
-            public void GivenNullOrEmptyFilePath_ThrowsArgumentException(string nullOrEmpty) {
+            public async Task GivenNullOrEmptyFilePath_ThrowsArgumentException(string nullOrEmpty) {
                 Func<Task> act = () => _sut.Read(nullOrEmpty);
 
-                act.Should().Throw<ArgumentException>();
+                await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]

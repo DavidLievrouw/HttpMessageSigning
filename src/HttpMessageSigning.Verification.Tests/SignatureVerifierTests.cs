@@ -87,15 +87,15 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public void GivenNullRequest_ThrowsArgumentNullException() {
+            public async Task GivenNullRequest_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.VerifySignature(null, _client);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
-            public void GivenNullClient_ThrowsArgumentException() {
+            public async Task GivenNullClient_ThrowsArgumentException() {
                 Func<Task> act = () => _sut.VerifySignature(_signedRequest, null);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]

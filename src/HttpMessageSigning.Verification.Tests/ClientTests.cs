@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void CreatesClient() {
                 var actual = new Client(
-                    (KeyId) "c1",
+                    (KeyId)"c1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -20,11 +20,11 @@ namespace Dalion.HttpMessageSigning.Verification {
                     new Claim("c1", "v1"),
                     new Claim("c2", "v2"));
 
-                actual.Id.Should().Be((KeyId) "c1");
+                actual.Id.Should().Be((KeyId)"c1");
                 actual.Name.Should().Be("Unit test app");
                 actual.ClockSkew.Should().Be(TimeSpan.FromMinutes(2));
                 actual.NonceLifetime.Should().Be(TimeSpan.FromMinutes(1));
-                actual.Claims.Should().BeEquivalentTo(new Claim("c1", "v1"), new Claim("c2", "v2"));
+                actual.Claims.Should().BeEquivalentTo(new[] { new Claim("c1", "v1"), new Claim("c2", "v2") });
                 actual.RequestTargetEscaping.Should().Be(RequestTargetEscaping.RFC2396);
                 actual.SignatureAlgorithm.Should().BeAssignableTo<HMACSignatureAlgorithm>();
             }
@@ -41,16 +41,16 @@ namespace Dalion.HttpMessageSigning.Verification {
                     RequestTargetEscaping = RequestTargetEscaping.RFC2396
                 };
                 var actual = new Client(
-                    (KeyId) "c1",
+                    (KeyId)"c1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     options);
 
-                actual.Id.Should().Be((KeyId) "c1");
+                actual.Id.Should().Be((KeyId)"c1");
                 actual.Name.Should().Be("Unit test app");
                 actual.ClockSkew.Should().Be(TimeSpan.FromMinutes(2));
                 actual.NonceLifetime.Should().Be(TimeSpan.FromMinutes(1));
-                actual.Claims.Should().BeEquivalentTo(new Claim("c1", "v1"), new Claim("c2", "v2"));
+                actual.Claims.Should().BeEquivalentTo(new[] { new Claim("c1", "v1"), new Claim("c2", "v2") });
                 actual.RequestTargetEscaping.Should().Be(RequestTargetEscaping.RFC2396);
                 actual.SignatureAlgorithm.Should().BeAssignableTo<HMACSignatureAlgorithm>();
             }
@@ -61,7 +61,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     Claims = null
                 };
                 var actual = new Client(
-                    (KeyId) "c1",
+                    (KeyId)"c1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     options);
@@ -74,7 +74,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData("")]
             public void DoesNotAcceptNullOrEmptyKeyIds(string nullOrEmpty) {
                 Action act = () => new Client(
-                    (KeyId) nullOrEmpty,
+                    (KeyId)nullOrEmpty,
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -89,7 +89,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(-99)]
             public void DoesNotAcceptZeroOrNegativeNonceLifetime(int seconds) {
                 Action act = () => new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromSeconds(seconds),
@@ -104,7 +104,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(-99)]
             public void DoesNotAcceptZeroOrNegativeClockSkew(int seconds) {
                 Action act = () => new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -115,9 +115,9 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public void DoesNotAcceptUnknownRequestTargetEscaping() {
-                var unsupported = (RequestTargetEscaping) (-99);
+                var unsupported = (RequestTargetEscaping)(-99);
                 Action act = () => new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -131,7 +131,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData("")]
             public void DoesNotAcceptNullOrEmptyName(string nullOrEmpty) {
                 Action act = () => new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     nullOrEmpty,
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -143,7 +143,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void DoesNotAcceptNullSignatureAlgorithm() {
                 Action act = () => new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     null,
                     TimeSpan.FromMinutes(1),
@@ -158,7 +158,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(-99)]
             public void DoesNotAcceptZeroOrEmptyNonceLifetime(int seconds) {
                 Action act = () => new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     null,
                     TimeSpan.FromSeconds(seconds),
@@ -172,7 +172,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 Client client = null;
 #pragma warning disable 618
                 Action act = () => client = new Client(
-                    (KeyId) "id1", "Unit test app",
+                    (KeyId)"id1", "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
 #pragma warning restore 618
                 act.Should().NotThrow();
@@ -184,7 +184,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 Client client = null;
 #pragma warning disable 618
                 Action act = () => client = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
 #pragma warning restore 618
@@ -197,7 +197,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 Client client = null;
 #pragma warning disable 618
                 Action act = () => client = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256));
 #pragma warning restore 618
@@ -213,11 +213,11 @@ namespace Dalion.HttpMessageSigning.Verification {
             private readonly string _name;
 
             public CreateWithSignatureAlgorithm() {
-                _keyId = (KeyId) "id1";
+                _keyId = (KeyId)"id1";
                 _name = "test client";
                 _signatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256);
                 _configureOptions = opts => {
-                    opts.Claims = new[] {new Claim("c1", "v1")};
+                    opts.Claims = new[] { new Claim("c1", "v1") };
                     opts.ClockSkew = TimeSpan.FromMinutes(10);
                     opts.NonceLifetime = TimeSpan.FromMinutes(3);
                     opts.RequestTargetEscaping = RequestTargetEscaping.OriginalString;
@@ -268,7 +268,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 client.Id.Should().Be(_keyId);
                 client.Name.Should().Be(_name);
                 client.SignatureAlgorithm.Should().Be(_signatureAlgorithm);
-                client.Claims.Should().BeEquivalentTo(new Claim("c1", "v1"));
+                client.Claims.Should().BeEquivalentTo(new[] { new Claim("c1", "v1") });
                 client.ClockSkew.Should().Be(TimeSpan.FromMinutes(10));
                 client.NonceLifetime.Should().Be(TimeSpan.FromMinutes(3));
                 client.RequestTargetEscaping.Should().Be(RequestTargetEscaping.OriginalString);
@@ -283,12 +283,12 @@ namespace Dalion.HttpMessageSigning.Verification {
             private readonly string _name;
 
             public CreateWithHMACSecret() {
-                _keyId = (KeyId) "id1";
+                _keyId = (KeyId)"id1";
                 _name = "test client";
                 _secret = "s3cr3t";
                 _hashAlgorithm = HashAlgorithmName.SHA384;
                 _configureOptions = opts => {
-                    opts.Claims = new[] {new Claim("c1", "v1")};
+                    opts.Claims = new[] { new Claim("c1", "v1") };
                     opts.ClockSkew = TimeSpan.FromMinutes(10);
                     opts.NonceLifetime = TimeSpan.FromMinutes(3);
                     opts.RequestTargetEscaping = RequestTargetEscaping.OriginalString;
@@ -354,7 +354,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 client.SignatureAlgorithm.Should().BeAssignableTo<HMACSignatureAlgorithm>();
                 client.SignatureAlgorithm.As<HMACSignatureAlgorithm>().Key.Should().Equal(Encoding.UTF8.GetBytes(_secret));
                 client.SignatureAlgorithm.HashAlgorithm.Should().Be(_hashAlgorithm);
-                client.Claims.Should().BeEquivalentTo(new Claim("c1", "v1"));
+                client.Claims.Should().BeEquivalentTo(new[] { new Claim("c1", "v1") });
                 client.ClockSkew.Should().Be(TimeSpan.FromMinutes(10));
                 client.NonceLifetime.Should().Be(TimeSpan.FromMinutes(3));
                 client.RequestTargetEscaping.Should().Be(RequestTargetEscaping.OriginalString);
@@ -370,13 +370,13 @@ namespace Dalion.HttpMessageSigning.Verification {
             private readonly RSACryptoServiceProvider _rsa;
 
             public CreateWithRSAPublicParameters() {
-                _keyId = (KeyId) "id1";
+                _keyId = (KeyId)"id1";
                 _name = "test client";
                 _rsa = new RSACryptoServiceProvider();
                 _publicParameters = _rsa.ExportParameters(includePrivateParameters: false);
                 _hashAlgorithm = HashAlgorithmName.SHA384;
                 _configureOptions = opts => {
-                    opts.Claims = new[] {new Claim("c1", "v1")};
+                    opts.Claims = new[] { new Claim("c1", "v1") };
                     opts.ClockSkew = TimeSpan.FromMinutes(10);
                     opts.NonceLifetime = TimeSpan.FromMinutes(3);
                     opts.RequestTargetEscaping = RequestTargetEscaping.OriginalString;
@@ -405,7 +405,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public void DoesNotAcceptNullPublicParameters() {
-                Action act = () => Client.Create(_keyId, _name, (RSAParameters) default, _hashAlgorithm, _configureOptions);
+                Action act = () => Client.Create(_keyId, _name, (RSAParameters)default, _hashAlgorithm, _configureOptions);
                 act.Should().Throw<ArgumentException>();
             }
 
@@ -439,7 +439,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 client.Name.Should().Be(_name);
                 client.SignatureAlgorithm.Should().BeAssignableTo<RSASignatureAlgorithm>();
                 client.SignatureAlgorithm.HashAlgorithm.Should().Be(_hashAlgorithm);
-                client.Claims.Should().BeEquivalentTo(new Claim("c1", "v1"));
+                client.Claims.Should().BeEquivalentTo(new[] { new Claim("c1", "v1") });
                 client.ClockSkew.Should().Be(TimeSpan.FromMinutes(10));
                 client.NonceLifetime.Should().Be(TimeSpan.FromMinutes(3));
                 client.RequestTargetEscaping.Should().Be(RequestTargetEscaping.OriginalString);
@@ -465,13 +465,13 @@ namespace Dalion.HttpMessageSigning.Verification {
             private readonly ECDsa _ecdsa;
 
             public CreateWithECDsaPublicParameters() {
-                _keyId = (KeyId) "id1";
+                _keyId = (KeyId)"id1";
                 _name = "test client";
                 _ecdsa = ECDsa.Create();
                 _publicParameters = _ecdsa.ExportParameters(includePrivateParameters: false);
                 _hashAlgorithm = HashAlgorithmName.SHA384;
                 _configureOptions = opts => {
-                    opts.Claims = new[] {new Claim("c1", "v1")};
+                    opts.Claims = new[] { new Claim("c1", "v1") };
                     opts.ClockSkew = TimeSpan.FromMinutes(10);
                     opts.NonceLifetime = TimeSpan.FromMinutes(3);
                     opts.RequestTargetEscaping = RequestTargetEscaping.OriginalString;
@@ -500,7 +500,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public void DoesNotAcceptNullPublicParameters() {
-                Action act = () => Client.Create(_keyId, _name, (ECParameters) default, _hashAlgorithm, _configureOptions);
+                Action act = () => Client.Create(_keyId, _name, (ECParameters)default, _hashAlgorithm, _configureOptions);
                 act.Should().Throw<ArgumentException>();
             }
 
@@ -534,7 +534,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 client.Name.Should().Be(_name);
                 client.SignatureAlgorithm.Should().BeAssignableTo<ECDsaSignatureAlgorithm>();
                 client.SignatureAlgorithm.HashAlgorithm.Should().Be(_hashAlgorithm);
-                client.Claims.Should().BeEquivalentTo(new Claim("c1", "v1"));
+                client.Claims.Should().BeEquivalentTo(new[] { new Claim("c1", "v1") });
                 client.ClockSkew.Should().Be(TimeSpan.FromMinutes(10));
                 client.NonceLifetime.Should().Be(TimeSpan.FromMinutes(3));
                 client.RequestTargetEscaping.Should().Be(RequestTargetEscaping.OriginalString);
@@ -550,7 +550,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void IsNotEqualToNull() {
                 var first = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -565,7 +565,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void IsEqualToSameReference() {
                 var first = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -579,14 +579,14 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void WhenIdIsTheSame_AreEqual() {
                 var first = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1),
                     RequestTargetEscaping.RFC3986);
                 var second = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -600,14 +600,14 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void WhenIdIsTheSame_AndTheOtherPropertiesAreDifferent_AreEqual() {
                 var first = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1),
                     RequestTargetEscaping.RFC3986);
                 var second = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
                     TimeSpan.FromMinutes(1),
@@ -622,14 +622,14 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void WhenIdIsTheSame_ButDifferentlyCased_AreNotEqual() {
                 var first = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1),
                     RequestTargetEscaping.RFC3986);
                 var second = new Client(
-                    (KeyId) "Id1",
+                    (KeyId)"Id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -642,7 +642,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void IsNotEqualToANonKeyStoreEntry() {
                 var first = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -656,14 +656,14 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public void SupportsInheritance() {
                 var first = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
                     TimeSpan.FromMinutes(1),
                     RequestTargetEscaping.RFC3986);
                 var second = new InheritedClient(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),
@@ -691,7 +691,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             public ToStringRepresentation() {
                 _sut = new Client(
-                    (KeyId) "id1",
+                    (KeyId)"id1",
                     "Unit test app",
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256),
                     TimeSpan.FromMinutes(1),

@@ -59,15 +59,15 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void GivenNullRequest_ThrowsArgumentNullException() {
+            public async Task GivenNullRequest_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.CreateSignature(null, _settings, _timeOfSigning, _expires);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
-            public void GivenNullSettings_ThrowsArgumentNullException() {
+            public async Task GivenNullSettings_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.CreateSignature(_httpRequestMessage, null, _timeOfSigning, _expires);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
             
             [Fact]
@@ -191,12 +191,12 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
             
             [Fact]
-            public void GivenNullOnSigningStringComposedEvent_DoesNotThrow() {
+            public async Task GivenNullOnSigningStringComposedEvent_DoesNotThrow() {
                 _settings.Events.OnSigningStringComposed = null;
                 
                 Func<Task> act = () => _sut.CreateSignature(_httpRequestMessage, _settings, _timeOfSigning, _expires);
                 
-                act.Should().NotThrow();
+                await act.Should().NotThrowAsync();
             }
             
             [Fact]
