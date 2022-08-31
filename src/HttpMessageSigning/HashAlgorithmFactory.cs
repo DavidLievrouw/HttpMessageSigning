@@ -5,11 +5,11 @@ using System.Security.Cryptography;
 namespace Dalion.HttpMessageSigning {
     internal static class HashAlgorithmFactory {
         private static readonly IDictionary<HashAlgorithmName, Func<HashAlgorithm>> HashAlgorithmCreators = new Dictionary<HashAlgorithmName, Func<HashAlgorithm>> {
-            {HashAlgorithmName.MD5, () => new MD5CryptoServiceProvider()},
-            {HashAlgorithmName.SHA1, () => new SHA1CryptoServiceProvider()},
-            {HashAlgorithmName.SHA256, () => new SHA256Managed()},
-            {HashAlgorithmName.SHA384, () => new SHA384Managed()},
-            {HashAlgorithmName.SHA512, () => new SHA512Managed()}
+            {HashAlgorithmName.MD5, MD5.Create},
+            {HashAlgorithmName.SHA1, SHA1.Create},
+            {HashAlgorithmName.SHA256,SHA256.Create},
+            {HashAlgorithmName.SHA384,SHA384.Create},
+            {HashAlgorithmName.SHA512,SHA512.Create}
         };
 
         public static HashAlgorithm Create(HashAlgorithmName hashAlgorithmName) {

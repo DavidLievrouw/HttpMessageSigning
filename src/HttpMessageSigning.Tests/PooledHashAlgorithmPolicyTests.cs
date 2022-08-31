@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning {
         public PooledHashAlgorithmPolicyTests() {
             _sut = new PooledHashAlgorithmPolicy(() => {
                 _hasBeenCalled = true;
-                return new SHA256Managed();
+                return SHA256.Create();
             });
         }
 
@@ -22,7 +22,7 @@ namespace Dalion.HttpMessageSigning {
                 var actual = _sut.Create();
 
                 _hasBeenCalled.Should().BeTrue();
-                actual.Should().NotBeNull().And.BeAssignableTo<SHA256Managed>();
+                actual.Should().NotBeNull().And.BeAssignableTo<SHA256>();
             }
         }
 
