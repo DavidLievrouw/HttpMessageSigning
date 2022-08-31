@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;netcoreapp3.1;net5</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;netcoreapp3.1;net6</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.SqlServer</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification.SqlServer</RootNamespace>
         <DebugType>portable</DebugType>
@@ -68,9 +68,9 @@
         <PackageReference Include="System.Data.SqlClient" Version="[4.8.2,)" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)'=='net5'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net6'">
         <PackageReference Include="Dapper" Version="[2.0.78,)" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[5.0.0,)" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[6.0.0,)" />
         <PackageReference Include="System.Data.SqlClient" Version="[4.8.2,)" />
     </ItemGroup>
 
