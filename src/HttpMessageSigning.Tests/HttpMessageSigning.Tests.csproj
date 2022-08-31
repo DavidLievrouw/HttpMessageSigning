@@ -43,6 +43,16 @@
         </PackageReference>
     </ItemGroup>
 
+    <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
+        <DefineConstants>NETFULL;NETSTANDARD;NETFRAMEWORK;NET472</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
+        <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP3_1</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net6'">
+        <DefineConstants>NETCORE;NETSTANDARD;NET6</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.28" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.28" />
