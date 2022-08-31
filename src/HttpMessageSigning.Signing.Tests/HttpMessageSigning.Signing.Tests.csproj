@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;netcoreapp2.1;netcoreapp3.1;net5</TargetFrameworks>
+        <TargetFrameworks>net472;netcoreapp3.1;net5</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Signing.Tests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Signing</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -37,10 +37,6 @@
         <PackageReference Include="coverlet.collector" Version="1.2.0" />
     </ItemGroup>
     
-    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-    </ItemGroup>
-
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
     </ItemGroup>

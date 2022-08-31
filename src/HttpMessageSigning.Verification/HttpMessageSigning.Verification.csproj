@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;netcoreapp2.1;netcoreapp3.1;net5</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;netcoreapp3.1;net5</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification</RootNamespace>
         <DebugType>portable</DebugType>
@@ -52,11 +52,6 @@
 
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="[3.1.2,)" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="[2.1.2,2.2.0)" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[2.1.1,2.2.0)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">

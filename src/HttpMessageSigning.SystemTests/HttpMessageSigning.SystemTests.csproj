@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;netcoreapp2.1;netcoreapp3.1;net5</TargetFrameworks>
+        <TargetFrameworks>net472;netcoreapp3.1;net5</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.SystemTests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -23,9 +23,6 @@
 
     <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
         <DefineConstants>NETFULL;NETSTANDARD;NETFRAMEWORK;NET472</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-        <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP2_1</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP3_1</DefineConstants>
@@ -49,14 +46,6 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
         <PackageReference Include="coverlet.collector" Version="1.2.0" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.2" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
-        <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">

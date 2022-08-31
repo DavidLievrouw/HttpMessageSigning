@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;netcoreapp2.1;netcoreapp3.1;net5</TargetFrameworks>
+        <TargetFrameworks>net472;netcoreapp3.1;net5</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.TestUtils</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.TestUtils</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -23,9 +23,6 @@
     <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
         <DefineConstants>NETFULL;NETSTANDARD;NETFRAMEWORK;NET472</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-        <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP2_1</DefineConstants>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP3_1</DefineConstants>
     </PropertyGroup>
@@ -42,14 +39,6 @@
         <Reference Include="System.Net.Http" />
     </ItemGroup>
     
-    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-        <PackageReference Include="FakeItEasy" Version="6.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="[2.1.2,2.2.0)" />
-        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="[2.1.2,2.2.0)" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[2.1.1,2.2.0)" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[2.1.1,2.2.0)" />
-    </ItemGroup>
-
     <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="FakeItEasy" Version="6.0.0" />
