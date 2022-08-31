@@ -30,12 +30,12 @@ namespace Dalion.HttpMessageSigning.Sign {
         }
 
         [Fact]
-        public void WhenAnUnsupportedAlgorithmIsSpecified_ProducesError() {
+        public async Task WhenAnUnsupportedAlgorithmIsSpecified_ProducesError() {
             _options.Algorithm = "unknown";
 
             Func<Task> act = () => Signer.Run(_options);
 
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Theory]
@@ -66,21 +66,21 @@ namespace Dalion.HttpMessageSigning.Sign {
         }
 
         [Fact]
-        public void WhenCreatingASignatureInTheFuture_ProducesError() {
+        public async Task WhenCreatingASignatureInTheFuture_ProducesError() {
             _options.Created = DateTimeOffset.Now.AddMinutes(10).ToUnixTimeSeconds().ToString();
 
             Func<Task> act = () => Signer.Run(_options);
 
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Fact]
-        public void WhenCreatingAnExpiredSignature_ProducesError() {
+        public async Task WhenCreatingAnExpiredSignature_ProducesError() {
             _options.Expires = DateTimeOffset.Now.AddMinutes(-10).ToUnixTimeSeconds().ToString();
 
             Func<Task> act = () => Signer.Run(_options);
 
-            act.Should().Throw<Exception>();
+            await act.Should().ThrowAsync<Exception>();
         }
 
         [Fact]

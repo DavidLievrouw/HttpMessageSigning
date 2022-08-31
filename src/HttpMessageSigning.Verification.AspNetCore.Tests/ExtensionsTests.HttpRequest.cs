@@ -38,9 +38,9 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                 }
 
                 [Fact]
-                public void GivenNullSignature_ThrowsArgumentNullException() {
+                public async Task GivenNullSignature_ThrowsArgumentNullException() {
                     Func<Task> act = () => _httpRequest.ToHttpRequestForVerification(null);
-                    act.Should().Throw<ArgumentNullException>();
+                    await act.Should().ThrowAsync<ArgumentNullException>();
                 }
 
                 [Fact]
@@ -172,7 +172,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                     actual.Body.Should().BeNull();
                 }
-
+                
                 [Fact]
                 public async Task WhenThereIsBody_AndDigestHeaderIsIncludedInSignature_ButDigestHeaderIsNotInRequest_ReadsBody() {
                     var bodyPayload = "This is the body payload";
@@ -183,8 +183,6 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.Headers.Remove(HeaderName.PredefinedHeaderNames.Digest);
                     
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
-
-                    _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
                     actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());
                 }
 
@@ -199,8 +197,6 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
-                    _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
-
                     actual.Body.Should().NotBeNull();
                     actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());
                 }
@@ -213,8 +209,6 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
                     _httpRequest.ContentType = "text/plain";
 
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
-
-                    _httpRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
 
                     actual.Body.Should().NotBeNull();
                     actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());

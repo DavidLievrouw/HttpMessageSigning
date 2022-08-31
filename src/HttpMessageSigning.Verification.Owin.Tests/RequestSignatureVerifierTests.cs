@@ -53,15 +53,15 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             }
 
             [Fact]
-            public void GivenNullRequest_ThrowsArgumentNullException() {
+            public async Task GivenNullRequest_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.VerifySignature(null, _options);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
-            public void GivenOptionsRequest_ThrowsArgumentNullException() {
+            public async Task GivenOptionsRequest_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.VerifySignature(_httpRequest, null);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
@@ -81,14 +81,14 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
             }
             
             [Fact]
-            public void WhenSignatureIsParsed_AndEventCallbackIsNull_DoesNotThrow() {
+            public async Task WhenSignatureIsParsed_AndEventCallbackIsNull_DoesNotThrow() {
                 A.CallTo(() => _signatureParser.Parse(_httpRequest, _options))
                     .Returns(new SignatureParsingSuccess(_requestForVerification.Signature));
                 
                 _options.OnSignatureParsed = null;
                 
                 Func<Task> act = () => _sut.VerifySignature(_httpRequest, _options);
-                act.Should().NotThrow();
+                await act.Should().NotThrowAsync();
             }
             
             [Fact]

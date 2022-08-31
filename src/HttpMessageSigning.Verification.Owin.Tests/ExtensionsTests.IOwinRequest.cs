@@ -173,7 +173,6 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    _owinRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
                     actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());
                 }
 
@@ -188,8 +187,6 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
 
-                    _owinRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
-
                     actual.Body.Should().NotBeNull();
                     actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());
                 }
@@ -202,8 +199,6 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                     _owinRequest.ContentType = "text/plain";
 
                     var actual = _owinRequest.ToHttpRequestForVerification(_signature);
-
-                    _owinRequest.Body.Should().NotBe(actual.Body); // Should not be the original stream, but a copy of it
 
                     actual.Body.Should().NotBeNull();
                     actual.Body.Should().BeEquivalentTo(bodyBytes, options => options.WithStrictOrdering());

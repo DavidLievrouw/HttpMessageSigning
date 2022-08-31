@@ -32,15 +32,15 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public void GivenNullSignature_ThrowsArgumentNullException() {
+            public async Task GivenNullSignature_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.Sanitize(null, _client);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
-            public void GivenNullClient_ThrowsArgumentException() {
+            public async Task GivenNullClient_ThrowsArgumentException() {
                 Func<Task> act = () => _sut.Sanitize(_signature, null);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]

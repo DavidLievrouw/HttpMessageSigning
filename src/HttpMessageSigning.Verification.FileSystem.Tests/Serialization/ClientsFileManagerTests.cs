@@ -33,9 +33,9 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
             }
 
             [Fact]
-            public void GivenNullClients_ThrowsArgumentNullException() {
+            public async Task GivenNullClients_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.Write(clients: null);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
@@ -59,20 +59,20 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
             }
 
             [Fact]
-            public void GivenZeroClients_DoesNotThrow() {
+            public async Task GivenZeroClients_DoesNotThrow() {
                 Func<Task> act = () => _sut.Write(Enumerable.Empty<ClientDataRecord>());
-                act.Should().NotThrow();
+                await act.Should().NotThrowAsync();
             }
 
             [Fact]
-            public void GivenZeroClients_WritesValidEmptyDocument() {
+            public async Task GivenZeroClients_WritesValidEmptyDocument() {
                 XDocument writtenDocument = null;
                 A.CallTo(() => _fileWriter.Write(_filePath, A<XDocument>._))
                     .Invokes((string f, XDocument xml) => writtenDocument = xml)
                     .Returns(Task.CompletedTask);
 
                 Func<Task> act = () => _sut.Write(Enumerable.Empty<ClientDataRecord>());
-                act.Should().NotThrow();
+                await act.Should().NotThrowAsync();
 
                 var expected = new XDocument(new XElement(XNamespace.Get("https://dalion.eu/httpmessagesigning") + "Dalion",
                     new XElement("Clients")));

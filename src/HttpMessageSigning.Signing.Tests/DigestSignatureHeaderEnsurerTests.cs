@@ -47,15 +47,15 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void GivenNullRequest_ThrowsArgumentNullException() {
+            public async Task GivenNullRequest_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.EnsureHeader(null, _settings, _timeOfSigning);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
-            public void GivenNullSettings_ThrowsArgumentNullException() {
+            public async Task GivenNullSettings_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.EnsureHeader(_httpRequest, null, _timeOfSigning);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Theory]
@@ -81,14 +81,14 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenHashAlgorithmIsNotSupported_ThrowsNotSupportedException() {
+            public async Task WhenHashAlgorithmIsNotSupported_ThrowsNotSupportedException() {
                 _httpRequest.Content = new StringContent("abc123", Encoding.UTF8, "application/json");
 
                 _settings.DigestHashAlgorithm = new HashAlgorithmName("Unsupported");
 
                 Func<Task> act = () => _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                act.Should().Throw<NotSupportedException>();
+                await act.Should().ThrowAsync<NotSupportedException>();
             }
 
             [Fact]
@@ -107,7 +107,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
                 _httpRequest.Headers.Should().Contain(h => h.Key == "digest" && h.Value.SequenceEqual(new[] {"SHA-256=abc123"}));
-                _httpRequest.Headers.Should().NotContain("Digest");
+                _httpRequest.Headers.Should().NotContainKey("Digest");
             }
 
             [Fact]

@@ -25,17 +25,17 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public void GivenEmptyKeyId_ThrowsArgumentException() {
+            public async Task GivenEmptyKeyId_ThrowsArgumentException() {
                 Func<Task> act = () => _sut.Get(KeyId.Empty, _value);
-                act.Should().Throw<ArgumentException>();
+                await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Theory]
             [InlineData(null)]
             [InlineData("")]
-            public void GivenNullOrEmptyNonceValue_ThrowsArgumentException(string nullOrEmpty) {
+            public async Task GivenNullOrEmptyNonceValue_ThrowsArgumentException(string nullOrEmpty) {
                 Func<Task> act = () => _sut.Get(_keyId, nullOrEmpty);
-                act.Should().Throw<ArgumentException>();
+                await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]
@@ -82,9 +82,9 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public void GivenNullNonce_ThrowsArgumentNullException() {
+            public async Task GivenNullNonce_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.Register(null);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]

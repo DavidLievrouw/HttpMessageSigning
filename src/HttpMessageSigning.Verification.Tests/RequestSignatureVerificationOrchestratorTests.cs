@@ -35,9 +35,9 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public void GivenNullRequest_ThrowsArgumentNullException() {
+            public async Task GivenNullRequest_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.VerifySignature(request: null);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
@@ -164,7 +164,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
             
             [Fact]
-            public void WhenVerificationReturnsAnUnexpectedException_Rethrows() {
+            public async Task WhenVerificationReturnsAnUnexpectedException_Rethrows() {
                 var client = new Client(
                     _request.Signature.KeyId, 
                     "Unit test app", 
@@ -184,7 +184,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     .Throws(failure);
                 
                 Func<Task> act = () => _sut.VerifySignature(_request);
-                act.Should().Throw<InvalidOperationException>().Where(ex => ex == failure);
+                await act.Should().ThrowAsync<InvalidOperationException>().Where(ex => ex == failure);
             }
         }
 

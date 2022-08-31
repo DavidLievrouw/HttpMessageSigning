@@ -65,20 +65,20 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void GivenNullRequest_ThrowsArgumentNullException() {
+            public async Task GivenNullRequest_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.Sign(null);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
-            public void GivenInvalidSettings_ThrowsValidationException() {
+            public async Task GivenInvalidSettings_ThrowsValidationException() {
                 _signingSettings.KeyId = KeyId.Empty; // Make invalid
                 Func<Task> act = () => _sut.Sign(_httpRequest);
-                act.Should().Throw<ValidationException>();
+                await act.Should().ThrowAsync<ValidationException>();
             }
 
             [Fact]
-            public void WhenSanitizerMakesSettingsInvalid_ThrowsValidationException() {
+            public async Task WhenSanitizerMakesSettingsInvalid_ThrowsValidationException() {
                 A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(A<SigningSettings>._, _httpRequest))
                     .Invokes(call => {
                         call.GetArgument<SigningSettings>(0).Headers = null;
@@ -86,7 +86,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                     });
 
                 Func<Task> act = () => _sut.Sign(_httpRequest);
-                act.Should().Throw<ValidationException>();
+                await act.Should().ThrowAsync<ValidationException>();
             }
             
             [Fact]
@@ -212,12 +212,12 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenEventsAreNull_DoesNotThrow() {
+            public async Task WhenEventsAreNull_DoesNotThrow() {
                 _signingSettings.Events = null;
                 
                 Func<Task> act = () => _sut.Sign(_httpRequest);
                 
-                act.Should().NotThrow();
+                await act.Should().NotThrowAsync();
             }
         }
 
@@ -237,20 +237,20 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void GivenNullRequest_ThrowsArgumentNullException() {
+            public async Task GivenNullRequest_ThrowsArgumentNullException() {
                 Func<Task> act = () => _sut.Sign(null, _timeOfSigning, _expires);
-                act.Should().Throw<ArgumentNullException>();
+                await act.Should().ThrowAsync<ArgumentNullException>();
             }
 
             [Fact]
-            public void GivenInvalidSettings_ThrowsValidationException() {
+            public async Task GivenInvalidSettings_ThrowsValidationException() {
                 _signingSettings.KeyId = KeyId.Empty; // Make invalid
                 Func<Task> act = () => _sut.Sign(_httpRequest, _timeOfSigning, _expires);
-                act.Should().Throw<ValidationException>();
+                await act.Should().ThrowAsync<ValidationException>();
             }
 
             [Fact]
-            public void WhenSanitizerMakesSettingsInvalid_ThrowsValidationException() {
+            public async Task WhenSanitizerMakesSettingsInvalid_ThrowsValidationException() {
                 A.CallTo(() => _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(A<SigningSettings>._, _httpRequest))
                     .Invokes(call => {
                         call.GetArgument<SigningSettings>(0).Headers = null;
@@ -258,7 +258,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                     });
 
                 Func<Task> act = () => _sut.Sign(_httpRequest, _timeOfSigning, _expires);
-                act.Should().Throw<ValidationException>();
+                await act.Should().ThrowAsync<ValidationException>();
             }
             
             [Fact]
@@ -384,30 +384,30 @@ namespace Dalion.HttpMessageSigning.Signing {
             }
 
             [Fact]
-            public void WhenEventsAreNull_DoesNotThrow() {
+            public async Task WhenEventsAreNull_DoesNotThrow() {
                 _signingSettings.Events = null;
                 
                 Func<Task> act = () => _sut.Sign(_httpRequest, _timeOfSigning, _expires);
                 
-                act.Should().NotThrow();
+                await act.Should().NotThrowAsync();
             }
 
             [Fact]
-            public void WhenSigningInTheFuture_ThrowsHttpMessageSigningException() {
+            public async Task WhenSigningInTheFuture_ThrowsHttpMessageSigningException() {
                 A.CallTo(() => _systemClock.UtcNow).Returns(_timeOfSigning.AddMinutes(15));
                 
                 Func<Task> act = () => _sut.Sign(_httpRequest, _timeOfSigning, _expires);
                 
-                act.Should().Throw<HttpMessageSigningException>();
+                await act.Should().ThrowAsync<HttpMessageSigningException>();
             }
             
             [Fact]
-            public void WhenSigningInThePast_ThrowsHttpMessageSigningException() {
+            public async Task WhenSigningInThePast_ThrowsHttpMessageSigningException() {
                 A.CallTo(() => _systemClock.UtcNow).Returns(_timeOfSigning.AddMinutes(-6));
                 
                 Func<Task> act = () => _sut.Sign(_httpRequest, _timeOfSigning, TimeSpan.FromMinutes(5));
                 
-                act.Should().Throw<HttpMessageSigningException>();
+                await act.Should().ThrowAsync<HttpMessageSigningException>();
             }
         }
         
