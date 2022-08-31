@@ -38,6 +38,18 @@ namespace Dalion.HttpMessageSigning.Utils {
                 var actual = _sut.Protect(input);
                 actual.Should().NotBeNullOrEmpty().And.NotBe(input);
             }
+
+            [Fact]
+            public void CanRoundTrip() {
+                var secret = "7yh5lsN32%$&";
+                var sut = new SymmetricStringProtector(secret);
+                var input = "eDJD6b4uyhwvrHsyyahV";
+                
+                var actual = sut.Protect(input);
+                var unprotected = sut.Unprotect(actual);
+                
+                unprotected.Should().Be(input);
+            }
         }
 
         public class Unprotect : SymmetricStringProtectorTests {
@@ -59,17 +71,24 @@ namespace Dalion.HttpMessageSigning.Utils {
             public void GivenInvalidCypher_ThrowsException() {
                 var invalidCypher = "UVoVzETSbfe/OPtwk4wiKw==";
                 Action act = () => _sut.Unprotect(invalidCypher);
-#if NET472
-                act.Should().Throw<CryptographicException>();
-#else
                 act.Should().Throw<ArgumentException>();
-#endif
             }
 
             [Fact]
             public void GivenNonsenseCypher_ThrowsFormatException() {
                 Action act = () => _sut.Unprotect("{nonsense}");
                 act.Should().Throw<FormatException>();
+            }
+
+            [Fact]
+            public void CanUnprotectALegacyRijndaelCypher() {
+                var secret = "7yh5lsN32%$&";
+                var sut = new SymmetricStringProtector(secret);
+
+                var cypher = "Xw6W8EYB5cosFERSGw/9E2yVJfXHrEqJR6qmWezVPAa8oPDhYI3yeE6D+GnzvJSYg+T50NbGF+QLUsJS0OMFlg==";
+                var actual = sut.Unprotect(cypher);
+
+                actual.Should().Be("eDJD6b4uyhwvrHsyyahV");
             }
         }
     }
