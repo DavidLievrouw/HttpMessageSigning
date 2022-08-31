@@ -43,7 +43,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="[1.1.1,)" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
@@ -62,13 +62,13 @@
     </ItemGroup>
     
     <ItemGroup Condition="'$(TargetFramework)'=='net6'">
-        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="[6.0.0,)" />
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="[6.0.8,)" />
         <PackageReference Include="Microsoft.Extensions.Primitives" Version="[6.0.0,)" />
     </ItemGroup>
     
     <ItemGroup Condition="'$(TargetFramework)'=='net472'">
-        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="[3.1.0,)" />
-        <PackageReference Include="Microsoft.Extensions.Primitives" Version="[3.1.0,)" />
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="[6.0.8,)" />
+        <PackageReference Include="Microsoft.Extensions.Primitives" Version="[6.0.0,)" />
         <PackageReference Include="System.Net.Http" Version="[4.3.4,)" />
     </ItemGroup>
     
