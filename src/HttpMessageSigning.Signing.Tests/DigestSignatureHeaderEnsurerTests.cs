@@ -1,14 +1,12 @@
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.TestUtils;
 using FakeItEasy;
 using FluentAssertions;
-using Microsoft.Extensions.Primitives;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Signing {
@@ -64,6 +62,21 @@ namespace Dalion.HttpMessageSigning.Signing {
             [InlineData("HEAD")]
             [InlineData("DELETE")]
             public async Task WhenMethodDoesNotHaveBody_DoesNotSetDigestHeader(string method) {
+                _httpRequest.Method = new HttpMethod(method);
+
+                await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
+
+                _httpRequest.Headers.Should().NotContain(_ => StringComparer.InvariantCultureIgnoreCase.Equals(_.Key, "Digest"));
+            }
+
+            [Theory]
+            [InlineData("GET")]
+            [InlineData("TRACE")]
+            [InlineData("HEAD")]
+            [InlineData("DELETE")]
+            public async Task WhenMethodHasEmptyBody_DoesNotSetDigestHeader(string method) {
+                _httpRequest.Content = new ByteArrayContent(Array.Empty<byte>());
+                
                 _httpRequest.Method = new HttpMethod(method);
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
