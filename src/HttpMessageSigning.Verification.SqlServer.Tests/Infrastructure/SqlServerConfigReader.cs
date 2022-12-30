@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Dalion.HttpMessageSigning.Verification.SqlServer.Infrastructure {
     public static class SqlServerConfigReader {
-        private const string DefaultConnectionStringTemplate = "Server={SERVER};Database=master;User Id={USERID};Password={PASSWORD};Trust Server Certificate=True;";
+        private const string DefaultConnectionStringTemplate = "Server={SERVER};Database=master;User Id={USERID};Password={PASSWORD};Encrypt=False;";
         private const string DefaultDatabaseNameTemplate = "HttpMessageSigningTestDb_{0}";
         private const string DefaultServerName = ".";
         private const string DefaultUserId = "sa";
