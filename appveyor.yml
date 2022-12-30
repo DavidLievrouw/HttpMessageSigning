@@ -36,6 +36,8 @@ test_script:
     
     Add-AppveyorMessage -Message "PR head repository: $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME"
     
+    & 'sqlcmd -C -S "$env:SQLSERVER:SERVERNAME" -U "$env:SQLSERVER:USERID" -P "$env:SQLSERVER:PASSWORD" -Q "SELECT * FROM information_schema.tables;" -d "master"'
+    
     & "./test.cmd" nopause
     
 artifacts:
