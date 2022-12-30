@@ -1,7 +1,7 @@
 version: 1.0.0.{build}
 image: Visual Studio 2022
-services:
-  - mssql2017
+init:
+  - net start MSSQL$SQL2019
 branches:
   except:
     - /dev_.*/
@@ -11,7 +11,7 @@ environment:
   CONFIGURATION: Release
   SQLSERVER:USERID: sa
   SQLSERVER:PASSWORD: Password12!
-  SQLSERVER:SERVERNAME: (local)\SQL2017
+  SQLSERVER:SERVERNAME: (local)\SQL2019
 nuget:
   disable_publish_on_pr: true
 build_script:
