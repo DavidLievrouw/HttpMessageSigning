@@ -33,7 +33,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V
                 throw new InvalidOperationException("Could not find the collection to migrate. Please check your MongoDB connection string.");
             }
 
-            var allClientsQueryTask = collection.FindAsync(new FilterDefinitionBuilder<ClientDataRecordV2>().Ne("_id", "_version"));
+            var allClientsQueryTask = collection.FindAsync(new FilterDefinitionBuilder<ClientDataRecordV2>().Ne("_id", ClientStoreVersionDocument.VersionDocumentId));
             var allClients = allClientsQueryTask != null 
                 ? (await allClientsQueryTask.ConfigureAwait(continueOnCapturedContext: false)).ToList() 
                 : new List<ClientDataRecordV2>();

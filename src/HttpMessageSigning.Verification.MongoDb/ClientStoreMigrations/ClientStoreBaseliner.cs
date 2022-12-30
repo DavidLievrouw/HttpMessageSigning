@@ -43,7 +43,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
         public async Task<int?> GetBaseline() {
             var latestVersion = await _lazyCollection.Value
                 .Find(new JsonFilterDefinition<ClientStoreVersionDocument>("{'_id': '" + ClientStoreVersionDocument.VersionDocumentId + "'}"))
-                .Sort(new JsonSortDefinition<ClientStoreVersionDocument>("{'version':-1}"))
+                .Sort(new JsonSortDefinition<ClientStoreVersionDocument>("{'Version':-1}"))
                 .Limit(1)
                 .FirstOrDefaultAsync()
                 .ConfigureAwait(continueOnCapturedContext: false);

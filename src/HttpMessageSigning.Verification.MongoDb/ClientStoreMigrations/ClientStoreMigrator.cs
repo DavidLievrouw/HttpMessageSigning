@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations {
         }
 
         public async Task<int> Migrate() {
-            var lastVersion = await _baseliner.GetBaseline() ?? 0;
+            var lastVersion = await _baseliner.GetBaseline().ConfigureAwait(continueOnCapturedContext: false) ?? 0;
 
             var stepsToExecute = await GetStepsToExecute().ConfigureAwait(continueOnCapturedContext: false);
 
