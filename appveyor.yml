@@ -30,33 +30,13 @@ build_script:
 
 test_script:
 - ps: >-    
-    $mainRepo = "DavidLievrouw/HttpMessageSigning"
-    
     Add-AppveyorMessage -Message "Current repository: $env:APPVEYOR_REPO_NAME"
     
     Add-AppveyorMessage -Message "PR: $env:APPVEYOR_PULL_REQUEST_NUMBER"
     
     Add-AppveyorMessage -Message "PR head repository: $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME"
     
-    if ($mainRepo -eq $env:APPVEYOR_REPO_NAME) {
-    
-      & "./coverage.cmd" nopause
-    
-      dotnet new tool-manifest
-    
-      dotnet tool install coveralls.net
-    
-      dotnet tool run csmacnz.Coveralls --opencover -i src\coverage.xml --repoToken $env:COVERALLS_REPO_TOKEN --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_JOB_ID
-      
-    }
-    
-    else {
-    
-      Add-AppveyorMessage -Message "Skipping coverage report, because this build was not triggered from the main repository ($mainRepo)."
-    
-      & "./test.cmd" nopause
-      
-    }
+    & "./test.cmd" nopause
     
 artifacts:
 - path: ./dist/%CONFIGURATION%
