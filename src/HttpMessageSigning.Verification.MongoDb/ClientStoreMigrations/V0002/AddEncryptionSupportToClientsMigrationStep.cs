@@ -33,7 +33,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V
                 throw new InvalidOperationException("Could not find the collection to migrate. Please check your MongoDB connection string.");
             }
 
-            var allClientsQueryTask = collection.FindAsync(FilterDefinition<ClientDataRecordV2>.Empty);
+            var allClientsQueryTask = collection.FindAsync(new FilterDefinitionBuilder<ClientDataRecordV2>().Ne("_id", "_version"));
             var allClients = allClientsQueryTask != null 
                 ? (await allClientsQueryTask.ConfigureAwait(continueOnCapturedContext: false)).ToList() 
                 : new List<ClientDataRecordV2>();
@@ -48,7 +48,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V
                 // - It should not have been encrypted before
                 // - Only applicable for HMAC signature algorithms (the only supported symmetric key algorithm)
                 if (_mongoDbClientStoreSettings.SharedSecretEncryptionKey != SharedSecretEncryptionKey.Empty &&
-                    StringComparer.OrdinalIgnoreCase.Equals("hmac", clientToMigrate.SignatureAlgorithm.Type) &&
+                    StringComparer.OrdinalIgnoreCase.Equals("hmac", clientToMigrate.SignatureAlgorithm?.Type) &&
                     !(clientToMigrate.SignatureAlgorithm?.IsParameterEncrypted ?? false)) {
                     var protector = _stringProtectorFactory.CreateSymmetric(_mongoDbClientStoreSettings.SharedSecretEncryptionKey);
                     if (clientToMigrate.SignatureAlgorithm != null) {
