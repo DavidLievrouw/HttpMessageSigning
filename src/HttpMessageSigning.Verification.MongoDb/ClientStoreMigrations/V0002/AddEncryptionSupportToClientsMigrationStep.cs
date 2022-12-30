@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Dalion.HttpMessageSigning.Utils;
 using MongoDB.Driver;
@@ -22,15 +24,22 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V
             _lazyCollection = new Lazy<IMongoCollection<ClientDataRecordV2>>(() => {
                 var database = clientProvider.Provide();
                 return database.GetCollection<ClientDataRecordV2>(mongoDbClientStoreSettings.CollectionName);
-            });
+            }, LazyThreadSafetyMode.PublicationOnly);
         }
 
         public async Task Run() {
             var collection = _lazyCollection.Value;
+            if (collection == null) {
+                throw new InvalidOperationException("Could not find the collection to migrate. Please check your MongoDB connection string.");
+            }
+
+            var allClientsQueryTask = collection.FindAsync(FilterDefinition<ClientDataRecordV2>.Empty);
+            var allClients = allClientsQueryTask != null 
+                ? (await allClientsQueryTask.ConfigureAwait(continueOnCapturedContext: false)).ToList() 
+                : new List<ClientDataRecordV2>();
             
-            var allClients = await collection.FindAsync(FilterDefinition<ClientDataRecordV2>.Empty).ConfigureAwait(continueOnCapturedContext: false);
-            var clientsToMigrate = (await allClients.ToListAsync().ConfigureAwait(continueOnCapturedContext: false))
-                .Where(c => !c.V.HasValue || c.V.Value < 2)
+            var clientsToMigrate = allClients
+                .Where(c => !c.V.HasValue || c.V < 2)
                 .ToList();
 
             foreach (var clientToMigrate in clientsToMigrate) {
@@ -39,11 +48,13 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb.ClientStoreMigrations.V
                 // - It should not have been encrypted before
                 // - Only applicable for HMAC signature algorithms (the only supported symmetric key algorithm)
                 if (_mongoDbClientStoreSettings.SharedSecretEncryptionKey != SharedSecretEncryptionKey.Empty &&
-                    clientToMigrate.SignatureAlgorithm.Type.Equals("hmac", StringComparison.OrdinalIgnoreCase) &&
-                    !clientToMigrate.SignatureAlgorithm.IsParameterEncrypted) {
+                    StringComparer.OrdinalIgnoreCase.Equals("hmac", clientToMigrate.SignatureAlgorithm.Type) &&
+                    !(clientToMigrate.SignatureAlgorithm?.IsParameterEncrypted ?? false)) {
                     var protector = _stringProtectorFactory.CreateSymmetric(_mongoDbClientStoreSettings.SharedSecretEncryptionKey);
-                    clientToMigrate.SignatureAlgorithm.Parameter = protector.Protect(clientToMigrate.SignatureAlgorithm.Parameter);
-                    clientToMigrate.SignatureAlgorithm.IsParameterEncrypted = true;
+                    if (clientToMigrate.SignatureAlgorithm != null) {
+                        clientToMigrate.SignatureAlgorithm.Parameter = protector.Protect(clientToMigrate.SignatureAlgorithm.Parameter);
+                        clientToMigrate.SignatureAlgorithm.IsParameterEncrypted = true;
+                    }
                 } 
                 
                 // Fill in RequestTargetEscaping, if it is missing
