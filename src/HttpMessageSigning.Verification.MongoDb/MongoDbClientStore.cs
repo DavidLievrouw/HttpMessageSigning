@@ -67,7 +67,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             
             var collection = _lazyCollection.Value;
 
-            var findResult = await collection.FindAsync(r => r.Id == clientId).ConfigureAwait(continueOnCapturedContext: false);
+            var findResult = await collection.FindAsync(r => r.Id == clientId.Value).ConfigureAwait(continueOnCapturedContext: false);
             var matches = await findResult.ToListAsync().ConfigureAwait(continueOnCapturedContext: false);
             if (!matches.Any()) return null;
 

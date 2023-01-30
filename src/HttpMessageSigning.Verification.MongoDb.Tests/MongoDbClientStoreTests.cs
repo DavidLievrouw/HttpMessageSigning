@@ -205,7 +205,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 await _sut.Register(client);
                 
                 var collection = Database.GetCollection<ClientDataRecordV2>(_collectionName);
-                var findResult = await collection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == client.Id));
+                var findResult = await collection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == client.Id.Value));
                 var loaded = await findResult.SingleAsync();
 
                 loaded.SignatureAlgorithm.Parameter.Should().NotBeNullOrEmpty();
@@ -230,7 +230,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 await _sut.Register(client);
                 
                 var collection = Database.GetCollection<ClientDataRecordV2>(_collectionName);
-                var findResult = await collection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == client.Id));
+                var findResult = await collection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == client.Id.Value));
                 var loaded = await findResult.SingleAsync();
 
                 loaded.V.Should().NotBeNull();
@@ -260,7 +260,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     await sut.Register(client);
 
                     var collection = Database.GetCollection<ClientDataRecordV2>(_collectionName);
-                    var findResult = await collection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == client.Id));
+                    var findResult = await collection.FindAsync<ClientDataRecordV2>(new ExpressionFilterDefinition<ClientDataRecordV2>(r => r.Id == client.Id.Value));
                     var loaded = await findResult.SingleAsync();
 
                     loaded.SignatureAlgorithm.Parameter.Should().NotBeNullOrEmpty();
