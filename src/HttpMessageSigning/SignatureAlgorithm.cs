@@ -174,7 +174,7 @@ namespace Dalion.HttpMessageSigning {
         }
 
         /// <summary>
-        ///     Creates a new ECDsa <see cref="ISignatureAlgorithm" />, for HTTP request signature verification purposes.
+        ///     Creates a new RSA <see cref="ISignatureAlgorithm" />, for HTTP request signature verification purposes.
         /// </summary>
         /// <param name="certificate">The X.509 certificate to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
@@ -183,7 +183,7 @@ namespace Dalion.HttpMessageSigning {
         }
 
         /// <summary>
-        ///     Creates a new ECDsa <see cref="ISignatureAlgorithm" />, for HTTP request signature verification purposes.
+        ///     Creates a new HMAC <see cref="ISignatureAlgorithm" />, for HTTP request signature verification purposes.
         /// </summary>
         /// <param name="hmacSecret">The shared HMAC secret to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
@@ -216,7 +216,7 @@ namespace Dalion.HttpMessageSigning {
         }
 
         /// <summary>
-        ///     Creates a new ECDsa <see cref="ISignatureAlgorithm" />, for HTTP request signature verification purposes.
+        ///     Creates a new RSA <see cref="ISignatureAlgorithm" />, for HTTP request signature verification purposes.
         /// </summary>
         /// <param name="publicParameters">The public RSA algorithm parameters to use.</param>
         /// <param name="hashAlgorithm">The name of the hash algorithm to use.</param>
@@ -236,7 +236,7 @@ namespace Dalion.HttpMessageSigning {
         }
 
         /// <summary>
-        ///     Creates a new ECDsa <see cref="ISignatureAlgorithm" />, for HTTP request signature verification purposes.
+        ///     Creates a new RSA <see cref="ISignatureAlgorithm" />, for HTTP request signature verification purposes.
         /// </summary>
         /// <param name="certificate">The X.509 certificate to use.</param>
         /// <param name="hashAlgorithm">The name of the hash algorithm to use.</param>
@@ -250,7 +250,7 @@ namespace Dalion.HttpMessageSigning {
         }
 
         /// <summary>
-        ///     Creates a new ECDsa <see cref="ISignatureAlgorithm" />, for HTTP request signature verification purposes.
+        ///     Creates a new HMAC <see cref="ISignatureAlgorithm" />, for HTTP request signature verification purposes.
         /// </summary>
         /// <param name="hmacSecret">The shared HMAC secret to use.</param>
         /// <param name="hashAlgorithm">The name of the hash algorithm to use.</param>
