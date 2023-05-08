@@ -53,7 +53,8 @@ namespace Dalion.HttpMessageSigning {
         /// <param name="certificate">The X.509 certificate to use.</param>
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForSigning(X509Certificate2 certificate) {
-            return CreateForSigning(certificate, HashAlgorithmName.SHA512);
+            if (certificate == null) throw new ArgumentNullException(nameof(certificate));
+            return RSASignatureAlgorithm.CreateForSigning(HashAlgorithmName.SHA512, certificate);
         }
 
         /// <summary>
@@ -117,10 +118,7 @@ namespace Dalion.HttpMessageSigning {
         /// <returns>The newly created <see cref="ISignatureAlgorithm" />.</returns>
         public static ISignatureAlgorithm CreateForSigning(X509Certificate2 certificate, HashAlgorithmName hashAlgorithm) {
             if (certificate == null) throw new ArgumentNullException(nameof(certificate));
-            var privateKey = certificate.GetRSAPrivateKey();
-            var privateParameters = privateKey.ExportParameters(true);
-
-            return CreateForSigning(privateParameters, hashAlgorithm);
+            return RSASignatureAlgorithm.CreateForSigning(hashAlgorithm, certificate);
         }
 
         /// <summary>

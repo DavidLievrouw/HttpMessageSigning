@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.Extensions.ObjectPool;
 
@@ -82,6 +83,17 @@ namespace Dalion.HttpMessageSigning {
             var rsa = new RSACryptoServiceProvider();
             rsa.ImportParameters(privateParameters);
             return new RSASignatureAlgorithm(hashAlgorithmName, rsa);
+        }
+
+        /// <summary>
+        ///     Create a new instance of this class, using the specified settings, for signing purposes.
+        /// </summary>
+        /// <param name="hashAlgorithmName">The name of the hash algorithm to use.</param>
+        /// <param name="cert">The certificate with the private key for the RSA algorithm.</param>
+        /// <returns>A new <see cref="RSASignatureAlgorithm" />.</returns>
+        public static RSASignatureAlgorithm CreateForSigning(HashAlgorithmName hashAlgorithmName, X509Certificate2 cert) {
+            if (cert == null) throw new ArgumentNullException(nameof(cert));
+            return new RSASignatureAlgorithm(hashAlgorithmName, cert.GetRSAPrivateKey());
         }
 
         /// <summary>

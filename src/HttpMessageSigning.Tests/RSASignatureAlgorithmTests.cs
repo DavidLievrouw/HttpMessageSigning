@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Xunit;
 
@@ -48,6 +49,17 @@ namespace Dalion.HttpMessageSigning {
                 Action act = () => sut.ComputeHash("payload");
                 act.Should().Throw<NotSupportedException>();
             }
+
+            [Fact]
+            public void CanSignWithoutExportablePrivateKey() {
+                using (var cert = new X509Certificate2("./dalion.local.pfx", "CertP@ss123")) {
+                    using (var sut = new RSASignatureAlgorithm(HashAlgorithmName.SHA384, cert.GetRSAPrivateKey())) {
+                        var payload = "_abc_123_";
+                        var actual = sut.ComputeHash(payload);
+                        actual.Should().NotBeNull().And.NotBeEmpty();
+                    }
+                }
+            }
         }
 
         public class VerifySignature : RSASignatureAlgorithmTests {
@@ -57,6 +69,21 @@ namespace Dalion.HttpMessageSigning {
                 var signature = _signer.ComputeHash(payload);
                 var actual = _verifier.VerifySignature(payload, signature);
                 actual.Should().BeTrue();
+            }
+
+            [Fact]
+            public void CanVerifyValidSignatureFromNonExportableX509Certificate2() {
+                using (var cert = new X509Certificate2("./dalion.local.pfx", "CertP@ss123")) {
+                    using (var signer = new RSASignatureAlgorithm(HashAlgorithmName.SHA384, cert.GetRSAPrivateKey())) {
+                        var payload = "_abc_123_";
+                        var signature = signer.ComputeHash(payload);
+
+                        using (var verifier = new RSASignatureAlgorithm(HashAlgorithmName.SHA384, cert.GetRSAPublicKey())) {
+                            var actual = verifier.VerifySignature(payload, signature);
+                            actual.Should().BeTrue();
+                        }
+                    }
+                }
             }
 
             [Fact]

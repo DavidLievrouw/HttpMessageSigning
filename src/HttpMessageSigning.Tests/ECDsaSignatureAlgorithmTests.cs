@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Xunit;
 
@@ -48,8 +49,19 @@ namespace Dalion.HttpMessageSigning {
                 Action act = () => sut.ComputeHash("payload");
                 act.Should().Throw<NotSupportedException>();
             }
+
+            [Fact]
+            public void CanSignWithoutExportablePrivateKey() {
+                using (var cert = new X509Certificate2("./dalion.local_ec.pfx", "CertP@ss123")) {
+                    using (var sut = new ECDsaSignatureAlgorithm(HashAlgorithmName.SHA384, cert.GetECDsaPrivateKey())) {
+                        var payload = "_abc_123_";
+                        var actual = sut.ComputeHash(payload);
+                        actual.Should().NotBeNull().And.NotBeEmpty();
+                    }
+                }
+            }
         }
-        
+
         public class VerifySignature : ECDsaSignatureAlgorithmTests {
             [Fact]
             public void CanVerifyValidSignature() {
@@ -84,6 +96,21 @@ namespace Dalion.HttpMessageSigning {
                 var verifier = new ECDsaSignatureAlgorithm(HashAlgorithmName.SHA1, _ecdsa);
                 var actual = verifier.VerifySignature(payload, signature);
                 actual.Should().BeTrue();
+            }
+
+            [Fact]
+            public void CanVerifyValidSignatureFromNonExportableX509Certificate2() {
+                using (var cert = new X509Certificate2("./dalion.local_ec.pfx", "CertP@ss123")) {
+                    using (var signer = new ECDsaSignatureAlgorithm(HashAlgorithmName.SHA384, cert.GetECDsaPrivateKey())) {
+                        var payload = "_abc_123_";
+                        var signature = signer.ComputeHash(payload);
+
+                        using (var verifier = new ECDsaSignatureAlgorithm(HashAlgorithmName.SHA384, cert.GetECDsaPublicKey())) {
+                            var actual = verifier.VerifySignature(payload, signature);
+                            actual.Should().BeTrue();
+                        }
+                    }
+                }
             }
         }
 
