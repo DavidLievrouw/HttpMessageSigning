@@ -86,7 +86,9 @@ namespace Dalion.HttpMessageSigning.Verification {
                 A.CallTo(() => _backgroundTaskStarter.Start(A<Func<Task>>._, A<TimeSpan>._))
                     .Invokes(call => {
                         var func = call.GetArgument<Func<Task>>(0);
+#pragma warning disable xUnit1031
                         func.Invoke().GetAwaiter().GetResult();
+#pragma warning restore xUnit1031
                     });
                 
                 await _sut.Register(_newClient);
