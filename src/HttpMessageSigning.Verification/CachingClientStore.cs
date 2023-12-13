@@ -7,7 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.Verification {
-    internal class CachingClientStore : IClientStore {
+    internal class CachingClientStore : ICachingClientStore {
         private static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(initialCount: 1, maxCount: 1);
         private static readonly TimeSpan MaxLockWaitTime = TimeSpan.FromSeconds(10);
 
@@ -91,7 +91,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
         }
         
-        internal void Evict(KeyId id) {
+        public void Evict(KeyId id) {
             if (id == KeyId.Empty) throw new ArgumentException("Value cannot be empty.", nameof(id));
            
             var cacheKey = new ClientStoreCacheKey(id);
