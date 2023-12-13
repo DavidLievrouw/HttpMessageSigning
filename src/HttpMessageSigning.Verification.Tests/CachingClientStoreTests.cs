@@ -5,37 +5,45 @@ using Dalion.HttpMessageSigning.Utils;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification {
     public class CachingClientStoreTests : IDisposable {
-        private readonly FakeMemoryCache _cache;
+        private readonly IMemoryCache _cache;
         private readonly IClientStore _decorated;
-        private readonly TimeSpan _expiration;
+        private TimeSpan _expiration;
         private readonly IBackgroundTaskStarter _backgroundTaskStarter;
         private readonly CachingClientStore _sut;
+        private readonly ServiceProvider _provider;
 
         public CachingClientStoreTests() {
             FakeFactory.Create(out _decorated, out _backgroundTaskStarter);
-            _cache = new FakeMemoryCache();
+            
+            _provider = new ServiceCollection()
+                .AddMemoryCache()
+                .BuildServiceProvider();
+            _cache = _provider.GetRequiredService<IMemoryCache>();
             _expiration = TimeSpan.FromSeconds(30);
-            _sut = new CachingClientStore(_decorated, _cache, _expiration, _backgroundTaskStarter);
+            
+            _sut = new CachingClientStore(_decorated, _cache, () => _expiration, _backgroundTaskStarter);
         }
 
         public void Dispose() {
             _cache?.Dispose();
             _decorated?.Dispose();
+            _provider?.Dispose();
             _sut?.Dispose();
         }
 
         public class Register : CachingClientStoreTests {
-            private readonly string _cacheKey;
+            private readonly CachingClientStore.ClientStoreCacheKey _cacheKey;
             private readonly Client _cachedClient;
             private readonly Client _newClient;
             
             public Register() {
                 var keyId = new KeyId("c1");
-                _cacheKey = $"CacheEntry_Client_{keyId}";
+                _cacheKey = new CachingClientStore.ClientStoreCacheKey(keyId);
                 _cachedClient = new Client(
                     keyId,
                     "cached", 
@@ -66,19 +74,17 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 await _sut.Register(_newClient);
 
-                _cache.TryGetEntry(_cacheKey, out var actualEntry).Should().BeTrue();
-                actualEntry.As<ICacheEntry>().AbsoluteExpirationRelativeToNow.Should().Be(_expiration);
+                _cache.TryGetValue(_cacheKey, out _).Should().BeTrue();
             }
             
             [Fact]
             public async Task WhenClientIsCached_ReplacesEntryInCache() {
-                var cacheEntry = _cache.CreateEntry(_cacheKey);
-                cacheEntry.Value = _cachedClient;
+                _cache.Set(_cacheKey, _cachedClient);
 
                 await _sut.Register(_newClient);
 
-                _cache.TryGetEntry(_cacheKey, out var actualEntry).Should().BeTrue();
-                actualEntry.Value.Should().Be(_newClient);
+                _cache.TryGetValue(_cacheKey, out var actual).Should().BeTrue();
+                actual.Should().Be(_newClient);
             }
 
             [Fact]
@@ -93,11 +99,10 @@ namespace Dalion.HttpMessageSigning.Verification {
                 
                 await _sut.Register(_newClient);
                 
-                // Force call eviction callbacks
-                _cache.TryGetEntry(_cacheKey, out var cacheEntry);
-                foreach (var callback in cacheEntry.PostEvictionCallbacks) {
-                    callback.EvictionCallback.Invoke(_cacheKey, cacheEntry.Value, EvictionReason.Expired, null);
-                }
+                // Force eviction
+                _sut.Evict(_cachedClient.Id);
+
+                await Task.Delay(TimeSpan.FromSeconds(1));
 
                 ((CustomSignatureAlgorithm) _newClient.SignatureAlgorithm).IsDisposed().Should().BeTrue();
             }
@@ -107,25 +112,25 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(-1)]
             [InlineData(-99)]
             public async Task WhenExpirationIsZeroOrNegative_DoesNotUseCache_AndDelegatesToDecoratedInstance(int expirationSeconds) {
-                var sut = new CachingClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds), _backgroundTaskStarter);
-
-                await sut.Register(_newClient);
+                _expiration = TimeSpan.FromSeconds(expirationSeconds);
+                
+                await _sut.Register(_newClient);
 
                 A.CallTo(() => _decorated.Register(_newClient))
                     .MustHaveHappened();
-                _cache.InternalData.Should().BeEmpty();
+                _cache.TryGetValue(_cacheKey, out _).Should().BeFalse();
             }
         }
 
         public class Get : CachingClientStoreTests {
             private readonly KeyId _keyId;
-            private readonly string _cacheKey;
+            private readonly CachingClientStore.ClientStoreCacheKey _cacheKey;
             private readonly Client _cachedClient;
             private readonly Client _newClient;
 
             public Get() {
                 _keyId = new KeyId("c1");
-                _cacheKey = $"CacheEntry_Client_{_keyId}";
+                _cacheKey = new CachingClientStore.ClientStoreCacheKey(_keyId);
 
                 _cachedClient = new Client(
                     _keyId,
@@ -149,13 +154,13 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(-1)]
             [InlineData(-99)]
             public async Task WhenExpirationIsZeroOrNegative_DoesNotUseCache_AndDelegatesToDecoratedInstance(int expirationSeconds) {
-                var sut = new CachingClientStore(_decorated, _cache, TimeSpan.FromSeconds(expirationSeconds), _backgroundTaskStarter);
-
-                await sut.Get(_keyId);
+                _expiration = TimeSpan.FromSeconds(expirationSeconds);
+                
+                await _sut.Get(_keyId);
 
                 A.CallTo(() => _decorated.Get(_keyId))
                     .MustHaveHappened();
-                _cache.InternalData.Should().BeEmpty();
+                _cache.TryGetValue(_cacheKey, out _).Should().BeFalse();
             }
 
             [Fact]
@@ -164,7 +169,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 var actual = await _sut.Get(_keyId);
 
-                actual.Should().Be(_newClient).And.Match<Client>(_ => _.Name == "new");
+                actual.Should().Be(_newClient).And.Match<Client>(c => c.Name == "new");
             }
 
             [Fact]
@@ -174,47 +179,38 @@ namespace Dalion.HttpMessageSigning.Verification {
                 await _sut.Get(_keyId);
 
                 _cache.TryGetValue(_cacheKey, out var actualCachedValue).Should().BeTrue();
-                actualCachedValue.Should().Be(_newClient).And.Match<Client>(_ => _.Name == "new");
+                actualCachedValue.Should().Be(_newClient).And.Match<Client>(c => c.Name == "new");
             }
 
             [Fact]
             public async Task WhenClientIsNotCached_AndIsNotFound_CachesNullValue() {
-                var cacheKey = "CacheEntry_Client_c2";
-                _cache.TryGetValue(cacheKey, out _).Should().BeFalse();
-                A.CallTo(() => _decorated.Get(new KeyId("c2"))).Returns((Client)null);
+                var otherKeyId = new KeyId("c2");
                 
-                var actual = await _sut.Get(new KeyId("c2"));
+                var cacheKey = new CachingClientStore.ClientStoreCacheKey(otherKeyId);
+                _cache.TryGetValue(cacheKey, out _).Should().BeFalse();
+                
+                A.CallTo(() => _decorated.Get(otherKeyId)).Returns((Client)null);
+                
+                var actual = await _sut.Get(otherKeyId);
 
                 actual.Should().BeNull();
-                _cache.TryGetEntry(cacheKey, out var actualEntry).Should().BeTrue();
-                actualEntry.As<ICacheEntry>().Value.Should().BeNull();
-                actualEntry.As<ICacheEntry>().AbsoluteExpirationRelativeToNow.Should().Be(_expiration);
-            }
-            
-            [Fact]
-            public async Task WhenClientIsNotCached_CachesAcquiredFromDecoratedInstance_WithExpectedExpiration() {
-                _cache.TryGetValue(_cacheKey, out _).Should().BeFalse();
-
-                await _sut.Get(_keyId);
-
-                _cache.TryGetEntry(_cacheKey, out var actualEntry).Should().BeTrue();
-                actualEntry.As<ICacheEntry>().AbsoluteExpirationRelativeToNow.Should().Be(_expiration);
+                
+                _cache.TryGetValue(cacheKey, out var actualEntry).Should().BeTrue();
+                actualEntry.Should().BeNull();
             }
 
             [Fact]
             public async Task WhenClientIsCached_ReturnsCachedInstance() {
-                var cacheEntry = _cache.CreateEntry(_cacheKey);
-                cacheEntry.Value = _cachedClient;
+                _cache.Set(_cacheKey, _cachedClient);
 
                 var actual = await _sut.Get(_keyId);
 
-                actual.Should().Be(_cachedClient).And.Match<Client>(_ => _.Name == "cached");
+                actual.Should().Be(_cachedClient).And.Match<Client>(c => c.Name == "cached");
             }
 
             [Fact]
             public async Task WhenClientIsCached_DoesNotAcquireFromDecoratedInstance() {
-                var cacheEntry = _cache.CreateEntry(_cacheKey);
-                cacheEntry.Value = _cachedClient;
+                _cache.Set(_cacheKey, _cachedClient);
 
                 await _sut.Get(_keyId);
 
@@ -230,13 +226,6 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 A.CallTo(() => _decorated.Dispose())
                     .MustHaveHappened();
-            }
-
-            [Fact]
-            public void DoesNotDisposeOfCache() {
-                _sut.Dispose();
-
-                _cache.IsDisposed.Should().BeFalse();
             }
         }
     }

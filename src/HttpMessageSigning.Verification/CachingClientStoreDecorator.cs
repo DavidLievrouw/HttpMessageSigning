@@ -13,7 +13,7 @@ namespace Dalion.HttpMessageSigning.Verification {
         }
 
         public IClientStore DecorateWithCaching(IClientStore decorated, TimeSpan cacheExpiration) {
-            return new CachingClientStore(decorated, _cache, cacheExpiration, _backgroundTaskStarter);
+            return new CachingClientStore(decorated, _cache, () => cacheExpiration, _backgroundTaskStarter);
         }
     }
 }
