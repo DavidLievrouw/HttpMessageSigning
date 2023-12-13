@@ -35,7 +35,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{77177A
 ProjectSection(SolutionItems) = preProject
 	..\.gitignore = ..\.gitignore
 	..\appveyor.yml = ..\appveyor.yml
-	..\coverage.cmd = ..\coverage.cmd
 	..\README.md = ..\README.md
 	..\test.cmd = ..\test.cmd
 	..\version.txt = ..\version.txt
