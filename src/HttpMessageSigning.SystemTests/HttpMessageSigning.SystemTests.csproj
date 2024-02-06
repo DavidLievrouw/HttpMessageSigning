@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net48;net6.0</TargetFrameworks>
+        <TargetFrameworks>net48;net6.0;net8.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.SystemTests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -27,6 +27,9 @@
     <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
         <DefineConstants>NETCORE;NETSTANDARD;NET6</DefineConstants>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
+        <DefineConstants>NETCORE;NETSTANDARD;NET8</DefineConstants>
+    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
@@ -51,9 +54,15 @@
         <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
     </ItemGroup>
 
+    <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+        <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
+    </ItemGroup>
+
     <ItemGroup Condition="'$(TargetFramework)'=='net48'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
         <PackageReference Include="Microsoft.Owin" Version="4.2.2" />
         <ProjectReference Include="..\HttpMessageSigning.Verification.Owin\HttpMessageSigning.Verification.Owin.csproj" />
     </ItemGroup>
