@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;netcoreapp3.1;net6.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.FileSystem</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification.FileSystem</RootNamespace>
         <DebugType>portable</DebugType>
@@ -56,11 +56,6 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.0,)" />
-        <PackageReference Include="Nito.AsyncEx" Version="[5.1.2,)" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.0,)" />
         <PackageReference Include="Nito.AsyncEx" Version="[5.1.2,)" />
     </ItemGroup>

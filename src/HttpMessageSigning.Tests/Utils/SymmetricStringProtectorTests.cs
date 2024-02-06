@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Xunit;
 
-#if NET472
+#if NETFRAMEWORK
 using System.Security.Cryptography;
 #endif
 
