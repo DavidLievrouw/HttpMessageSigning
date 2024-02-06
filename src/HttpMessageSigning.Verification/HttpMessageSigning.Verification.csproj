@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;net6.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net48;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification</RootNamespace>
         <DebugType>portable</DebugType>
@@ -58,7 +58,7 @@
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="[6.0.0,)" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net48'">
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="[6.0.0,)" />
     </ItemGroup>
     

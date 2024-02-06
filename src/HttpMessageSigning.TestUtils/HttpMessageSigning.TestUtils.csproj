@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;net6.0</TargetFrameworks>
+        <TargetFrameworks>net48;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.TestUtils</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.TestUtils</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -20,14 +20,14 @@
         </PropertyGroup>
     </Target>
 
-    <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
-        <DefineConstants>NETFULL;NETSTANDARD;NETFRAMEWORK;NET472</DefineConstants>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net48'">
+        <DefineConstants>NETFRAMEWORK;NETSTANDARD</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
         <DefineConstants>NETCORE;NETSTANDARD;NET6</DefineConstants>
     </PropertyGroup>
     
-    <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net48'">
         <PackageReference Include="FakeItEasy" Version="8.1.0" />
         <PackageReference Include="Microsoft.Owin.Security" Version="4.2.2" />
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />

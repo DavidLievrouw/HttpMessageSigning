@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;net6.0</TargetFrameworks>
+        <TargetFrameworks>net48;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.SystemTests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -21,8 +21,8 @@
         </PropertyGroup>
     </Target>
 
-    <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
-        <DefineConstants>NETFULL;NETSTANDARD;NETFRAMEWORK;NET472</DefineConstants>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net48'">
+        <DefineConstants>NETFRAMEWORK;NETSTANDARD</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
         <DefineConstants>NETCORE;NETSTANDARD;NET6</DefineConstants>
@@ -51,7 +51,7 @@
         <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)'=='net472'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net48'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
         <PackageReference Include="Microsoft.Owin" Version="4.2.2" />
