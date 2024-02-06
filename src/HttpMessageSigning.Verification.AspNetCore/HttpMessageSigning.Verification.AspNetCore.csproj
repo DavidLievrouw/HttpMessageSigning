@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net6</TargetFrameworks>
+        <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.AspNetCore</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification.AspNetCore</RootNamespace>
         <DebugType>portable</DebugType>
@@ -46,7 +46,7 @@
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)'=='net6'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
     

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;netcoreapp3.1;net6</TargetFrameworks>
+        <TargetFrameworks>net472;netcoreapp3.1;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.Tests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -50,7 +50,7 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.32" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)'=='net6'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     </ItemGroup>
 

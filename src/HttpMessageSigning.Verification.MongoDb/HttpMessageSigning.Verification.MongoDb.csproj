@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;netcoreapp3.1;net6</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net472;netcoreapp3.1;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.MongoDb</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification.MongoDb</RootNamespace>
         <DebugType>portable</DebugType>
@@ -63,7 +63,7 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[3.1.0,)" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)'=='net6'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[6.0.0,)" />
     </ItemGroup>
 

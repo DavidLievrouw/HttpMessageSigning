@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;netcoreapp3.1;net6</TargetFrameworks>
+        <TargetFrameworks>net472;netcoreapp3.1;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.TestUtils</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.TestUtils</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -26,7 +26,7 @@
     <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP3_1</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net6'">
+    <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
         <DefineConstants>NETCORE;NETSTANDARD;NET6</DefineConstants>
     </PropertyGroup>
 
@@ -47,7 +47,7 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.32" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)'=='net6'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="FakeItEasy" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />

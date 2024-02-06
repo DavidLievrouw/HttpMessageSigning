@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;netcoreapp3.1;net6</TargetFrameworks>
+        <TargetFrameworks>net472;netcoreapp3.1;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.MongoDb.Tests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification.MongoDb</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -27,7 +27,7 @@
     <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP3_1</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net6'">
+    <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
         <DefineConstants>NETCORE;NETSTANDARD;NET6</DefineConstants>
     </PropertyGroup>
 
@@ -62,7 +62,7 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.32" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)'=='net6'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     </ItemGroup>
 

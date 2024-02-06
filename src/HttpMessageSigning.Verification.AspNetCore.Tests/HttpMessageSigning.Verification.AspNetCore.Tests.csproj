@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net6</TargetFrameworks>
+        <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.AspNetCore.Tests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification.AspNetCore</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -51,7 +51,7 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.32" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)'=='net6'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     </ItemGroup>
 

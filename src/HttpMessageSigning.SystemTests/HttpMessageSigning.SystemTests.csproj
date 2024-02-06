@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;netcoreapp3.1;net6</TargetFrameworks>
+        <TargetFrameworks>net472;netcoreapp3.1;net6.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.SystemTests</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning</RootNamespace>
         <IsPackable>false</IsPackable>
@@ -27,7 +27,7 @@
     <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
         <DefineConstants>NETCORE;NETSTANDARD;NETCOREAPP3_1</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net6'">
+    <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
         <DefineConstants>NETCORE;NETSTANDARD;NET6</DefineConstants>
     </PropertyGroup>
 
@@ -64,7 +64,7 @@
         <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
     </ItemGroup>
 
-    <ItemGroup Condition="'$(TargetFramework)'=='net6'">
+    <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
         <ProjectReference Include="..\HttpMessageSigning.Verification.AspNetCore\HttpMessageSigning.Verification.AspNetCore.csproj" />
