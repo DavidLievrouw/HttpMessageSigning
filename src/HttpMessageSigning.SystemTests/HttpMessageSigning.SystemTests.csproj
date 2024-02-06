@@ -73,7 +73,7 @@
     <ItemGroup Condition="'$(TargetFramework)'=='net472'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Owin" Version="4.1.0" />
+        <PackageReference Include="Microsoft.Owin" Version="4.2.2" />
         <ProjectReference Include="..\HttpMessageSigning.Verification.Owin\HttpMessageSigning.Verification.Owin.csproj" />
     </ItemGroup>
 
