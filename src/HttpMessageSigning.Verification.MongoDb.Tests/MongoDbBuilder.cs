@@ -1,11 +1,11 @@
 ﻿using System;
-using Mongo2Go;
+using EphemeralMongo;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class MongoDbBuilder : IDisposable {
         private string _databaseName;
 
-        private MongoDbRunner _runner;
+        private IMongoRunner _runner;
 
         public void Dispose() {
             if (_runner == null) return;
@@ -25,9 +25,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
 
         public string Build() {
-            Console.WriteLine($"Starting {nameof(Mongo2Go)}...");
-            _runner = MongoDbRunner.Start();
-            Console.WriteLine($"Running {nameof(Mongo2Go)} at {_runner.ConnectionString}...");
+            Console.WriteLine($"Starting {nameof(EphemeralMongo)}...");
+            _runner = MongoRunner.Run();
+            Console.WriteLine($"Running {nameof(EphemeralMongo)} at {_runner.ConnectionString}...");
 
             return _runner.ConnectionString;
         }
