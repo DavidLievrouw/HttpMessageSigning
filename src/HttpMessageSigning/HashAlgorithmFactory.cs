@@ -14,7 +14,7 @@ namespace Dalion.HttpMessageSigning {
 
         public static HashAlgorithm Create(HashAlgorithmName hashAlgorithmName) {
             if (!HashAlgorithmCreators.TryGetValue(hashAlgorithmName, out var creatorFunc)) {
-                var fallback =  HashAlgorithm.Create(hashAlgorithmName.Name);
+                var fallback = (HashAlgorithm)CryptoConfig.CreateFromName(hashAlgorithmName.Name);
                 if (fallback == null) throw new NotSupportedException($"The specified hash algorithm '{hashAlgorithmName.Name}' is not supported.");
                 return fallback;
             }

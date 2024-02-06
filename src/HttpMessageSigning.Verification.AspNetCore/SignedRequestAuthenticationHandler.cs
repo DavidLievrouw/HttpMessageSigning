@@ -10,7 +10,15 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     internal class SignedRequestAuthenticationHandler : AuthenticationHandler<SignedRequestAuthenticationOptions> {
         private readonly IRequestSignatureVerifier _requestSignatureVerifier;
         private readonly IAuthenticationHeaderExtractor _authenticationHeaderExtractor;
-
+        
+#if NET8
+        public SignedRequestAuthenticationHandler(
+            IOptionsMonitor<SignedRequestAuthenticationOptions> options,
+            UrlEncoder encoder,
+            IRequestSignatureVerifier requestSignatureVerifier,
+            IAuthenticationHeaderExtractor authenticationHeaderExtractor,
+            ILoggerFactory loggerFactory = null) : base(options, loggerFactory, encoder) {
+#else
         public SignedRequestAuthenticationHandler(
             IOptionsMonitor<SignedRequestAuthenticationOptions> options,
             UrlEncoder encoder,
@@ -18,6 +26,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             IRequestSignatureVerifier requestSignatureVerifier,
             IAuthenticationHeaderExtractor authenticationHeaderExtractor,
             ILoggerFactory loggerFactory = null) : base(options, loggerFactory, encoder, clock) {
+#endif
             _requestSignatureVerifier = requestSignatureVerifier ?? throw new ArgumentNullException(nameof(requestSignatureVerifier));
             _authenticationHeaderExtractor = authenticationHeaderExtractor ?? throw new ArgumentNullException(nameof(authenticationHeaderExtractor));
         }

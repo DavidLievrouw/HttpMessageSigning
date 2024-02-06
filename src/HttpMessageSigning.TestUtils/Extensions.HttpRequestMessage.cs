@@ -41,7 +41,7 @@ namespace Dalion.HttpMessageSigning.TestUtils {
                     request.Headers[header.Key] = clientRequest.Headers.GetValues(header.Key).ToArray();
                 }
                 else {
-                    request.Headers.Add(header.Key, clientRequest.Headers.GetValues(header.Key).ToArray());
+                    request.Headers.Append(header.Key, clientRequest.Headers.GetValues(header.Key).ToArray());
                 }
             }
 

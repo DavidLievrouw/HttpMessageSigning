@@ -128,9 +128,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 [Fact]
                 public async Task CopiesHeaders() {
-                    _httpRequest.Headers.Add("dalion-empty-header", string.Empty);
-                    _httpRequest.Headers.Add("dalion-single-header", "one");
-                    _httpRequest.Headers.Add("dalion-multi-header", new Microsoft.Extensions.Primitives.StringValues(new[] {"one", "2"}));
+                    _httpRequest.Headers["dalion-empty-header"] = string.Empty;
+                    _httpRequest.Headers.Append("dalion-single-header", "one");
+                    _httpRequest.Headers.Append("dalion-multi-header", "one");
+                    _httpRequest.Headers.Append("dalion-multi-header", "2");
 
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);
 
@@ -146,9 +147,10 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
 
                 [Fact]
                 public async Task ReadsContentTypeAsHeader() {
-                    _httpRequest.Headers.Add("dalion-empty-header", string.Empty);
-                    _httpRequest.Headers.Add("dalion-single-header", "one");
-                    _httpRequest.Headers.Add("dalion-multi-header", new Microsoft.Extensions.Primitives.StringValues(new[] {"one", "2"}));
+                    _httpRequest.Headers["dalion-empty-header"] = string.Empty;
+                    _httpRequest.Headers.Append("dalion-single-header", "one");
+                    _httpRequest.Headers.Append("dalion-multi-header", "one");
+                    _httpRequest.Headers.Append("dalion-multi-header", "2");
                     _httpRequest.ContentType = "application/json";
 
                     var actual = await _httpRequest.ToHttpRequestForVerification(_signature);

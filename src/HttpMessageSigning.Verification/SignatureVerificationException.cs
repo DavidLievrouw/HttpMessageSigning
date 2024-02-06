@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 
 namespace Dalion.HttpMessageSigning.Verification {
     /// <summary>
@@ -17,8 +16,5 @@ namespace Dalion.HttpMessageSigning.Verification {
         
         /// <inheritdoc />
         public SignatureVerificationException(string message, Exception innerException) : base(message, innerException) { }
-        
-        /// <inheritdoc />
-        protected SignatureVerificationException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 }

@@ -76,7 +76,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             [InlineData("DELETE")]
             public async Task WhenMethodHasEmptyBody_DoesNotSetDigestHeader(string method) {
                 _httpRequest.Content = new ByteArrayContent(Array.Empty<byte>());
-                
+
                 _httpRequest.Method = new HttpMethod(method);
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
@@ -110,7 +110,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value.SequenceEqual(new[] {"SHA-256=abc123"}));
+                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value.SequenceEqual(new[] { "SHA-256=abc123" }));
             }
 
             [Fact]
@@ -119,7 +119,7 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().Contain(h => h.Key == "digest" && h.Value.SequenceEqual(new[] {"SHA-256=abc123"}));
+                _httpRequest.Headers.Should().Contain(h => h.Key == "digest" && h.Value.SequenceEqual(new[] { "SHA-256=abc123" }));
                 _httpRequest.Headers.Should().NotContainKey("Digest");
             }
 
@@ -129,24 +129,32 @@ namespace Dalion.HttpMessageSigning.Signing {
 
                 await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
 
-                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value.SequenceEqual(new[] {""}));
+                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value.SequenceEqual(new[] { "" }));
             }
 
             [Fact]
             public async Task ReturnsExpectedString() {
-                var bodyBytes = new byte[] {0x01, 0x02, 0x03};
+                var bodyBytes = new byte[] { 0x01, 0x02, 0x03 };
                 _httpRequest.Content = new ByteArrayContent(bodyBytes);
 
                 _settings.DigestHashAlgorithm = HashAlgorithmName.SHA512;
-                var hashBytes = HashAlgorithm.Create(HashAlgorithmName.SHA512.Name)?.ComputeHash(bodyBytes);
+                
+                var alg = CryptoConfig.CreateFromName(HashAlgorithmName.SHA512.Name) as HashAlgorithm;
 
-                var base64 = "xyz==";
-                A.CallTo(() => _base64Converter.ToBase64(A<byte[]>.That.IsSameSequenceAs(hashBytes)))
-                    .Returns(base64);
+                try {
+                    var hashBytes = alg?.ComputeHash(bodyBytes);
 
-                await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
+                    var base64 = "xyz==";
+                    A.CallTo(() => _base64Converter.ToBase64(A<byte[]>.That.IsSameSequenceAs(hashBytes)))
+                        .Returns(base64);
 
-                _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value.SequenceEqual(new[] {"SHA-512=xyz=="}));
+                    await _sut.EnsureHeader(_httpRequest, _settings, _timeOfSigning);
+
+                    _httpRequest.Headers.Should().Contain(h => h.Key == "Digest" && h.Value.SequenceEqual(new[] { "SHA-512=xyz==" }));
+                }
+                finally {
+                    alg?.Dispose();
+                }
             }
         }
     }

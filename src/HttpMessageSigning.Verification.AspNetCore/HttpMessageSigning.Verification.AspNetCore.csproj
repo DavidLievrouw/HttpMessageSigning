@@ -42,6 +42,16 @@
         </None>
     </ItemGroup>
 
+    <PropertyGroup Condition="'$(TargetFramework)'=='net48'">
+        <DefineConstants>NETFRAMEWORK;NETSTANDARD</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
+        <DefineConstants>NETCORE;NETSTANDARD;NET6</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
+        <DefineConstants>NETCORE;NETSTANDARD;NET8</DefineConstants>
+    </PropertyGroup>
+    
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="[8.0.0,)" PrivateAssets="All" />

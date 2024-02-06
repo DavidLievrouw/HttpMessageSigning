@@ -33,7 +33,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _method = (request, signature, client) => _sut.Verify(request, signature, client);
                 
                 _signedRequest.Body = Encoding.UTF8.GetBytes("I am the body payload");
-                using (var hashAlgorithm = HashAlgorithm.Create("SHA-384")) {
+                using (var hashAlgorithm = (HashAlgorithm)CryptoConfig.CreateFromName("SHA-384")) {
                     var digestBytes = hashAlgorithm.ComputeHash(_signedRequest.Body);
                     var digestString = new Base64Converter().ToBase64(digestBytes);
                     _signedRequest.Headers.Add(HeaderName.PredefinedHeaderNames.Digest, "SHA-384=" + digestString);
@@ -94,7 +94,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
 
             [Fact]
             public async Task WhenDigestHeaderDoesNotMatchCalculatedBodyDigest_ReturnsSignatureVerificationFailure() {
-                using (var hashAlgorithm = HashAlgorithm.Create("SHA-384")) {
+                using (var hashAlgorithm = (HashAlgorithm)CryptoConfig.CreateFromName("SHA-384")) {
                     var digestBytes = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(_signedRequest.Body + "a"));
                     var digestString = new Base64Converter().ToBase64(digestBytes);
                     _signedRequest.Headers[HeaderName.PredefinedHeaderNames.Digest] = "SHA-384=" + digestString;
