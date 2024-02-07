@@ -38,11 +38,11 @@ namespace Dalion.HttpMessageSigning.Signing {
         public string Value { get; }
 
         public bool Equals(ShortGuid other) {
-            return Equals((object) other);
+            return Equals((object)other);
         }
 
         public bool Equals(string other) {
-            return Equals((object) other);
+            return Equals((object)other);
         }
 
         public override string ToString() {
@@ -50,9 +50,9 @@ namespace Dalion.HttpMessageSigning.Signing {
         }
 
         public override bool Equals(object obj) {
-            if (obj is ShortGuid) return Guid.Equals(((ShortGuid) obj).Guid);
-            if (obj is Guid) return Guid.Equals((Guid) obj);
-            if (obj is string) return Guid.Equals(((ShortGuid) (string) obj).Guid);
+            if (obj is ShortGuid) return Guid.Equals(((ShortGuid)obj).Guid);
+            if (obj is Guid) return Guid.Equals((Guid)obj);
+            if (obj is string) return Guid.Equals(((ShortGuid)(string)obj).Guid);
             return false;
         }
 
@@ -73,7 +73,11 @@ namespace Dalion.HttpMessageSigning.Signing {
             encoded = encoded
                 .Replace("/", "_")
                 .Replace("+", "-");
+#if NET6_0_OR_GREATER
+            return encoded[..22];
+#else
             return encoded.Substring(0, 22);
+#endif
         }
 
         private static Guid Decode(string value) {

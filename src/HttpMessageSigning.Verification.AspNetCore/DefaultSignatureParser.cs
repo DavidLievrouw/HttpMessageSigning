@@ -48,52 +48,52 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             var signature = string.Empty;
 
             foreach (var authParamPart in authParamParts) {
-                var keyIdSelector = "keyId=";
+                const string keyIdSelector = "keyId=";
                 if (authParamPart.StartsWith(keyIdSelector, StringComparison.Ordinal)) {
                     if (keyId != KeyId.Empty) return new SignatureParsingFailure($"Duplicate '{keyIdSelector}' found in signature.");
-                    var value = authParamPart.Substring(keyIdSelector.Length).Trim('"');
+                    var value = authParamPart[keyIdSelector.Length..].Trim('"');
                     keyId = new KeyId(value);
                 }
 
-                var algorithmSelector = "algorithm=";
+                const string  algorithmSelector = "algorithm=";
                 if (authParamPart.StartsWith(algorithmSelector, StringComparison.Ordinal)) {
                     if (algorithm != string.Empty) return new SignatureParsingFailure($"Duplicate '{algorithmSelector}' found in signature.");
-                    var value = authParamPart.Substring(algorithmSelector.Length).Trim('"');
+                    var value = authParamPart[algorithmSelector.Length..].Trim('"');
                     algorithm = value;
                 }
 
-                var createdSelector = "created=";
+                const string  createdSelector = "created=";
                 if (authParamPart.StartsWith(createdSelector, StringComparison.Ordinal)) {
                     if (createdString != string.Empty) return new SignatureParsingFailure($"Duplicate '{createdSelector}' found in signature.");
-                    var value = authParamPart.Substring(createdSelector.Length).Trim('"');
+                    var value = authParamPart[createdSelector.Length..].Trim('"');
                     createdString = value;
                 }
 
-                var expiresSelector = "expires=";
+                const string  expiresSelector = "expires=";
                 if (authParamPart.StartsWith(expiresSelector, StringComparison.Ordinal)) {
                     if (expiresString != string.Empty) return new SignatureParsingFailure($"Duplicate '{expiresSelector}' found in signature.");
-                    var value = authParamPart.Substring(expiresSelector.Length).Trim('"');
+                    var value = authParamPart[expiresSelector.Length..].Trim('"');
                     expiresString = value;
                 }
 
-                var headersSelector = "headers=";
+                const string  headersSelector = "headers=";
                 if (authParamPart.StartsWith(headersSelector, StringComparison.Ordinal)) {
                     if (headersString != string.Empty) return new SignatureParsingFailure($"Duplicate '{headersSelector}' found in signature.");
-                    var value = authParamPart.Substring(headersSelector.Length).Trim('"');
+                    var value = authParamPart[headersSelector.Length..].Trim('"');
                     headersString = value;
                 }
 
-                var nonceSelector = "nonce=";
+                const string  nonceSelector = "nonce=";
                 if (authParamPart.StartsWith(nonceSelector, StringComparison.Ordinal)) {
                     if (!string.IsNullOrEmpty(nonce)) return new SignatureParsingFailure($"Duplicate '{nonceSelector}' found in signature.");
-                    var value = authParamPart.Substring(nonceSelector.Length).Trim('"');
+                    var value = authParamPart[nonceSelector.Length..].Trim('"');
                     nonce = value;
                 }
 
-                var signatureSelector = "signature=";
+                const string  signatureSelector = "signature=";
                 if (authParamPart.StartsWith(signatureSelector, StringComparison.Ordinal)) {
                     if (signature != string.Empty) return new SignatureParsingFailure($"Duplicate '{signatureSelector}' found in signature.");
-                    var value = authParamPart.Substring(signatureSelector.Length).Trim('"');
+                    var value = authParamPart[signatureSelector.Length..].Trim('"');
                     signature = value;
                 }
             }

@@ -32,13 +32,13 @@ namespace WebApplication {
                     return new AuthenticationHeaderValue(rawAuthHeader);
                 }
 
-                var authScheme = rawAuthHeader.Substring(0, separatorIndex);
+                var authScheme = rawAuthHeader[..separatorIndex];
 
                 if (separatorIndex >= rawAuthHeader.Length - 1) {
                     return new AuthenticationHeaderValue(authScheme);
                 }
 
-                var authParam = rawAuthHeader.Substring(separatorIndex + 1);
+                var authParam = rawAuthHeader[(separatorIndex + 1)..];
 
                 return new AuthenticationHeaderValue(authScheme, authParam);
             }

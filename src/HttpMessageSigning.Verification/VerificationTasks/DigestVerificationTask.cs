@@ -19,7 +19,8 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
         public override SignatureVerificationFailure VerifySync(HttpRequestForVerification signedRequest, Signature signature, Client client) {
             if (signature.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest) &&
                 !signedRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
-                return SignatureVerificationFailure.HeaderMissing($"The {HeaderName.PredefinedHeaderNames.Digest} header is indicated as part of the signature, but it is not included in the request.");
+                return SignatureVerificationFailure.HeaderMissing(
+                    $"The {HeaderName.PredefinedHeaderNames.Digest} header is indicated as part of the signature, but it is not included in the request.");
             }
 
             if (!signedRequest.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
@@ -39,24 +40,31 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     digestParams.Add(digestHeaderValue);
                 }
                 else {
+#if NET6_0_OR_GREATER
+                    digestParams.Add(digestHeaderValue[..separatorIndex]);
+                    digestParams.Add(digestHeaderValue[(separatorIndex + 1)..]);
+#else
                     digestParams.Add(digestHeaderValue.Substring(0, separatorIndex));
                     digestParams.Add(digestHeaderValue.Substring(separatorIndex + 1));
+#endif
                 }
             }
-            
+
             if (digestParams.Count < 2) {
                 return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} request header is invalid.");
             }
 
             if (!Constants.DigestHashAlgorithms.TryGetValue(digestParams[0], out var digestAlgorithmName)) {
-                return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is invalid.");
+                return SignatureVerificationFailure.InvalidDigestHeader(
+                    $"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is invalid.");
             }
-            
+
             using (var hashAlgorithm = HashAlgorithmFactory.Create(new HashAlgorithmName(digestAlgorithmName))) {
                 if (hashAlgorithm == null) {
-                    return SignatureVerificationFailure.InvalidDigestHeader($"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is currently not supported.");
+                    return SignatureVerificationFailure.InvalidDigestHeader(
+                        $"The {HeaderName.PredefinedHeaderNames.Digest} algorithm name ({digestParams[0] ?? "[null]"}) is currently not supported.");
                 }
-                
+
                 var payloadBytes = hashAlgorithm.ComputeHash(signedRequest.Body);
                 var calculatedDigest = _base64Converter.ToBase64(payloadBytes);
                 var receivedDigest = digestParams[1];
@@ -65,7 +73,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     return SignatureVerificationFailure.InvalidDigestHeader("The digest header verification failed.");
                 }
             }
-            
+
             return null;
         }
     }

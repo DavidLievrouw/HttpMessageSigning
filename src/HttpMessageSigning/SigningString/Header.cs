@@ -65,8 +65,13 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     nameAndValues.Add(value);
                 }
                 else {
+#if NET6_0_OR_GREATER
+                    nameAndValues.Add(value[..separatorIndex]);
+                    nameAndValues.Add(value[(separatorIndex + 1)..]);
+#else
                     nameAndValues.Add(value.Substring(0, separatorIndex));
                     nameAndValues.Add(value.Substring(separatorIndex + 1));
+#endif
                 }
             }
 
@@ -74,7 +79,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             var name = nameAndValues[0];
             if (string.IsNullOrEmpty(name.Trim())) return false;
             var values = nameAndValues[1]
-                .Split(new[] {", "}, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(v => v.Trim())
                 .Where(v => !string.IsNullOrEmpty(v))
                 .ToArray();
@@ -85,7 +90,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public static Header Parse(string header) {
-            return (Header) header;
+            return (Header)header;
         }
 
         public static implicit operator string(Header header) {

@@ -27,11 +27,11 @@ namespace Dalion.HttpMessageSigning {
 
             var isAbsolute = decoded.IsAbsoluteUri;
             var originalString = decoded.OriginalString;
-            
+
             var decodedPath = isAbsolute
                 ? decoded.GetComponents(UriComponents.Path, UriFormat.Unescaped).TrimStart('/')
                 : FastSplitInTwo(originalString, separator: '?')[0].TrimStart('/');
-            
+
             string decodedQuery = null;
             if (originalString.IndexOf(value: '?') > -1) {
                 decodedQuery = isAbsolute
@@ -52,19 +52,20 @@ namespace Dalion.HttpMessageSigning {
                     sb.Append(value: ':');
                     sb.Append(decoded.Port);
                 }
+
                 sb.Append(value: '/');
             }
 
             if (!isAbsolute) sb.Append(value: '/');
             sb.Append(string.Join("/", pathSegments));
-            
+
             if (!string.IsNullOrEmpty(queryString)) {
                 sb.Append("?" + queryString);
             }
 
             return sb.ToString();
         }
-        
+
         private static string UriEscapeRFC2396(this Uri decoded) {
             if (decoded == null) return null;
 
@@ -79,7 +80,7 @@ namespace Dalion.HttpMessageSigning {
                 : FastSplitInTwo(originalString, separator: '#')[0];
 
             var absoluteUri = new Uri("https://dalion.eu/" + withoutHash.TrimStart('/'), UriKind.Absolute);
-            
+
             return absoluteUri.GetComponents(UriComponents.PathAndQuery, UriFormat.UriEscaped);
         }
 
@@ -96,10 +97,10 @@ namespace Dalion.HttpMessageSigning {
                 : (object)FastSplit(query, separator: '&');
 
             var sb = new StringBuilder();
-            
+
             if (pairs is string str) {
                 var parts = FastSplitInTwo(str, separator: '=');
-                
+
                 sb.Append(Uri.EscapeDataString(parts[0]));
                 if (parts.Length > 1) {
                     sb.Append('=');
@@ -110,7 +111,7 @@ namespace Dalion.HttpMessageSigning {
             }
 
             var isFirst = true;
-            foreach (var pair in (IEnumerable<string>) pairs) {
+            foreach (var pair in (IEnumerable<string>)pairs) {
                 var parts = FastSplitInTwo(pair, separator: '=');
 
                 if (!isFirst) sb.Append('&');
@@ -133,30 +134,44 @@ namespace Dalion.HttpMessageSigning {
             var index = span.IndexOf(separator);
 
             var items = new List<string>();
+
+#if NET6_0_OR_GREATER
             while (index > -1) {
-                var item = span.Slice(start: 0, index).ToString();
+                var item = span[..index].ToString();
+                span = span[(index + 1)..];
+                items.Add(item);
+                index = span.IndexOf(separator);
+            }
+#else
+            while (index > -1) {
+                var item = span.Slice(0, index).ToString();
                 span = span.Slice(index + 1);
                 items.Add(item);
                 index = span.IndexOf(separator);
             }
-            
+#endif
             items.Add(span.ToString());
 
             return items;
         }
-        
+
         private static string[] FastSplitInTwo(string input, char separator) {
             var span = input.AsSpan();
 
             var index = span.IndexOf(separator);
-            if (index < 0) return new[] {input};
-            
-            var part1 = span.Slice(start: 0, index).ToString();
+            if (index < 0) return new[] { input };
+
+#if NET6_0_OR_GREATER
+            var part1 = span[..index].ToString();
+            span = span[(index + 1)..];
+#else
+            var part1 = span.Slice(0, index).ToString();
             span = span.Slice(index + 1);
+#endif
 
             var part2 = span.ToString();
 
-            return new[] {part1, part2};
+            return new[] { part1, part2 };
         }
     }
 }

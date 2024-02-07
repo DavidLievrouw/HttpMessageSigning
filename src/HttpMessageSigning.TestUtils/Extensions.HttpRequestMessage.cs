@@ -29,7 +29,7 @@ namespace Dalion.HttpMessageSigning.TestUtils {
             else {
                 var originalString = clientRequest.RequestUri.OriginalString;
                 var idx = originalString.IndexOf('?');
-                var query = idx >= 0 ? originalString.Substring(idx) : "";
+                var query = idx >= 0 ? originalString[idx..] : "";
                 request.QueryString = new Microsoft.AspNetCore.Http.QueryString(query);
             }
 

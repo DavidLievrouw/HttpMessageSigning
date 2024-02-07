@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
     internal class MatchingAlgorithmVerificationTask : VerificationTask {
         private readonly ILogger<MatchingAlgorithmVerificationTask> _logger;
-        
+
         public MatchingAlgorithmVerificationTask(ILogger<MatchingAlgorithmVerificationTask> logger = null) {
             _logger = logger;
         }
@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                 _logger?.LogDebug("Algorithm match verification is not required, because there is no algorithm specified in the signature.");
                 return null;
             }
-            
+
             // hs2019 is always ok
             if (signature.Algorithm == Signature.DefaultSignatureAlgorithm) return null;
 
@@ -27,21 +27,28 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     algorithmParts.Add(signature.Algorithm);
                 }
                 else {
+#if NET6_0_OR_GREATER
+                    algorithmParts.Add(signature.Algorithm[..separatorIndex]);
+                    algorithmParts.Add(signature.Algorithm[(separatorIndex + 1)..]);
+#else
                     algorithmParts.Add(signature.Algorithm.Substring(0, separatorIndex));
                     algorithmParts.Add(signature.Algorithm.Substring(separatorIndex + 1));
+#endif
                 }
             }
-            
+
             if (algorithmParts.Count < 2) {
                 return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified signature algorithm ({signature.Algorithm}) is not supported.");
             }
 
             if (!client.SignatureAlgorithm.Name.Equals(algorithmParts[0], StringComparison.OrdinalIgnoreCase)) {
-                return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified signature algorithm ({algorithmParts[0]}) does not match the registered signature algorithm for the client with id {client.Id}.");
+                return SignatureVerificationFailure.InvalidSignatureAlgorithm(
+                    $"The specified signature algorithm ({algorithmParts[0]}) does not match the registered signature algorithm for the client with id {client.Id}.");
             }
 
             if (!client.SignatureAlgorithm.HashAlgorithm.Name.Equals(algorithmParts[1], StringComparison.OrdinalIgnoreCase)) {
-                return SignatureVerificationFailure.InvalidSignatureAlgorithm($"The specified hash algorithm ({algorithmParts[1]}) does not match the registered hash algorithm for the client with id {client.Id}.");
+                return SignatureVerificationFailure.InvalidSignatureAlgorithm(
+                    $"The specified hash algorithm ({algorithmParts[1]}) does not match the registered hash algorithm for the client with id {client.Id}.");
             }
 
             return null;

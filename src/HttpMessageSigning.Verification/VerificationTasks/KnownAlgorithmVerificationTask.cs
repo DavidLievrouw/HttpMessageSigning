@@ -37,8 +37,13 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     algorithmParts.Add(signature.Algorithm);
                 }
                 else {
+#if NET6_0_OR_GREATER
+                    algorithmParts.Add(signature.Algorithm[..separatorIndex]);
+                    algorithmParts.Add(signature.Algorithm[(separatorIndex + 1)..]);
+#else
                     algorithmParts.Add(signature.Algorithm.Substring(0, separatorIndex));
                     algorithmParts.Add(signature.Algorithm.Substring(separatorIndex + 1));
+#endif
                 }
             }
             
