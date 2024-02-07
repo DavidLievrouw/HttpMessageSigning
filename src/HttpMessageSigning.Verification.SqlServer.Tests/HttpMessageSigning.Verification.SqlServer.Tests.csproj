@@ -21,16 +21,6 @@
         </PropertyGroup>
     </Target>
 
-    <PropertyGroup Condition="'$(TargetFramework)'=='net48'">
-        <DefineConstants>NETFRAMEWORK;NETSTANDARD</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
-        <DefineConstants>NETCORE;NETSTANDARD;NET6</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
-        <DefineConstants>NETCORE;NETSTANDARD;NET8</DefineConstants>
-    </PropertyGroup>
-
     <ItemGroup>
         <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
         <PackageReference Include="CompareNETObjects" Version="4.83.0" />

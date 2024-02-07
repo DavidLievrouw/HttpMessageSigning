@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
     public class SignedRequestAuthenticationHandlerTests {
-#if !NET8
+#if !NET8_0_OR_GREATER
         private readonly ISystemClock _clock;
 #endif
         private readonly UrlEncoder _encoder;
@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         private readonly SignedRequestAuthenticationHandlerForTests _sut;
 
         public SignedRequestAuthenticationHandlerTests() {
-#if NET8
+#if NET8_0_OR_GREATER
             FakeFactory.Create(out _logger, out _requestSignatureVerifier);
 #else
             FakeFactory.Create(out _logger, out _clock, out _requestSignatureVerifier);
@@ -38,7 +38,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
             _options = new SignedRequestAuthenticationOptions { Realm = "test-app" };
             var optionsMonitor = A.Fake<IOptionsMonitor<SignedRequestAuthenticationOptions>>();
             A.CallTo(() => optionsMonitor.Get(_schemeName)).Returns(_options);
-#if NET8
+#if NET8_0_OR_GREATER
             _sut = new SignedRequestAuthenticationHandlerForTests(optionsMonitor, _encoder, _requestSignatureVerifier, _authenticationHeaderExtractor, _logger);
 #else
             _sut = new SignedRequestAuthenticationHandlerForTests(optionsMonitor, _encoder, _clock, _requestSignatureVerifier, _authenticationHeaderExtractor, _logger);
@@ -256,7 +256,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         }
 
         private class SignedRequestAuthenticationHandlerForTests : SignedRequestAuthenticationHandler {
-#if NET8
+#if NET8_0_OR_GREATER
             public SignedRequestAuthenticationHandlerForTests(
                 IOptionsMonitor<SignedRequestAuthenticationOptions> options,
                 UrlEncoder encoder,

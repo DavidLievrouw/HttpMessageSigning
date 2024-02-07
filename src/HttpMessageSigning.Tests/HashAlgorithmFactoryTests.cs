@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Dalion.HttpMessageSigning {
     public class HashAlgorithmFactoryTests {
-#if NETCORE
+#if !NETFRAMEWORK
         [Theory]
         [InlineData("MD5", "MD5")]
         [InlineData("SHA1", "SHA1")]

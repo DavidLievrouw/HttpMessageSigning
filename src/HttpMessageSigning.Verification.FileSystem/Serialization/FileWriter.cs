@@ -13,10 +13,10 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
             using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite)) {
-#if NETFRAMEWORK || NETSTANDARD
-                xml.Save(fileStream, SaveOptions.DisableFormatting);
-#else
+#if NET6_0_OR_GREATER
                 await xml.SaveAsync(fileStream, SaveOptions.DisableFormatting, CancellationToken.None);
+#else
+                xml.Save(fileStream, SaveOptions.DisableFormatting);
 #endif
                 await fileStream.FlushAsync(CancellationToken.None);
             }

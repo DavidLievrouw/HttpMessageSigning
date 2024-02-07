@@ -19,11 +19,11 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
 
             try {
                 using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
-#if NETFRAMEWORK || NETSTANDARD
+#if NET6_0_OR_GREATER
+                    return await XDocument.LoadAsync(fileStream, LoadOptions.None, CancellationToken.None);
+#else
                     var doc = XDocument.Load(fileStream, LoadOptions.None);
                     return await Task.FromResult(doc);
-#else
-                    return await XDocument.LoadAsync(fileStream, LoadOptions.None, CancellationToken.None);
 #endif
                 }
             }

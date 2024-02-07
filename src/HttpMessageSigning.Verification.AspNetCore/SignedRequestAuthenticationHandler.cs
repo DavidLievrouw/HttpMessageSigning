@@ -11,7 +11,7 @@ namespace Dalion.HttpMessageSigning.Verification.AspNetCore {
         private readonly IRequestSignatureVerifier _requestSignatureVerifier;
         private readonly IAuthenticationHeaderExtractor _authenticationHeaderExtractor;
         
-#if NET8
+#if NET8_0_OR_GREATER
         public SignedRequestAuthenticationHandler(
             IOptionsMonitor<SignedRequestAuthenticationOptions> options,
             UrlEncoder encoder,

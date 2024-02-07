@@ -38,16 +38,6 @@
         </PackageReference>
     </ItemGroup>
 
-    <PropertyGroup Condition="'$(TargetFramework)'=='net48'">
-        <DefineConstants>NETFRAMEWORK;NETSTANDARD</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
-        <DefineConstants>NETCORE;NETSTANDARD;NET6</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
-        <DefineConstants>NETCORE;NETSTANDARD;NET8</DefineConstants>
-    </PropertyGroup>
-
     <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />

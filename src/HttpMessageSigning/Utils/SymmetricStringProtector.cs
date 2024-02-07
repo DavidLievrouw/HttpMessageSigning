@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.Utils {
             var saltStringBytes = Generate128BitsOfRandomEntropy();
             var ivStringBytes = Generate128BitsOfRandomEntropy();
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-#if NET8
+#if NET8_0_OR_GREATER
             using (var password = new Rfc2898DeriveBytes(_secret, saltStringBytes, DerivationIterations, HashAlgorithmName.SHA1)) {
 #else
             using (var password = new Rfc2898DeriveBytes(_secret, saltStringBytes, DerivationIterations)) {
@@ -51,7 +51,7 @@ namespace Dalion.HttpMessageSigning.Utils {
             var saltStringBytes = cipherTextBytesWithSaltAndIv.Take(KeySize / 8).ToArray();
             var ivStringBytes = cipherTextBytesWithSaltAndIv.Skip(KeySize / 8).Take(KeySize / 8).ToArray();
             var cipherTextBytes = cipherTextBytesWithSaltAndIv.Skip(KeySize / 8 * 2).Take(cipherTextBytesWithSaltAndIv.Length - KeySize / 8 * 2).ToArray();
-#if NET8
+#if NET8_0_OR_GREATER
             using (var password = new Rfc2898DeriveBytes(_secret, saltStringBytes, DerivationIterations, HashAlgorithmName.SHA1)) {
 #else
             using (var password = new Rfc2898DeriveBytes(_secret, saltStringBytes, DerivationIterations)) {
