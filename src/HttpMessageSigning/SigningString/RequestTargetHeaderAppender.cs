@@ -20,7 +20,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             return "\n" + new Header(
                        HeaderName.PredefinedHeaderNames.RequestTarget,
-                       $"{_request.Method.Method.ToLowerInvariant()} {path}");
+                       $"{_request.Method.Method.ToLower()} {path}");
         }
     }
 }

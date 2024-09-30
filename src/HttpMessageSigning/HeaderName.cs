@@ -12,7 +12,7 @@ namespace Dalion.HttpMessageSigning {
         /// </summary>
         /// <param name="value">The string representation of this instance.</param>
         public HeaderName(string value) {
-            Value = value ?? string.Empty;
+            Value = value?.ToLower() ?? string.Empty;
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning {
 
         /// <inheritdoc />
         public bool Equals(HeaderName other) {
-            return string.Equals(Value ?? string.Empty, other.Value ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(Value ?? string.Empty, other.Value ?? string.Empty, StringComparison.Ordinal);
         }
 
         /// <inheritdoc />
@@ -37,7 +37,7 @@ namespace Dalion.HttpMessageSigning {
 
         /// <inheritdoc />
         public override int GetHashCode() {
-            return StringComparer.OrdinalIgnoreCase.GetHashCode(Value ?? string.Empty);
+            return StringComparer.Ordinal.GetHashCode(Value);
         }
 
         /// <summary>
@@ -67,12 +67,12 @@ namespace Dalion.HttpMessageSigning {
         ///     An implicit conversion operator for this type to string.
         /// </summary>
         public static implicit operator string(HeaderName name) {
-            return name.Value.ToLowerInvariant();
+            return name.Value;
         }
 
         /// <inheritdoc />
         public override string ToString() {
-            return (Value ?? string.Empty).ToLowerInvariant();
+            return Value;
         }
 
         /// <summary>

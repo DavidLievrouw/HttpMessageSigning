@@ -74,7 +74,7 @@ namespace Dalion.HttpMessageSigning {
             if (KeyId == KeyId.Empty) errors.Add(new ValidationError(nameof(KeyId), $"The {nameof(Signature)} do not specify a valid {nameof(KeyId)}."));
             if (string.IsNullOrEmpty(String)) errors.Add(new ValidationError(nameof(String), $"The {nameof(Signature)} do not specify a valid signature {nameof(String)}."));
             if (Headers == null) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified (null)."));
-            if (Headers != null && !Headers.Any()) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified empty."));
+            if (Headers != null && Headers.Length == 0) errors.Add(new ValidationError(nameof(Headers), $"{nameof(Headers)} cannot be unspecified empty."));
             return errors;
         }
     }

@@ -13,7 +13,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
         public Header(string name, params string[] values) {
             if (values == null) values = Array.Empty<string>();
-            Name = name?.ToLowerInvariant() ?? throw new ArgumentNullException(nameof(name));
+            Name = name?.ToLower() ?? throw new ArgumentNullException(nameof(name));
             if (name == string.Empty && values.Any()) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
             Values = values;
             _stringRepresentation = null;

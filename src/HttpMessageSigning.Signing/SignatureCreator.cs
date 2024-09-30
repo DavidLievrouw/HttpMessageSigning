@@ -43,7 +43,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             var signature = new Signature {
                 KeyId = settings.KeyId,
                 Algorithm = settings.UseDeprecatedAlgorithmParameter
-                    ? $"{settings.SignatureAlgorithm.Name.ToLowerInvariant()}-{settings.SignatureAlgorithm.HashAlgorithm.ToString().ToLowerInvariant()}"
+                    ? $"{settings.SignatureAlgorithm.Name.ToLower()}-{settings.SignatureAlgorithm.HashAlgorithm.ToString().ToLower()}"
                     : Signature.DefaultSignatureAlgorithm,
                 Created = timeOfSigning,
                 Expires = timeOfSigning.Add(expires),

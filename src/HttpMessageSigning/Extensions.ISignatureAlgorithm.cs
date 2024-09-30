@@ -5,28 +5,25 @@ namespace Dalion.HttpMessageSigning {
         internal static bool ShouldIncludeDateHeader(this ISignatureAlgorithm signatureAlgorithm) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
             
-            var signatureAlgorithmString = signatureAlgorithm.Name.ToLowerInvariant();
-            return signatureAlgorithmString.StartsWith("rsa", StringComparison.Ordinal) || 
-                   signatureAlgorithmString.StartsWith("hmac", StringComparison.Ordinal) ||
-                   signatureAlgorithmString.StartsWith("ecdsa", StringComparison.Ordinal);
+            return signatureAlgorithm.Name.StartsWith("rsa", StringComparison.OrdinalIgnoreCase) || 
+                   signatureAlgorithm.Name.StartsWith("hmac", StringComparison.OrdinalIgnoreCase) ||
+                   signatureAlgorithm.Name.StartsWith("ecdsa", StringComparison.OrdinalIgnoreCase);
         }        
         
         internal static bool ShouldIncludeCreatedHeader(this ISignatureAlgorithm signatureAlgorithm) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
             
-            var signatureAlgorithmString = signatureAlgorithm.Name.ToLowerInvariant();
-            return !signatureAlgorithmString.StartsWith("rsa", StringComparison.Ordinal) && 
-                   !signatureAlgorithmString.StartsWith("hmac", StringComparison.Ordinal) &&
-                   !signatureAlgorithmString.StartsWith("ecdsa", StringComparison.Ordinal);
+            return !signatureAlgorithm.Name.StartsWith("rsa", StringComparison.OrdinalIgnoreCase) && 
+                   !signatureAlgorithm.Name.StartsWith("hmac", StringComparison.OrdinalIgnoreCase) &&
+                   !signatureAlgorithm.Name.StartsWith("ecdsa", StringComparison.OrdinalIgnoreCase);
         }
         
         internal static bool ShouldIncludeExpiresHeader(this ISignatureAlgorithm signatureAlgorithm) {
             if (signatureAlgorithm == null) throw new ArgumentNullException(nameof(signatureAlgorithm));
             
-            var signatureAlgorithmString = signatureAlgorithm.Name.ToLowerInvariant();
-            return !signatureAlgorithmString.StartsWith("rsa", StringComparison.Ordinal) && 
-                   !signatureAlgorithmString.StartsWith("hmac", StringComparison.Ordinal) &&
-                   !signatureAlgorithmString.StartsWith("ecdsa", StringComparison.Ordinal);
+            return !signatureAlgorithm.Name.StartsWith("rsa", StringComparison.OrdinalIgnoreCase) && 
+                   !signatureAlgorithm.Name.StartsWith("hmac", StringComparison.OrdinalIgnoreCase) &&
+                   !signatureAlgorithm.Name.StartsWith("ecdsa", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -51,7 +51,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                 var clonedSettings = (SigningSettings)_signingSettings.Clone();
                 var onRequestSigningTask = _signingSettings.Events?.OnRequestSigning?.Invoke(request, clonedSettings);
                 if (onRequestSigningTask != null) await onRequestSigningTask.ConfigureAwait(continueOnCapturedContext: false);
-                
                 _signingSettingsSanitizer.SanitizeHeaderNamesToInclude(clonedSettings, request);
                 
                 clonedSettings.Validate();

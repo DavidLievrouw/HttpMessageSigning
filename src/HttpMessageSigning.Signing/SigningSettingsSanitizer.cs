@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 
@@ -7,44 +8,39 @@ namespace Dalion.HttpMessageSigning.Signing {
         public void SanitizeHeaderNamesToInclude(SigningSettings signingSettings, HttpRequestMessage request) {
             if (signingSettings == null) throw new ArgumentNullException(nameof(signingSettings));
             if (request == null) throw new ArgumentNullException(nameof(request));
-            
+
             // When feature is disabled, don't take any further action
             if (!signingSettings.AutomaticallyAddRecommendedHeaders) return;
 
-            if (signingSettings.Headers == null) signingSettings.Headers = Array.Empty<HeaderName>();
-            
+            var headers = signingSettings.Headers != null 
+                ? new HashSet<HeaderName>(signingSettings.Headers) 
+                : new HashSet<HeaderName>();
+
             // According to the spec, the header (request-target) should always be a part of the signature string.
-            if (!signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.RequestTarget)) {
-                signingSettings.Headers = AppendHeaderName(signingSettings.Headers, HeaderName.PredefinedHeaderNames.RequestTarget);
-            }
+            headers.Add(HeaderName.PredefinedHeaderNames.RequestTarget);
 
             // According to the spec, when the algorithm starts with 'rsa', 'hmac' or 'ecdsa', the Date header should be part of the signature string.
-            if (signingSettings.SignatureAlgorithm.ShouldIncludeDateHeader() && !signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Date)) {
-                signingSettings.Headers = AppendHeaderName(signingSettings.Headers, HeaderName.PredefinedHeaderNames.Date);
+            if (signingSettings.SignatureAlgorithm.ShouldIncludeDateHeader()) {
+                headers.Add(HeaderName.PredefinedHeaderNames.Date);
             }
 
             // According to the spec, when the algorithm does not start with 'rsa', 'hmac' or 'ecdsa', the (created) header should be part of the signature string.
-            if (signingSettings.SignatureAlgorithm.ShouldIncludeCreatedHeader() && !signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Created)) {
-                signingSettings.Headers = AppendHeaderName(signingSettings.Headers, HeaderName.PredefinedHeaderNames.Created);
+            if (signingSettings.SignatureAlgorithm.ShouldIncludeCreatedHeader()) {
+                headers.Add(HeaderName.PredefinedHeaderNames.Created);
             }
 
             // According to the spec, when the algorithm does not start with 'rsa', 'hmac' or 'ecdsa', the (expires) header should be part of the signature string.
-            if (signingSettings.SignatureAlgorithm.ShouldIncludeExpiresHeader() && !signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Expires)) {
-                signingSettings.Headers = AppendHeaderName(signingSettings.Headers, HeaderName.PredefinedHeaderNames.Expires);
+            if (signingSettings.SignatureAlgorithm.ShouldIncludeExpiresHeader()) {
+                headers.Add(HeaderName.PredefinedHeaderNames.Expires);
             }
 
             // When digest is enabled, make it part of the signature string
-            if (!string.IsNullOrEmpty(signingSettings.DigestHashAlgorithm.Name) && request.Method.SupportsBody() &&
-                !signingSettings.Headers.Contains(HeaderName.PredefinedHeaderNames.Digest)) {
-                signingSettings.Headers = AppendHeaderName(signingSettings.Headers, HeaderName.PredefinedHeaderNames.Digest);
+            if (!string.IsNullOrEmpty(signingSettings.DigestHashAlgorithm.Name) && request.Method.SupportsBody()) {
+                headers.Add(HeaderName.PredefinedHeaderNames.Digest);
             }
-        }
 
-        private static HeaderName[] AppendHeaderName(HeaderName[] headerNames, HeaderName toAppend) {
-            var result = new HeaderName[headerNames.Length + 1];
-            headerNames.CopyTo(result, 0);
-            result[headerNames.Length] = toAppend;
-            return result;
+            //signingSettings.Headers = new List<HeaderName>(headers).ToArray();
+            signingSettings.Headers = headers.ToArray();
         }
     }
 }
