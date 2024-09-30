@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Benchmark")]
 [assembly: InternalsVisibleTo("Dalion.HttpMessageSigning.Tests")]
 [assembly: InternalsVisibleTo("Dalion.HttpMessageSigning.Verification.Tests")]
 [assembly: InternalsVisibleTo("Dalion.HttpMessageSigning.Signing")]

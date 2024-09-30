@@ -28,7 +28,7 @@ namespace Dalion.HttpMessageSigning.Utils {
         public class Protect : SymmetricStringProtectorTests {
             [Fact]
             public void GivenNullPlainText_Throws() {
-                Action act = () => _sut.Protect(plainText: null);
+                Action act = () => _sut.Protect(plain: null);
                 act.Should().Throw<ArgumentNullException>();
             }
 
@@ -55,7 +55,7 @@ namespace Dalion.HttpMessageSigning.Utils {
         public class Unprotect : SymmetricStringProtectorTests {
             [Fact]
             public void GivenNullCypher_Throws() {
-                Action act = () => _sut.Unprotect(cipherText: null);
+                Action act = () => _sut.Unprotect(cipher: null);
                 act.Should().Throw<ArgumentNullException>();
             }
 

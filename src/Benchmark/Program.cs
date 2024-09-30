@@ -18,7 +18,7 @@ namespace Benchmark {
         }*/
         
         internal static void Main(string[] args) {
-            var summary1 = BenchmarkRunner.Run<ShortGuidEncoding>();
+            var summary1 = BenchmarkRunner.Run<SymmetricStringProtectorBenchmarks>();
         }
     }
 }
