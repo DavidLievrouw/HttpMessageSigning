@@ -44,19 +44,9 @@ namespace Benchmark {
         }
 
         [Benchmark]
-        public async Task Sign() {
-            for (var i = 0; i < 10000; i++) {
-                await _requestSigner.Sign(_request);
-            }
-        }
-        
-        public async Task SignABunchOfTimes() {
-            var watch = Stopwatch.StartNew();
-            for (var i = 0; i < 1000000; i++) {
-                await _requestSigner.Sign(_request);
-            }
-            watch.Stop();
-            Console.WriteLine("Elapsed: {0}ms", watch.ElapsedMilliseconds);
+        public async Task<HttpRequestMessage> Sign() {
+            await _requestSigner.Sign(_request);
+            return _request;
         }
         
         private class Config : ManualConfig {

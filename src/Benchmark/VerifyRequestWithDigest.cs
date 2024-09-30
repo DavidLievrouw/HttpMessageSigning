@@ -27,8 +27,8 @@ namespace Benchmark {
         public VerifyRequestWithDigest() {
             var keyId = new KeyId("e0e8dcd638334c409e1b88daf821d135");
             var cert = new X509Certificate2(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
-            
-            var serviceProvider = new ServiceCollection()                
+
+            var serviceProvider = new ServiceCollection()
                 .AddHttpMessageSigning()
                 .UseKeyId(keyId)
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("yumACY64r%hm"))
@@ -40,7 +40,7 @@ namespace Benchmark {
                     "e0e8dcd638334c409e1b88daf821d135",
                     "HttpMessageSigningSampleHMAC",
                     SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
-                    options => options.Claims = new [] {
+                    options => options.Claims = new[] {
                         new Claim(SignedHttpRequestClaimTypes.Role, "users.read")
                     }
                 ))
@@ -53,7 +53,7 @@ namespace Benchmark {
                 Method = HttpMethod.Post,
                 Content = new StringContent("{'id':42}", Encoding.UTF8, MediaTypeNames.Application.Json),
                 Headers = {
-                    {"Dalion-App-Id", "ringor"}
+                    { "Dalion-App-Id", "ringor" }
                 }
             };
             requestSigner.Sign(request).GetAwaiter().GetResult();
@@ -62,21 +62,11 @@ namespace Benchmark {
         }
 
         [Benchmark]
-        public async Task Verify() {
-            for (var i = 0; i < 10000; i++) {
-                await _verifier.VerifySignature(_request, new SignedRequestAuthenticationOptions());
-            }
+        public async Task<RequestSignatureVerificationResult> Verify() {
+            var result = await _verifier.VerifySignature(_request, new SignedRequestAuthenticationOptions());
+            return result;
         }
-        
-        public async Task VerifyABunchOfTimes() {
-            var watch = Stopwatch.StartNew();
-            for (var i = 0; i < 1000000; i++) {
-                await _verifier.VerifySignature(_request, new SignedRequestAuthenticationOptions());
-            }
-            watch.Stop();
-            Console.WriteLine("Elapsed: {0}ms", watch.ElapsedMilliseconds);
-        }
-        
+
         private class Config : ManualConfig {
             public Config() {
                 AddDiagnoser(MemoryDiagnoser.Default);
