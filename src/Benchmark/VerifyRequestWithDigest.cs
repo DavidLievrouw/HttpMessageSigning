@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,10 +33,12 @@ namespace Benchmark {
                 .AddHttpMessageSigning()
                 .UseKeyId(keyId)
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("yumACY64r%hm"))
+                //.UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(cert, HashAlgorithmName.SHA256))
                 .UseExpires(TimeSpan.FromMinutes(1))
                 .UseHeaders((HeaderName)"Dalion-App-Id")
                 .Services
                 .AddHttpMessageSignatureVerification()
+                .UseAspNetCoreSignatureVerification()
                 .UseClient(Client.Create(
                     "e0e8dcd638334c409e1b88daf821d135",
                     "HttpMessageSigningSampleHMAC",

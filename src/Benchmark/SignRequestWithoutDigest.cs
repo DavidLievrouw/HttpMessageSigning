@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Net.Mime;
@@ -27,7 +26,8 @@ namespace Benchmark {
             var serviceProvider = new ServiceCollection()
                 .AddHttpMessageSigning()
                 .UseKeyId(keyId)
-                .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(cert, HashAlgorithmName.SHA256))
+                .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("yumACY64r%hm"))
+                //.UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(cert, HashAlgorithmName.SHA256))
                 .UseExpires(TimeSpan.FromMinutes(1))
                 .UseHeaders((HeaderName)"Dalion-App-Id")
                 .Services

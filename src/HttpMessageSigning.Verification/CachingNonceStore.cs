@@ -45,8 +45,38 @@ namespace Dalion.HttpMessageSigning.Verification {
             _decorated.Dispose();
         }
 
-        private static string CacheKeyFactory(KeyId clientId, string nonceValue) {
-            return $"CacheEntry_Nonce_{clientId}_{nonceValue ?? "null"}";
+        private static CachingNonceStoreCacheKey CacheKeyFactory(KeyId clientId, string nonceValue) {
+            return new CachingNonceStoreCacheKey(clientId, nonceValue);
+        }
+        
+        private class CachingNonceStoreCacheKey : IEquatable<CachingNonceStoreCacheKey> {
+            private readonly KeyId _clientId;
+            private readonly string _nonceValue;
+
+            public CachingNonceStoreCacheKey(KeyId clientId, string nonceValue) {
+                _clientId = clientId;
+                _nonceValue = nonceValue;
+            }
+
+            public bool Equals(CachingNonceStoreCacheKey other) {
+                if (other is null) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return _clientId.Equals(other._clientId) && _nonceValue == other._nonceValue;
+            }
+
+            public override bool Equals(object obj) {
+                return ReferenceEquals(this, obj) || (obj is CachingNonceStoreCacheKey other && Equals(other));
+            }
+
+            public override int GetHashCode() {
+                unchecked {
+                    return (_clientId.GetHashCode() * 397) ^ _nonceValue.GetHashCode();
+                }
+            }
+
+            public override string ToString() {
+                return $"{_clientId}_{_nonceValue}";
+            }
         }
     }
 }

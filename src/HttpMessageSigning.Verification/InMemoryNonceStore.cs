@@ -53,8 +53,38 @@ namespace Dalion.HttpMessageSigning.Verification {
             return Task.FromResult(match);
         }
 
-        private static string CacheKeyCreator(KeyId clientId, string nonce) {
-            return $"Nonce_{clientId}_{nonce}";
+        private static InMemoryNonceStoreCacheKey CacheKeyCreator(KeyId clientId, string nonce) {
+            return new InMemoryNonceStoreCacheKey(clientId, nonce);
+        }
+
+        private class InMemoryNonceStoreCacheKey : IEquatable<InMemoryNonceStoreCacheKey> {
+            private readonly KeyId _clientId;
+            private readonly string _nonceValue;
+
+            public InMemoryNonceStoreCacheKey(KeyId clientId, string nonceValue) {
+                _clientId = clientId;
+                _nonceValue = nonceValue;
+            }
+
+            public bool Equals(InMemoryNonceStoreCacheKey other) {
+                if (other is null) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return _clientId.Equals(other._clientId) && _nonceValue == other._nonceValue;
+            }
+
+            public override bool Equals(object obj) {
+                return ReferenceEquals(this, obj) || (obj is InMemoryNonceStoreCacheKey other && Equals(other));
+            }
+
+            public override int GetHashCode() {
+                unchecked {
+                    return (_clientId.GetHashCode() * 397) ^ _nonceValue.GetHashCode();
+                }
+            }
+
+            public override string ToString() {
+                return $"{_clientId}_{_nonceValue}";
+            }
         }
     }
 }
