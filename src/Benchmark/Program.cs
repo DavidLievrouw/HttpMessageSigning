@@ -10,11 +10,15 @@ namespace Benchmark {
             //var summary4 = BenchmarkRunner.Run<VerifyRequestWithDigest>();
         }*/
 
-        internal static async Task Main(string[] args) {
+        /*internal static async Task Main(string[] args) {
             await new SignRequestWithoutDigest().SignABunchOfTimes();
             await new SignRequestWithDigest().SignABunchOfTimes();
             await new VerifyRequestWithoutDigest().VerifyABunchOfTimes();
             await new VerifyRequestWithDigest().VerifyABunchOfTimes();
+        }*/
+        
+        internal static void Main(string[] args) {
+            var summary1 = BenchmarkRunner.Run<ShortGuidEncoding>();
         }
     }
 }

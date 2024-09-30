@@ -50,9 +50,9 @@ namespace Dalion.HttpMessageSigning.Signing {
         }
 
         public override bool Equals(object obj) {
-            if (obj is ShortGuid) return Guid.Equals(((ShortGuid)obj).Guid);
-            if (obj is Guid) return Guid.Equals((Guid)obj);
-            if (obj is string) return Guid.Equals(((ShortGuid)(string)obj).Guid);
+            if (obj is ShortGuid sg) return Guid.Equals(sg.Guid);
+            if (obj is Guid g) return Guid.Equals(g);
+            if (obj is string s) return Guid.Equals(((ShortGuid)s).Guid);
             return false;
         }
 
@@ -68,6 +68,41 @@ namespace Dalion.HttpMessageSigning.Signing {
             return new ShortGuid(Guid.NewGuid());
         }
 
+#if NET6_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        private static string Encode(Guid guid) {
+            Span<byte> guidBytes = stackalloc byte[16];
+            guid.TryWriteBytes(guidBytes);
+            Span<char> encodedChars = stackalloc char[24];
+            Convert.TryToBase64Chars(guidBytes, encodedChars, out _);
+            for (var i = 0; i < 22; i++) {
+                encodedChars[i] = encodedChars[i] switch {
+                    '/' => '_',
+                    '+' => '-',
+                    _ => encodedChars[i]
+                };
+            }
+
+            return new string(encodedChars.Slice(0, 22));
+        }
+
+        private static Guid Decode(string value) {
+            Span<char> decodedChars = stackalloc char[24];
+            value.AsSpan().CopyTo(decodedChars);
+            for (var i = 0; i < 22; i++) {
+                decodedChars[i] = decodedChars[i] switch {
+                    '_' => '/',
+                    '-' => '+',
+                    _ => decodedChars[i]
+                };
+            }
+
+            decodedChars[22] = '=';
+            decodedChars[23] = '=';
+            Span<byte> buffer = stackalloc byte[16];
+            Convert.TryFromBase64Chars(decodedChars, buffer, out _);
+            return new Guid(buffer);
+        }
+#else
         private static string Encode(Guid guid) {
             var encoded = Convert.ToBase64String(guid.ToByteArray());
             encoded = encoded
@@ -87,6 +122,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             var buffer = Convert.FromBase64String(value + "==");
             return new Guid(buffer);
         }
+#endif
 
         public static bool operator ==(ShortGuid x, ShortGuid y) {
             return x.Guid == y.Guid;
