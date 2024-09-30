@@ -39,7 +39,6 @@ namespace Dalion.HttpMessageSigning.Signing {
                 headers.Add(HeaderName.PredefinedHeaderNames.Digest);
             }
 
-            //signingSettings.Headers = new List<HeaderName>(headers).ToArray();
             signingSettings.Headers = headers.ToArray();
         }
     }

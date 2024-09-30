@@ -176,14 +176,6 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 _cache.TryGetEntry(cacheKey, out _).Should().BeFalse();
             }
-
-            private static string CacheKeyFactory(KeyId clientId, string nonceValue) {
-                return $"CacheEntry_Nonce_{clientId}_{nonceValue}";
-            }
-
-            private static string CacheKeyFactory(Nonce nonce) {
-                return $"CacheEntry_Nonce_{nonce.ClientId}_{nonce.Value}";
-            }
         }
 
         public class Register : CachingNonceStoreTests {
@@ -201,7 +193,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             public async Task AddsToCacheWithExpectedExpiration() {
                 var nonce = new Nonce(new KeyId("c1"), "abc123", _now.AddSeconds(30));
 
-                var cacheKey = "CacheEntry_Nonce_c1_abc123";
+                var cacheKey = CacheKeyFactory(nonce);
                 _cache.TryGetValue(cacheKey, out _).Should().BeFalse();
 
                 await _sut.Register(nonce);
@@ -227,6 +219,14 @@ namespace Dalion.HttpMessageSigning.Verification {
 
                 _cache.IsDisposed.Should().BeFalse();
             }
+        }
+
+        private static object CacheKeyFactory(KeyId clientId, string nonceValue) {
+            return new CachingNonceStore.CachingNonceStoreCacheKey(clientId, nonceValue);
+        }
+
+        private static object CacheKeyFactory(Nonce nonce) {
+            return new CachingNonceStore.CachingNonceStoreCacheKey(nonce.ClientId, nonce.Value);
         }
     }
 }

@@ -45,11 +45,11 @@ namespace Dalion.HttpMessageSigning.Verification {
             _decorated.Dispose();
         }
 
-        private static CachingNonceStoreCacheKey CacheKeyFactory(KeyId clientId, string nonceValue) {
+        internal static CachingNonceStoreCacheKey CacheKeyFactory(KeyId clientId, string nonceValue) {
             return new CachingNonceStoreCacheKey(clientId, nonceValue);
         }
         
-        private class CachingNonceStoreCacheKey : IEquatable<CachingNonceStoreCacheKey> {
+        internal class CachingNonceStoreCacheKey : IEquatable<CachingNonceStoreCacheKey> {
             private readonly KeyId _clientId;
             private readonly string _nonceValue;
 

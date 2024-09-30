@@ -15,7 +15,7 @@ namespace Dalion.HttpMessageSigning {
             [Fact]
             public void Constructor_CreatesHeaderNameWithValue() {
                 var actual = new HeaderName("theValue");
-                actual.Value.Should().Be("theValue");
+                actual.Value.Should().Be("thevalue");
             }
 
             [Fact]

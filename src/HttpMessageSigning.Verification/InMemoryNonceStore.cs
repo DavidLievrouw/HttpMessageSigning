@@ -57,7 +57,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             return new InMemoryNonceStoreCacheKey(clientId, nonce);
         }
 
-        private class InMemoryNonceStoreCacheKey : IEquatable<InMemoryNonceStoreCacheKey> {
+        internal class InMemoryNonceStoreCacheKey : IEquatable<InMemoryNonceStoreCacheKey> {
             private readonly KeyId _clientId;
             private readonly string _nonceValue;
 

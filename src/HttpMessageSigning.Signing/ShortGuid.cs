@@ -86,6 +86,10 @@ namespace Dalion.HttpMessageSigning.Signing {
         }
 
         private static Guid Decode(string value) {
+            if (string.IsNullOrWhiteSpace(value)) {
+                throw new FormatException("Invalid short guid format.");
+            }
+            
             Span<char> decodedChars = stackalloc char[24];
             value.AsSpan().CopyTo(decodedChars);
             for (var i = 0; i < 22; i++) {

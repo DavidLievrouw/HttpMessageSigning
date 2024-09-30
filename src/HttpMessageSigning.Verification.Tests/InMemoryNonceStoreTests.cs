@@ -41,7 +41,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task WhenNonceIsRegistered_ReturnsNonce() {
                 var nonce = new Nonce(_keyId, _value, DateTimeOffset.Now.AddMinutes(1));
-                var cacheKey = "Nonce_c1_abc123";
+                var cacheKey = CacheKeyFactory(nonce);
                 var cacheEntry = _cache.CreateEntry(cacheKey);
                 cacheEntry.Value = nonce;
 
@@ -53,7 +53,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [Fact]
             public async Task WhenNonceIsRegistered_ReturnsNonce_EvenIfItExpired() {
                 var nonce = new Nonce(_keyId, _value, DateTimeOffset.Now.AddMinutes(-1));
-                var cacheKey = "Nonce_c1_abc123";
+                var cacheKey = CacheKeyFactory(nonce);
                 var cacheEntry = _cache.CreateEntry(cacheKey);
                 cacheEntry.Value = nonce;
 
@@ -73,11 +73,11 @@ namespace Dalion.HttpMessageSigning.Verification {
         public class Register : InMemoryNonceStoreTests {
             private readonly DateTimeOffset _now;
             private readonly Nonce _nonce;
-            private readonly string _cacheKey;
+            private readonly object _cacheKey;
 
             public Register() {
                 _now = new DateTimeOffset(2020, 3, 20, 12, 12, 14, TimeSpan.Zero);
-                _cacheKey = "Nonce_c1_abc123";
+                _cacheKey = CacheKeyFactory(new KeyId("c1"), "abc123");
                 _nonce = new Nonce(new KeyId("c1"), "abc123", _now.AddMinutes(1));
             }
 
@@ -118,7 +118,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenNonceIsAlreadyRegistered_Overwrites() {
-                var cacheKey = "Nonce_c1_abc123";
+                var cacheKey = CacheKeyFactory(new KeyId("c1"), "abc123");
                 var cacheEntry = _cache.CreateEntry(cacheKey);
                 cacheEntry.Value = _nonce;
 
@@ -128,6 +128,14 @@ namespace Dalion.HttpMessageSigning.Verification {
                 _cache.TryGetValue(_cacheKey, out var actualNonce).Should().BeTrue();
                 actualNonce.Should().Be(newNonce);
             }
+        }
+
+        private static object CacheKeyFactory(KeyId clientId, string nonceValue) {
+            return new InMemoryNonceStore.InMemoryNonceStoreCacheKey(clientId, nonceValue);
+        }
+
+        private static object CacheKeyFactory(Nonce nonce) {
+            return new InMemoryNonceStore.InMemoryNonceStoreCacheKey(nonce.ClientId, nonce.Value);
         }
     }
 }
