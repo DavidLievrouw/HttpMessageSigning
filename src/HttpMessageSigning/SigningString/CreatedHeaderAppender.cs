@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class CreatedHeaderAppender : IHeaderAppender {
@@ -8,10 +9,13 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _timeOfComposing = timeOfComposing;
         }
 
-        public string BuildStringToAppend(HeaderName header) {
-            if (!_timeOfComposing.HasValue) return string.Empty;
+        public void Append(HeaderName header, StringBuilder sb) {
+            if (!_timeOfComposing.HasValue) return;
+            
             var createdValue = _timeOfComposing.Value.ToUnixTimeSeconds();
-            return "\n" + new Header(HeaderName.PredefinedHeaderNames.Created, createdValue.ToString());
+            
+            var headerToAppend = new Header(HeaderName.PredefinedHeaderNames.Created, createdValue.ToString());
+            headerToAppend.Append(sb);
         }
     }
 }

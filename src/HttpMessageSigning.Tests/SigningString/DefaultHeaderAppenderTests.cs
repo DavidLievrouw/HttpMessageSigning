@@ -17,10 +17,10 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _sut = new DefaultHeaderAppender(_httpRequest);
         }
 
-        public class BuildStringToAppend : DefaultHeaderAppenderTests {
+        public class Append : DefaultHeaderAppenderTests {
             private readonly HeaderName _headerName;
 
-            public BuildStringToAppend() {
+            public Append() {
                 _headerName = new HeaderName("Dalion-test");
             }
 

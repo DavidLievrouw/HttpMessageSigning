@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Dalion.HttpMessageSigning.SigningString {
     internal class CompositeHeaderAppender : IHeaderAppender {
@@ -21,20 +22,25 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _dateHeaderAppender = dateHeaderAppender ?? throw new ArgumentNullException(nameof(dateHeaderAppender));
         }
 
-        public string BuildStringToAppend(HeaderName header) {
+        public void Append(HeaderName header, StringBuilder sb) {
             if (header == HeaderName.Empty) throw new ValidationException("An empty header name was specified.");
             
             switch (header) {
                 case string str when str == HeaderName.PredefinedHeaderNames.RequestTarget:
-                    return _requestTargetHeaderAppender.BuildStringToAppend(header);
+                    _requestTargetHeaderAppender.Append(header, sb);
+                    break;
                 case string str when str == HeaderName.PredefinedHeaderNames.Created:
-                    return _createdHeaderAppender.BuildStringToAppend(header);
+                    _createdHeaderAppender.Append(header, sb);
+                    break;
                 case string str when str == HeaderName.PredefinedHeaderNames.Expires:
-                    return _expiresHeaderAppender.BuildStringToAppend(header);
+                    _expiresHeaderAppender.Append(header, sb);
+                    break;
                 case string str when str == HeaderName.PredefinedHeaderNames.Date:
-                    return _dateHeaderAppender.BuildStringToAppend(header);
+                    _dateHeaderAppender.Append(header, sb);
+                    break;
                 default:
-                    return _defaultHeaderAppender.BuildStringToAppend(header);
+                    _defaultHeaderAppender.Append(header, sb);
+                    break;
             }
         }
     }

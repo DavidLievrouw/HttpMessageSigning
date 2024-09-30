@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Dalion.HttpMessageSigning.SigningString.RequestTarget;
 
 namespace Dalion.HttpMessageSigning.SigningString {
@@ -13,14 +14,15 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _requestTargetEscaper = requestTargetEscaper ?? throw new ArgumentNullException(nameof(requestTargetEscaper));
         }
 
-        public string BuildStringToAppend(HeaderName header) {
+        public void Append(HeaderName header, StringBuilder sb) {
             var path = _request.RequestUri.OriginalString == "*"
                 ? _request.RequestUri.OriginalString
                 : _requestTargetEscaper.Escape(_request.RequestUri, _requestTargetEscaping);
 
-            return "\n" + new Header(
-                       HeaderName.PredefinedHeaderNames.RequestTarget,
-                       $"{_request.Method.Method.ToLower()} {path}");
+            var headerToAppend = new Header(
+                HeaderName.PredefinedHeaderNames.RequestTarget,
+                $"{_request.Method.Method.ToLower()} {path}");
+            headerToAppend.Append(sb);
         }
     }
 }

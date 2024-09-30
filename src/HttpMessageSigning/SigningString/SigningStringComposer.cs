@@ -23,10 +23,10 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             var sb = new StringBuilder();
             foreach (var headerName in compositionRequest.HeadersToInclude.Where(h => h != HeaderName.Empty)) {
-                sb = sb.Append(headerAppender.BuildStringToAppend(headerName));
+                headerAppender.Append(headerName, sb);
             }
 
-            sb.Append(_nonceAppender.BuildStringToAppend(compositionRequest.Nonce));
+            _nonceAppender.Append(compositionRequest.Nonce, sb);
             
             return sb.ToString().TrimStart();
         }

@@ -17,7 +17,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _sut = new DateHeaderAppender(_httpRequest);
         }
 
-        public class BuildStringToAppend : DateHeaderAppenderTests {
+        public class Append : DateHeaderAppenderTests {
             [Fact]
             public void WhenRequestDoesNotContainDateHeader_ReturnsEmptyString() {
                 var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Expires);

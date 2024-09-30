@@ -1,9 +1,13 @@
-﻿namespace Dalion.HttpMessageSigning.SigningString {
+﻿using System.Text;
+
+namespace Dalion.HttpMessageSigning.SigningString {
     internal class NonceAppender : INonceAppender {
-        public string BuildStringToAppend(string nonce) {
-            return string.IsNullOrEmpty(nonce)
-                ? string.Empty
-                : $"\nnonce: {nonce}";
+        private const string Header = "\nnonce: ";
+
+        public void Append(string nonce, StringBuilder sb) {
+            if (string.IsNullOrEmpty(nonce)) return;
+            sb.Append(Header);
+            sb.Append(nonce);
         }
     }
 }

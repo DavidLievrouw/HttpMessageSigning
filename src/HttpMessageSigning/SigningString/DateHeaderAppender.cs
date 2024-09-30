@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using Microsoft.Extensions.Primitives;
 
 namespace Dalion.HttpMessageSigning.SigningString {
@@ -10,16 +11,17 @@ namespace Dalion.HttpMessageSigning.SigningString {
         public DateHeaderAppender(HttpRequestForSignatureString request) {
             _request = request ?? throw new ArgumentNullException(nameof(request));
         }
-
-        public string BuildStringToAppend(HeaderName header) {
+        
+        public void Append(HeaderName header, StringBuilder sb) {
             var dateValues = _request.Headers[HeaderName.PredefinedHeaderNames.Date];
             
-            if (dateValues == StringValues.Empty) return string.Empty;
+            if (dateValues == StringValues.Empty) return;
             if (!DateTimeOffset.TryParseExact(dateValues.First(), "R", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateValue)) {
-                return string.Empty;
+                return;
             }
             
-            return "\n" + new Header(HeaderName.PredefinedHeaderNames.Date, dateValue.ToString("R"));
+            var headerToAppend = new Header(HeaderName.PredefinedHeaderNames.Date, dateValue.ToString("R"));
+            headerToAppend.Append(sb);
         }
     }
 }

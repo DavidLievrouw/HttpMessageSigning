@@ -1,5 +1,7 @@
+using System.Text;
+
 namespace Dalion.HttpMessageSigning.SigningString {
     internal interface IHeaderAppender {
-        string BuildStringToAppend(HeaderName header);
+        void Append(HeaderName header, StringBuilder sb);
     }
 }

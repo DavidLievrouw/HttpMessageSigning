@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Text;
 using Dalion.HttpMessageSigning.TestUtils;
 using FakeItEasy;
 using FluentAssertions;
@@ -58,64 +59,64 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 Action act = () => _sut.Compose(null);
                 act.Should().Throw<ArgumentNullException>();
             }
-            
+
             [Fact]
             public void ExcludesEmptyHeaderNames() {
                 _compositionRequest.HeadersToInclude = new[] {
                     HeaderName.PredefinedHeaderNames.RequestTarget,
-                    HeaderName.Empty, 
+                    HeaderName.Empty,
                     HeaderName.PredefinedHeaderNames.Date,
-                    HeaderName.Empty, 
+                    HeaderName.Empty,
                     new HeaderName("dalion_app_id")
                 };
-                
-                A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
-                    .ReturnsLazily(call => call.GetArgument<HeaderName>(0) + ",");
 
-                A.CallTo(() => _nonceAppender.BuildStringToAppend(_compositionRequest.Nonce))
-                    .Returns("abc123,");
-                
+                A.CallTo(() => _headerAppender.Append(A<HeaderName>._, A<StringBuilder>._))
+                    .Invokes((HeaderName h, StringBuilder sb) => sb.Append(h + ","));
+
+                A.CallTo(() => _nonceAppender.Append(_compositionRequest.Nonce, A<StringBuilder>._))
+                    .Invokes((string _, StringBuilder sb) => sb.Append("abc123,"));
+
                 var actual = _sut.Compose(_compositionRequest);
 
                 var expected = "(request-target),date,dalion_app_id,abc123,";
                 actual.Should().Be(expected);
             }
-            
+
             [Fact]
             public void ComposesStringOutOfAllRequestedHeaders() {
-                A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
-                    .ReturnsLazily(call => "\n" + call.GetArgument<HeaderName>(0) + ",");
+                A.CallTo(() => _headerAppender.Append(A<HeaderName>._, A<StringBuilder>._))
+                    .Invokes((HeaderName h, StringBuilder sb) => sb.Append("\n" + h + ","));
 
-                A.CallTo(() => _nonceAppender.BuildStringToAppend(_compositionRequest.Nonce))
-                    .Returns("abc123,");
-                
+                A.CallTo(() => _nonceAppender.Append(_compositionRequest.Nonce, A<StringBuilder>._))
+                    .Invokes((string _, StringBuilder sb) => sb.Append("abc123,"));
+
                 var actual = _sut.Compose(_compositionRequest);
 
                 var expected = "(request-target),\ndate,\ndalion_app_id,abc123,";
                 actual.Should().Be(expected);
             }
-            
+
             [Fact]
             public void AppendsNonce() {
-                A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
-                    .ReturnsLazily(call => "\n" + call.GetArgument<HeaderName>(0) + ",");
+                A.CallTo(() => _headerAppender.Append(A<HeaderName>._, A<StringBuilder>._))
+                    .Invokes((HeaderName h, StringBuilder sb) => sb.Append("\n" + h + ","));
 
-                A.CallTo(() => _nonceAppender.BuildStringToAppend(_compositionRequest.Nonce))
-                    .Returns("abc123,");
-                
+                A.CallTo(() => _nonceAppender.Append(_compositionRequest.Nonce, A<StringBuilder>._))
+                    .Invokes((string _, StringBuilder sb) => sb.Append("abc123,"));
+
                 var actual = _sut.Compose(_compositionRequest);
 
                 actual.Should().Contain(",abc123,");
             }
-            
+
             [Fact]
             public void TrimsWhitespaceFromStart() {
-                A.CallTo(() => _headerAppender.BuildStringToAppend(A<HeaderName>._))
-                    .ReturnsLazily(call => "\n" + call.GetArgument<HeaderName>(0) + ",");
+                A.CallTo(() => _headerAppender.Append(A<HeaderName>._, A<StringBuilder>._))
+                    .Invokes((HeaderName h, StringBuilder sb) => sb.Append("\n" + h + ","));
 
-                A.CallTo(() => _nonceAppender.BuildStringToAppend(_compositionRequest.Nonce))
-                    .Returns("abc123,");
-                
+                A.CallTo(() => _nonceAppender.Append(_compositionRequest.Nonce, A<StringBuilder>._))
+                    .Invokes((string _, StringBuilder sb) => sb.Append("abc123,"));
+
                 var actual = _sut.Compose(_compositionRequest);
 
                 var expected = "(request-target),\ndate,\ndalion_app_id,abc123,";

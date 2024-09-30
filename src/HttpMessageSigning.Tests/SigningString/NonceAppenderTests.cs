@@ -9,7 +9,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _sut = new NonceAppender();
         }
 
-        public class BuildStringToAppend : NonceAppenderTests {
+        public class Append : NonceAppenderTests {
             [Theory]
             [InlineData(null)]
             [InlineData("")]

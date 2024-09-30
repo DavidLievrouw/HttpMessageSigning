@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _timeOfComposing = new DateTimeOffset(2020, 2, 24, 11, 20, 14, TimeSpan.FromHours(1));
         }
 
-        public class BuildStringToAppend : ExpiresHeaderAppenderTests {
+        public class Append : ExpiresHeaderAppenderTests {
             [Fact]
             public void WhenExpiresHasValue_ReturnsExpectedString() {
                 var expires = TimeSpan.FromMinutes(10);

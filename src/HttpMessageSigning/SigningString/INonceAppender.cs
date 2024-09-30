@@ -1,5 +1,7 @@
-﻿namespace Dalion.HttpMessageSigning.SigningString {
+﻿using System.Text;
+
+namespace Dalion.HttpMessageSigning.SigningString {
     internal interface INonceAppender {
-        string BuildStringToAppend(string nonce);
+        void Append(string nonce, StringBuilder sb);
     }
 }

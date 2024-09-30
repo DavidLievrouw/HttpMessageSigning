@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Dalion.HttpMessageSigning.TestUtils;
 using FakeItEasy;
 using FluentAssertions;
@@ -28,18 +29,18 @@ namespace Dalion.HttpMessageSigning.SigningString {
                 _dateHeaderAppender);
         }
 
-        public class BuildStringToAppend : CompositeHeaderAppenderTests {
-            public BuildStringToAppend() {
-                A.CallTo(() => _createdHeaderAppender.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Created))
-                    .Returns("{known-created}");
-                A.CallTo(() => _dateHeaderAppender.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Date))
-                    .Returns("{known-date}");
-                A.CallTo(() => _expiresHeaderAppender.BuildStringToAppend(HeaderName.PredefinedHeaderNames.Expires))
-                    .Returns("{known-expires}");
-                A.CallTo(() => _requestTargetHeaderAppender.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget))
-                    .Returns("{known-request-target}");
-                A.CallTo(() => _defaultHeaderAppender.BuildStringToAppend(A<HeaderName>._))
-                    .ReturnsLazily(call => $"{{{call.GetArgument<HeaderName>(0)}}}");
+        public class Append : CompositeHeaderAppenderTests {
+            public Append() {
+                A.CallTo(() => _createdHeaderAppender.Append(HeaderName.PredefinedHeaderNames.Created, A<StringBuilder>._))
+                    .Invokes((HeaderName _, StringBuilder sb) => sb.Append("{known-created}"));
+                A.CallTo(() => _dateHeaderAppender.Append(HeaderName.PredefinedHeaderNames.Date, A<StringBuilder>._))
+                    .Invokes((HeaderName _, StringBuilder sb) => sb.Append("{known-date}"));
+                A.CallTo(() => _expiresHeaderAppender.Append(HeaderName.PredefinedHeaderNames.Expires, A<StringBuilder>._))
+                    .Invokes((HeaderName _, StringBuilder sb) => sb.Append("{known-expires}"));
+                A.CallTo(() => _requestTargetHeaderAppender.Append(HeaderName.PredefinedHeaderNames.RequestTarget, A<StringBuilder>._))
+                    .Invokes((HeaderName _, StringBuilder sb) => sb.Append("{known-request-target}"));
+                A.CallTo(() => _defaultHeaderAppender.Append(A<HeaderName>._, A<StringBuilder>._))
+                    .Invokes((HeaderName hn, StringBuilder sb) => sb.Append($"{{{hn}}}"));
             }
 
             [Fact]

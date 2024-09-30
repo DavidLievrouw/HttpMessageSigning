@@ -7,6 +7,8 @@ using System.Text;
 namespace Dalion.HttpMessageSigning.SigningString {
     [DebuggerDisplay("{" + nameof(ToString) + "()}")]
     internal struct Header : IEquatable<Header> {
+        private const string Separator = ": ";
+
         public static Header Empty = new Header(string.Empty, Array.Empty<string>());
 
         private string _stringRepresentation;
@@ -14,7 +16,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         public Header(string name, params string[] values) {
             if (values == null) values = Array.Empty<string>();
             Name = name?.ToLower() ?? throw new ArgumentNullException(nameof(name));
-            if (name == string.Empty && values.Any()) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
+            if (name == string.Empty && values.Length != 0) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
             Values = values;
             _stringRepresentation = null;
         }
@@ -24,7 +26,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         public string[] Values { get; }
 
         public bool Equals(Header other) {
-            return string.Equals(Name ?? string.Empty, other.Name ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(Name ?? string.Empty, other.Name ?? string.Empty, StringComparison.Ordinal);
         }
 
         public override bool Equals(object obj) {
@@ -32,7 +34,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
         }
 
         public override int GetHashCode() {
-            return StringComparer.OrdinalIgnoreCase.GetHashCode(Name ?? string.Empty);
+            return StringComparer.Ordinal.GetHashCode(Name ?? string.Empty);
         }
 
         public static bool operator ==(Header left, Header right) {
@@ -60,7 +62,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
 
             var nameAndValues = new List<string>();
             if (!string.IsNullOrEmpty(value)) {
-                var separatorIndex = value.IndexOf(": ", StringComparison.Ordinal);
+                var separatorIndex = value.IndexOf(Separator, StringComparison.Ordinal);
                 if (separatorIndex < 0 || separatorIndex >= value.Length - 1) {
                     nameAndValues.Add(value);
                 }
@@ -97,12 +99,34 @@ namespace Dalion.HttpMessageSigning.SigningString {
             return header.ToString();
         }
 
+        internal void Append(StringBuilder sb, bool appendNewLine = true) {
+            if (appendNewLine) {
+                sb.Append("\n");
+            }
+
+            sb.Append(Name);
+            sb.Append(Separator);
+
+            if (Values == null || Values.Length == 0) {
+                return;
+            }
+
+            if (Values.Length == 1) {
+                sb.Append(Values[0]);
+                return;
+            }
+
+            sb.Append(Values[0]);
+            for (var i = 1; i < Values.Length; i++) {
+                sb.Append(", ");
+                sb.Append(Values[i]);
+            }
+        }
+
         public override string ToString() {
             if (_stringRepresentation == null) {
                 var sb = new StringBuilder();
-                sb.Append(Name);
-                sb.Append(": ");
-                sb.Append(string.Join(", ", Values));
+                Append(sb, appendNewLine: false);
                 _stringRepresentation = sb.ToString();
             }
 

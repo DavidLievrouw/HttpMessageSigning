@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             _sut = new RequestTargetHeaderAppender(_httpRequest, _requestTargetEscaping, _requestTargetEscaper);
         }
 
-        public class BuildStringToAppend : RequestTargetHeaderAppenderTests {
+        public class Append : RequestTargetHeaderAppenderTests {
             [Fact]
             public void WritesLowercaseMethod() {
                 var actual = _sut.BuildStringToAppend(HeaderName.PredefinedHeaderNames.RequestTarget);
