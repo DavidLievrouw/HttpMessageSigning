@@ -228,7 +228,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(null)]
             [InlineData("")]
             public void DoesNotAcceptNullOrEmptyKeyIds(string nullOrEmpty) {
-                Action act = () => Client.Create(nullOrEmpty, _name, _signatureAlgorithm, _configureOptions);
+                Action act = () => Client.Create((KeyId)nullOrEmpty, _name, _signatureAlgorithm, _configureOptions);
                 act.Should().Throw<ArgumentException>();
             }
 
@@ -299,7 +299,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(null)]
             [InlineData("")]
             public void DoesNotAcceptNullOrEmptyKeyIds(string nullOrEmpty) {
-                Action act = () => Client.Create(nullOrEmpty, _name, _secret, _hashAlgorithm, _configureOptions);
+                Action act = () => Client.Create((KeyId)nullOrEmpty, _name, _secret, _hashAlgorithm, _configureOptions);
                 act.Should().Throw<ArgumentException>();
             }
 
@@ -391,7 +391,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(null)]
             [InlineData("")]
             public void DoesNotAcceptNullOrEmptyKeyIds(string nullOrEmpty) {
-                Action act = () => Client.Create(nullOrEmpty, _name, _publicParameters, _hashAlgorithm, _configureOptions);
+                Action act = () => Client.Create((KeyId)nullOrEmpty, _name, _publicParameters, _hashAlgorithm, _configureOptions);
                 act.Should().Throw<ArgumentException>();
             }
 
@@ -486,7 +486,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(null)]
             [InlineData("")]
             public void DoesNotAcceptNullOrEmptyKeyIds(string nullOrEmpty) {
-                Action act = () => Client.Create(nullOrEmpty, _name, _publicParameters, _hashAlgorithm, _configureOptions);
+                Action act = () => Client.Create((KeyId)nullOrEmpty, _name, _publicParameters, _hashAlgorithm, _configureOptions);
                 act.Should().Throw<ArgumentException>();
             }
 

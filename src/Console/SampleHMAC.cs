@@ -32,7 +32,7 @@ namespace Console {
             services
                 .AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
                 .AddHttpMessageSigning()
-                .UseKeyId("e0e8dcd638334c409e1b88daf821d135")
+                .UseKeyId((KeyId)"e0e8dcd638334c409e1b88daf821d135")
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("yumACY64r%hm"))
                 .UseDigestAlgorithm(HashAlgorithmName.SHA256)
                 .UseExpires(TimeSpan.FromMinutes(1))
@@ -40,7 +40,7 @@ namespace Console {
                 .Services
                 .AddHttpMessageSignatureVerification()
                 .UseClient(Client.Create(
-                    "e0e8dcd638334c409e1b88daf821d135",
+                    (KeyId)"e0e8dcd638334c409e1b88daf821d135",
                     "HttpMessageSigningSampleHMAC",
                     SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                     options => options.Claims = new [] {
@@ -59,7 +59,7 @@ namespace Console {
                 }
             };
 
-            var requestSigner = requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
+            var requestSigner = requestSignerFactory.CreateFor((KeyId)"e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
             
             return request;

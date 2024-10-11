@@ -91,7 +91,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             var signatureAlgorithm = _signatureAlgorithmDataRecordConverter.ToSignatureAlgorithm(match.SignatureAlgorithm, _encryptionKey, match.V);
             
             return new Client(
-                match.Id,
+                (KeyId)match.Id,
                 match.Name,
                 signatureAlgorithm,
                 nonceLifetime,
@@ -106,7 +106,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
         private static readonly KeyId[] ProhibitedIds = {
             KeyId.Empty,
-            "_version"
+            (KeyId)"_version"
         };
     }
 }

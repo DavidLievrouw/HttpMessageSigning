@@ -3,7 +3,7 @@ using System;
 namespace Dalion.HttpMessageSigning.Verification.Owin {
     internal static class TestModels {
         public static readonly Signature Signature = new Signature {
-            KeyId = "app1",
+            KeyId = (KeyId)"app1",
             Algorithm = "hs2019",
             Headers = new[] {
                 HeaderName.PredefinedHeaderNames.RequestTarget,

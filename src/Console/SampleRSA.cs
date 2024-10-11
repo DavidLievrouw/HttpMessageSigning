@@ -35,12 +35,12 @@ namespace Console {
             services
                 .AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
                 .AddHttpMessageSigning()
-                .UseKeyId("4d8f14b6c4184dc1b677c88a2b60bfd2")
+                .UseKeyId((KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2")
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(cert))
                 .Services
                 .AddHttpMessageSignatureVerification()
                 .UseClient(Client.Create(
-                    "4d8f14b6c4184dc1b677c88a2b60bfd2",
+                    (KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2",
                     "HttpMessageSigningSampleRSA",
                     SignatureAlgorithm.CreateForVerification(cert),
                     options => options.Claims = new[] {
@@ -59,7 +59,7 @@ namespace Console {
                 }
             };
 
-            var requestSigner = requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            var requestSigner = requestSignerFactory.CreateFor((KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2");
             await requestSigner.Sign(request);
 
             return request;

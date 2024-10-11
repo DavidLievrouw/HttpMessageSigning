@@ -59,11 +59,11 @@ namespace Dalion.HttpMessageSigning.Verification {
                 _signedRequest = new HttpRequestForVerification {
                     Method = HttpMethod.Post,
                     RequestUri = "https://unittest.com:9001".ToUri(),
-                    Signature = new Signature {KeyId = "client1"}
+                    Signature = new Signature {KeyId = (KeyId)"client1"}
                 };
                 
                 _client = new Client(
-                    "client1", 
+                    (KeyId)"client1", 
                     "Unit test app", 
                     new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA256), 
                     TimeSpan.FromMinutes(1), 

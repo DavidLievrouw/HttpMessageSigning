@@ -18,7 +18,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             _rsa = new RSACryptoServiceProvider();
             var services = new ServiceCollection()
                 .AddHttpMessageSigning()
-                .UseKeyId("unit-test-app")
+                .UseKeyId((KeyId)"unit-test-app")
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("s3cr3t"))
                 .UseOnRequestSignedEvent((message, signature, settings) => {
                     _interceptedSettingsDictionary[settings.KeyId] = settings;
@@ -26,7 +26,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 })
                 .Services
                 .AddHttpMessageSigning()
-                .UseKeyId("unit-test-app-hmac")
+                .UseKeyId((KeyId)"unit-test-app-hmac")
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("s3cr3t"))
                 .UseHeaders((HeaderName) "hmacHeader")
                 .UseOnRequestSignedEvent((message, signature, settings) => {
@@ -35,7 +35,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 })
                 .Services
                 .AddHttpMessageSigning()
-                .UseKeyId("unit-test-app-rsa")
+                .UseKeyId((KeyId)"unit-test-app-rsa")
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(_rsa))
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("s3cr3t"))
                 .UseHeaders((HeaderName) "rsaHeader")
@@ -68,7 +68,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         [InlineData("unit-test-app-rsa")]
         public void CanResolveRegisteredSigner(string keyId) {
             object actualSigner = null;
-            Action act = () => actualSigner = _provider.GetRequiredService<IRequestSignerFactory>().CreateFor(keyId);
+            Action act = () => actualSigner = _provider.GetRequiredService<IRequestSignerFactory>().CreateFor((KeyId)keyId);
             act.Should().NotThrow();
             actualSigner.Should().NotBeNull();
             actualSigner.Should().BeAssignableTo<IRequestSigner>();
@@ -77,7 +77,7 @@ namespace Dalion.HttpMessageSigning.Signing {
         [Theory]
         [InlineData("something-not-registered")]
         public void CannotResolveUnregisteredKeyId(string keyId) {
-            Action act = () => _provider.GetRequiredService<IRequestSignerFactory>().CreateFor(keyId);
+            Action act = () => _provider.GetRequiredService<IRequestSignerFactory>().CreateFor((KeyId)keyId);
             act.Should().Throw<InvalidOperationException>();
         }
 
@@ -91,28 +91,28 @@ namespace Dalion.HttpMessageSigning.Signing {
             };
             var factory = _provider.GetRequiredService<IRequestSignerFactory>();
 
-            var signer1 = factory.CreateFor("unit-test-app");
+            var signer1 = factory.CreateFor((KeyId)"unit-test-app");
             await signer1.Sign(request);
 
-            _interceptedSettingsDictionary.Should().ContainKey("unit-test-app");
-            _interceptedSettingsDictionary["unit-test-app"].Headers.Should().Equal(
+            _interceptedSettingsDictionary.Should().ContainKey((KeyId)"unit-test-app");
+            _interceptedSettingsDictionary[(KeyId)"unit-test-app"].Headers.Should().Equal(
                 HeaderName.PredefinedHeaderNames.RequestTarget,
                 HeaderName.PredefinedHeaderNames.Date);
             
-            var signer2 = factory.CreateFor("unit-test-app-hmac");
+            var signer2 = factory.CreateFor((KeyId)"unit-test-app-hmac");
             await signer2.Sign(request);
 
-            _interceptedSettingsDictionary.Should().ContainKey("unit-test-app-hmac");
-            _interceptedSettingsDictionary["unit-test-app-hmac"].Headers.Should().Equal(
+            _interceptedSettingsDictionary.Should().ContainKey((KeyId)"unit-test-app-hmac");
+            _interceptedSettingsDictionary[(KeyId)"unit-test-app-hmac"].Headers.Should().Equal(
                 (HeaderName)"hmacHeader", 
                 HeaderName.PredefinedHeaderNames.RequestTarget, 
                 HeaderName.PredefinedHeaderNames.Date);
             
-            var signer3 = factory.CreateFor("unit-test-app-rsa");
+            var signer3 = factory.CreateFor((KeyId)"unit-test-app-rsa");
             await signer3.Sign(request);
 
-            _interceptedSettingsDictionary.Should().ContainKey("unit-test-app-rsa");
-            _interceptedSettingsDictionary["unit-test-app-rsa"].Headers.Should().Equal(
+            _interceptedSettingsDictionary.Should().ContainKey((KeyId)"unit-test-app-rsa");
+            _interceptedSettingsDictionary[(KeyId)"unit-test-app-rsa"].Headers.Should().Equal(
                 (HeaderName)"rsaHeader", 
                 HeaderName.PredefinedHeaderNames.RequestTarget, 
                 HeaderName.PredefinedHeaderNames.Date);
@@ -122,11 +122,11 @@ namespace Dalion.HttpMessageSigning.Signing {
         public void UponIncompleteRegistration_ThrowsValidationException() {
             using (var provider = new ServiceCollection()
                 .AddHttpMessageSigning()
-                .UseKeyId("unit-test-app")
+                .UseKeyId((KeyId)"unit-test-app")
                 .Services
                 .BuildServiceProvider()) {
                 var factory = provider.GetRequiredService<IRequestSignerFactory>();
-                Action act = () => factory.CreateFor("unit-test-app");
+                Action act = () => factory.CreateFor((KeyId)"unit-test-app");
                 act.Should().Throw<ValidationException>();
             }
         }

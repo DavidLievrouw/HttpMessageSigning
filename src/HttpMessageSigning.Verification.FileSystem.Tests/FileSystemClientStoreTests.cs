@@ -37,7 +37,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             [InlineData(null)]
             [InlineData("")]
             public void AllowsForNullOrEmptyEncryptionKey(string nullOrEmpty) {
-                Action act = () => new FileSystemClientStore(_fileManager, _signatureAlgorithmDataRecordConverter, nullOrEmpty);
+                Action act = () => new FileSystemClientStore(_fileManager, _signatureAlgorithmDataRecordConverter, (SharedSecretEncryptionKey)nullOrEmpty);
                 act.Should().NotThrow();
             }
         }
@@ -53,7 +53,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             public async Task CanRoundTripHMAC() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -77,7 +77,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                     var publicKeyParams = rsa.ExportParameters(false);
                     var rsaAlg = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA384, publicKeyParams);
                     var client = new Client(
-                        "c1",
+                        (KeyId)"c1",
                         "app one",
                         rsaAlg,
                         TimeSpan.FromMinutes(1),
@@ -102,7 +102,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                     var publicKeyParams = ecdsa.ExportParameters(false);
                     var rsaAlg = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA384, publicKeyParams);
                     var client = new Client(
-                        "c1",
+                        (KeyId)"c1",
                         "app one",
                         rsaAlg,
                         TimeSpan.FromMinutes(1),
@@ -125,7 +125,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             public async Task Upserts() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client1 = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -135,7 +135,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
                     new Claim("scope", "HttpMessageSigning"));
                 await _sut.Register(client1);
                 var client2 = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app two",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -154,7 +154,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             public async Task EncryptsHMACSecretInFile() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -178,7 +178,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             public async Task MarksRecordsWithCorrectVersion() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -199,10 +199,10 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             [InlineData(null)]
             [InlineData("")]
             public async Task WhenEncryptionKeyIsNullOrEmpty_DoesNotEncryptHMACSecretInFile(string nullOrEmpty) {
-                using (var sut = new FileSystemClientStore(_fileManager, _signatureAlgorithmDataRecordConverter, nullOrEmpty)) {
+                using (var sut = new FileSystemClientStore(_fileManager, _signatureAlgorithmDataRecordConverter, (SharedSecretEncryptionKey)nullOrEmpty)) {
                     var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                     var client = new Client(
-                        "c1",
+                        (KeyId)"c1",
                         "app one",
                         hmac,
                         TimeSpan.FromMinutes(1),
@@ -228,14 +228,14 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             [InlineData(null)]
             [InlineData("")]
             public async Task GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
-                Func<Task> act = () => _sut.Get(nullOrEmpty);
+                Func<Task> act = () => _sut.Get((KeyId)nullOrEmpty);
                 await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]
             public async Task WhenClientIsNotFound_ReturnsNull() {
                 Client actual = null;
-                Func<Task> act = async () => actual = await _sut.Get("IDontExist");
+                Func<Task> act = async () => actual = await _sut.Get((KeyId)"IDontExist");
                 await act.Should().NotThrowAsync();
                 actual.Should().BeNull();
             }
@@ -244,7 +244,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             public async Task CanGetAndDeserializeExistingClient() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),

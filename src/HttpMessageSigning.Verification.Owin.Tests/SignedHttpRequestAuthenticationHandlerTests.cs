@@ -79,7 +79,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
                 var successResult = new RequestSignatureVerificationResultSuccess(
                     new Client(
-                        "c1", 
+                        (KeyId)"c1", 
                         "test", 
                         SignatureAlgorithm.CreateForVerification("s3cr3t"), 
                         TimeSpan.FromMinutes(1),
@@ -104,7 +104,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
                 var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {new Claim("name", "john.doe")}));
                 var successResult = new RequestSignatureVerificationResultSuccess(
                     new Client(
-                        "c1", 
+                        (KeyId)"c1", 
                         "test", 
                         SignatureAlgorithm.CreateForVerification("s3cr3t"), 
                         TimeSpan.FromMinutes(1),
@@ -134,7 +134,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                 var failureResult = new RequestSignatureVerificationResultFailure(
                     new Client(
-                        "c1", 
+                        (KeyId)"c1", 
                         "test", 
                         SignatureAlgorithm.CreateForVerification("s3cr3t"), 
                         TimeSpan.FromMinutes(1), 
@@ -158,7 +158,7 @@ namespace Dalion.HttpMessageSigning.Verification.Owin {
 
                 var failureResult = new RequestSignatureVerificationResultFailure(
                     new Client(
-                        "c1", 
+                        (KeyId)"c1", 
                         "test", 
                         SignatureAlgorithm.CreateForVerification("s3cr3t"), 
                         TimeSpan.FromMinutes(1),

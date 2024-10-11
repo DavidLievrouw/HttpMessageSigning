@@ -124,15 +124,6 @@ namespace Dalion.HttpMessageSigning {
             }
 
             [Fact]
-            public void IsImplicitlyConvertibleFromString() {
-                var value = Guid.NewGuid().ToString();
-                var str = value;
-                SharedSecretEncryptionKey actual = str;
-                var expected = new SharedSecretEncryptionKey(value);
-                actual.Should().Be(expected);
-            }
-
-            [Fact]
             [SuppressMessage("ReSharper", "ExpressionIsAlwaysNull")]
             public void GivenNullString_ReturnsEmptySharedSecretEncryptionKey() {
                 string nullString = null;

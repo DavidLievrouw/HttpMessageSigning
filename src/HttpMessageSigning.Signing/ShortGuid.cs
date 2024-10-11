@@ -152,11 +152,11 @@ namespace Dalion.HttpMessageSigning.Signing {
             return shortGuid.Guid;
         }
 
-        public static implicit operator ShortGuid(string shortGuid) {
+        public static explicit operator ShortGuid(string shortGuid) {
             return new ShortGuid(shortGuid);
         }
 
-        public static implicit operator ShortGuid(Guid guid) {
+        public static explicit operator ShortGuid(Guid guid) {
             return new ShortGuid(guid);
         }
     }

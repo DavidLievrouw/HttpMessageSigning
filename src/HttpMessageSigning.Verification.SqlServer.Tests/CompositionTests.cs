@@ -70,7 +70,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     ConnectionString = _connectionString
                 })
                 .UseClient(Client.Create(
-                    "e0e8dcd638334c409e1b88daf821d135",
+                    (KeyId)"e0e8dcd638334c409e1b88daf821d135",
                     "HttpMessageSigningSampleHMAC",
                     SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                     options => options.Claims = new [] {
@@ -81,7 +81,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 .BuildServiceProvider()) {
                 var clientStore = provider.GetRequiredService<IClientStore>();
                 clientStore.GetType().Name.Should().Be("CachingClientStore");
-                var registeredClient = await clientStore.Get("e0e8dcd638334c409e1b88daf821d135");
+                var registeredClient = await clientStore.Get((KeyId)"e0e8dcd638334c409e1b88daf821d135");
                 registeredClient.Should().NotBeNull();
                 registeredClient.Name.Should().Be("HttpMessageSigningSampleHMAC");
             }

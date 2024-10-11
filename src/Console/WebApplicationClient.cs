@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Console {
     public class WebApplicationClient {
-        private const string KeyId = "e0e8dcd638334c409e1b88daf821d135";
+        private static readonly KeyId KeyId = (KeyId)"e0e8dcd638334c409e1b88daf821d135";
         private const string Secret = "G#6l$!D16E2UPoYKu&oL@AjAOj9vipKJTSII%*8iY*q6*MOis2R";
         private const int Port = 5000;
         

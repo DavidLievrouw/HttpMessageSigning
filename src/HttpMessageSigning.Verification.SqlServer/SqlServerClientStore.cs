@@ -155,7 +155,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             var signatureAlgorithm = _signatureAlgorithmConverter.ToSignatureAlgorithm(match, _settings.SharedSecretEncryptionKey);
             
             return new Client(
-                match.Id,
+                (KeyId)match.Id,
                 match.Name,
                 signatureAlgorithm,
                 nonceLifetime,

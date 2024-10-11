@@ -68,9 +68,9 @@ namespace Dalion.HttpMessageSigning {
         }
 
         /// <summary>
-        ///     An implicit conversion operator for this type from string.
+        ///     An explicit conversion operator for this type from string.
         /// </summary>
-        public static implicit operator KeyId(string value) {
+        public static explicit operator KeyId(string value) {
             if (!TryParse(value, out var keyId)) {
                 throw new FormatException($"The specified value ({value ?? "[null]"}) is not a valid string representation of a {nameof(KeyId)}.");
             }

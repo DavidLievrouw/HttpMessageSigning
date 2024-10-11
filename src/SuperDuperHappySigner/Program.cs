@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace SuperDuperHappySigner {
     internal class Program {
         private static async Task Main(string[] args) {
-            var keyId = "91533c57807640579af1482d94faafe3";
+            var keyId = new KeyId("91533c57807640579af1482d94faafe3");
             
             var services = new ServiceCollection()
                 .AddHttpMessageSigning().Services;

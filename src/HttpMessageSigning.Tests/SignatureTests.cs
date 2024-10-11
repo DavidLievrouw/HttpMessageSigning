@@ -10,7 +10,7 @@ namespace Dalion.HttpMessageSigning {
         public SignatureTests() {
             _sut = new Signature {
                 Algorithm = "rsa-sha256",
-                KeyId = "client1",
+                KeyId = (KeyId)"client1",
                 String = "xyz123==",
                 Created = new DateTimeOffset(2020, 2, 26, 13, 18, 12, TimeSpan.Zero),
                 Expires = new DateTimeOffset(2020, 2, 26, 13, 23, 12, TimeSpan.Zero),

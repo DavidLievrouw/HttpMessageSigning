@@ -32,7 +32,7 @@ namespace Dalion.HttpMessageSigning.Signing {
                 };
                 _settings = new SigningSettings {
                     Expires = TimeSpan.FromMinutes(5),
-                    KeyId = "client1",
+                    KeyId = (KeyId)"client1",
                     SignatureAlgorithm = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA512),
                     Headers = new[] {
                         HeaderName.PredefinedHeaderNames.RequestTarget,

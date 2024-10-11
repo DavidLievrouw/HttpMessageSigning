@@ -123,7 +123,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(null)]
             [InlineData("")]
             public async Task GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
-                Func<Task> act = () => _sut.Get(nullOrEmpty, "abc123");
+                Func<Task> act = () => _sut.Get((KeyId)nullOrEmpty, "abc123");
                 await act.Should().ThrowAsync<ArgumentException>();
             }
 
@@ -137,7 +137,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
             [Fact]
             public async Task WhenNonceIsNotFound_ReturnsNull() {
-                var actual = await _sut.Get("IDontExist", "abc123");
+                var actual = await _sut.Get((KeyId)"IDontExist", "abc123");
                 actual.Should().BeNull();
             }
 

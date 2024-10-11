@@ -48,7 +48,7 @@ namespace Conformance {
             var serviceProvider = new ServiceCollection()
                 .AddHttpMessageSignatureVerification()
                 .UseClient(Client.Create(
-                    "test",
+                    (KeyId)"test",
                     "ConformanceClient",
                     signatureAlgorithmForVerification
                 ))

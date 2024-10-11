@@ -39,7 +39,7 @@ namespace Benchmark {
                 .AddHttpMessageSignatureVerification()
                 .UseAspNetCoreSignatureVerification()
                 .UseClient(Client.Create(
-                    "e0e8dcd638334c409e1b88daf821d135",
+                    (KeyId)"e0e8dcd638334c409e1b88daf821d135",
                     "HttpMessageSigningSampleHMAC",
                     SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                     options => options.Claims = new [] {

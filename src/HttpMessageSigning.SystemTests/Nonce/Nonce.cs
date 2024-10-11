@@ -51,7 +51,7 @@ namespace Dalion.HttpMessageSigning.Nonce {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
             var receivedRequest = await request.ToServerSideHttpRequest();
@@ -77,7 +77,7 @@ namespace Dalion.HttpMessageSigning.Nonce {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
             var receivedRequest = await request.ToServerSideHttpRequest();
@@ -102,7 +102,7 @@ namespace Dalion.HttpMessageSigning.Nonce {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
             var nonceRegex = new Regex("nonce=\"(?<nonce>[A-z0-9, =-]+)\",", RegexOptions.Compiled);
@@ -131,7 +131,7 @@ namespace Dalion.HttpMessageSigning.Nonce {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("e0e8dcd638334c409e1b88daf821d135");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"e0e8dcd638334c409e1b88daf821d135");
             await requestSigner.Sign(request);
 
             var nonceRegex = new Regex("nonce=\"(?<nonce>[A-z0-9, =-]+)\"", RegexOptions.Compiled);
@@ -154,7 +154,7 @@ namespace Dalion.HttpMessageSigning.Nonce {
         private void ConfigureServices(IServiceCollection services) {
             services                
                 .AddHttpMessageSigning()
-                .UseKeyId("e0e8dcd638334c409e1b88daf821d135")
+                .UseKeyId((KeyId)"e0e8dcd638334c409e1b88daf821d135")
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning("yumACY64r%hm"))
                 .UseDigestAlgorithm(HashAlgorithmName.SHA256)
                 .UseExpires(TimeSpan.FromMinutes(1))
@@ -167,7 +167,7 @@ namespace Dalion.HttpMessageSigning.Nonce {
                 .AddHttpMessageSignatureVerification()
                 .UseAspNetCoreSignatureVerification()
                 .UseClient(Client.Create(
-                    "e0e8dcd638334c409e1b88daf821d135",
+                    (KeyId)"e0e8dcd638334c409e1b88daf821d135",
                     "HttpMessageSigningSampleHMAC",
                     SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                     options => options.Claims = new [] {

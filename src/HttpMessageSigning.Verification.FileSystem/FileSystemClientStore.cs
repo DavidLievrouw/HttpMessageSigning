@@ -68,7 +68,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             var signatureAlgorithm = _signatureAlgorithmDataRecordConverter.ToSignatureAlgorithm(match.SigAlg, _encryptionKey, match.V);
             
             return new Client(
-                match.Id,
+                (KeyId)match.Id,
                 match.Name,
                 signatureAlgorithm,
                 nonceLifetime,

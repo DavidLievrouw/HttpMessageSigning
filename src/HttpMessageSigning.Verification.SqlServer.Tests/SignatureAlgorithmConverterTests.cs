@@ -62,7 +62,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotThrow(string nullOrEmpty) {
                 using (var hmac = SignatureAlgorithm.CreateForVerification(_unencryptedKey, HashAlgorithmName.SHA384)) {
-                    Action act = () => _sut.SetSignatureAlgorithm(_dataRecord, hmac, nullOrEmpty);
+                    Action act = () => _sut.SetSignatureAlgorithm(_dataRecord, hmac, (SharedSecretEncryptionKey)nullOrEmpty);
                     act.Should().NotThrow();
                 }
             }
@@ -85,7 +85,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotEncryptParameter(string nullOrEmpty) {
                 using (var hmac = SignatureAlgorithm.CreateForVerification(_unencryptedKey, HashAlgorithmName.SHA384)) {
-                    _sut.SetSignatureAlgorithm(_dataRecord, hmac, nullOrEmpty);
+                    _sut.SetSignatureAlgorithm(_dataRecord, hmac, (SharedSecretEncryptionKey)nullOrEmpty);
                     _dataRecord.SigParameter.Should().Be(_unencryptedKey);
                     _dataRecord.IsSigParameterEncrypted.Should().BeFalse();
                 }
@@ -161,7 +161,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(null)]
             [InlineData("")]
             public void GivenNullOrEmptyEncryptionKey_DoesNotThrow(string nullOrEmpty) {
-                Action act = () => _sut.ToSignatureAlgorithm(_dataRecord, nullOrEmpty);
+                Action act = () => _sut.ToSignatureAlgorithm(_dataRecord, (SharedSecretEncryptionKey)nullOrEmpty);
                 act.Should().NotThrow();
             }
 
@@ -171,7 +171,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             public void GivenInvalidEncryptionKey_ThrowsSecurityException(string invalidKey) {
                 _stringProtector.Throw(new FormatException("Invalid cypher."));
                 
-                Action act = () => _sut.ToSignatureAlgorithm(_dataRecord, invalidKey);
+                Action act = () => _sut.ToSignatureAlgorithm(_dataRecord, (SharedSecretEncryptionKey)invalidKey);
                 act.Should().Throw<SecurityException>();
             }
             
@@ -181,7 +181,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             public void GivenNullOrEmptyEncryptionKey_DoesNotDecryptParameter(string nullOrEmpty) {
                 _dataRecord.SigParameter = _unencryptedKey;
                 
-                var actual = _sut.ToSignatureAlgorithm(_dataRecord, nullOrEmpty);
+                var actual = _sut.ToSignatureAlgorithm(_dataRecord, (SharedSecretEncryptionKey)nullOrEmpty);
 
                 actual.Should().BeAssignableTo<HMACSignatureAlgorithm>();
                 var actualKeyBytes = actual.As<HMACSignatureAlgorithm>().Key;

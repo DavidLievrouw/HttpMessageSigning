@@ -51,7 +51,7 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2");
             await requestSigner.Sign(request);
 
             var receivedRequest = await request.ToServerSideHttpRequest();
@@ -79,7 +79,7 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2");
             await requestSigner.Sign(request);
 
             var receivedRequest = await request.ToServerSideHttpRequest();
@@ -107,7 +107,7 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2");
             await requestSigner.Sign(request);
 
             var receivedRequest = await request.ToServerSideHttpRequest();
@@ -135,7 +135,7 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2");
             await requestSigner.Sign(request);
 
             var receivedRequest = await request.ToServerSideHttpRequest();
@@ -163,7 +163,7 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2");
             await requestSigner.Sign(request);
 
             var receivedRequest = await request.ToServerSideHttpRequest();
@@ -191,7 +191,7 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2");
             await requestSigner.Sign(request);
 
             var receivedRequest = await request.ToServerSideHttpRequest();
@@ -219,7 +219,7 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
                 }
             };
             
-            var requestSigner = _requestSignerFactory.CreateFor("4d8f14b6c4184dc1b677c88a2b60bfd2");
+            var requestSigner = _requestSignerFactory.CreateFor((KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2");
             await requestSigner.Sign(request);
             
             var signatureStringRegEx = new Regex("signature=\"(?<signature>[a-zA-Z0-9+/]+={0,2})\"", RegexOptions.Compiled);
@@ -242,13 +242,13 @@ namespace Dalion.HttpMessageSigning.BasicRSA {
             
             services
                 .AddHttpMessageSigning()
-                .UseKeyId("4d8f14b6c4184dc1b677c88a2b60bfd2")
+                .UseKeyId((KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2")
                 .UseSignatureAlgorithm(SignatureAlgorithm.CreateForSigning(privateKey))
                 .Services
                 .AddHttpMessageSignatureVerification()
                 .UseAspNetCoreSignatureVerification()
                 .UseClient(Client.Create(
-                    "4d8f14b6c4184dc1b677c88a2b60bfd2",
+                    (KeyId)"4d8f14b6c4184dc1b677c88a2b60bfd2",
                     "HttpMessageSigningSampleRSA",
                     SignatureAlgorithm.CreateForVerification(publicKey),
                     options => options.Claims = new [] {

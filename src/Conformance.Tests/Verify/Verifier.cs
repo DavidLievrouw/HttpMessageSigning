@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning.Verify {
                 .AddHttpMessageSignatureVerification()
                 .UseAspNetCoreSignatureVerification()
                 .UseClient(Client.Create(
-                    "test",
+                    (KeyId)"test",
                     "ConformanceClient",
                     signatureAlgorithm
                 ))

@@ -50,7 +50,7 @@ namespace Dalion.HttpMessageSigning.ClockSkew {
             };
             
             var requestSigner = _requestSignerFactory.Create(
-                "e0e8dcd638334c409e1b88daf821d135",
+                (KeyId)"e0e8dcd638334c409e1b88daf821d135",
                 new SigningSettings {
                     SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("yumACY64r%hm"),
                     DigestHashAlgorithm = HashAlgorithmName.SHA256,
@@ -93,7 +93,7 @@ namespace Dalion.HttpMessageSigning.ClockSkew {
             };
             
             var requestSigner = _requestSignerFactory.Create(
-                "e0e8dcd638334c409e1b88daf821d135",
+                (KeyId)"e0e8dcd638334c409e1b88daf821d135",
                 new SigningSettings {
                     SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("yumACY64r%hm"),
                     DigestHashAlgorithm = HashAlgorithmName.SHA256,
@@ -129,7 +129,7 @@ namespace Dalion.HttpMessageSigning.ClockSkew {
             };
             
             var requestSigner = _requestSignerFactory.Create(
-                "e0e8dcd638334c409e1b88daf821d135",
+                (KeyId)"e0e8dcd638334c409e1b88daf821d135",
                 new SigningSettings {
                     SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("yumACY64r%hm"),
                     DigestHashAlgorithm = HashAlgorithmName.SHA256,
@@ -172,7 +172,7 @@ namespace Dalion.HttpMessageSigning.ClockSkew {
             };
             
             var requestSigner = _requestSignerFactory.Create(
-                "e0e8dcd638334c409e1b88daf821d135",
+                (KeyId)"e0e8dcd638334c409e1b88daf821d135",
                 new SigningSettings {
                     SignatureAlgorithm = SignatureAlgorithm.CreateForSigning("yumACY64r%hm"),
                     DigestHashAlgorithm = HashAlgorithmName.SHA256,
@@ -202,7 +202,7 @@ namespace Dalion.HttpMessageSigning.ClockSkew {
                 .AddHttpMessageSignatureVerification()
                 .UseAspNetCoreSignatureVerification()
                 .UseClient(Client.Create(
-                    "e0e8dcd638334c409e1b88daf821d135",
+                    (KeyId)"e0e8dcd638334c409e1b88daf821d135",
                     "HttpMessageSigningSampleHMAC",
                     SignatureAlgorithm.CreateForVerification("yumACY64r%hm"),
                     options => options.Claims = new [] {

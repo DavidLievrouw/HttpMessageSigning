@@ -38,7 +38,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
         public class Register : LockingNonceStoreTests {
             [Fact]
             public async Task CallsDecoratedService() {
-                var nonce = new Nonce("c1", "abc123", DateTimeOffset.UtcNow.AddMinutes(1));
+                var nonce = new Nonce((KeyId)"c1", "abc123", DateTimeOffset.UtcNow.AddMinutes(1));
 
                 await _sut.Register(nonce);
 
@@ -50,7 +50,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
         public class Get : LockingNonceStoreTests {
             [Fact]
             public async Task ReturnsResultFromDecoratedService() {
-                var nonce = new Nonce("c1", "abc123", DateTimeOffset.UtcNow.AddMinutes(1));
+                var nonce = new Nonce((KeyId)"c1", "abc123", DateTimeOffset.UtcNow.AddMinutes(1));
 
                 A.CallTo(() => _decorated.Get(nonce.ClientId, nonce.Value))
                     .Returns(nonce);

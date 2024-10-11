@@ -42,7 +42,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             public async Task CallsDecoratedService() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -63,7 +63,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
             public async Task ReturnsResultFromDecoratedService() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),

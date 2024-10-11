@@ -95,14 +95,14 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(null)]
             [InlineData("")]
             public async Task GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
-                Func<Task> act = () => _sut.Get(nullOrEmpty);
+                Func<Task> act = () => _sut.Get((KeyId)nullOrEmpty);
                 await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]
             public async Task WhenItemIsNotFound_ReturnsNull() {
                 Client actual = null;
-                Func<Task> act = async () => actual = await _sut.Get("IDontExist");
+                Func<Task> act = async () => actual = await _sut.Get((KeyId)"IDontExist");
                 await act.Should().NotThrowAsync();
                 actual.Should().BeNull();
             }
@@ -179,7 +179,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                 var sut = new InMemoryClientStore(entries);
                 sut.Dispose();
 
-                var actual = await sut.Get("entry1");
+                var actual = await sut.Get((KeyId)"entry1");
                 actual.Should().BeNull();
             }
         }

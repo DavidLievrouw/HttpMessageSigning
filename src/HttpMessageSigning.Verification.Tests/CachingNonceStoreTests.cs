@@ -40,7 +40,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             [InlineData(null)]
             [InlineData("")]
             public async Task GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
-                Func<Task> act = () => _sut.Get(nullOrEmpty, "abc123");
+                Func<Task> act = () => _sut.Get((KeyId)nullOrEmpty, "abc123");
                 await act.Should().ThrowAsync<ArgumentException>();
             }
 
@@ -54,7 +54,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenNonceIsInCache_AndItIsNotNull_ReturnsCachedNonce() {
-                var cachedNonce = new Nonce("c1", "abc123", _now.AddMinutes(1));
+                var cachedNonce = new Nonce((KeyId)"c1", "abc123", _now.AddMinutes(1));
                 var cacheKey = CacheKeyFactory(cachedNonce);
                 var cacheEntry = _cache.CreateEntry(cacheKey);
                 cacheEntry.Value = cachedNonce;
@@ -66,7 +66,7 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenNonceIsInCache_AndItIsNotNull_DoesNotCallDecoratedService() {
-                var cachedNonce = new Nonce("c1", "abc123", _now.AddMinutes(1));
+                var cachedNonce = new Nonce((KeyId)"c1", "abc123", _now.AddMinutes(1));
                 var cacheKey = CacheKeyFactory(cachedNonce);
                 var cacheEntry = _cache.CreateEntry(cacheKey);
                 cacheEntry.Value = cachedNonce;
@@ -79,15 +79,15 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenNonceIsInCache_ButItIsNull_AndNonceIsResolved_AddsToCacheWithExpectedExpiration() {
-                var cacheKey = CacheKeyFactory("c1", "abc123");
+                var cacheKey = CacheKeyFactory((KeyId)"c1", "abc123");
                 var cacheEntry = _cache.CreateEntry(cacheKey);
                 cacheEntry.Value = null;
 
-                var resolvedNonce = new Nonce("c1", "abc123", _now.AddMinutes(2));
-                A.CallTo(() => _decorated.Get("c1", "abc123"))
+                var resolvedNonce = new Nonce((KeyId)"c1", "abc123", _now.AddMinutes(2));
+                A.CallTo(() => _decorated.Get((KeyId)"c1", "abc123"))
                     .Returns(resolvedNonce);
 
-                await _sut.Get("c1", "abc123");
+                await _sut.Get((KeyId)"c1", "abc123");
 
                 _cache.TryGetEntry(cacheKey, out var actualEntry).Should().BeTrue();
                 actualEntry.As<ICacheEntry>().AbsoluteExpiration.Should().Be(resolvedNonce.Expiration);
@@ -95,57 +95,57 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenNonceIsInCache_ButItIsNull_AndNonceIsResolved_ReturnsResolvedNonce() {
-                var cacheKey = CacheKeyFactory("c1", "abc123");
+                var cacheKey = CacheKeyFactory((KeyId)"c1", "abc123");
                 var cacheEntry = _cache.CreateEntry(cacheKey);
                 cacheEntry.Value = null;
 
-                var resolvedNonce = new Nonce("c1", "abc123", _now.AddMinutes(2));
-                A.CallTo(() => _decorated.Get("c1", "abc123"))
+                var resolvedNonce = new Nonce((KeyId)"c1", "abc123", _now.AddMinutes(2));
+                A.CallTo(() => _decorated.Get((KeyId)"c1", "abc123"))
                     .Returns(resolvedNonce);
 
-                var actual = await _sut.Get("c1", "abc123");
+                var actual = await _sut.Get((KeyId)"c1", "abc123");
 
                 actual.Should().Be(resolvedNonce);
             }
 
             [Fact]
             public async Task WhenNonceIsInCache_ButItIsNull_AndNonceCannotBeResolved_ReturnsNull() {
-                var cacheKey = CacheKeyFactory("c1", "abc123");
+                var cacheKey = CacheKeyFactory((KeyId)"c1", "abc123");
                 var cacheEntry = _cache.CreateEntry(cacheKey);
                 cacheEntry.Value = null;
 
-                A.CallTo(() => _decorated.Get("c1", "abc123"))
+                A.CallTo(() => _decorated.Get((KeyId)"c1", "abc123"))
                     .Returns((Nonce) null);
 
-                var actual = await _sut.Get("c1", "abc123");
+                var actual = await _sut.Get((KeyId)"c1", "abc123");
 
                 actual.Should().BeNull();
             }
 
             [Fact]
             public async Task WhenNonceIsNotCached_AndNonceIsResolved_ReturnsResolvedNonce() {
-                var cacheKey = CacheKeyFactory("c1", "abc123");
+                var cacheKey = CacheKeyFactory((KeyId)"c1", "abc123");
                 _cache.TryGetValue(cacheKey, out _).Should().BeFalse();
 
-                var resolvedNonce = new Nonce("c1", "abc123", _now.AddMinutes(2));
-                A.CallTo(() => _decorated.Get("c1", "abc123"))
+                var resolvedNonce = new Nonce((KeyId)"c1", "abc123", _now.AddMinutes(2));
+                A.CallTo(() => _decorated.Get((KeyId)"c1", "abc123"))
                     .Returns(resolvedNonce);
 
-                var actual = await _sut.Get("c1", "abc123");
+                var actual = await _sut.Get((KeyId)"c1", "abc123");
 
                 actual.Should().Be(resolvedNonce);
             }
 
             [Fact]
             public async Task WhenNonceIsNotCached_AndItIsResolved_AddsToCacheWithExpectedExpiration() {
-                var cacheKey = CacheKeyFactory("c1", "abc123");
+                var cacheKey = CacheKeyFactory((KeyId)"c1", "abc123");
                 _cache.TryGetValue(cacheKey, out _).Should().BeFalse();
 
-                var resolvedNonce = new Nonce("c1", "abc123", _now.AddMinutes(2));
-                A.CallTo(() => _decorated.Get("c1", "abc123"))
+                var resolvedNonce = new Nonce((KeyId)"c1", "abc123", _now.AddMinutes(2));
+                A.CallTo(() => _decorated.Get((KeyId)"c1", "abc123"))
                     .Returns(resolvedNonce);
 
-                await _sut.Get("c1", "abc123");
+                await _sut.Get((KeyId)"c1", "abc123");
 
                 _cache.TryGetEntry(cacheKey, out var actualEntry).Should().BeTrue();
                 actualEntry.As<ICacheEntry>().AbsoluteExpiration.Should().Be(resolvedNonce.Expiration);
@@ -153,26 +153,26 @@ namespace Dalion.HttpMessageSigning.Verification {
 
             [Fact]
             public async Task WhenNonceIsNotCached_AndNonceCannotBeResolved_ReturnsNull() {
-                var cacheKey = CacheKeyFactory("c1", "abc123");
+                var cacheKey = CacheKeyFactory((KeyId)"c1", "abc123");
                 _cache.TryGetValue(cacheKey, out _).Should().BeFalse();
 
-                A.CallTo(() => _decorated.Get("c1", "abc123"))
+                A.CallTo(() => _decorated.Get((KeyId)"c1", "abc123"))
                     .Returns((Nonce) null);
 
-                var actual = await _sut.Get("c1", "abc123");
+                var actual = await _sut.Get((KeyId)"c1", "abc123");
 
                 actual.Should().BeNull();
             }
 
             [Fact]
             public async Task WhenNonceIsNotCached_AndNonceCannotNotResolved_DoesNotAddToCache() {
-                var cacheKey = CacheKeyFactory("c1", "abc123");
+                var cacheKey = CacheKeyFactory((KeyId)"c1", "abc123");
                 _cache.TryGetValue(cacheKey, out _).Should().BeFalse();
 
-                A.CallTo(() => _decorated.Get("c1", "abc123"))
+                A.CallTo(() => _decorated.Get((KeyId)"c1", "abc123"))
                     .Returns((Nonce) null);
 
-                await _sut.Get("c1", "abc123");
+                await _sut.Get((KeyId)"c1", "abc123");
 
                 _cache.TryGetEntry(cacheKey, out _).Should().BeFalse();
             }

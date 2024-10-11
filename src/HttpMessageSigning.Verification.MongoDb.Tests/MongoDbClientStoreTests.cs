@@ -41,7 +41,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 Action act = () => new MongoDbClientStore(
                     new MongoDatabaseClientProvider(Database), 
                     _collectionName, 
-                    nullOrEmpty, 
+                    (SharedSecretEncryptionKey)nullOrEmpty, 
                     _migrator, 
                     _signatureAlgorithmDataRecordConverter);
                 act.Should().NotThrow();
@@ -74,7 +74,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public async Task PerformsMigrations() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1", 
+                    (KeyId)"c1", 
                     "app one", 
                     hmac, 
                     TimeSpan.FromMinutes(1), 
@@ -93,7 +93,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public async Task CanRoundTripHMAC() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1", 
+                    (KeyId)"c1", 
                     "app one", 
                     hmac, 
                     TimeSpan.FromMinutes(1), 
@@ -117,7 +117,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     var publicKeyParams = rsa.ExportParameters(false);
                     var rsaAlg = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA384, publicKeyParams);
                     var client = new Client(
-                        "c1", 
+                        (KeyId)"c1", 
                         "app one", 
                         rsaAlg, 
                         TimeSpan.FromMinutes(1), 
@@ -142,7 +142,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     var publicKeyParams = ecdsa.ExportParameters(false);
                     var rsaAlg = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA384, publicKeyParams);
                     var client = new Client(
-                        "c1", 
+                        (KeyId)"c1", 
                         "app one", 
                         rsaAlg, 
                         TimeSpan.FromMinutes(1), 
@@ -165,7 +165,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public async Task Upserts() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client1 = new Client(
-                    "c1", 
+                    (KeyId)"c1", 
                     "app one",
                     hmac, 
                     TimeSpan.FromMinutes(1), 
@@ -175,7 +175,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                     new Claim("scope", "HttpMessageSigning"));
                 await _sut.Register(client1);
                 var client2 = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app two",
                     hmac,
                     TimeSpan.FromMinutes(1), 
@@ -194,7 +194,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public async Task EncryptsHMACSecretInDatabase() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1", 
+                    (KeyId)"c1", 
                     "app one", 
                     hmac, 
                     TimeSpan.FromMinutes(1), 
@@ -219,7 +219,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public async Task MarksRecordsWithCorrectVersion() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1", 
+                    (KeyId)"c1", 
                     "app one", 
                     hmac, 
                     TimeSpan.FromMinutes(1), 
@@ -244,12 +244,12 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 using (var sut = new MongoDbClientStore(
                     new MongoDatabaseClientProvider(Database), 
                     _collectionName, 
-                    nullOrEmpty, 
+                    (SharedSecretEncryptionKey)nullOrEmpty, 
                     _migrator, 
                     _signatureAlgorithmDataRecordConverter)) {
                     var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                     var client = new Client(
-                        "c1",
+                        (KeyId)"c1",
                         "app one",
                         hmac,
                         TimeSpan.FromMinutes(1),
@@ -278,13 +278,13 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [InlineData(null)]
             [InlineData("")]
             public async Task GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
-                Func<Task> act = () => _sut.Get(nullOrEmpty);
+                Func<Task> act = () => _sut.Get((KeyId)nullOrEmpty);
                 await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]
             public async Task PerformsMigrations() {
-                await _sut.Get("c1");
+                await _sut.Get((KeyId)"c1");
 
                 A.CallTo(() => _migrator.Migrate())
                     .MustHaveHappened();
@@ -323,7 +323,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
                 await collection.InsertOneAsync(legacyDocument);
                 
                 Client actual = null;
-                Func<Task> act = async () => actual = await _sut.Get(prohibitedId);
+                Func<Task> act = async () => actual = await _sut.Get((KeyId)prohibitedId);
                 await act.Should().NotThrowAsync();
                 actual.Should().BeNull();
             }
@@ -331,7 +331,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             [Fact]
             public async Task WhenClientIsNotFound_ReturnsNull() {
                 Client actual = null;
-                Func<Task> act = async () => actual = await _sut.Get("IDontExist");
+                Func<Task> act = async () => actual = await _sut.Get((KeyId)"IDontExist");
                 await act.Should().NotThrowAsync();
                 actual.Should().BeNull();
             }
@@ -340,7 +340,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
             public async Task CanGetAndDeserializeExistingClient() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1", 
+                    (KeyId)"c1", 
                     "app one",
                     hmac, 
                     TimeSpan.FromMinutes(1), 
@@ -393,7 +393,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var expected = new Client(
-                    "c2", 
+                    (KeyId)"c2", 
                     "app one",
                     hmac, 
                     TimeSpan.FromMinutes(5), 
@@ -444,7 +444,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var expected = new Client(
-                    "c3", 
+                    (KeyId)"c3", 
                     "app one", 
                     hmac, 
                     TimeSpan.FromMinutes(5), 
@@ -495,7 +495,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var expected = new Client(
-                    "c4", 
+                    (KeyId)"c4", 
                     "app one", 
                     hmac, 
                     TimeSpan.FromMinutes(5), 
@@ -547,7 +547,7 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
 
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var expected = new Client(
-                    "c5", 
+                    (KeyId)"c5", 
                     "app one", 
                     hmac, 
                     TimeSpan.FromMinutes(5), 

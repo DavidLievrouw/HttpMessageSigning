@@ -76,7 +76,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             public async Task CanRoundTripHMAC() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -98,7 +98,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             public async Task CanRegisterMultipleClaimsWithSameTypes() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -123,7 +123,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     var publicKeyParams = rsa.ExportParameters(false);
                     var rsaAlg = RSASignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA384, publicKeyParams);
                     var client = new Client(
-                        "c1",
+                        (KeyId)"c1",
                         "app one",
                         rsaAlg,
                         TimeSpan.FromMinutes(1),
@@ -148,7 +148,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     var publicKeyParams = ecdsa.ExportParameters(false);
                     var rsaAlg = ECDsaSignatureAlgorithm.CreateForVerification(HashAlgorithmName.SHA384, publicKeyParams);
                     var client = new Client(
-                        "c1",
+                        (KeyId)"c1",
                         "app one",
                         rsaAlg,
                         TimeSpan.FromMinutes(1),
@@ -171,7 +171,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             public async Task Upserts() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client1 = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -181,7 +181,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     new Claim("scope", "HttpMessageSigning"));
                 await _sut.Register(client1);
                 var client2 = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app two",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -206,7 +206,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     new SignatureAlgorithmConverter(new FakeStringProtectorFactory()))) {
                     var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                     var client = new Client(
-                        "c1",
+                        (KeyId)"c1",
                         "app one",
                         hmac,
                         TimeSpan.FromMinutes(1),
@@ -230,7 +230,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             public async Task MarksRecordsWithCorrectVersion() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),
@@ -252,12 +252,12 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             public async Task WhenEncryptionKeyIsNullOrEmpty_DoesNotEncryptHMACSecretInDatabase(string nullOrEmpty) {
                 using (var sut = new SqlServerClientStore(new SqlServerClientStoreSettings {
                         ConnectionString = _connectionString,
-                        SharedSecretEncryptionKey = nullOrEmpty
+                        SharedSecretEncryptionKey = (SharedSecretEncryptionKey)nullOrEmpty
                     },
                     new SignatureAlgorithmConverter(new FakeStringProtectorFactory()))) {
                     var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                     var client = new Client(
-                        "c1",
+                        (KeyId)"c1",
                         "app one",
                         hmac,
                         TimeSpan.FromMinutes(1),
@@ -292,7 +292,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 Action act = () => new SqlServerClientStore(
                     new SqlServerClientStoreSettings {
                         ConnectionString = _fixture.SqlServerConfig.GetConnectionStringForTestDatabase(),
-                        SharedSecretEncryptionKey = nullOrEmpty
+                        SharedSecretEncryptionKey = (SharedSecretEncryptionKey)nullOrEmpty
                     },
                     new SignatureAlgorithmConverter(new FakeStringProtectorFactory()));
                 act.Should().NotThrow();
@@ -307,14 +307,14 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             [InlineData(null)]
             [InlineData("")]
             public async Task GivenNullOrEmptyId_ThrowsArgumentException(string nullOrEmpty) {
-                Func<Task> act = () => _sut.Get(nullOrEmpty);
+                Func<Task> act = () => _sut.Get((KeyId)nullOrEmpty);
                 await act.Should().ThrowAsync<ArgumentException>();
             }
 
             [Fact]
             public async Task WhenClientIsNotFound_ReturnsNull() {
                 Client actual = null;
-                Func<Task> act = async () => actual = await _sut.Get("IDontExist");
+                Func<Task> act = async () => actual = await _sut.Get((KeyId)"IDontExist");
                 await act.Should().NotThrowAsync();
                 actual.Should().BeNull();
             }
@@ -323,7 +323,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
             public async Task CanGetAndDeserializeExistingClient() {
                 var hmac = new HMACSignatureAlgorithm("s3cr3t", HashAlgorithmName.SHA384);
                 var client = new Client(
-                    "c1",
+                    (KeyId)"c1",
                     "app one",
                     hmac,
                     TimeSpan.FromMinutes(1),

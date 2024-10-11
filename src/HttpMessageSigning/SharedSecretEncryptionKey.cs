@@ -70,7 +70,7 @@ namespace Dalion.HttpMessageSigning {
         /// <summary>
         ///     An implicit conversion operator for this type from string.
         /// </summary>
-        public static implicit operator SharedSecretEncryptionKey(string value) {
+        public static explicit operator SharedSecretEncryptionKey(string value) {
             if (!TryParse(value, out var sharedSecretEncryptionKey)) {
                 throw new FormatException($"The specified value ({value ?? "[null]"}) is not a valid string representation of a {nameof(SharedSecretEncryptionKey)}.");
             }
