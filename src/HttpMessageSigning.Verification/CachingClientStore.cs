@@ -130,9 +130,7 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             public override int GetHashCode() {
-                return _id != null
-                    ? _id.GetHashCode()
-                    : 0;
+                return _id.GetHashCode();
             }
         }
     }
