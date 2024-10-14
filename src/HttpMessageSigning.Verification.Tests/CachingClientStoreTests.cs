@@ -69,22 +69,13 @@ namespace Dalion.HttpMessageSigning.Verification {
             }
 
             [Fact]
-            public async Task WhenClientIsNotCached_AddsEntryToCache() {
-                _cache.TryGetValue(_cacheKey, out _).Should().BeFalse();
-
-                await _sut.Register(_newClient);
-
-                _cache.TryGetValue(_cacheKey, out _).Should().BeTrue();
-            }
-
-            [Fact]
-            public async Task WhenClientIsCached_ReplacesEntryInCache() {
+            public async Task WhenClientIsCached_EvictsEntryFromCache() {
                 _cache.Set(_cacheKey, _cachedClient);
+                _cache.TryGetValue(_cacheKey, out _).Should().BeTrue();
 
                 await _sut.Register(_newClient);
 
-                _cache.TryGetValue(_cacheKey, out var actual).Should().BeTrue();
-                actual.Should().Be(_newClient);
+                _cache.TryGetValue(_cacheKey, out _).Should().BeFalse();
             }
 
             [Fact]
@@ -97,10 +88,12 @@ namespace Dalion.HttpMessageSigning.Verification {
 #pragma warning restore xUnit1031
                     });
 
-                await _sut.Register(_newClient);
+                A.CallTo(() => _decorated.Get(_newClient.Id)).Returns(_newClient);
+                
+                await _sut.Get(_newClient.Id); // Force it to be in cache
 
                 // Force eviction
-                _sut.Evict(_cachedClient.Id);
+                _sut.Evict(_newClient.Id);
 
                 await Task.Delay(TimeSpan.FromSeconds(1));
 
@@ -252,6 +245,7 @@ namespace Dalion.HttpMessageSigning.Verification {
                     RequestTargetEscaping.RFC3986);
                 
                 await _sut.Register(client);
+                _cache.Set(cacheKey, client);
 
                 _cache.TryGetValue(cacheKey, out _).Should().BeTrue();
 
@@ -279,7 +273,9 @@ namespace Dalion.HttpMessageSigning.Verification {
                     TimeSpan.FromMinutes(1),
                     RequestTargetEscaping.RFC3986);
                 
-                await _sut.Register(client);
+                // Force it to be in cache
+                A.CallTo(() => _decorated.Get(client.Id)).Returns(client);
+                await _sut.Get(client.Id); 
 
                 _cache.TryGetValue(cacheKey, out _).Should().BeTrue();
 
