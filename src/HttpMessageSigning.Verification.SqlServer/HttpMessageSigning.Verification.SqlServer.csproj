@@ -48,7 +48,7 @@
 
     <ItemGroup>
         <PackageReference Include="Dapper" Version="[2.1.35,)" />
-        <PackageReference Include="System.Data.SqlClient" Version="[4.8.6,)" />
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="[5.2.2,)" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="[8.0.0,)" PrivateAssets="All" />
     </ItemGroup>
 
@@ -65,11 +65,11 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[8.0.0,)" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[8.0.2,)" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)'=='net48'">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[8.0.0,)" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="[8.0.2,)" />
     </ItemGroup>
 
     <ItemGroup>
