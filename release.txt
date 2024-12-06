@@ -2,3 +2,5 @@
 - Update push key in push.cmd
 - Run build.cmd and push.cmd
 - Tag repo
+- Create release in GitHub, based on tag
+- Upload binaries to release
