@@ -178,7 +178,6 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ILLink\ILLink.Descriptors.LibraryBuild.xml" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -212,6 +211,9 @@
       <Project>{197735f8-278b-4f9b-b417-193a10527e29}</Project>
       <Name>HttpMessageSigning</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ILLink\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
