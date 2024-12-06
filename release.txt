@@ -1,0 +1,4 @@
+- Bump version.txt
+- Update push key in push.cmd
+- Run build.cmd and push.cmd
+- Tag repo
