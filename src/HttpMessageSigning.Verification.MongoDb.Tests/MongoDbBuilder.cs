@@ -1,5 +1,5 @@
 ﻿using System;
-using EphemeralMongo;
+using MongoSandbox;
 
 namespace Dalion.HttpMessageSigning.Verification.MongoDb {
     public class MongoDbBuilder : IDisposable {
@@ -25,9 +25,9 @@ namespace Dalion.HttpMessageSigning.Verification.MongoDb {
         }
 
         public string Build() {
-            Console.WriteLine($"Starting {nameof(EphemeralMongo)}...");
+            Console.WriteLine($"Starting {nameof(MongoSandbox)}...");
             _runner = MongoRunner.Run();
-            Console.WriteLine($"Running {nameof(EphemeralMongo)} at {_runner.ConnectionString}...");
+            Console.WriteLine($"Running {nameof(MongoSandbox)} at {_runner.ConnectionString}...");
 
             return _runner.ConnectionString;
         }

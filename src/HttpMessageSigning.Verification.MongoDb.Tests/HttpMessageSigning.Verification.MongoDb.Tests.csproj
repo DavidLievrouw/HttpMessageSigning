@@ -25,9 +25,9 @@
         <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
         <PackageReference Include="CompareNETObjects" Version="4.83.0" />
         <PackageReference Include="FakeItEasy" Version="8.3.0" />
-        <PackageReference Include="EphemeralMongo.Core" Version="1.1.3" />
-        <PackageReference Include="EphemeralMongo6.runtime.linux-x64" Version="1.1.0" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
-        <PackageReference Include="EphemeralMongo6.runtime.win-x64" Version="1.1.3" Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
+        <PackageReference Include="MongoSandbox.Core" Version="1.0.1" />
+        <PackageReference Include="MongoSandbox8.runtime.linux-x64" Version="1.0.1" Condition="$([MSBuild]::IsOSPlatform('Linux'))" />
+        <PackageReference Include="MongoSandbox8.runtime.win-x64" Version="1.0.1" Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
         <PackageReference Include="FluentAssertions" Version="7.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
