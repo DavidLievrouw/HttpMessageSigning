@@ -56,7 +56,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
             [Fact]
             public async Task CanRoundTrip() {
-                var nonce = new Nonce(new KeyId("c1"), "abc123", _now.AddSeconds(30));
+                var nonce = new Nonce(new KeyId("c2"), "abc123", _now.AddSeconds(30));
 
                 await _sut.Register(nonce);
 
@@ -68,7 +68,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
             [Fact]
             public async Task Upserts() {
-                var nonce1 = new Nonce(new KeyId("c1"), "abc123", _now.AddMinutes(1));
+                var nonce1 = new Nonce(new KeyId("c2"), "abc123", _now.AddMinutes(1));
                 await _sut.Register(nonce1);
 
                 var nonce2 = new Nonce(nonce1.ClientId, nonce1.Value, _now.AddMinutes(2));
@@ -81,7 +81,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
             [Fact]
             public async Task WhenInsertingADuplicateNonce_UpdatesExpiration() {
-                var clientId = new KeyId("c1");
+                var clientId = new KeyId("c2");
                 var nonceValue = "abc123";
 
                 var nonce1 = new Nonce(clientId, nonceValue, _now.AddMinutes(-1));
@@ -97,7 +97,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
             [Fact]
             public async Task CleansUpExpiredNonces() {
-                var nonce = new Nonce(new KeyId("c1"), "abc123", _now.AddSeconds(30));
+                var nonce = new Nonce(new KeyId("c2"), "abc123", _now.AddSeconds(30));
 
                 await _sut.Register(nonce);
 
@@ -143,7 +143,7 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
 
             [Fact]
             public async Task CanGetAndDeserializeExistingNonce() {
-                var nonce = new Nonce(new KeyId("c1"), "abc123", _now.AddMinutes(1));
+                var nonce = new Nonce(new KeyId("c2"), "abc123", _now.AddMinutes(1));
                 await _sut.Register(nonce);
 
                 var actual = await _sut.Get(nonce.ClientId, nonce.Value);

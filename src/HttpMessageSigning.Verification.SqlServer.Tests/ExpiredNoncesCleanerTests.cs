@@ -81,12 +81,12 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                     }
                 }
 
-                var allNoncesBefore = await GetAllNonces();
+                var allNoncesBefore = await GetAllNonces(new KeyId("c1"));
                 allNoncesBefore.Should().BeEquivalentTo<Nonce>(noncesToInsert);
 
                 await _sut.CleanUpNonces();
 
-                var allNoncesAfter = await GetAllNonces();
+                var allNoncesAfter = await GetAllNonces(new KeyId("c1"));
                 var expectedNonces = new[] {
                     new Nonce(new KeyId("c1"), "abc003", _now.AddSeconds(30)),
                     new Nonce(new KeyId("c1"), "abc004", _now.AddMinutes(30)),
@@ -94,8 +94,9 @@ namespace Dalion.HttpMessageSigning.Verification.SqlServer {
                 allNoncesAfter.Should().BeEquivalentTo<Nonce>(expectedNonces);
             }
 
-            private async Task<IEnumerable<Nonce>> GetAllNonces() {
-                var sql = @"SELECT [ClientId], [Value], [Expiration] FROM " + _settings.NonceTableName;
+            private async Task<IEnumerable<Nonce>> GetAllNonces(KeyId clientId) {
+                var sql = @"SELECT [ClientId], [Value], [Expiration] FROM " + _settings.NonceTableName +
+                          $" WHERE [ClientId] = '{clientId.Value}'";
                 
                 using (var connection = new SqlConnection(_settings.ConnectionString)) {
                     var nonces = await connection.QueryAsync<NonceDataRecord>(sql);
