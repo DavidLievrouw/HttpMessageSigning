@@ -1,5 +1,6 @@
 @echo off
 cls
+set DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 SET DIR=%~dp0%
 SET SRCDIR=%DIR%\src
 

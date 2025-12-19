@@ -17,14 +17,17 @@ nuget:
 
 install:
   - ps: |
+      $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
       Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
-      & $env:temp\dotnet-install.ps1 -Architecture x64 -Version '10.0.100' -InstallDir "$env:ProgramFiles\dotnet"
+      & $env:temp\dotnet-install.ps1 -Architecture x64 -Version '10.0.100' -InstallDir "$env:ProgramFiles\dotnet" -NoPath -NoLogo
 
 before_build:
   - cmd: dotnet --version
 
 build_script:
 - ps: >-
+    $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
+    
     dotnet --version
     
     $PackageVersion = Get-Content version.txt -First 1
@@ -38,7 +41,9 @@ build_script:
     & "./build.cmd" nopause
 
 test_script:
-- ps: >-    
+- ps: >-
+    $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
+    
     Add-AppveyorMessage -Message "Current repository: $env:APPVEYOR_REPO_NAME"
     
     Add-AppveyorMessage -Message "PR: $env:APPVEYOR_PULL_REQUEST_NUMBER"
