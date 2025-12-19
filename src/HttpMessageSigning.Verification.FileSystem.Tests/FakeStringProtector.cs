@@ -13,7 +13,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem {
         public string Unprotect(string cipherText) {
             if (_ex != null) throw _ex;
             
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
             return cipherText.EndsWith(Suffix)
                 ? cipherText[..^Suffix.Length]
                 : cipherText;

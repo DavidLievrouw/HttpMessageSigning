@@ -16,7 +16,7 @@ namespace Dalion.HttpMessageSigning.Utils {
             _key = key;
         }
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         public byte[] Protect(ReadOnlySpan<byte> data) {
             var saltStringBytes = Generate128BitsOfRandomEntropy();
             var ivStringBytes = Generate128BitsOfRandomEntropy();

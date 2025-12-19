@@ -135,7 +135,7 @@ namespace Dalion.HttpMessageSigning {
 
             var items = new List<string>();
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
             while (index > -1) {
                 var item = span[..index].ToString();
                 span = span[(index + 1)..];
@@ -161,7 +161,7 @@ namespace Dalion.HttpMessageSigning {
             var index = span.IndexOf(separator);
             if (index < 0) return new[] { input };
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
             var part1 = span[..index].ToString();
             span = span[(index + 1)..];
 #else

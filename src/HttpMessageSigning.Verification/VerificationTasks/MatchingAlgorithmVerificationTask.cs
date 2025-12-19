@@ -27,7 +27,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     algorithmParts.Add(signature.Algorithm);
                 }
                 else {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     algorithmParts.Add(signature.Algorithm[..separatorIndex]);
                     algorithmParts.Add(signature.Algorithm[(separatorIndex + 1)..]);
 #else

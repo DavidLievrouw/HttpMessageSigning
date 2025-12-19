@@ -40,7 +40,7 @@ namespace Dalion.HttpMessageSigning.Verification.VerificationTasks {
                     digestParams.Add(digestHeaderValue);
                 }
                 else {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     digestParams.Add(digestHeaderValue[..separatorIndex]);
                     digestParams.Add(digestHeaderValue[(separatorIndex + 1)..]);
 #else

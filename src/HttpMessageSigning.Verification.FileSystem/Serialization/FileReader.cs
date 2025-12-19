@@ -19,7 +19,7 @@ namespace Dalion.HttpMessageSigning.Verification.FileSystem.Serialization {
 
             try {
                 using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     return await XDocument.LoadAsync(fileStream, LoadOptions.None, CancellationToken.None);
 #else
                     var doc = XDocument.Load(fileStream, LoadOptions.None);

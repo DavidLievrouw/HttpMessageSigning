@@ -23,7 +23,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
             headerToAppend.Append(sb);
         }
 
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         private static string SanitizeHeaderValue(string input) {
             if (input == null) return null;
             if (input.IndexOf('\n') < 0) return input.Trim();

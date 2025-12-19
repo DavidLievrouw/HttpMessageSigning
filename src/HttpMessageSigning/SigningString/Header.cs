@@ -67,7 +67,7 @@ namespace Dalion.HttpMessageSigning.SigningString {
                     nameAndValues.Add(value);
                 }
                 else {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
                     nameAndValues.Add(value[..separatorIndex]);
                     nameAndValues.Add(value[(separatorIndex + 1)..]);
 #else

@@ -2,7 +2,7 @@
 
 namespace Dalion.HttpMessageSigning.Utils {
     internal interface IDataProtector {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         byte[] Protect(ReadOnlySpan<byte> data);
         byte[] Unprotect(ReadOnlySpan<byte> cipher);
 #else

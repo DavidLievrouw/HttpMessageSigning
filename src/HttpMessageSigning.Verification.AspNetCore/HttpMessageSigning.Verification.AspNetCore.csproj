@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
         <AssemblyName>Dalion.HttpMessageSigning.Verification.AspNetCore</AssemblyName>
         <RootNamespace>Dalion.HttpMessageSigning.Verification.AspNetCore</RootNamespace>
         <DebugType>portable</DebugType>

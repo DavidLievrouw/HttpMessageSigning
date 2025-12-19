@@ -68,7 +68,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             return new ShortGuid(Guid.NewGuid());
         }
 
-#if NET6_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+#if NET8_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         private static string Encode(Guid guid) {
             Span<byte> guidBytes = stackalloc byte[16];
             guid.TryWriteBytes(guidBytes);
@@ -112,7 +112,7 @@ namespace Dalion.HttpMessageSigning.Signing {
             encoded = encoded
                 .Replace("/", "_")
                 .Replace("+", "-");
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
             return encoded[..22];
 #else
             return encoded.Substring(0, 22);
