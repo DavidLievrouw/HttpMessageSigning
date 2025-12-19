@@ -30,8 +30,11 @@ namespace Console {
         }
 
         public static void ConfigureServices(IServiceCollection services) {
+#if NET10_0_OR_GREATER
+            var cert = X509CertificateLoader.LoadPkcs12(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
+#else
             var cert = new X509Certificate2(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
-
+#endif
             services
                 .AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
                 .AddHttpMessageSigning()

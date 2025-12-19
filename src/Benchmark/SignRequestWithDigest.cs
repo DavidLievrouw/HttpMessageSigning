@@ -21,7 +21,12 @@ namespace Benchmark {
 
         public SignRequestWithDigest() {
             var keyId = new KeyId("e0e8dcd638334c409e1b88daf821d135");
+            
+#if NET10_0_OR_GREATER
+            var cert = X509CertificateLoader.LoadPkcs12(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
+#else
             var cert = new X509Certificate2(File.ReadAllBytes("./dalion.local.pfx"), "CertP@ss123", X509KeyStorageFlags.Exportable);
+#endif
             
             var serviceProvider = new ServiceCollection()
                 .AddHttpMessageSigning()

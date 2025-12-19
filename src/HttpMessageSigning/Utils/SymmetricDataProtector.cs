@@ -20,8 +20,7 @@ namespace Dalion.HttpMessageSigning.Utils {
         public byte[] Protect(ReadOnlySpan<byte> data) {
             var saltStringBytes = Generate128BitsOfRandomEntropy();
             var ivStringBytes = Generate128BitsOfRandomEntropy();
-            using var password = new Rfc2898DeriveBytes(_key, saltStringBytes, DerivationIterations, HashAlgorithmName.SHA1);
-            var keyBytes = password.GetBytes(KeySize / 8);
+            var keyBytes = Rfc2898DeriveBytes.Pbkdf2(_key, saltStringBytes, DerivationIterations, HashAlgorithmName.SHA1, KeySize / 8);
             using var symmetricKey = Aes.Create();
             symmetricKey.BlockSize = 128;
             symmetricKey.Mode = CipherMode.CBC;
@@ -53,9 +52,7 @@ namespace Dalion.HttpMessageSigning.Utils {
                 Buffer.BlockCopy(cipherArray, 0, saltStringBytes, 0, KeySize / 8);
                 Buffer.BlockCopy(cipherArray, KeySize / 8, ivStringBytes, 0, KeySize / 8);
                 Buffer.BlockCopy(cipherArray, KeySize / 8 * 2, cipherTextBytes, 0, cipher.Length - KeySize / 8 * 2);
-
-                using var password = new Rfc2898DeriveBytes(_key, saltStringBytes, DerivationIterations, HashAlgorithmName.SHA1);
-                var keyBytes = password.GetBytes(KeySize / 8);
+                var keyBytes = Rfc2898DeriveBytes.Pbkdf2(_key, saltStringBytes, DerivationIterations, HashAlgorithmName.SHA1, KeySize / 8);
                 using var symmetricKey = Aes.Create();
                 symmetricKey.BlockSize = 128;
                 symmetricKey.Mode = CipherMode.CBC;

@@ -52,7 +52,11 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void CanSignWithoutExportablePrivateKey() {
+#if NET10_0_OR_GREATER
+                using (var cert = X509CertificateLoader.LoadPkcs12FromFile("./dalion.local.pfx", "CertP@ss123")) {
+#else
                 using (var cert = new X509Certificate2("./dalion.local.pfx", "CertP@ss123")) {
+#endif
                     using (var sut = new RSASignatureAlgorithm(HashAlgorithmName.SHA384, cert.GetRSAPrivateKey())) {
                         var payload = "_abc_123_";
                         var actual = sut.ComputeHash(payload);
@@ -73,7 +77,11 @@ namespace Dalion.HttpMessageSigning {
 
             [Fact]
             public void CanVerifyValidSignatureFromNonExportableX509Certificate2() {
+#if NET10_0_OR_GREATER
+                using (var cert = X509CertificateLoader.LoadPkcs12FromFile("./dalion.local.pfx", "CertP@ss123")) {
+#else
                 using (var cert = new X509Certificate2("./dalion.local.pfx", "CertP@ss123")) {
+#endif
                     using (var signer = new RSASignatureAlgorithm(HashAlgorithmName.SHA384, cert.GetRSAPrivateKey())) {
                         var payload = "_abc_123_";
                         var signature = signer.ComputeHash(payload);
