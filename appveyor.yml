@@ -2,9 +2,11 @@ version: 1.0.0.{build}
 image: Visual Studio 2022
 init:
   - net start MSSQL$SQL2019
+
 branches:
   except:
     - /dev_.*/
+
 environment:
   PRODUCT: HttpMessageSigning
   DISTPATH: ../../dist
@@ -12,6 +14,7 @@ environment:
   SQLSERVER:USERID: sa
   SQLSERVER:PASSWORD: Password12!
   SQLSERVER:SERVERNAME: (local)\SQL2019
+
 nuget:
   disable_publish_on_pr: true
 
@@ -26,19 +29,15 @@ install:
 build_script:
 - ps: >-
     $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
-    
     $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
-    
     $env:DOTNET_NOLOGO = "true"
     
     dotnet --version
     
     $PackageVersion = Get-Content version.txt -First 1
-    
     $ProductVersion = "$PackageVersion.$env:APPVEYOR_BUILD_NUMBER"
     
     Add-AppveyorMessage -Message "Determined the version to be $ProductVersion."
-    
     Update-AppveyorBuild -Version $ProductVersion
     
     & "./build.cmd" nopause
@@ -46,15 +45,11 @@ build_script:
 test_script:
 - ps: >-
     $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
-    
     $env:DOTNET_CLI_TELEMETRY_OPTOUT = "1"
-    
     $env:DOTNET_NOLOGO = "true"
     
     Add-AppveyorMessage -Message "Current repository: $env:APPVEYOR_REPO_NAME"
-    
     Add-AppveyorMessage -Message "PR: $env:APPVEYOR_PULL_REQUEST_NUMBER"
-    
     Add-AppveyorMessage -Message "PR head repository: $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME"
     
     & "./test.cmd" nopause
@@ -62,4 +57,5 @@ test_script:
 artifacts:
 - path: ./dist/%CONFIGURATION%
   name: dist
+
 deploy: off
